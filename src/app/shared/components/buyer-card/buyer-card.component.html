@@ -54,19 +54,28 @@
       <br />
       <span *ngIf="description" class="description">{{ truncateString(description, 100) }}</span>
 
-      <button
-        class="stock-button"
-        *ngIf="supplierProvidedData?.stock && supplierProvidedData?.stock >= 0"
-      >
-        En inventario: {{ supplierProvidedData?.stock }}
-      </button>
+      <ng-container *ngIf="supplierProvidedData">
+        <button
+          class="stock-button"
+          *ngIf="supplierProvidedData?.stock && supplierProvidedData?.stock > 0"
+        >
+          {{ supplierProvidedData?.stock }} disponibles
+        </button>
 
-      <button
-        class="stock-button"
-        *ngIf="!supplierProvidedData?.stock && supplierProvidedData?.stock !== 0"
-      >
-        Adicionar disponibilidad
-      </button>
+        <button
+          class="stock-button"
+          *ngIf="supplierProvidedData?.stock === 0"
+        >
+          0 disponible (oculto)
+        </button>
+
+        <button
+          class="stock-button"
+          *ngIf="!supplierProvidedData?.stock && supplierProvidedData?.stock !== 0"
+        >
+          Adicionar disponibilidad
+        </button>
+      </ng-container>
     </div>
     <div
       class="image-container"

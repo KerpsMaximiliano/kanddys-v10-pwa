@@ -204,8 +204,8 @@ export const deleteLocation = gql`
 `;
 
 export const listItems = gql`
-  query listItems($params: PaginationInput) {
-    listItems(params: $params) {
+  query listItems($params: PaginationInput, $searchName: String) {
+    listItems(params: $params, searchName: $searchName) {
       _id
       content
       name
@@ -213,6 +213,7 @@ export const listItems = gql`
       pricePerUnit
       description
       createdAt
+      parentItem
       images {
         _id
         value
@@ -237,6 +238,7 @@ export const listItems = gql`
         _id
         name
       }
+      stock
       params {
         _id
         name
@@ -267,8 +269,8 @@ export const listItems = gql`
 `;
 
 export const hotListItems = gql`
-  query listItems($params: PaginationInput) {
-    listItems(params: $params) {
+  query listItems($params: PaginationInput, $searchName: String) {
+    listItems(params: $params, searchName: $searchName) {
       _id
       status
     }

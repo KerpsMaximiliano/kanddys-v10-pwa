@@ -42,10 +42,21 @@
         <!-- <button class="btn" (click)="openContactInfo()">
           <span>Simbolos & Contactos</span>
         </button> -->
+        <!-- <div class="flex">
+
+        <mat-icon>favorite_filled</mat-icon>4
+      </div> -->
+        <div
+          class="shopping-cart-container"
+          *ngIf="headerService.order?.products?.length"
+          (click)="goToCart()"
+        >
+          <mat-icon>shopping_cart</mat-icon>
+          {{ headerService.order?.products?.length }}
+        </div>
       </div>
     </div>
-
-    <div class="top-bar" *ngIf="tags.length">
+    <!-- <div class="top-bar" *ngIf="tags.length">
       <div
         class="chip-list"
         #elemt
@@ -78,13 +89,43 @@
           ]"
           routerLinkActive="selected"
         >
-          <!-- <app-gradient-card [tag]="tag"></app-gradient-card> -->
           {{ tag.name }}
         </a>
       </div>
+    </div> -->
+    <div
+      class="input-container"
+      #elemt
+      (mousedown)="startDragging($event, elemt)"
+      (mouseup)="stopDragging()"
+      (mouseleave)="stopDragging()"
+      (mousemove)="moveEvent($event, elemt)"
+    >
+      <input 
+        placeholder="Buscar.."
+        (keyup)="onKeywordSearch($event)"
+      />
+      <div class="input-items">
+        <div class="icon-button" (click)="openEstimatedDeliveryDialog()">⏰</div>
+        <div class="icon-button" (click)="openPriceRangeDialog()">💰</div>
+        <div class="icon-button" (click)="openTagsDialog()" *ngIf="tags.length">🖇️️</div>
+        <!-- <div class="icon-button">🏷️</div> -->
+      </div>
+      <!-- <div class="input-item-text">
+        ⏰  Artículos que se entregan en menos de 2 horas en Santo Domingo
+      </div>
+      <div class="input-item-text">
+        💰 Artículos que cuestan entre $id - $id
+      </div> -->
+      <!-- <div class="input-item-text">
+        🏷️  Artículos con tagid, tagid
+      </div> -->
+      <!-- <div class="input-item-text">
+        🖇️ Artículos en categoriaID, categoryID
+      </div> -->
+
     </div>
   </div>
-
   <router-outlet></router-outlet>
 </div>
 <div id="footer" class="display-footer hide">
@@ -190,12 +231,13 @@
       </li>
     </ng-container>
   </ul>
-  <div style="display: flex; justify-content: center; align-items: center">
-    <ng-container *ngIf="!headerService.order?.products?.length">
-      <img [src]="env + '/star-highlight.png'" alt="" style="width: 40px" />
-      <p class="highlighted-text">Stars for causes</p>
+  <div style="cursor: pointer; display: flex; justify-content: center; align-items: center;">
+    <ng-container>
+      <!-- <img [src]="env + '/star-highlight.png'" alt="" style="width: 40px" /> -->
+      <p class="highlighted-text">Guarda y Monetiza</p>
+      <p style="font-size: 16px;">💚</p>
     </ng-container>
-    <div
+    <!-- <div
       class="cart-container"
       *ngIf="headerService.order?.products?.length"
       (click)="goToCart()"
@@ -206,6 +248,6 @@
         alt=""
         style="width: 15px; margin-bottom: 2px"
       />
-    </div>
+    </div> -->
   </div>
 </div>

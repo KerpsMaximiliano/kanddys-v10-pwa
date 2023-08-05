@@ -79,10 +79,48 @@ export const arrayOfRoutesToBase64 = async (
 export const urltoFile = async (
   dataUrl: string,
   fileName: string,
-  type?: string
+  type?: string,
+  inferFileExtensionFromURL?: boolean
 ): Promise<File> => {
+  if (inferFileExtensionFromURL) {
+    // Extract the file extension from the data URL
+    const extensionMatch = dataUrl.match(/\.([a-z0-9]+)(?=[?#]|$)/i);
+    const fileExtension = extensionMatch ? extensionMatch[1] : '';
+
+
+    // Map common file extensions to their respective MIME types for images
+    const imageMimeTypes: Record<string, string> = {
+      jpg: 'image/jpeg',
+      jpeg: 'image/jpeg',
+      png: 'image/png',
+      gif: 'image/gif',
+      // Add more image types if needed
+    };
+
+    // Map common file extensions to their respective MIME types for videos
+    const videoMimeTypes: Record<string, string> = {
+      mp4: 'video/mp4',
+      webm: 'video/webm',
+      // Add more video types if needed
+    };
+
+    // Determine the MIME type based on the file extension or use a default value
+    let mimeType = imageMimeTypes[fileExtension.toLowerCase()];
+    if (!mimeType) {
+      mimeType = videoMimeTypes[fileExtension.toLowerCase()] || 'image/jpg';
+    }
+
+    type = mimeType;
+  }
+
   const res: Response = await fetch(dataUrl);
+
+  const contentType: string | null = res.headers.get('Content-Type');
+
   const blob: Blob = await res.blob();
+
+  //console.log(fileName, { type: type || 'image/jpg' })
+
   return new File([blob], fileName, { type: type || 'image/jpg' });
 };
 

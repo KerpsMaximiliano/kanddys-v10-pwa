@@ -544,7 +544,7 @@ export class OrderDetailComponent implements OnInit {
   }
 
   goToWhatsapp() {
-    window.open(this.messageLink, '_blank');
+    window.location.href = this.messageLink;
   }
 
   // async notificationClicked() {
@@ -722,7 +722,7 @@ export class OrderDetailComponent implements OnInit {
     this.messageLink = `https://api.whatsapp.com/send?phone=${
       this.order.user?.phone
     }&text=${encodeURIComponent(message)}`;
-    window.open(this.messageLink, '_blank');
+    window.location.href = this.messageLink;
   }
 
   formatHour(date: Date, breakTime?: number) {

@@ -56,6 +56,15 @@ import { HttpClient } from '@angular/common/http';
 import { createTranslateLoader } from 'src/app/core/functions/create-translate-loader';
 import { OrderConfirmationComponent } from './pages/order-confirmation/order-confirmation.component';
 import { InvalidMagicLinkComponent } from './pages/invalid-magic-link/invalid-magic-link.component';
+import { ItemSelectorComponent } from 'src/app/shared/components/item-selector/item-selector.component';
+import { InventoryComponent } from 'src/app/shared/components/inventory/inventory.component';
+import { QuotationBidsComponent } from './pages/quotation-bids/quotation-bids.component';
+import { SupplierRegistrationComponent } from '../../shared/components/supplier-registration/supplier-registration.component';
+import { InventoryCreatorComponent } from './pages/inventory-creator/inventory-creator.component';
+import { ConfirmQuotationComponent } from './pages/confirm-quotation/confirm-quotation.component';
+import { ItemCreationComponent } from './pages/item-creation/item-creation.component';
+import { FormCreatorComponent } from 'src/app/shared/components/form-creator/form-creator.component';
+import { ItemsSlidesEditorComponent } from 'src/app/shared/components/items-slides-editor/items-slides-editor.component';
 
 const routes: Routes = [
   {
@@ -148,6 +157,86 @@ const routes: Routes = [
   {
     path: 'invalid-link',
     component: InvalidMagicLinkComponent
+  },
+  {
+    path: 'supplier-items-selector',
+    component: ItemSelectorComponent,
+  },
+  {
+    path: 'supplier-items-selector/:quotationId',
+    component: ItemSelectorComponent,
+  },
+  {
+    path: 'supplier-register/:quotationId',
+    component: SupplierRegistrationComponent,
+  },
+  {
+    path: 'supplier-register',
+    component: SupplierRegistrationComponent,
+  },
+  {
+    path: 'quotations',
+    component: InventoryComponent,
+  },
+  {
+    path: 'item-management/:itemId',
+    component: ItemCreationComponent,
+  },
+  {
+    path: 'item-management',
+    component: ItemCreationComponent,
+  },
+  {
+    path: 'webform-creator/:itemId',
+    component: FormCreatorComponent,
+  },
+  {
+    path: 'webform-creator',
+    component: FormCreatorComponent,
+  },
+  {
+    path: 'inventory-creator',
+    component: InventoryCreatorComponent,
+  },
+  {
+    path: 'inventory-creator/:itemId',
+    component: InventoryCreatorComponent,
+  },
+  {
+    path: 'quotation-bids',
+    component: QuotationBidsComponent,
+  },
+  {
+    path: 'quotation-bids/:quotationId',
+    component: QuotationBidsComponent,
+  },
+  {
+    path: 'confirm-quotation',
+    component: ConfirmQuotationComponent,
+  },
+  {
+    path: 'confirm-quotation/:quotationId',
+    component: ConfirmQuotationComponent,
+  },
+  {
+    path: 'article-detail/:entity',
+    component: SymbolDetailComponent,
+  },
+  {
+    path: 'items-slides-editor-2',
+    component: ItemsSlidesEditorComponent,
+  },
+  {
+    path: 'items-slides-editor-2/:itemId',
+    component: ItemsSlidesEditorComponent,
+  },
+  {
+    path: 'slides-editor-2/:articleId',
+    component: QrEditComponent,
+  },
+  {
+    path: 'slides-editor-2',
+    component: QrEditComponent,
   },
   {
     path: ':merchantSlug',
@@ -333,6 +422,10 @@ const routes: Routes = [
     SymbolDetailComponent,
     OrderConfirmationComponent,
     InvalidMagicLinkComponent,
+    QuotationBidsComponent,
+    InventoryCreatorComponent,
+    ConfirmQuotationComponent,
+    ItemCreationComponent
   ],
   imports: [
     CommonModule,

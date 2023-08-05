@@ -5,14 +5,24 @@ import { Quotation, QuotationInput } from '../models/quotations';
 import {
   createQuotation,
   deleteQuotation,
+  multipleQuotationMatches,
+  multipleQuotationMatchesByItems,
   quotation,
   quotationCoincidences,
+  quotationCoincidencesByItem,
+  quotationPublic,
   quotations,
   updateQuotation,
 } from '../graphql/quotations.gql';
 import { Subscription } from 'rxjs';
 import { Item, ItemInput } from '../models/item';
+import { ExtendedItemInput } from './items.service';
 
+export interface QuotationItem extends Item {
+  inSaleflow?: boolean;
+  valid: boolean;
+  indexInFullList?: number;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -23,8 +33,43 @@ export class QuotationsService {
   quotationItemsInputBeingEdited: Array<ItemInput> = null;
   quotationBeingEdited: Quotation = null;
   quotationInCart: Quotation = null;
-  isANewMerchantAdjustingAQuotation: boolean = false;
+
+  //Variables for keeping track of the items that are being added to a quotation before said quotation is created
+  //Or while you are editing it
   selectedItemsForQuotation: Array<string> = [];
+  quotationToUpdate: Quotation = null; 
+
+  typeOfQuotationBeingEdited: 'DATABASE_QUOTATION' | 'TEMPORAL_QUOTATION' = 'DATABASE_QUOTATION';
+  typeOfProvider: 'REGISTERED_SUPPLIER' | 'NEW_SUPPLIER' = null;
+
+  //specific variables for the case when no user session is found when creating a quotation
+  temporalQuotations: Array<QuotationInput> = [];
+  selectedTemporalQuotation: QuotationInput = null;
+
+  //specific variables for when a provider is adjusting item information of a quotation
+  temporalQuotationBeingEdited: QuotationInput = null;
+
+  supplierItemBeingEdited: Item = null;
+  fetchSupplierItem: boolean = true;
+  
+  supplierItemsAdjustmentsConfig: {
+    typeOfProvider: 'REGISTERED_SUPPLIER' | 'NEW_SUPPLIER',
+    typeOfRequester: 'REGISTERED_USER' | 'UNSPECIFIED_USER',
+    typeOfQuotationBeingEdited: 'DATABASE_QUOTATION' | 'TEMPORAL_QUOTATION',
+    requesterId?: string,
+    supplierMerchantId?: string;
+    globalSupplieritemIdsInQuotation: Array<string>,
+    supplierSpecificOtemIdsInQuotation: Array<string>,
+    quotationItems: Array<QuotationItem>,
+    itemsThatArentInSupplierSaleflow?: Array<ItemInput>,
+    quotationId?: string;
+    quotationItemBeingEdited?: {
+      id?: string,
+      inSaleflow: boolean
+      indexInQuotations: number;
+      quotationItemInMemory: boolean,
+    };
+  } = null;
 
   constructor(private graphql: GraphQLWrapper) {}
 
@@ -61,6 +106,65 @@ export class QuotationsService {
     }
   }
 
+  async multipleQuotationMatches(
+    quotationsIds: Array<string>,
+    paginationOptionsInput: PaginationOptionsInput
+  ): Promise<Array<any>> {
+    try {
+      const result = await this.graphql.query({
+        query: multipleQuotationMatches,
+        variables: { quotationsIds, paginationOptionsInput },
+        fetchPolicy: 'no-cache',
+      });
+
+      if (!result || result?.errors) return undefined;
+      return result?.multipleQuotationMatches;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async multipleQuotationMatchesByItems(
+    quotationsItems: Array<Array<string>>,
+    paginationOptionsInput: PaginationOptionsInput
+  ): Promise<Array<any>> {
+    try {
+      const result = await this.graphql.query({
+        query: multipleQuotationMatchesByItems,
+        variables: { quotationsItems, paginationOptionsInput },
+        fetchPolicy: 'no-cache',
+      });
+
+      if (!result || result?.errors) return undefined;
+      return result?.multipleQuotationMatchesByItems;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async quotationCoincidencesByItem(
+    paginationOptionsInput: PaginationOptionsInput,
+    categories: Array<string>,
+    itemId: Array<string>
+  ): Promise<Array<any>> {
+    try {
+      const result = await this.graphql.query({
+        query: quotationCoincidencesByItem,
+        variables: {
+          paginationOptionsInput,
+          categories,
+          itemId,
+        },
+        fetchPolicy: 'no-cache',
+      });
+
+      if (!result || result?.errors) return undefined;
+      return result?.quotationCoincidencesByItem;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   async quotation(id: string): Promise<Quotation> {
     try {
       const result = await this.graphql.query({
@@ -78,10 +182,28 @@ export class QuotationsService {
     }
   }
 
+  async quotationPublic(id: string): Promise<Quotation> {
+    try {
+      const result = await this.graphql.query({
+        query: quotationPublic,
+        variables: { id },
+        fetchPolicy: 'no-cache',
+      });
+
+      if (!result || result?.errors) return undefined;
+      return result?.quotationPublic;
+    } catch (e) {
+      console.log(e);
+
+      return e;
+    }
+  }
+
+
   async createQuotation(
     merchantId: string,
     input: QuotationInput
-  ): Promise<any> {
+  ): Promise<Quotation> {
     const result = await this.graphql.mutate({
       mutation: createQuotation,
       variables: { merchantId, input },

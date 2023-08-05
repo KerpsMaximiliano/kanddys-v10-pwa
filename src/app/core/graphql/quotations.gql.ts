@@ -17,6 +17,14 @@ export const quotation = gql`
     }
 `;
 
+export const quotationPublic = gql`
+    query quotationPublic($id: ObjectID!) {
+      quotationPublic(id: $id) {
+          ${quotationBody}
+        }
+    }
+`;
+
 export const quotations = gql`
     query quotations($input: PaginationInput) {
         quotations(input: $input) {
@@ -26,9 +34,53 @@ export const quotations = gql`
 `;
 
 export const quotationCoincidences = gql`
-    query quotationCoincidences($id: ObjectID!, $paginationOptionsInput: PaginationOptionsInput) {
-      quotationCoincidences(id: $id, paginationOptionsInput: $paginationOptionsInput)
-    }
+  query quotationCoincidences(
+    $id: ObjectID!
+    $paginationOptionsInput: PaginationOptionsInput
+  ) {
+    quotationCoincidences(
+      id: $id
+      paginationOptionsInput: $paginationOptionsInput
+    )
+  }
+`;
+
+export const multipleQuotationMatches = gql`
+  query multipleQuotationMatches(
+    $quotationsIds: [ObjectID!]
+    $paginationOptionsInput: PaginationOptionsInput
+  ) {
+    multipleQuotationMatches(
+      quotationsIds: $quotationsIds
+      paginationOptionsInput: $paginationOptionsInput
+    )
+  }
+`;
+
+export const multipleQuotationMatchesByItems = gql`
+  query multipleQuotationMatchesByItems(
+    $quotationsItems: [[ObjectID!]!]
+    $paginationOptionsInput: PaginationOptionsInput
+  ) {
+    multipleQuotationMatchesByItems(
+      quotationsItems: $quotationsItems
+      paginationOptionsInput: $paginationOptionsInput
+    )
+  }
+`;
+
+export const quotationCoincidencesByItem = gql`
+  query quotationCoincidencesByItem(
+    $paginationOptionsInput: PaginationOptionsInput
+    $categories: [ObjectID!]
+    $itemId: [ObjectID!]!
+  ) {
+    quotationCoincidencesByItem(
+      paginationOptionsInput: $paginationOptionsInput
+      categories: $categories
+      itemId: $itemId
+    )
+  }
 `;
 
 export const createQuotation = gql`

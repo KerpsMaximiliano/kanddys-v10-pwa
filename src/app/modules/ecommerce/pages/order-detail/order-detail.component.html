@@ -1,4 +1,4 @@
-<app-navigation [opened]="openNavigation" (closed)="openNavigation = false">
+<!-- <app-navigation [opened]="openNavigation" (closed)="openNavigation = false"> -->
   <div class="container">
     <div class="header-navigation">
       <mat-accordion>
@@ -79,6 +79,7 @@
         top: 51px;
         right: 20px;
       "
+      *ngIf="messageLink"
       (click)="goToWhatsapp()"
     >
       <img
@@ -492,7 +493,8 @@
                 <p class="top-text">Mensaje de dedicatoria</p>
                 <p class="bottom-text">
                   <ng-container *ngIf="post?.envelopeText">
-                    {{ post?.envelopeText }}
+                    <!-- {{ post?.envelopeText }} -->
+                    Contenido privado
                   </ng-container>
                 </p>
               </div>
@@ -507,7 +509,8 @@
                 </p>
                 <p class="bottom-text">
                   <ng-container *ngIf="post?.envelopeText">
-                    {{ post?.envelopeText }}
+                    <!-- {{ post?.envelopeText }} -->
+                    Contenido privado
                   </ng-container>
                 </p>
               </div>
@@ -556,4 +559,4 @@
       ></qrcode>
     </div>
   </div>
-</app-navigation>
+<!-- </app-navigation> -->

@@ -17,11 +17,17 @@ import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
 
 //Helper functions
-import { formatID, isVideo } from 'src/app/core/helpers/strings.helpers';
+import {
+  formatID,
+  isVideo,
+  truncateString,
+} from 'src/app/core/helpers/strings.helpers';
 import {
   isVideoPlaying,
+  lockUI,
   playVideoNoFullscreen,
   playVideoOnFullscreen,
+  unlockUI,
 } from 'src/app/core/helpers/ui.helpers';
 
 //Imported models
@@ -156,11 +162,15 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   tagData: Tag;
   queryParams: any;
   routeParams: any;
+  supplierPreview: any;
   playVideo = playVideoNoFullscreen;
+  truncateString = truncateString;
   addedItemToQuotation: boolean = false;
   defaultCtaText: string = 'Agregar al carrito';
   defaultCtaRemoveText: string = 'Quitar del carrito';
   supplierItem: boolean = false;
+  supplierItemInSaleflow: boolean = false;
+  supplierViewer: boolean = false;
 
   fromQR: boolean = false;
 
@@ -202,8 +212,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   }
 
   async ngAfterViewInit() {
-    const element = this.elementRef.nativeElement.querySelector('.container'); // Replace with the appropriate CSS class or ID of your <div> element
-    const excludedRegion = element.querySelector('.description');
+    const element = this.elementRef.nativeElement.querySelector('.container');
 
     const hammertime = new Hammer(element);
     hammertime.get('swipe').set({ direction: Hammer.DIRECTION_VERTICAL });
@@ -229,10 +238,13 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     await this.verifyIfUserIsLogged();
     const validEntities = ['item', 'post', 'template', 'collection'];
     const { entity, entityId } = this.routeParams;
-    const { mode, redirectTo } = this.queryParams;
+    const { mode, redirectTo, supplierPreview, supplierViewer } =
+      this.queryParams;
 
     this.entityPresentation = mode;
     this.redirectTo = redirectTo;
+    this.supplierPreview = supplierPreview;
+    this.supplierViewer = JSON.parse(supplierViewer || 'false');
 
     if (
       this.entityPresentation === 'DEMO' ||
@@ -318,6 +330,17 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
           this.quotationsService.selectedItemsForQuotation.findIndex(
             (itemId) => itemId === this.itemData._id
           );
+
+        const doesThisItemExistInCurrentSaleflow =
+          this.headerService.saleflow?.items?.find(
+            (item) => item.item._id === this.itemData._id
+          );
+
+        this.supplierItemInSaleflow = doesThisItemExistInCurrentSaleflow
+          ? true
+          : !this.headerService.saleflow || this.supplierPreview
+          ? true
+          : false;
 
         if (foundItemIndex < 0) {
           this.addedItemToQuotation = false;
@@ -548,6 +571,8 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
       this.swiperConfig.spaceBetween = 0;
       this.layout = 'EXPANDED-SLIDE';
     }
+
+    console.log(this.layout);
   }
 
   expandDescriptionAndShowAllSlidesSwiper() {
@@ -570,6 +595,8 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   updateCurrentSlideData(event: any) {
     const prevIndex = this.currentMediaSlide;
     this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
+
+    //console.log(this.currentMediaSlide);
 
     if (this.genericModelTemplate.slides[prevIndex].type === 'VIDEO') {
       this.playCurrentSlideVideo('media' + prevIndex);
@@ -713,7 +740,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
       .map(() => `${'1'}fr`)
       .join(' ');
 
-    console.log(this.fractions);
+    //console.log(this.fractions);
   }
 
   itemInCart() {
@@ -761,14 +788,14 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   }
 
   back = async () => {
-    if (this.supplierItem) {
-      return this.router.navigate([`/admin/item-selector`]);
+    if (this.supplierPreview) {
+      return this.headerService.redirectFromQueryParams();
     }
 
     if (this.mode === 'preview') {
       this.itemsService.itemUrls = [];
       return this.router.navigate([
-        `/admin/item-creation/${this.itemData._id}`,
+        `/ecommerce/item-management/${this.itemData._id}`,
       ]);
     }
     if (this.mode === 'image-preview') {
@@ -863,8 +890,8 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     }, 500);
   }
 
-  saveProduct() {
-    if (this.itemData.type === 'supplier') {
+  async saveProduct() {
+    if (this.itemData && this.itemData.type === 'supplier') {
       const foundItemIndex =
         this.quotationsService.selectedItemsForQuotation.findIndex(
           (itemId) => itemId === this.itemData._id
@@ -883,25 +910,39 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
         );
       }
 
+      if (this.quotationsService.quotationToUpdate) {
+        lockUI();
+        await this.quotationsService.updateQuotation(
+          {
+            items: this.quotationsService.selectedItemsForQuotation,
+          },
+          this.quotationsService.quotationToUpdate._id
+        );
+        unlockUI();
+      }
+
       return;
     }
 
     if (this.mode === 'preview' || this.mode === 'image-preview') return;
-    if (!this.isItemInCart && !this.headerService.saleflow.canBuyMultipleItems)
+    if (!this.isItemInCart && this.headerService.saleflow && !this.headerService.saleflow?.canBuyMultipleItems)
       this.headerService.emptyOrderProducts();
-    const product: ItemSubOrderInput = {
-      item: this.itemData._id,
-      amount: 1,
-    };
 
-    this.headerService.storeOrderProduct(product);
+    if (this.itemData && this.headerService.saleflow) {
+      const product: ItemSubOrderInput = {
+        item: this.itemData._id,
+        amount: 1,
+      };
 
-    this.appService.events.emit({
-      type: 'added-item',
-      data: this.itemData._id,
-    });
-    this.itemInCart();
-    if (this.isItemInCart) this.goToCheckout();
+      this.headerService.storeOrderProduct(product);
+
+      this.appService.events.emit({
+        type: 'added-item',
+        data: this.itemData._id,
+      });
+      this.itemInCart();
+      if (this.isItemInCart) this.goToCheckout();
+    }
   }
 
   goToCheckout() {

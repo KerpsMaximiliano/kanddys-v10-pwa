@@ -14,7 +14,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { Subscription } from 'rxjs';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { Item, ItemImageInput, ItemInput } from 'src/app/core/models/item';
+import {
+  Item,
+  ItemCategory,
+  ItemImageInput,
+  ItemInput,
+} from 'src/app/core/models/item';
 import { ItemOrder } from 'src/app/core/models/order';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { Tag } from 'src/app/core/models/tags';
@@ -43,6 +48,7 @@ import { ExtendedItem } from '../items-dashboard/items-dashboard.component';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { WebformsService } from 'src/app/core/services/webforms.service';
 
 export class FilterCriteria {
   _id?: string;
@@ -189,7 +195,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                     this._ItemsService.editingImageId =
                       createItem.images[0]._id;
                     this.router.navigate([
-                      `admin/item-creation/${createItem._id}`,
+                      `ecommerce/item-management/${createItem._id}`,
                     ]);
                   };
                   reader.readAsDataURL(images[0].file as File);
@@ -276,6 +282,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   view: 'sold' | 'notSold' | 'hidden' | 'all' | 'default' = 'default';
   showItems: string = null;
+  supplierMode: boolean = false;
 
   constructor(
     public _MerchantsService: MerchantsService,
@@ -285,6 +292,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private tagsService: TagsService,
     private ordersService: OrderService,
+    private webformsService: WebformsService,
     private _ItemsService: ItemsService,
     private snackBar: MatSnackBar,
     private _bottomSheet: MatBottomSheet,
@@ -297,32 +305,243 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     //await this.getItemsBoughtByMe();
+    this.route.queryParams.subscribe(async ({ view, showItems, jsondata }) => {
+      this.showItems = showItems;
+      this.supplierMode = JSON.parse(
+        this.route.snapshot.queryParamMap.get('supplierMode') || 'false'
+      );
 
-    const view = this.route.snapshot.queryParamMap.get('view');
-    this.showItems = this.route.snapshot.queryParamMap.get('showItems');
+      if (jsondata) {
+        let parsedData = JSON.parse(decodeURIComponent(jsondata));
 
-    if (view)
-      this.view = view as 'sold' | 'notSold' | 'hidden' | 'all' | 'default';
+        //console.log('parsedData', parsedData);
 
-    if (this._SaleflowService.saleflowData) {
-      await this.inicializeItems(true, false, true, true);
-      this.getTags();
-      this.getQueryParameters();
-      this.getHiddenItems();
-      this.getSoldItems();
-      this.getItemsThatHaventBeenSold();
-    }
-    this.subscription = this._SaleflowService.saleflowLoaded.subscribe({
-      next: async (value) => {
-        if (value) {
-          await this.inicializeItems(true, false, true, true);
-          this.getTags();
-          this.getQueryParameters();
-          this.getHiddenItems();
-          this.getSoldItems();
-          this.getItemsThatHaventBeenSold();
+        if (parsedData.createdItem) {
+          try {
+            lockUI();
+            const createdItemId = parsedData.createdItem;
+
+            const item = await this._ItemsService.item(createdItemId);
+
+            const saleflowDefault = await this._SaleflowService.saleflowDefault(
+              this._MerchantsService.merchantData._id
+            );
+
+            await this._ItemsService.authItem(
+              this._MerchantsService.merchantData._id,
+              createdItemId
+            );
+
+            await this._SaleflowService.addItemToSaleFlow(
+              {
+                item: createdItemId,
+              },
+              saleflowDefault._id
+            );
+
+            if (parsedData.createdWebformId) {
+              await this.webformsService.authWebform(
+                parsedData.createdWebformId
+              );
+
+              await this.webformsService.itemAddWebForm(
+                createdItemId,
+                parsedData.createdWebformId
+              );
+            }
+
+            //For existing tags that are going to be assigned to the item
+            if (parsedData.tagsToAssignIds) {
+              const tagsToAssignIds: Array<string> =
+                parsedData.tagsToAssignIds.split('-');
+
+              await Promise.all(
+                tagsToAssignIds.map((tagId) =>
+                  this.tagsService.itemAddTag(tagId, createdItemId)
+                )
+              );
+            }
+
+            //For tags the user created while not being logged-in
+            if (parsedData.itemTagsToCreate?.length > 0) {
+              const createdTags: Array<Tag> = [];
+
+              for await (const tagName of parsedData.itemTagsToCreate) {
+                const createdTag = await this.tagsService.createTag({
+                  entity: 'item',
+                  merchant: this._MerchantsService.merchantData._id,
+                  name: tagName,
+                  status: 'active',
+                });
+
+                createdTags.push(createdTag);
+              }
+
+              let tagIndex = 0;
+              for await (const createdTag of createdTags) {
+                if (
+                  parsedData.tagsIndexesToAssignAfterCreated?.length > 0 &&
+                  parsedData.tagsIndexesToAssignAfterCreated.includes(tagIndex)
+                ) {
+                  await this.tagsService.itemAddTag(
+                    createdTags[tagIndex]._id,
+                    createdItemId
+                  );
+                }
+                tagIndex++;
+              }
+            }
+
+            //For itemCategories the user created while not being logged-in
+            if (parsedData.itemCategoriesToCreate?.length > 0) {
+              const createdCategories: Array<ItemCategory> = [];
+
+              for await (const categoryName of parsedData.itemCategoriesToCreate) {
+                const createdCategory =
+                  await this._ItemsService.createItemCategory(
+                    {
+                      merchant: this._MerchantsService.merchantData?._id,
+                      name: categoryName,
+                      active: true,
+                    },
+                    false
+                  );
+
+                createdCategories.push(createdCategory);
+              }
+
+              if (
+                parsedData.categoriesIndexesToAssignAfterCreated?.length > 0
+              ) {
+                await this._ItemsService.updateItem(
+                  {
+                    category: createdCategories
+                      .filter((category, index) =>
+                        parsedData.categoriesIndexesToAssignAfterCreated.includes(
+                          index
+                        )
+                      )
+                      .map((category) => category._id),
+                  },
+                  createdItemId
+                );
+              }
+            }
+
+            unlockUI();
+
+            window.location.href =
+              environment.uri +
+              (item.type !== 'supplier'
+                ? '/admin/dashboard'
+                : '/admin/supplier-dashboard?supplierMode=true');
+          } catch (error) {
+            unlockUI();
+
+            console.error(error);
+          }
         }
-      },
+
+        if (parsedData.quotationItems) {
+          try {
+            lockUI();
+            await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+
+            const saleflow = await this._SaleflowService.saleflowDefault(
+              this._MerchantsService.merchantData?._id
+            );
+
+            const quotationItemsIDs = parsedData.quotationItems.split('-');
+
+            this.headerService.saleflow = saleflow;
+            this.headerService.storeSaleflow(saleflow);
+
+            const supplierSpecificItemsInput: PaginationInput = {
+              findBy: {
+                _id: {
+                  __in: ([] = quotationItemsIDs),
+                },
+              },
+              options: {
+                sortBy: 'createdAt:desc',
+                limit: -1,
+                page: 1,
+              },
+            };
+
+            //Fetches supplier specfic items, meaning they already are on the saleflow
+            let quotationItems: Array<Item> = [];
+
+            quotationItems = (
+              await this._ItemsService.listItems(supplierSpecificItemsInput)
+            )?.listItems;
+
+            if (quotationItems?.length) {
+              this.items = quotationItems;
+
+              if (!this.items[0].merchant) {
+                await Promise.all(
+                  this.items.map((item) =>
+                    this._ItemsService.authItem(
+                      this._MerchantsService.merchantData._id,
+                      item._id
+                    )
+                  )
+                );
+
+                await Promise.all(
+                  this.items.map((item) =>
+                    this._SaleflowService.addItemToSaleFlow(
+                      {
+                        item: item._id,
+                      },
+                      this.headerService.saleflow._id
+                    )
+                  )
+                );
+              }
+            }
+
+            unlockUI();
+            window.location.href =
+              environment.uri + '/admin/supplier-dashboard?supplierMode=true';
+          } catch (error) {
+            unlockUI();
+
+            console.error(error);
+          }
+        }
+
+        return;
+      }
+
+      if (view)
+        this.view = view as 'sold' | 'notSold' | 'hidden' | 'all' | 'default';
+
+        this._ItemsService.temporalItem = null;
+        this._ItemsService.temporalItemInput = null;
+        this._ItemsService.temporalItem = null;
+
+      if (this._SaleflowService.saleflowData) {
+        await this.inicializeItems(true, false, true, true);
+        this.getTags();
+        this.getQueryParameters();
+        this.getHiddenItems();
+        this.getSoldItems();
+        this.getItemsThatHaventBeenSold();
+      }
+      this.subscription = this._SaleflowService.saleflowLoaded.subscribe({
+        next: async (value) => {
+          if (value) {
+            await this.inicializeItems(true, false, true, true);
+            this.getTags();
+            this.getQueryParameters();
+            this.getHiddenItems();
+            this.getSoldItems();
+            this.getItemsThatHaventBeenSold();
+          }
+        },
+      });
     });
   }
 
@@ -371,6 +590,14 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     );
     this.notSoldItems = Object.values(notSoldItems)[0] as Array<Item>;
     this.itemsIndexesByList['NOT_SOLD'] = {};
+
+    if (this.supplierMode) {
+      this.notSoldItems = this.notSoldItems.filter((item) => item.parentItem);
+    } else {
+      this.notSoldItems = this.notSoldItems.filter(
+        (item) => item.type !== 'supplier'
+      );
+    }
 
     this.notSoldItems.forEach((item, index) => {
       this.itemsIndexesByList['NOT_SOLD'][item._id] = index;
@@ -462,6 +689,11 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       },
     };
 
+    if (this.supplierMode) {
+      pagination.findBy.type = 'supplier';
+      pagination.findBy.merchant = this._MerchantsService.merchantData._id;
+    }
+
     if (this.selectedTags.length)
       pagination.findBy.tags = this.selectedTags.map((tag) => tag._id);
 
@@ -470,7 +702,15 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
     return this.renderItemsPromise.then(async (response) => {
       const items = response;
-      const itemsQueryResult = items?.listItems;
+      let itemsQueryResult = items?.listItems;
+
+      if (this.supplierMode) {
+        itemsQueryResult = itemsQueryResult.filter((item) => item.parentItem);
+      } else {
+        itemsQueryResult = itemsQueryResult.filter(
+          (item) => item.type !== 'supplier'
+        );
+      }
 
       /*
       if (getTotalNumberOfItems) {
@@ -572,19 +812,23 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       if (this.selectedTags.length)
         pagination.findBy.tags = this.selectedTags.map((tag) => tag._id);
 
-      console.log('pagination', pagination);
-
       const result = (await this._ItemsService.bestSellersByMerchant(
         false,
         pagination
       )) as any[];
 
-      console.log('Vendidos', result);
-
       this.soldItems = result.map((item) => {
         this.itemsSelledCountByItemId[item.item._id] = item.count;
         return item.item;
       });
+
+      if (this.supplierMode) {
+        this.soldItems = this.soldItems.filter((item) => item.parentItem);
+      } else {
+        this.soldItems = this.soldItems.filter(
+          (item) => item.type !== 'supplier'
+        );
+      }
 
       this.itemsIndexesByList['SOLD'] = {};
 
@@ -708,7 +952,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                           };
                         }
                       );
-                      console.log(images);
+                      //console.log(images);
                       if (!pricing) return;
                       lockUI();
                       const itemInput: ItemInput = {
@@ -753,7 +997,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
                         this._ItemsService.editingImageId =
                           createItem.images[0]._id;
                         this.router.navigate([
-                          `admin/item-creation/${createItem._id}`,
+                          `ecommerce/item-management/${createItem._id}`,
                         ]);
                       };
                       reader.readAsDataURL(images[0].file as File);
@@ -871,7 +1115,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   async newArticle() {
-    this.router.navigate(['admin/item-creation']);
+    if (!this.supplierMode) this.router.navigate(['ecommerce/item-management']);
+    else this.router.navigate(['ecommerce/inventory-creator']);
+
     /*
     let dialogRef = this.dialog.open(StepperFormComponent);
     dialogRef
@@ -924,7 +1170,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         const reader = new FileReader();
         reader.onload = (e) => {
           this._ItemsService.editingImageId = createItem.images[0]._id;
-          this.router.navigate([`admin/item-creation/${createItem._id}`]);
+          this.router.navigate([`ecommerce/item-management/${createItem._id}`]);
         };
         reader.readAsDataURL(images[0].file as File);
       });*/

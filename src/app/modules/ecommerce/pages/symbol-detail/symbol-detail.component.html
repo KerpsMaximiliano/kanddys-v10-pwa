@@ -9,6 +9,11 @@
       style="cursor: pointer"
       src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/back.svg"
       alt="go back to previous slide"
+      [ngClass]="
+        !(genericModelTemplate?.slides?.length > 1 &&
+        currentMediaSlide > 0) ||
+        layout === 'ZOOMED-OUT-INFO' ? 'hidden' : ''
+      "
     />
 
     <img
@@ -23,6 +28,11 @@
       style="cursor: pointer"
       src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/next.svg"
       alt="go to next slide"
+      [ngClass]="
+        !(genericModelTemplate?.slides?.length > 1 &&
+        currentMediaSlide !== genericModelTemplate?.slides?.length - 1) ||
+        layout === 'ZOOMED-OUT-INFO' ? 'hidden' : ''
+      "
     />
   </header>
 
@@ -150,11 +160,11 @@
       </h1>
 
       <h1
-        class="title"
-        *ngIf="!genericModelTemplate.title && genericModelTemplate.description"
+        class="title small"
+        *ngIf="genericModelTemplate.description"
         (click)="zoomOutOrZoomInDetails()"
       >
-        {{ genericModelTemplate.description }}
+        {{ truncateString(genericModelTemplate?.description, 150, 2) }}
       </h1>
 
       <ng-container
@@ -203,7 +213,7 @@
     <div class="right">
       <ng-container [ngSwitch]="entity">
         <div class="add-to-cart" *ngSwitchCase="'item'" (click)="saveProduct()">
-          <ng-container *ngIf="entityPresentation !== 'DEMO'">
+          <ng-container *ngIf="entityPresentation !== 'DEMO' && !supplierViewer">
             <ng-container *ngIf="!supplierItem">
               {{
                 !isItemInCart
@@ -212,7 +222,7 @@
               }}
             </ng-container>
 
-            <ng-container *ngIf="supplierItem">
+            <ng-container *ngIf="supplierItem && ((itemData?.stock > 0 && supplierItemInSaleflow) || supplierPreview)">
               {{
                 !addedItemToQuotation
                   ? itemData?.ctaText || defaultCtaText

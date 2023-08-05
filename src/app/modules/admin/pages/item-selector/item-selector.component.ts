@@ -187,9 +187,16 @@ export class ItemSelectorComponent implements OnInit {
   }
 
   goToArticleDetail(itemID: string) {
-    this.router.navigate([
+    this.router.navigate(
+      [
       `ecommerce/${this.merchantService.merchantData.slug}/article-detail/item/${itemID}`,
-    ]);
+      ],
+      {
+        queryParams: {
+          supplierPreview: true
+        }
+      }
+    );
   }
 
   setSelectedItems = (value: Array<string>) => {
@@ -304,7 +311,7 @@ export class ItemSelectorComponent implements OnInit {
           name: result.value['product-name'],
         };
 
-        this.router.navigate(['/admin/inventory-creator']);
+        this.router.navigate(['/ecommerce/inventory-creator']);
         /*
         this.itemFormData.patchValue({
           title: result.value['item-title'],
@@ -331,7 +338,7 @@ export class ItemSelectorComponent implements OnInit {
     };
     this.itemsService.temporalItem = item;
 
-    this.router.navigate(['/admin/inventory-creator'], {
+    this.router.navigate(['/ecommerce/inventory-creator'], {
       queryParams: {
         existingItem: true,
       },

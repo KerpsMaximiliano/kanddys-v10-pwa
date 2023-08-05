@@ -139,7 +139,7 @@ export class OrderConfirmationComponent implements OnInit {
   }
 
   goToWhatsapp() {
-    window.open(this.messageLink, '_blank');
+    window.location.href = this.messageLink;
   }
 
   openImageModal(imageSourceURL: string) {

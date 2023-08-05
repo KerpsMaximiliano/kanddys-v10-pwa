@@ -1,0 +1,172 @@
+<div class="container">
+  <div class="header">
+    <div class="flex">
+      <button class="close" (click)="showQuotations()">X</button>
+
+      <p class="header-title" *ngIf="typeOfQuotation === 'DATABASE_QUOTATION'">
+        {{ quotation?.name ? quotation?.name : "Cotización sin nombre" }}
+      </p>
+
+      <p class="header-title" *ngIf="typeOfQuotation === 'TEMPORAL_QUOTATION'">
+        {{
+          temporalQuotation?.name
+            ? temporalQuotation?.name
+            : "Cotización sin nombre"
+        }}
+      </p>
+    </div>
+
+    <img
+      *ngIf="
+        (currentView === 'QUOTATION_CONFIG' &&
+          isTheCurrentUserTheQuotationMerchant) ||
+        typeOfQuotation === 'TEMPORAL_QUOTATION'
+      "
+      [src]="assetsFolder + '/trash-black.svg'"
+      class="delete-icon"
+      (click)="deleteQuotation()"
+    />
+
+    <img
+      [src]="
+        currentView === 'SUPPLIERS_LIST'
+          ? assetsFolder + '/icon_info.png'
+          : assetsFolder + '/dropdown_icon.png'
+      "
+      (click)="changeView()"
+      style="cursor: pointer"
+    />
+  </div>
+  <div class="content">
+    <ng-container [ngSwitch]="currentView">
+      <ng-container *ngSwitchCase="'SUPPLIERS_LIST'">
+        <p class="content-title">Precios de Suplidores Locales:</p>
+        <div class="content-cards-container">
+          <div
+            class="content-card"
+            *ngFor="let match of quotationMatches"
+            (click)="createOrder(match)"
+          >
+            <div class="content-card-top-container">
+              <div class="flex">
+                <div
+                  class="content-card-img"
+                  [ngStyle]="{
+                    backgroundImage: match.merchant.image
+                      ? 'url(' + match.merchant.image + ')'
+                      : 'url(/assets/images/noimage.png)',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'center',
+                    backgroundSize: 'cover'
+                  }"
+                ></div>
+                <p class="content-card-title">
+                  {{ match.merchant.name || match.merchant.slug }}
+                </p>
+              </div>
+              <p class="content-card-cotization">${{ match.total }}</p>
+            </div>
+            <ul class="content-card-list-container">
+              <li>
+                {{ match.items.length }} de {{ match.itemsMax }} artículos
+                disponibles
+              </li>
+            </ul>
+
+            <!--
+              <hr />
+            -->
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'QUOTATION_CONFIG'">
+        <p class="content-title-light">Información:</p>
+
+        <div class="content-cards-container">
+          <div class="content-card info" (click)="editQuotation()">
+            <h3>Articulos en el carrito</h3>
+
+            <h6>
+              {{
+                typeOfQuotation === "TEMPORAL_QUOTATION"
+                  ? temporalQuotation.items.length
+                  : quotation.items.length
+              }}
+            </h6>
+          </div>
+        </div>
+
+        <div class="content-cards-container">
+          <div class="content-card info" (click)="renameQuotation()">
+            <h3>Nombre del carrito</h3>
+
+            <h6>
+              {{
+                typeOfQuotation === "TEMPORAL_QUOTATION"
+                  ? temporalQuotation?.name
+                  : quotation?.name
+              }}
+            </h6>
+          </div>
+        </div>
+
+        <div class="optional-stuff">
+          <p class="content-title-light">FUNCIONALIDADES PARA PROVEEDORES:</p>
+
+          <div class="item-field empty" (click)="changeView(true)">
+            <div class="field-name">
+              {{
+                isTheCurrentUserTheQuotationMerchant
+                  ? "Ajustar los precios de esta cotización"
+                  : "Añadir mi precio a los artículos de esta cotización"
+              }}
+            </div>
+
+            <img
+              class="add-icon"
+              [src]="assetsFolder + '/add_button_circle.svg'"
+              alt="fill value"
+            />
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+  </div>
+
+  <div class="bubble-button-wrapper">
+    <div
+      class="bubble-button"
+      *ngIf="currentView === 'QUOTATION_CONFIG'"
+      (click)="currentView = 'SUPPLIERS_LIST'"
+    >
+      <img [src]="assetsFolder + '/dropdown_icon.png'" alt="wizard" />
+    </div>
+  </div>
+
+  <qrcode
+    *ngIf="quotationLink"
+    style="display: none"
+    #quotationQrCode
+    [qrdata]="quotationLink"
+    [elementType]="'img'"
+    [width]="500"
+    [errorCorrectionLevel]="'M'"
+    [allowEmptyString]="true"
+    colorDark="#000000"
+  ></qrcode>
+
+  <footer *ngIf="currentView === 'SUPPLIERS_LIST'">
+    <button
+      class="share-btn"
+      *ngIf="typeOfQuotation === 'DATABASE_QUOTATION'"
+      (click)="shareQuotation()"
+    >
+      Comparte y monetiza
+    </button>
+
+    <span class="average-label" *ngIf="quotationMatches?.length > 0"
+      >Promedio: ${{ providersPriceAverage | number : "1.2-2" }}</span
+    >
+  </footer>
+</div>

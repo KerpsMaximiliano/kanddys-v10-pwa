@@ -15,6 +15,80 @@ p {
   padding: 22px 23px;
   background-color: #181d17;
 
+  &.quotation {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 17px;
+    padding-bottom: 13px;
+    height: auto;
+
+    background-color: #fff;
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.06));
+
+    .title {
+      color: #272727;
+      font-family: InterBold;
+      text-transform: capitalize;
+      font-size: 17px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
+
+      overflow: hidden;
+      display: -webkit-box;
+      text-overflow: ellipsis;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+    }
+
+    .close {
+      color: #c4c5c3;
+      text-align: right;
+      font-family: InterLight;
+      font-size: 24px;
+      font-style: normal;
+      font-weight: 300;
+      line-height: normal;
+      padding: 0px;
+      margin: 0px;
+      border: none;
+      background: transparent;
+    }
+
+    .left-area {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+
+      i {
+        color: #7b7b7b;
+        font-size: 1.2rem;
+        margin-top: 2px;
+      }
+    }
+
+    .right-area {
+      display: flex;
+      align-items: flex-end;
+
+      .header-text {
+        font-family: "RobotoRegular";
+        font-size: 0.875rem;
+        color: #c4c5c3;
+        margin-right: 6px;
+      }
+
+      img {
+        width: 14px;
+        margin: 0;
+        filter: brightness(2);
+      }
+    }
+  }
+
   .title {
     color: #c4c5c3;
     font-family: SfProBold;
@@ -66,15 +140,26 @@ p {
 
 main {
   margin: 22px 16px;
+
+  &.quotation {
+    margin: 15px 18px;
+  }
 }
 
 .card {
+  border-radius: 7px;
   box-shadow: none;
   margin-bottom: 19px;
+
+  &.quotation {
+    margin-bottom: 9px;
+  }
 
   .card-header {
     justify-content: space-between;
     .left-side {
+      justify-content: flex-start;
+      width: 64%;
       .featured-image {
         cursor: pointer;
         width: 82px;
@@ -136,38 +221,31 @@ main {
           }
         }
       }
-
-      .item-quantity {
-        margin-left: 10px;
-        .quantity {
-          margin-top: 1.2em;
-          span {
-            margin-right: 20px;
-            font-size: 40px;
-            color: #000;
-            font-family: "InterSemiBold";
-
-            &.button {
-              cursor: pointer;
-            }
-
-            &.disabled {
-              color: rgba(0, 0, 0, 0.4);
-              cursor: not-allowed;
-            }
-          }
-        }
-      }
     }
     .right-side {
       .header-text {
         text-transform: capitalize;
       }
     }
+    .item-info-container {
+      width: 50%;
+      margin-left: 8px;
+      p {
+        font-family: "InterRegular";
+        &.main-text {
+          font-size: 17px;
+          color: #181d17;
+        }
+        &.greyout-text {
+          font-size: 13px;
+          color: #7b7b7b;
+        }
+      }
+    }
   }
 
   .card-body {
-    margin-top: 2em;
+    margin-top: 1em;
     margin-bottom: 1em;
 
     .section {
@@ -177,6 +255,8 @@ main {
         cursor: pointer;
         font-size: 17px;
         margin-bottom: 0.7em;
+        font-family: "InterRegular";
+        color: #7b7b7b;
 
         &.required {
           max-width: 75%;
@@ -184,8 +264,9 @@ main {
       }
       .section-description {
         cursor: pointer;
-        font-size: 17px;
+        font-size: 13px;
         font-family: InterRegular;
+        color: #7b7b7b;
       }
 
       .question-text-response {
@@ -200,6 +281,10 @@ main {
         right: -32px;
         top: -18px;
       }
+    }
+
+    .section:nth-child(2) {
+      margin-top: 20px !important;
     }
   }
 }
@@ -249,6 +334,46 @@ footer {
   }
 }
 
+.quotations-footer {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  max-width: 500px;
+  background: var(--el-verdecito, #87cd9b);
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 15px;
+  margin: auto;
+
+  .continue-order {
+    border: none;
+    color: #181d17;
+    font-family: InterBold;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    background-color: transparent;
+    padding: 0px;
+    margin: 0px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .total-label {
+    color: var(--el-mas-oscuro, #181d17);
+    text-align: right;
+    font-family: InterRegular;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  }
+}
+
 .flex {
   display: flex;
 }
@@ -271,6 +396,48 @@ footer {
   top: 0px;
 }
 
+.item-quantity {
+  border: 1px solid #c4c5c3;
+  border-radius: 20px;
+  padding: 1px 10px;
+
+  &.deactivated {
+    background-color: darken($color: #fff, $amount: 3);
+  }
+
+  .quantity {
+    span {
+      font-size: 17px;
+      color: #000;
+      font-family: "InterRegular";
+
+      &.button {
+        cursor: pointer;
+
+        &.icon {
+          font-size: 28px;
+          font-family: "InterSemiBold";
+        }
+
+        &.deactivated {
+          color: lighten($color: #000, $amount: 50);
+          cursor: not-allowed;
+        }
+      }
+
+      &.disabled {
+        color: rgba(0, 0, 0, 0.4);
+        cursor: not-allowed;
+      }
+    }
+
+    span:nth-child(1),
+    span:nth-child(2) {
+      margin-right: 20px;
+    }
+  }
+}
+
 .mat-checkbox ::ng-deep .mat-checkbox-frame {
   background-color: white;
   border-color: #707070;
@@ -286,4 +453,10 @@ footer {
 
 ::ng-deep .mat-checkbox.mat-checkbox-checked .mat-checkbox-background {
   background-color: #87cd9b;
+}
+
+@media (max-width: 374px) {
+  .left-side {
+    width: 60% !important;
+  }
 }

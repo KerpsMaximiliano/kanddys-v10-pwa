@@ -223,6 +223,11 @@ import { StoreChatbotComponent } from './components/store-chatbot/store-chatbot.
 import { InputDialogComponent } from './dialogs/input-dialog/input-dialog.component';
 import { ProgressBarComponent } from './components/progress-bar/progress-bar.component';
 import { OptionsMenuComponent } from './dialogs/options-menu/options-menu.component';
+import { TagFilteringComponent } from './dialogs/tag-filtering/tag-filtering.component';
+import { ItemSelectorComponent } from './components/item-selector/item-selector.component';
+import { InventoryComponent } from './components/inventory/inventory.component';
+import { SupplierRegistrationComponent } from './components/supplier-registration/supplier-registration.component';
+import { CardImageComponent } from './components/card-image/card-image.component';
 
 const imports = [
   CommonModule,
@@ -456,8 +461,13 @@ const declarations = [
   ItemsSlidesEditorComponent,
   StoreChatbotComponent,
   InputDialogComponent,
+  OptionsMenuComponent,
+  TagFilteringComponent,
+  ItemSelectorComponent,
+  InventoryComponent,
+  SupplierRegistrationComponent,
   ProgressBarComponent,
-  OptionsMenuComponent
+  CardImageComponent
 ];
 
 @NgModule({

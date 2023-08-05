@@ -49,6 +49,10 @@ import {
   currencyStartByMerchant,
   merchantFuncionality,
   updateMerchantFuncionality,
+  walletsByCurrency,
+  paginateUsers,
+  payUserStarAffiliate,
+  ordersCommissionableItemsCount,
 } from './../graphql/merchants.gql';
 import {
   EmployeeContract,
@@ -505,7 +509,7 @@ export class MerchantsService {
   async entryMerchant(
     merchantID: string,
     merchantInput: MerchantInput,
-    userInput: UserInput,
+    userInput: UserInput
   ) {
     const result = await this.graphql.mutate({
       mutation: entryMerchant,
@@ -519,13 +523,12 @@ export class MerchantsService {
   }
 
   async currencyStartByMerchant(
-    merchantId: string,
+    merchantId: string
   ) {
     const result = await this.graphql.query({
       query: currencyStartByMerchant,
-      variables: { merchantId},
+      variables: { merchantId },
       fetchPolicy: 'no-cache',
-      context: { useMultipart: true },
     });
 
     if (!result || result?.errors) return undefined;
@@ -561,7 +564,58 @@ export class MerchantsService {
     return result.updateMerchantFuncionality;
   }
 
-  
+  async paginateUsers (input: PaginationInput) {
+    const result = await this.graphql.query({
+      query: paginateUsers,
+      variables: { input },
+      fetchPolicy: 'no-cache',
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result.paginateUsers;
+  }
+
+  async payUserStarAffiliate (
+    screenshot : File, 
+    paymentMethod : string, 
+    userId : string, 
+    merchantId : string
+  ) {
+    const result = await this.graphql.mutate({
+      mutation: payUserStarAffiliate,
+      variables: { screenshot, paymentMethod, userId, merchantId },
+      fetchPolicy: 'no-cache',
+      context: { useMultipart: true },
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result.payUserStarAffiliate;
+  }
+
+  async walletsByCurrency(
+    paginate: PaginationInput
+  ): Promise<any[]> {
+    const response = await this.graphql.query({
+      query: walletsByCurrency,
+      variables: { paginate },
+      fetchPolicy: 'no-cache'
+    });
+
+    return response?.walletsByCurrency;
+  }
+
+  async ordersCommissionableItemsCount(
+    userId: string,
+    merchantId: string,
+  ): Promise<any[]> {
+    const response = await this.graphql.query({
+      query: ordersCommissionableItemsCount,
+      variables: { userId: [userId], merchantId },
+      fetchPolicy: 'cache-first',
+    });
+
+    return response?.ordersCommissionableItemsCount;
+  }
 }
 
 

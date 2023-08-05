@@ -1,0 +1,130 @@
+<div class="container">
+  <header class="header quotation">
+    <div class="left-area">
+      <button class="close" (click)="goBack()">X</button>
+      <p class="title">{{ quotationName }}</p>
+    </div>
+  </header>
+
+  <div class="list-of-items">
+    <div
+      class="item-wrapper"
+      *ngFor="let item of quotationItems; let itemIndex = index"
+    >
+      <div class="item-card">
+        <div class="left-column">
+          <div
+            class="product-image"
+            [ngStyle]="{
+              backgroundColor: 'white',
+              backgroundImage: item.images?.length
+                ? 'url(' +
+                  item.images[0].value +
+                  '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+                : 'url(/assets/images/noimage.png)',
+              backgroundPosition: 'center',
+              backgroundSize: 'cover',
+              backgroundRepeat: 'no-repeat'
+            }"
+          ></div>
+        </div>
+
+        <div class="middle-column">
+          <div class="item-name">{{ item.name }}</div>
+          <div class="item-description">{{ item.description }}</div>
+          <div class="item-price">
+            <ng-container *ngIf="item.pricing !== null">
+              ${{ item.pricing | number : "1.2-2" }}
+            </ng-container>
+
+            <ng-container *ngIf="item.pricing === null">
+              Adicione el precio
+            </ng-container>
+          </div>
+        </div>
+
+        <div
+          class="right-column"
+          (click)="redirectToItemEdition(item, itemIndex)"
+        >
+          <div class="edit-btn">Editar</div>
+        </div>
+      </div>
+
+      <!--
+        <app-buyer-card
+          [index]="itemIndex"
+          [title]="item.name"
+          [description]="item.description"
+          [img]="
+            item.images?.length
+              ? completeImageURLWrapper(item.images[0].value)
+              : ''
+          "
+          [leftAmount]="item.pricing"
+          [supplierProvidedData]="{
+            stock: item.stock
+          }"
+          [cta]="true"
+          [ctaActive]="item.isSelected"
+          [skipRedirection]="true"
+          (cardClicked)="redirectToItemEdition(item, itemIndex)"
+        ></app-buyer-card>
+      -->
+    </div>
+  </div>
+
+  <footer *ngIf="!adjustmentsReady" class="adjustments-not-ready">
+    Edita lo que le puedes vender a floristerías
+  </footer>
+
+  <footer
+    *ngIf="
+      this.quotationsService.supplierItemsAdjustmentsConfig.typeOfProvider ===
+        'REGISTERED_SUPPLIER' &&
+      this.quotationsService.supplierItemsAdjustmentsConfig &&
+      authorized &&
+      adjustmentsReady
+    "
+  >
+    <button
+      style="color: #272727"
+      (click)="confirmChangesForRegisteredUser()"
+    >
+      Confirmar
+    </button>
+  </footer>
+
+  <footer
+    *ngIf="
+      this.quotationsService.supplierItemsAdjustmentsConfig.typeOfProvider ===
+        'NEW_SUPPLIER' && adjustmentsReady
+    "
+  >
+    <button
+      style="color: #272727"
+      (click)="confirmChangesForNewUser()"
+    >
+      Guardar y registrarme
+    </button>
+  </footer>
+
+  <footer
+    *ngIf="
+      this.quotationsService.supplierItemsAdjustmentsConfig.typeOfProvider ===
+        'REGISTERED_SUPPLIER' &&
+      this.quotationsService.supplierItemsAdjustmentsConfig
+        .typeOfQuotationBeingEdited === 'DATABASE_QUOTATION' &&
+      onlyItemsThatAreOnTheSupplierSaleflow &&
+      authorized &&
+      adjustmentsReady
+    "
+  >
+    <button
+      style="color: #272727"
+      (click)="confirmChangesForRegisteredUser()"
+    >
+      Ir a mi dashboard
+    </button>
+  </footer>
+</div>

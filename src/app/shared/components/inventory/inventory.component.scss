@@ -1,0 +1,169 @@
+.container {
+  height: 100vh;
+  overflow-y: scroll;
+  background: #f6f6f6;
+  padding: 0px;
+  height: 100%;
+  overflow-y: scroll;
+  padding-bottom: 3rem;
+}
+
+.header {
+  background: #181d17;
+  box-shadow: 0px 4px 20px 0px rgba(123, 123, 123, 0);
+  height: 46px;
+  padding-left: 18px;
+  padding-right: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  img {
+    margin-right: 15px;
+  }
+
+  .plus-icon {
+    color: #fff !important;
+  }
+
+  p {
+    color: #87cd9b;
+    font-family: InterLight;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin: 0;
+    margin-right: 7px;
+  }
+}
+
+.content {
+  padding-left: 18px;
+  padding-right: 18px;
+  padding-top: 5px;
+  padding-bottom: 200px;
+}
+
+.content-card {
+  cursor: pointer;
+  background: #ffffff;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  border-radius: 5px;
+  padding: 14px 8px;
+  margin-top: 4px;
+
+  &:first-child {
+    margin-top: 14px;
+  }
+}
+
+.hr-container {
+  padding-left: 6px;
+  margin-top: 14px;
+  hr {
+    border: 1px solid #e9e9e9;
+    margin: 0;
+  }
+}
+.content-card-top-container {
+  display: flex;
+  justify-content: space-between;
+  padding-right: 9px;
+
+  img {
+    margin-right: 5px;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.content-card-title {
+  color: #272727;
+  font-family: InterBold;
+  font-size: 17px;
+  font-style: normal;
+  line-height: normal;
+  margin: 0;
+}
+
+.content-card-quantity {
+  color: #272727;
+  font-family: InterRegular;
+  font-size: 17px;
+  font-style: normal;
+  line-height: normal;
+  margin: 0;
+}
+
+.content-card-new {
+  color: #7b7b7b;
+  font-family: InterRegular;
+  font-size: 15px;
+  font-style: normal;
+  line-height: normal;
+  margin: 0;
+}
+
+.content-card-desc {
+  color: #272727;
+  font-family: InterMedium;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin-bottom: 0;
+  margin-top: 8px;
+  padding-left: 9px;
+  padding-right: 9px;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+
+  mat-icon {
+    color: #87cd9b;
+  }
+}
+
+.delete-icon {
+  cursor: pointer;
+  margin-top: 7px;
+}
+
+.dates-container {
+  width: 100%;
+  padding-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.progress {
+  cursor: pointer;
+  color: #f6f6f6;
+  font-family: InterMedium;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  padding-left: 13px;
+  padding-right: 13px;
+  border-radius: 29px;
+  justify-self: baseline;
+  border: 1px solid #928c8b;
+  color: #181d17;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.progress-selected {
+  color: #181d17;
+  background: #c4c5c3;
+  font-weight: 700;
+}

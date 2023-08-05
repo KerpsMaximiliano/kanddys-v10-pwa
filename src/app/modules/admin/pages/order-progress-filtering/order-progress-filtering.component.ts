@@ -142,7 +142,7 @@ export class OrderProgressFilteringComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate([`/admin/quotations`]);
+    this.router.navigate([`/ecommerce/quotations`]);
   }
 
 }

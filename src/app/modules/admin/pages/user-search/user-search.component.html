@@ -1,0 +1,32 @@
+<div class="container">
+  <div class="flex-space-between">
+    <mat-icon class="back-icon">chevron_left</mat-icon>
+    <div *ngIf="orders" class="continue-text">
+      Nuevo comprador <mat-icon>add_circle_outlined</mat-icon>
+    </div>
+  </div>
+  <p class="search-title">
+    Busca por nombre, teléfono o correo electrónico del comprador:
+  </p>
+  <div class="input-container">
+    <div><mat-icon>search</mat-icon></div>
+    <input (keydown)="searchHandler($event)" />
+  </div>
+  <div *ngIf="orders; else elseBlock" class="items-container">
+    <div *ngFor="let order of orders" class="item">
+      <div class="flex-space-between">
+        <p class="item-title">{{order.user.email ? order.user.email : order.user.phone}}</p>
+        <p class="item-sold">${{order.totalAmount}} vendido</p>
+      </div>
+      <div class="flex-space-between">
+        <p class="item-desc">Ultima venta hace {{dateHandler(order.date)}}</p>
+        <p class="item-desc">{{order.count}} ventas</p>
+      </div>
+    </div>
+  </div>
+  <ng-template #elseBlock>
+    <div class="continue-text elseblock">
+      Agrega un nuevo comprador <mat-icon>add_circle_outlined</mat-icon>
+    </div>
+  </ng-template>
+</div>

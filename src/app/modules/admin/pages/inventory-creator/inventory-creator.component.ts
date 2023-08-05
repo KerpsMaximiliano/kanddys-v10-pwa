@@ -5,6 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
+import { urltoFile } from 'src/app/core/helpers/files.helpers';
 import { completeImageURL } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { ItemImageInput, ItemInput } from 'src/app/core/models/item';
@@ -88,12 +89,18 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
     this.routerParamsSubscription = this.route.params.subscribe(
       ({ itemId }) => {
         this.queryParamsSubscription = this.route.queryParams.subscribe(
-          async ({ existingItem, updateItem, merchantRegistration, quotationId, requesterId }) => {
+          async ({
+            existingItem,
+            updateItem,
+            merchantRegistration,
+            quotationId,
+            requesterId,
+          }) => {
             this.existingItem = JSON.parse(existingItem || 'false');
             this.updateItem = Boolean(updateItem);
             this.quotationId = quotationId;
             this.requesterId = requesterId;
-            
+
             this.merchantRegistration = JSON.parse(
               merchantRegistration || 'false'
             );
@@ -369,6 +376,18 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
   }
 
   async saveItem() {
+    let itemSlideIndex = 0;
+    for await (const slide of this.itemSlides) {
+      if (slide.url && !slide.media) {
+        this.itemSlides[itemSlideIndex].media = await urltoFile(
+          slide.url,
+          'file' + itemSlideIndex
+        );
+      }
+
+      itemSlideIndex++;
+    }
+
     try {
       let images: ItemImageInput[] = this.itemSlides.map(
         (slide: SlideInput, index: number) => {
@@ -427,19 +446,15 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
           await this.itemsService.updateItem(itemInput, this.itemId);
           this.itemsService.modifiedImagesFromExistingItem = false;
 
-
           this.snackbar.open('Producto actualizado satisfactoriamente!', '', {
             duration: 5000,
           });
 
           this.router.navigate(
-            [
-              `admin/supplier-register/${this.quotationId}`
-            ],
+            [`admin/supplier-register/${this.quotationId}`],
             {
               queryParams: {
-                supplierMerchantId:
-                this.merchantsService.merchantData?._id,
+                supplierMerchantId: this.merchantsService.merchantData?._id,
                 requesterId: this.requesterId,
               },
             }
@@ -483,20 +498,39 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
       };
       this.itemsService.itemPrice = null;
 
-      const createdItem = (await this.itemsService.createItem(itemInput))
-        ?.createItem;
+      const saleflowDefault = await this.saleflowService.saleflowDefault(this.merchantsService.merchantData._id);
 
-      itemInput.parentItem = createdItem._id;
+      if (!this.existingItem) {
 
-      const createdItem2 = (await this.itemsService.createItem(itemInput))
-        ?.createItem;
+        const createdItem = (await this.itemsService.createItem(itemInput))
+          ?.createItem;
 
-      await this.saleflowService.addItemToSaleFlow(
-        {
-          item: createdItem2._id,
-        },
-        this.saleflowService.saleflowData._id
-      );
+        itemInput.parentItem = createdItem._id;
+
+        const createdItem2 = (await this.itemsService.createItem(itemInput))
+          ?.createItem;
+
+        await this.saleflowService.addItemToSaleFlow(
+          {
+            item: createdItem2._id,
+          },
+          saleflowDefault._id
+        );
+      } else {
+        console.log("suplidor creando item a partir de uno global")
+        itemInput.parentItem = this.itemsService.temporalItem._id;
+
+        const createdItem2 = (await this.itemsService.createItem(itemInput))
+          ?.createItem;
+
+        await this.saleflowService.addItemToSaleFlow(
+          {
+            item: createdItem2._id,
+          },
+          saleflowDefault._id
+        );
+      }
+
       this.snackbar.open('Producto creado satisfactoriamente!', '', {
         duration: 5000,
       });
@@ -513,6 +547,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
         duration: 3000,
       });
     } catch (error) {
+      console.log("Ocurrio un error", error);
       this.snackbar.open('Error al crear el producto', 'Cerrar', {
         duration: 3000,
       });
@@ -522,13 +557,10 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
   back() {
     if (this.updateItem) {
       return this.router.navigate(
-        [
-          `admin/supplier-register/${this.quotationId}`
-        ],
+        [`admin/supplier-register/${this.quotationId}`],
         {
           queryParams: {
-            supplierMerchantId:
-            this.merchantsService.merchantData?._id,
+            supplierMerchantId: this.merchantsService.merchantData?._id,
             requesterId: this.requesterId,
           },
         }

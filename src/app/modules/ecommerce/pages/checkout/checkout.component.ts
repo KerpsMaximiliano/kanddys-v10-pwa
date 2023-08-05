@@ -229,7 +229,8 @@ export class CheckoutComponent implements OnInit {
           }
         }
 
-        if(this.quotationsService.quotationInCart) this.quotationsService.quotationInCart = null;
+        if (this.quotationsService.quotationInCart)
+          this.quotationsService.quotationInCart = null;
 
         this.appService.events.emit({ type: 'order-done', data: true });
         if (this.hasPaymentModule) {
@@ -269,7 +270,8 @@ export class CheckoutComponent implements OnInit {
 
         await this.createEntityTemplateForOrderPost(queryParamsDecoded.post);
 
-        if(this.quotationsService.quotationInCart) this.quotationsService.quotationInCart = null;
+        if (this.quotationsService.quotationInCart)
+          this.quotationsService.quotationInCart = null;
 
         this.appService.events.emit({ type: 'order-done', data: true });
         if (this.hasPaymentModule) {
@@ -622,13 +624,16 @@ export class CheckoutComponent implements OnInit {
 
     switch (mode) {
       case 'item': {
-        if(this.isSuppliersBuyerFlow(this.items)) {
-          return this.router.navigate([`/admin/quotations`]);
+        if (this.isSuppliersBuyerFlow(this.items)) {
+          return this.router.navigate([`/ecommerce/quotations`]);
         }
 
-        this.router.navigate([`../store`], {
+        this.router.navigate([`../cart`], {
           relativeTo: this.route,
           replaceUrl: true,
+          queryParams: {
+            progress: 'checkout'
+          }
         });
         break;
       }
@@ -868,10 +873,13 @@ export class CheckoutComponent implements OnInit {
 
         await this.createEntityTemplateForOrderPost(postResult);
         await this.finishOrderCreation();
-      } else if (this.postsService?.post?.slides?.length || this.postsService?.post?.message || this.postsService?.post?.envelopeText) {
+      } else if (
+        this.postsService?.post?.slides?.length ||
+        this.postsService?.post?.message ||
+        this.postsService?.post?.envelopeText
+      ) {
+        console.log('Creando post pro');
 
-        console.log("Creando post pro");
-        
         unlockUI();
 
         lockUI();
@@ -935,21 +943,6 @@ export class CheckoutComponent implements OnInit {
 
         return;
       } else if (!this.logged && this.areWebformsValid) {
-        const createdOrder = (
-          await this.orderService.createPreOrder(this.headerService.order)
-        )?.createPreOrder._id;
-
-        if (
-          this.hasDeliveryZone &&
-          this.deliveryZone &&
-          this.deliveryLocation.street
-        ) {
-          await this.orderService.orderSetDeliveryZone(
-            this.deliveryZone.id,
-            createdOrder
-          );
-        }
-
         const matDialogRef = this.matDialog.open(LoginDialogComponent, {
           data: {
             loginType: 'phone',
@@ -968,7 +961,7 @@ export class CheckoutComponent implements OnInit {
             this.headerService.alreadyInputtedloginDialogUser =
               value.user || value.session.user;
 
-            await this.finishOrderCreation();
+            await this.finishOrderCreation(true);
             unlockUI();
           }
         });
@@ -983,21 +976,6 @@ export class CheckoutComponent implements OnInit {
         await this.finishOrderCreation();
       }
     } else {
-      const createdOrder = (
-        await this.orderService.createPreOrder(this.headerService.order)
-      )?.createPreOrder._id;
-
-      if (
-        this.hasDeliveryZone &&
-        this.deliveryZone &&
-        this.deliveryLocation.street
-      ) {
-        await this.orderService.orderSetDeliveryZone(
-          this.deliveryZone.id,
-          createdOrder
-        );
-      }
-
       const matDialogRef = this.matDialog.open(LoginDialogComponent, {
         data: {
           loginType: 'phone',
@@ -1016,14 +994,14 @@ export class CheckoutComponent implements OnInit {
           this.headerService.alreadyInputtedloginDialogUser =
             value.user || value.session.user;
 
-          await this.finishOrderCreation();
+          await this.finishOrderCreation(true);
           unlockUI();
         }
       });
     }
   };
 
-  finishOrderCreation = async () => {
+  finishOrderCreation = async (skipLogin: boolean = false) => {
     try {
       let createdOrder: string;
       const anonymous = this.headerService.getOrderAnonymous();
@@ -1083,7 +1061,8 @@ export class CheckoutComponent implements OnInit {
       //Answer the webforms of each item and adds it to the order
       await this.createAnswerForEveryWebformItem(createdOrder);
 
-      if(this.quotationsService.quotationInCart) this.quotationsService.quotationInCart = null;
+      if (this.quotationsService.quotationInCart)
+        this.quotationsService.quotationInCart = null;
 
       this.appService.events.emit({ type: 'order-done', data: true });
       if (this.hasPaymentModule) {
@@ -1098,7 +1077,21 @@ export class CheckoutComponent implements OnInit {
           replaceUrl: true,
         });
       } else {
-        if (!this.headerService.user || anonymous) {
+        if (this.headerService.alreadyInputtedloginDialogUser && skipLogin) {
+          await this.orderService.authOrder(
+            createdOrder,
+            this.headerService.alreadyInputtedloginDialogUser._id
+          );
+
+          unlockUI();
+          this.router.navigate([`../../order-detail/${createdOrder}`], {
+            relativeTo: this.route,
+            replaceUrl: true,
+          });
+          return;
+        }
+
+        if (!this.headerService.user || (anonymous && !skipLogin)) {
           const matDialogRef = this.matDialog.open(LoginDialogComponent, {
             data: {
               loginType: 'phone',

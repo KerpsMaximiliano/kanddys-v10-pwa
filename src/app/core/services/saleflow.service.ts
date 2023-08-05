@@ -32,6 +32,9 @@ export class SaleFlowService {
   saleflowLoaded = new Subject();
   saleflowData: SaleFlow;
 
+  private triggerSubject = new Subject<any>();
+  trigger = this.triggerSubject.asObservable();
+
   constructor(private graphql: GraphQLWrapper, private app: AppService) {}
 
   async saleflow(id: string, isHot?: boolean): Promise<{ saleflow: SaleFlow }> {
@@ -77,20 +80,21 @@ export class SaleFlowService {
 
   async listItems(
     params: PaginationInput,
-    justPromise?: boolean
+    justPromise?: boolean,
+    searchName?: string
   ): Promise<{ listItems: Item[] }> {
     try {
       if (!justPromise) {
         const response = await this.graphql.query({
           query: listItems,
-          variables: { params },
+          variables: { params, searchName },
           fetchPolicy: 'no-cache',
         });
         return response;
       } else {
         const promise = this.graphql.query({
           query: listItems,
-          variables: { params },
+          variables: { params, searchName },
           fetchPolicy: 'no-cache',
         });
         return promise;
@@ -218,5 +222,9 @@ export class SaleFlowService {
     });
     if (!result || result?.errors) return undefined;
     return result;
+  }
+
+  notifyTrigger(data: any) {
+    this.triggerSubject.next(data);
   }
 }

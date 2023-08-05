@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
+import { Subscription } from 'rxjs';
 import { AppService } from 'src/app/app.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item } from 'src/app/core/models/item';
@@ -36,13 +37,28 @@ export class AllItemsComponent implements OnInit {
   };
   reachedTheEndOfPagination = false;
 
+  filterTrigger: {
+    triggerID: 'pricing' | 'tags' | 'search' | 'estimatedDelivery',
+    data: any
+  }
+  
+  private triggerSubscription: Subscription;
+
   constructor(
     public headerService: HeaderService,
     private appService: AppService,
     private saleflowService: SaleFlowService,
     private ngNavigatorShareService: NgNavigatorShareService,
     private router: Router
-  ) {}
+  ) {
+    this.triggerSubscription = this.saleflowService.trigger.subscribe(async data => {
+      // Reaccionar al trigger desde el Componente A
+      console.log('Componente B se enteró del trigger:', data);
+      
+      this.filterTrigger = data;
+      await this.getItems(true, data.triggerID, data.data);
+    });
+  }
 
   async ngOnInit() {
     const saleflowItems = this.headerService.saleflow.items.map(
@@ -139,11 +155,12 @@ export class AllItemsComponent implements OnInit {
         this.paginationState.status === 'complete' &&
         !this.reachedTheEndOfPagination
       ) {
-        await this.getItems();
+        if (this.filterTrigger) await this.getItems(false, this.filterTrigger.triggerID, this.filterTrigger.data);
+        else await this.getItems();
       }
     }
 
-    const topBar = document.querySelector('.top-bar') as HTMLElement;
+    const topBar = document.querySelector('.input-container') as HTMLElement;
 
     if (page.scrollTop > 10 && topBar) {
       topBar.style.display = 'none';
@@ -152,7 +169,7 @@ export class AllItemsComponent implements OnInit {
     }
   }
 
-  async getItems(restartPagination = false) {
+  async getItems(restartPagination = false, filterCriteria?: 'pricing' | 'tags' | 'search' | 'estimatedDelivery', filterCriteriaData?: any) {
     this.paginationState.status = 'loading';
 
     const saleflowItems = this.headerService.saleflow.items.map(
@@ -169,11 +186,26 @@ export class AllItemsComponent implements OnInit {
       this.paginationState.page++;
     }
 
+    let filter = {};
+    if (filterCriteria === 'pricing')
+      filter = filterCriteriaData;
+
+    let tags = [];
+    if (filterCriteria === 'tags')
+      tags = filterCriteriaData;
+
+    let estimatedDeliveryTime = {};
+      if (filterCriteria === 'estimatedDelivery')
+        estimatedDeliveryTime = filterCriteriaData;
+
     const pagination: PaginationInput = {
+      filter,
       findBy: {
         _id: {
           __in: ([] = saleflowItems.map((items) => items.item)),
         },
+        tags,
+        estimatedDeliveryTime,
       },
       options: {
         sortBy: 'createdAt:desc',
@@ -182,7 +214,7 @@ export class AllItemsComponent implements OnInit {
       },
     };
 
-    this.renderItemsPromise = this.saleflowService.listItems(pagination, true);
+    this.renderItemsPromise = this.saleflowService.listItems(pagination, true, filterCriteria === 'search' ? filterCriteriaData : '');
     this.renderItemsPromise
       .then((response) => {
         const items = response;
@@ -245,5 +277,10 @@ export class AllItemsComponent implements OnInit {
       .catch((error) => {
         console.log(error);
       });
+  }
+
+  ngOnDestroy() {
+    // Asegurarse de desuscribirse cuando el componente se destruye
+    this.triggerSubscription.unsubscribe();
   }
 }

@@ -1,0 +1,66 @@
+<div class="container">
+  <div class="header">
+    <mat-icon>close</mat-icon>
+    <p>💰 Ventas en un intérvalo de tiempo</p>
+  </div>
+  <div class="dates-container">
+    <div class="date-box" (click)="start.open()">
+      <p class="date-box-title">Desde</p>
+      <p class="date-box-date">{{formatDate(start_date)}}</p>
+      <mat-form-field>
+        <input
+          matInput
+          [matDatepicker]="start" 
+          placeholder=""
+          (dateChange)="change_start_date('change', $event)"
+          style="display: none;"
+        >
+        <mat-datepicker #start></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <div class="date-box" (click)="end.open()">
+      <p class="date-box-title">Hasta</p>
+      <p class="date-box-date">{{formatDate(end_date)}}</p>
+      <mat-form-field style="display: hidden;">
+        <input
+          matInput
+          [matDatepicker]="end"
+          placeholder=""
+          (dateChange)="change_end_date('change', $event)"
+          style="display: none;"
+        >
+        <mat-datepicker #end></mat-datepicker>
+      </mat-form-field>
+    </div>
+    
+  </div>
+  <div class="content">
+    <div class="content-title-container">
+      <p class="content-title">
+        {{ toConfirmCount() }} facturas por confirmar el pago. ${{ calcTotalPrice().toFixed(2) }} de ingresos en {{this.orders.length}} ventas que hicieron {{this.orders.length}} compradores.
+      </p>
+    </div>
+    <div class="content-cards-container">
+      <div
+        class="content-card"
+        *ngFor="let order of orders; index as i"
+      >
+        <div class="display-flex">
+          <!-- <img [src]=" order.user.image?order.user.image:'https://cdn-icons-png.flaticon.com/512/149/149071.png'" width="66px"> -->
+          <div
+            class="content-card-img"
+            [style]="'border-radius: 50%; width: 66px; height:66px; background-repeat: no-repeat; background-size: 66px; background-image: url('+(order.user!=null?order.user.image:default_image)+'), url('+ default_image +')'">
+          </div>
+          <div class="content-card-info">
+            <p class="content-card-title">{{ order.user != null ? (order.user.name || order.user.email || order.user.phone) : "Usuario borrado" }}</p>
+            <p class="content-card-extra-info">{{ shortFormatID(order.dateId) }}</p>
+          </div>
+        </div>
+        <div>
+          <p class="content-card-price">${{ calcTotal(order.subtotals).toFixed(2) }}</p>
+          <p class="content-card-extra-info">{{ order.items.length }} artículos</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

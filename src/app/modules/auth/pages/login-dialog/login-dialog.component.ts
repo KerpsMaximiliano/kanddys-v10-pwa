@@ -22,6 +22,7 @@ export interface LoginDialogData {
     entity: MagicLinkEntities;
     redirectionRouteQueryParams: any;
     attachments?: any;
+    overWriteDefaultEntity?: boolean;
   };
   loginType?: 'full' | 'phone';
   route?: string;
@@ -137,7 +138,7 @@ export class LoginDialogComponent implements OnInit {
             emailOrPhone,
             this.data.magicLinkData.redirectionRoute,
             this.data.magicLinkData.redirectionRouteId,
-            'NewUser2',
+            this.data.magicLinkData.overWriteDefaultEntity ? this.data.magicLinkData.entity : 'NewUser2',
             this.data.magicLinkData.redirectionRouteQueryParams,
             this.data.magicLinkData.attachments
           );

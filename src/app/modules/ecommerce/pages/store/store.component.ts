@@ -8,8 +8,11 @@ import { PaginationInput } from 'src/app/core/models/saleflow';
 import { Tag } from 'src/app/core/models/tags';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { TagsService } from 'src/app/core/services/tags.service';
 import { ContactHeaderComponent } from 'src/app/shared/components/contact-header/contact-header.component';
+import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
+import { TagFilteringComponent } from 'src/app/shared/dialogs/tag-filtering/tag-filtering.component';
 import { environment } from 'src/environments/environment';
 import SwiperCore, { Virtual } from 'swiper/core';
 
@@ -46,10 +49,17 @@ export class StoreComponent implements OnInit {
 
   adminView: boolean = false;
 
+  filteredTags: Array<{
+    _id: string;
+    name: string;
+    selected: boolean;
+  }> = [];
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private merchantService: MerchantsService,
+    private saleflowService: SaleFlowService,
     public headerService: HeaderService,
     private tagsService: TagsService,
     public _DomSanitizer: DomSanitizer,
@@ -63,6 +73,9 @@ export class StoreComponent implements OnInit {
         let { startOnSnapshot, adminView } = queryParams;
         startOnSnapshot = Boolean(startOnSnapshot);
         localStorage.removeItem('flowRoute');
+        localStorage.removeItem('selectedTemporalQuotation');
+        localStorage.removeItem('quotationInCart');
+        localStorage.removeItem('quotationInCartObject');
         this.headerService.flowRoute = null;
 
         if (adminView) this.adminView = true;
@@ -131,6 +144,14 @@ export class StoreComponent implements OnInit {
     if (tagsList) {
       this.tags = tagsList;
       this.headerService.tags = this.tags;
+
+      this.filteredTags = this.tags.map((tag) => {
+        return {
+          _id: tag._id,
+          name: tag.name,
+          selected: false,
+        };
+      });
       // this.hasCollections = tagsList.some(
       //   (tag) => tag.notes != null && tag.notes != ''
       // );
@@ -185,6 +206,188 @@ export class StoreComponent implements OnInit {
         email,
       },
     });
+  }
+
+  openPriceRangeDialog() {
+    this._bottomSheet.open(OptionsMenuComponent, {
+      data: {
+        title: `💰 Artículos según el precio`,
+        options: [
+          {
+            value: `$0.00 - $2,000`,
+            callback: () => {
+              this.saleflowService.notifyTrigger({
+                triggerID: 'pricing',
+                data: {
+                  minPricing: 0,
+                  maxPricing: 2000,
+                },
+              });
+            },
+          },
+          {
+            value: `$2,000 - $4,000`,
+            callback: () => {
+              this.saleflowService.notifyTrigger({
+                triggerID: 'pricing',
+                data: {
+                  minPricing: 2000,
+                  maxPricing: 4000,
+                },
+              });
+            },
+          },
+          {
+            value: `$4,000 - $6,000`,
+            callback: () => {
+              this.saleflowService.notifyTrigger({
+                triggerID: 'pricing',
+                data: {
+                  minPricing: 4000,
+                  maxPricing: 6000,
+                },
+              });
+            },
+          },
+          {
+            value: `$6,000 - $8,000`,
+            callback: () => {
+              this.saleflowService.notifyTrigger({
+                triggerID: 'pricing',
+                data: {
+                  minPricing: 6000,
+                  maxPricing: 8000,
+                },
+              });
+            },
+          },
+          {
+            value: `$8,000+`,
+            callback: () => {
+              this.saleflowService.notifyTrigger({
+                triggerID: 'pricing',
+                data: {
+                  minPricing: 8000,
+                },
+              });
+            },
+          },
+        ],
+        styles: {
+          fullScreen: true,
+        },
+      },
+    });
+  }
+
+  openTagsDialog() {
+    this._bottomSheet.open(TagFilteringComponent, {
+      data: {
+        title: 'Categorías de artículos',
+        // rightCTA: {
+        //   text: "Todas",
+        //   callback: () => {
+        //     console.log("asd");
+        //   }
+        // },
+        categories: this.filteredTags,
+      },
+    });
+
+    this._bottomSheet._openedBottomSheetRef?.instance.selectionOutput.subscribe(
+      (selectedCategories) => {
+        this.onTagSelectionChange(selectedCategories); // Manejar las categorías seleccionadas
+      }
+    );
+  }
+
+  openEstimatedDeliveryDialog() {
+    this._bottomSheet.open(OptionsMenuComponent, {
+      data: {
+        title: `⏰ Artículos según la hora de entrega en Santo Domingo`,
+        options: [
+          {
+            value: `En menos de 2 horas`,
+            callback: () => {
+              this.saleflowService.notifyTrigger({
+                triggerID: 'estimatedDelivery',
+                data: {
+                  until: 2
+                },
+              });
+            },
+          },
+          {
+            value: `En menos de 8 horas`,
+            callback: () => {
+              this.saleflowService.notifyTrigger({
+                triggerID: 'estimatedDelivery',
+                data: {
+                  until: 8
+                },
+              });
+            },
+          },
+          {
+            value: `En menos de 30 horas`,
+            callback: () => {
+              this.saleflowService.notifyTrigger({
+                triggerID: 'estimatedDelivery',
+                data: {
+                  until: 30
+                },
+              });
+            },
+          },
+          {
+            value: `Entre 30 a 48 horas`,
+            callback: () => {
+              this.saleflowService.notifyTrigger({
+                triggerID: 'estimatedDelivery',
+                data: {
+                  from: 30,
+                  until: 48
+                },
+              });
+            },
+          },
+          {
+            value: `Más de 48 horas`,
+            callback: () => {
+              this.saleflowService.notifyTrigger({
+                triggerID: 'estimatedDelivery',
+                data: {
+                  from: 48
+                },
+              });
+            },
+          },
+        ],
+        styles: {
+          fullScreen: true,
+        },
+      },
+    });
+  }
+
+  onTagSelectionChange(selectedCategories: any[]) {
+    console.log(selectedCategories);
+    this.saleflowService.notifyTrigger({
+      triggerID: 'tags',
+      data: selectedCategories,
+    });
+  }
+
+  onKeywordSearch(event: any) {
+    console.log(event.target.value);
+    const value = event.target.value;
+    setTimeout(() => {
+      console.log("Enviando keyword");
+      this.saleflowService.notifyTrigger({
+        triggerID: 'search',
+        data: value
+      });
+    }, 500);
   }
 
   mouseDown: boolean;

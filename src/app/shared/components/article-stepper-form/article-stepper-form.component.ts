@@ -214,7 +214,7 @@ export class ArticleStepperFormComponent implements OnInit {
     //reader.readAsDataURL(this.file as File);
 
     this.router.navigate([
-      `admin/item-creation/${this.itemCreated.createItem._id}`,
+      `ecommerce/item-management/${this.itemCreated.createItem._id}`,
     ]);
   }
 }
