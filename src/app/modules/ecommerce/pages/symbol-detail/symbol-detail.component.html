@@ -11,7 +11,8 @@
       alt="go back to previous slide"
       [ngClass]="
         !(genericModelTemplate?.slides?.length > 1 &&
-        currentMediaSlide > 0) ? 'hidden' : ''
+        currentMediaSlide > 0) ||
+        layout === 'ZOOMED-OUT-INFO' ? 'hidden' : ''
       "
     />
 
@@ -29,7 +30,8 @@
       alt="go to next slide"
       [ngClass]="
         !(genericModelTemplate?.slides?.length > 1 &&
-        currentMediaSlide !== genericModelTemplate?.slides?.length - 1) ? 'hidden' : ''
+        currentMediaSlide !== genericModelTemplate?.slides?.length - 1) ||
+        layout === 'ZOOMED-OUT-INFO' ? 'hidden' : ''
       "
     />
   </header>
@@ -162,7 +164,7 @@
         *ngIf="genericModelTemplate.description"
         (click)="zoomOutOrZoomInDetails()"
       >
-        {{ truncateString(genericModelTemplate?.description, 48, 2) }}
+        {{ truncateString(genericModelTemplate?.description, 150, 2) }}
       </h1>
 
       <ng-container

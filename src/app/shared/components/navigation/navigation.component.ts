@@ -96,6 +96,11 @@ export class NavigationComponent implements OnInit {
           routerLink: ['/admin/merchants-entry'],
           linkName: 'affiliate-entry',
         },
+        {
+          text: 'Balance de recompensas ✨',
+          routerLink: ['/admin/user-stars'],
+          linkName: 'user-stars',
+        }
       ],
     },
     {
@@ -193,6 +198,16 @@ export class NavigationComponent implements OnInit {
           routerLink: ['/ecommerce/supplier-items-selector'],
           possibleRedirection: ['/ecommerce/quotations'],
           linkName: 'quotations-link',
+        },
+        {
+          text: 'Recompensa a compradores ✨',
+          routerLink: ['/admin/stars-landing'],
+          linkName: 'stars-landing',
+        },
+        {
+          text: 'Recompensas de ✨ para 🚀',
+          routerLink: ['/admin/stars-metrics'],
+          linkName: 'stars-metrics',
         } /*
         {
           text: 'Carritos de compradores',
@@ -272,6 +287,7 @@ export class NavigationComponent implements OnInit {
           text: 'Administración de mi KiosKo',
           callback: () => {
             this.router.navigate(['/admin/dashboard']);
+            this.close();
           },
         },
       },
@@ -299,7 +315,7 @@ export class NavigationComponent implements OnInit {
           },
           hardcodedURL: '/ecommerce/supplier-items-selector?supplierMode=true',
           linkName: 'quotations-link',
-        } 
+        },
       ],
       textList: [
         {
@@ -324,6 +340,7 @@ export class NavigationComponent implements OnInit {
                 supplierMode: true,
               },
             });
+            this.close();
           },
         },
       },
@@ -544,7 +561,7 @@ export class NavigationComponent implements OnInit {
       });
 
       if (this.quotations.length > 0) {
-        this.tabs[2].links[this.tabs[2].links.length - 1].routerLink = [
+        this.tabs[2].links[1].routerLink = [
           '/ecommerce/quotations',
         ];
       }
@@ -652,6 +669,8 @@ export class NavigationComponent implements OnInit {
     this.router.navigate(link.routerLink, {
       queryParams: link.queryParams ? link.queryParams : {},
     });
+
+    this.close();
   }
 
   @ViewChild('sidenav') sidenav: MatSidenav;

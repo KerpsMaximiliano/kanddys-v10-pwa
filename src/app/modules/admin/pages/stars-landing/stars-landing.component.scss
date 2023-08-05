@@ -1,0 +1,129 @@
+.container {
+  height: 100vh;
+  overflow-y: scroll;
+  background: #f6f6f6;
+}
+
+.header {
+  background: #181d17;
+  padding-left: 19px;
+  padding-right: 19px;
+  padding-top: 17px;
+  padding-bottom: 26px;
+}
+
+.flex{
+    display:flex;
+}
+
+.header-top-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  mat-icon {
+    color: #87cd9b;
+    font-size: 30px;
+    margin-top: -4px;
+  }
+}
+
+.header-top-text {
+  color: #87cd9b;
+  font-weight: 400;
+  font-family: InterMedium;
+  font-size: 17px;
+  margin: 0;
+  margin-right: 7px;
+}
+
+.header-text {
+  color: #ffffff;
+  font-size: InterBold;
+  font-weight: 600;
+  font-size: 19px;
+  line-height: 23px;
+  text-align: center;
+  margin: 0;
+  margin-top: 24px;
+}
+
+.header-secondary-text {
+  color: #ffffff;
+  text-align: center;
+  font-size: 17px;
+  font-family: InterLight;
+  font-style: italic;
+  font-weight: 300;
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+.content {
+  padding-left: 18px;
+  padding-right: 18px;
+  padding-top: 27px;
+}
+
+.content-text {
+  color: #181d17;
+  font-size: 17px;
+  font-family: InterBold;
+  font-weight: 700;
+  margin: 0;
+}
+
+.content-box {
+  cursor: pointer;
+  border-radius: 3px;
+  background: #fff;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.2);
+  padding: 13px 13px 13px 13px;
+  color: #7b7b7b;
+  font-size: 17px;
+  font-family: InterMedium;
+  font-weight: 600;
+  margin-top: 6px;
+  p{
+    margin:0;
+    margin-top:12px;
+    font-weight: 400;
+  }
+}
+
+.content-first-box {
+  margin-top: 15px;
+}
+
+.desc-text {
+  color: #7b7b7b;
+  font-size: 17px;
+  font-family: InterMedium;
+  font-style: italic;
+  font-weight: 400;
+  line-height: normal;
+  margin-top:17px;
+  padding-left: 13px;
+  padding-right: 14px;
+}
+
+.content-items-title{
+  color: #181D17;
+font-family: InterMedium;
+font-size: 17px;
+font-style: normal;
+font-weight: 700;
+line-height: normal;
+margin-top:75px;
+margin-bottom: 0;
+}
+
+.content-item{
+  color: #2874AD;
+font-family: InterMedium;
+font-size: 17px;
+font-style: normal;
+font-weight: 700;
+line-height: normal;
+margin-top:12px;
+}

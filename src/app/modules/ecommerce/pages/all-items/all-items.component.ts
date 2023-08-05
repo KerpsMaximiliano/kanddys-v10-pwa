@@ -38,7 +38,7 @@ export class AllItemsComponent implements OnInit {
   reachedTheEndOfPagination = false;
 
   filterTrigger: {
-    triggerID: 'pricing' | 'tags' | 'search',
+    triggerID: 'pricing' | 'tags' | 'search' | 'estimatedDelivery',
     data: any
   }
   
@@ -169,7 +169,7 @@ export class AllItemsComponent implements OnInit {
     }
   }
 
-  async getItems(restartPagination = false, filterCriteria?: 'pricing' | 'tags' | 'search', filterCriteriaData?: any) {
+  async getItems(restartPagination = false, filterCriteria?: 'pricing' | 'tags' | 'search' | 'estimatedDelivery', filterCriteriaData?: any) {
     this.paginationState.status = 'loading';
 
     const saleflowItems = this.headerService.saleflow.items.map(
@@ -194,13 +194,18 @@ export class AllItemsComponent implements OnInit {
     if (filterCriteria === 'tags')
       tags = filterCriteriaData;
 
+    let estimatedDeliveryTime = {};
+      if (filterCriteria === 'estimatedDelivery')
+        estimatedDeliveryTime = filterCriteriaData;
+
     const pagination: PaginationInput = {
       filter,
       findBy: {
         _id: {
           __in: ([] = saleflowItems.map((items) => items.item)),
         },
-        tags
+        tags,
+        estimatedDeliveryTime,
       },
       options: {
         sortBy: 'createdAt:desc',

@@ -222,7 +222,6 @@ export const buyersByItemInMerchantStore = gql`
   }
 `;
 
-
 export const totalByItem = gql`
   query totalByItem($itemId: [ObjectID!], $merchantId: ObjectID!) {
     totalByItem(itemId: $itemId, merchantId: $merchantId)
@@ -320,6 +319,13 @@ export const listItems = gql`
     }
   }
 `;
+
+export const itemsQuantityOfFilters = gql`
+  query itemsQuantityOfFilters($merchantId: ObjectID, $typeOfItem: String) {
+    itemsQuantityOfFilters(merchantId: $merchantId, typeOfItem: $typeOfItem)
+  }
+`;
+
 export const listItemPackage = gql`
   query listItemPackage($params: PaginationInput) {
     listItemPackage(params: $params) {

@@ -47,6 +47,8 @@ import {
   higherIncomeBuyersByMerchant,
   entryMerchant,
   currencyStartByMerchant,
+  merchantFuncionality,
+  updateMerchantFuncionality,
   walletsByCurrency,
   paginateUsers,
   payUserStarAffiliate,
@@ -533,6 +535,35 @@ export class MerchantsService {
     return result.currencyStartByMerchant;
   }
 
+  async merchantFuncionality(
+    merchantId: string,
+  ) {
+    const result = await this.graphql.query({
+      query: merchantFuncionality,
+      variables: { merchantId},
+      fetchPolicy: 'no-cache',
+      context: { useMultipart: true },
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result.merchantFuncionality;
+  }
+
+  async updateMerchantFuncionality(
+    input:any,
+    merchantId: string,
+  ) {
+    const result = await this.graphql.mutate({
+      mutation: updateMerchantFuncionality,
+      variables: {input, merchantId},
+      fetchPolicy: 'no-cache',
+      context: { useMultipart: true },
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result.updateMerchantFuncionality;
+  }
+
   async paginateUsers (input: PaginationInput) {
     const result = await this.graphql.query({
       query: paginateUsers,
@@ -586,3 +617,7 @@ export class MerchantsService {
     return response?.ordersCommissionableItemsCount;
   }
 }
+
+
+
+

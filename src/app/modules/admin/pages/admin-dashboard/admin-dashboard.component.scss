@@ -6,9 +6,10 @@
 .btn {
   all: unset;
 }
-
-.container {
-  min-height: 100vh;
+.dashboard-page {
+  height: 100vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .header {
@@ -418,7 +419,8 @@
   left: 0 !important;
 }
 
-::ng-deep mat-datepicker-content.mat-datepicker-content.ng-tns-c405-4.ng-trigger.ng-trigger-transformPanel.mat-primary.ng-star-inserted {
+::ng-deep
+  mat-datepicker-content.mat-datepicker-content.ng-tns-c405-4.ng-trigger.ng-trigger-transformPanel.mat-primary.ng-star-inserted {
   margin: 0 auto;
   width: 100%;
   display: flex;
@@ -444,7 +446,6 @@
     padding-left: 1rem !important;
   }
 }
-
 
 .category-swiper {
   ::ng-deep .swiper-container {
@@ -535,9 +536,9 @@
   border-radius: 10px;
   margin-top: 25px;
   margin-left: -12px;
-  
+
   span {
-    color: #FFF;
+    color: #fff;
     font-size: 16px;
   }
 

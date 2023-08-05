@@ -72,6 +72,7 @@ export const body = `
     }
     index
   }
+  status
 `;
 
 export const saleflow = gql`
@@ -94,6 +95,7 @@ export const setDefaultSaleflow = gql`
       merchant {
         _id
         name
+        status
       }
     }
   }
@@ -127,6 +129,7 @@ export const hotSaleflow = gql`
         index
       }
       workingHours
+      status
     }
   }
 `;
@@ -140,6 +143,7 @@ export const saleflows = gql`
       items {
         _id
       }
+      status
     }
   }
 `;
