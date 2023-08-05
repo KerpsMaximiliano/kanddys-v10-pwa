@@ -10,6 +10,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { environment } from '../../../../../environments/environment';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { Router } from '@angular/router';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 @Component({
   selector: 'app-stars-landing',
   templateUrl: './stars-landing.component.html',
@@ -79,16 +80,23 @@ export class StarsLandingComponent implements OnInit {
       data: fieldsToCreate,
     });
 
-    dialogRef.afterClosed().subscribe((result: FormGroup) => {
+    dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
       if (
         result &&
         result.get('item-percentage').valid &&
         result.get('item-value').valid
       )
-        this.updateMerchantFunctionality(
+      lockUI();
+      try {
+        await this.updateMerchantFunctionality(
           result.get('item-percentage').value,
           result.get('item-value').value
         );
+        unlockUI();
+      } catch (error) {
+        console.log(error);
+        unlockUI();
+      }
     });
   }
 

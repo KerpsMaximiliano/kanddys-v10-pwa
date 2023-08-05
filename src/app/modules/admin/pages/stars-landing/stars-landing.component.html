@@ -18,14 +18,14 @@
       ¿% del monto facturado que ganará el comprador? 
     <p>0%</p>
     </div>
-    <div class="content-box content-first-box" *ngIf="active">
+    <div class="content-box content-first-box" *ngIf="active" (click)="openForm()">
       El comprador gana el {{merchantFunctionality.reward.rewardPercentage*100 + '%'}} de lo que facture.
     </div>
     <div class="content-box " *ngIf="!active" (click)="openForm()">
      ¿Descuento de la recompensa? 
     <p>$0.00</p>
     </div>
-    <div class="content-box" *ngIf="active">
+    <div class="content-box" *ngIf="active" (click)="openForm()">
       Recompensas al comprador con {{merchantFunctionality.reward.amountBuyer | currency}}
     </div>
     <p class="desc-text" *ngIf="!active" >
@@ -36,7 +36,7 @@
       Tus compradores ganan 50 ✨ por cada $1.00 que facturen y alcanzarán la
       suma de 1,000 ✨ para poder canjearlas.
     </p>
-<div *ngIf="!active">
+<div>
   <p class="content-items-title"> Tienda</p>
   <div class="content-item" (click)="copyClipboard()">
       Copia el link

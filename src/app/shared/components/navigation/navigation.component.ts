@@ -96,6 +96,11 @@ export class NavigationComponent implements OnInit {
           routerLink: ['/admin/merchants-entry'],
           linkName: 'affiliate-entry',
         },
+        {
+          text: 'Balance de recompensas ✨',
+          routerLink: ['/admin/user-stars'],
+          linkName: 'user-stars',
+        }
       ],
     },
     {
