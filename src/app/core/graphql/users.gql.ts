@@ -65,16 +65,3 @@ export const deleteMe = gql`
     deleteMe
   }
 `;
-
-export const paginateUsers = gql`
-query paginateUsers($input:PaginationInput) {
-  paginateUsers(input: $input) {
-  results{
-    _id 
-    name
-    phone
-    email
-  }
-  }
-}
-`;

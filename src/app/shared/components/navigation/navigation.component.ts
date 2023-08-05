@@ -193,6 +193,16 @@ export class NavigationComponent implements OnInit {
           routerLink: ['/ecommerce/supplier-items-selector'],
           possibleRedirection: ['/ecommerce/quotations'],
           linkName: 'quotations-link',
+        },
+        {
+          text: 'Recompensa a compradores ✨',
+          routerLink: ['/admin/stars-landing'],
+          linkName: 'stars-landing',
+        },
+        {
+          text: 'Recompensas de ✨ para 🚀',
+          routerLink: ['/admin/stars-metrics'],
+          linkName: 'stars-metrics',
         } /*
         {
           text: 'Carritos de compradores',
@@ -544,7 +554,7 @@ export class NavigationComponent implements OnInit {
       });
 
       if (this.quotations.length > 0) {
-        this.tabs[2].links[this.tabs[2].links.length - 1].routerLink = [
+        this.tabs[2].links[1].routerLink = [
           '/ecommerce/quotations',
         ];
       }
