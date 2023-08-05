@@ -628,9 +628,12 @@ export class CheckoutComponent implements OnInit {
           return this.router.navigate([`/ecommerce/quotations`]);
         }
 
-        this.router.navigate([`../store`], {
+        this.router.navigate([`../cart`], {
           relativeTo: this.route,
           replaceUrl: true,
+          queryParams: {
+            progress: 'checkout'
+          }
         });
         break;
       }
