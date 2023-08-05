@@ -85,7 +85,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
             let items;
             this.quotationId = quotationId;
 
-            console.log("parsedData", parsedData);
+            console.log('parsedData', parsedData);
 
             if (!parsedData) {
               const lastCurrentQuotationRequest: {
@@ -98,7 +98,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
                 localStorage.getItem('lastCurrentQuotationRequest')
               );
 
-              console.log("ESCENARIO A")
+              console.log('ESCENARIO A');
 
               supplierMerchantId =
                 lastCurrentQuotationRequest.supplierMerchantId;
@@ -138,12 +138,12 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
               temporalQuotation = parsedData.temporalQuotation;
               quotationName = parsedData.quotationName;
 
-              console.log("ESCENARIO B")
+              console.log('ESCENARIO B');
 
               this.storeQueryParams(parsedData as any);
             }
 
-            console.log("items", items);
+            console.log('items', items);
 
             this.quotationName = quotationName;
 
@@ -433,6 +433,8 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
           item.merchant = null;
           item.stock = null;
           item.inSaleflow = false;
+          item.notificationStockLimit = null;
+          item.notificationStockPhoneOrEmail = null;
         });
 
         this.quotationsService.supplierItemsAdjustmentsConfig.itemsThatArentInSupplierSaleflow =
@@ -472,6 +474,8 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
         item.merchant = null;
         item.stock = null;
         item.inSaleflow = false;
+        item.notificationStockLimit = null;
+        item.notificationStockPhoneOrEmail = null;
       });
 
       this.quotationsService.supplierItemsAdjustmentsConfig.itemsThatArentInSupplierSaleflow =
@@ -590,7 +594,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
       layout: item.layout,
       stock: item.stock,
       notificationStockLimit: item.notificationStockLimit,
-      notificationStockPhoneOrEmail: item.notificationStockPhoneOrEmail
+      notificationStockPhoneOrEmail: item.notificationStockPhoneOrEmail,
     };
 
     if (!item.pricing || item.stock === null || !item.merchant) {
@@ -721,8 +725,8 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
 
       this.router.navigate(['/admin/supplier-dashboard'], {
         queryParams: {
-          supplierMode: true
-        }
+          supplierMode: true,
+        },
       });
     } catch (error) {
       console.error(error);
@@ -740,50 +744,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
         (item) => !item.inSaleflow
       );
 
-      const idsOfCreatedItems: Array<string> = [];
-
       if (itemsThatArentOnSupplierSaleflow.length) {
-        lockUI();
-        const inputArray: Array<ItemInput> =
-          itemsThatArentOnSupplierSaleflow.map((item, index) => {
-            const input: ItemInput = {
-              name: item.name,
-              description: item.description,
-              pricing: item.pricing,
-              stock: item.stock,
-              useStock: true,
-              notificationStock: true,
-              notificationStockLimit: item.notificationStockLimit,
-              notificationStockPhoneOrEmail: item.notificationStockPhoneOrEmail,
-              images:
-                this.quotationsService.supplierItemsAdjustmentsConfig
-                  .itemsThatArentInSupplierSaleflow[index].images,
-              merchant: this.supplierMerchantId,
-              content: [],
-              currencies: [],
-              hasExtraPrice: false,
-              parentItem: item._id,
-              purchaseLocations: [],
-              showImages:
-                this.quotationsService.supplierItemsAdjustmentsConfig
-                  .itemsThatArentInSupplierSaleflow[index].images.length > 0,
-              type: 'supplier',
-            };
-
-            return input;
-          });
-
-        for await (const itemInput of inputArray) {
-          //console.log('itemInput', itemInput);
-
-          const createdItem = (await this.itemsService.createPreItem(itemInput))
-            ?.createPreItem;
-
-          idsOfCreatedItems.push(createdItem._id);
-        }
-
-        unlockUI();
-
         let fieldsToCreate: FormData = {
           title: {
             text: '¿Dónde recibirás las facturas y órdenes?',
@@ -821,29 +782,123 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
               ? result?.value['email']
               : null;
 
-            let firstLinkSent = false;
+            const myUser = await this.authService.checkUser(phone);
+            const merchantDefaullt = myUser
+              ? await this.merchantsService.merchantDefault(myUser._id)
+              : null;
 
-            if (result.controls.phone.valid && phone) {
-              firstLinkSent = !firstLinkSent;
-              await this.generateMagicLinkFor(
-                phone,
-                idsOfCreatedItems,
-                firstLinkSent
-              );
-            }
-            if (result.controls.email.valid && email) {
-              firstLinkSent = !firstLinkSent;
-              await this.generateMagicLinkFor(
-                email,
-                idsOfCreatedItems,
-                firstLinkSent
-              );
-            }
+            if (!myUser && !merchantDefaullt) {
+              const idsOfCreatedItems: Array<string> = [];
 
-            if (!result.controls.phone.valid && !result.controls.email.valid) {
-              this.snackbar.open('Datos invalidos', 'Cerrar', {
-                duration: 3000,
-              });
+              let firstLinkSent = false;
+
+              lockUI();
+              const inputArray: Array<ItemInput> =
+                itemsThatArentOnSupplierSaleflow.map((item, index) => {
+                  const input: ItemInput = {
+                    name: item.name,
+                    description: item.description,
+                    pricing: item.pricing,
+                    stock: item.stock,
+                    useStock: true,
+                    notificationStock: true,
+                    notificationStockLimit: item.notificationStockLimit,
+                    notificationStockPhoneOrEmail:
+                      item.notificationStockPhoneOrEmail,
+                    images:
+                      this.quotationsService.supplierItemsAdjustmentsConfig
+                        .itemsThatArentInSupplierSaleflow[index].images,
+                    merchant: this.supplierMerchantId,
+                    content: [],
+                    currencies: [],
+                    hasExtraPrice: false,
+                    parentItem: item._id,
+                    purchaseLocations: [],
+                    showImages:
+                      this.quotationsService.supplierItemsAdjustmentsConfig
+                        .itemsThatArentInSupplierSaleflow[index].images.length >
+                      0,
+                    type: 'supplier',
+                  };
+
+                  return input;
+                });
+
+              for await (const itemInput of inputArray) {
+                //console.log('itemInput', itemInput);
+
+                const createdItem = (
+                  await this.itemsService.createPreItem(itemInput)
+                )?.createPreItem;
+
+                idsOfCreatedItems.push(createdItem._id);
+              }
+
+              unlockUI();
+
+              if (result.controls.phone.valid && phone) {
+                firstLinkSent = !firstLinkSent;
+                await this.generateMagicLinkFor(
+                  phone,
+                  idsOfCreatedItems,
+                  null,
+                  firstLinkSent
+                );
+              }
+              if (result.controls.email.valid && email) {
+                firstLinkSent = !firstLinkSent;
+                await this.generateMagicLinkFor(
+                  email,
+                  idsOfCreatedItems,
+                  null,
+                  firstLinkSent
+                );
+              }
+
+              if (
+                !result.controls.phone.valid &&
+                !result.controls.email.valid
+              ) {
+                this.snackbar.open('Datos invalidos', 'Cerrar', {
+                  duration: 3000,
+                });
+              }
+            } else {
+              let firstLinkSent = false;
+
+              const { createdItems, itemsToUpdate } =
+                await this.determineWhichItemsNeedToBeUpdatedAndWhichNeedToBeCreated(
+                  merchantDefaullt,
+                  itemsThatArentOnSupplierSaleflow
+                );
+
+              if (result.controls.phone.valid && phone) {
+                firstLinkSent = !firstLinkSent;
+                await this.generateMagicLinkFor(
+                  phone,
+                  createdItems,
+                  itemsToUpdate,
+                  firstLinkSent
+                );
+              }
+              if (result.controls.email.valid && email) {
+                firstLinkSent = !firstLinkSent;
+                await this.generateMagicLinkFor(
+                  email,
+                  createdItems,
+                  itemsToUpdate,
+                  firstLinkSent
+                );
+              }
+
+              if (
+                !result.controls.phone.valid &&
+                !result.controls.email.valid
+              ) {
+                this.snackbar.open('Datos invalidos', 'Cerrar', {
+                  duration: 3000,
+                });
+              }
             }
           }
         });
@@ -867,17 +922,24 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
   async generateMagicLinkFor(
     emailOrPhone: string,
     idsOfCreatedItems: Array<string>,
+    itemsToUpdate?: Record<string, ItemInput>,
     openSuccessDialog: boolean = true
   ) {
+    const magicLinkParams: any = {
+      quotationItems: idsOfCreatedItems.join('-'),
+    };
+
+    if (itemsToUpdate) {
+      magicLinkParams.itemsToUpdate = itemsToUpdate;
+    }
+
     await this.authService.generateMagicLink(
       emailOrPhone,
       '/admin/dashboard',
       null,
       'MerchantAccess',
       {
-        jsondata: JSON.stringify({
-          quotationItems: idsOfCreatedItems.join('-'),
-        }),
+        jsondata: JSON.stringify(magicLinkParams),
       },
       []
     );
@@ -896,4 +958,113 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
       });
     }
   }
+
+  determineWhichItemsNeedToBeUpdatedAndWhichNeedToBeCreated = async (
+    merchantDefault: Merchant,
+    itemsThatArentOnSupplierSaleflow: Array<QuotationItem>
+  ): Promise<{
+    createdItems: Array<string>;
+    itemsToUpdate: Record<string, ItemInput>;
+  }> => {
+    const idsOfCreatedItems: Array<string> = [];
+
+    lockUI();
+
+    const supplierSpecificItemsInput: PaginationInput = {
+      findBy: {
+        parentItem: {
+          $in: ([] = this.quotationItems.map(quotation => quotation._id)),
+        },
+        merchant: merchantDefault._id,
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: -1,
+        page: 1,
+      },
+    };
+
+    const itemsToUpdateOrToCreateById: Record<
+      string,
+      {
+        data: ItemInput;
+        operation: 'CREATE' | 'UPDATE';
+      }
+    > = {};
+    const itemsToUpdate: Record<string, boolean> = {};
+    const parentItemsAndChildItems: Record<string, string> = {};
+    const itemsToCreateIds: Array<string> = [];
+    let itemsToUpdateObjects: Record<string, ItemInput> = null;
+
+    //Fetches supplier specfic items, meaning they already are on the saleflow
+    let itemsAlreadyProviderByTheMerchant: Array<QuotationItem> = [];
+
+    itemsAlreadyProviderByTheMerchant = (
+      await this.itemsService.listItems(supplierSpecificItemsInput)
+    )?.listItems;
+
+    itemsAlreadyProviderByTheMerchant.forEach((item) => {
+      itemsToUpdate[item.parentItem] = true;
+      parentItemsAndChildItems[item.parentItem] = item._id;
+    });
+
+    itemsThatArentOnSupplierSaleflow.forEach((item, index) => {
+      itemsToUpdateOrToCreateById[item._id] = {
+        operation: itemsToUpdate[item._id] ? 'UPDATE' : 'CREATE',
+        data: {
+          name: item.name,
+          description: item.description,
+          pricing: item.pricing,
+          stock: item.stock,
+          useStock: true,
+          notificationStock: true,
+          notificationStockLimit: item.notificationStockLimit,
+          notificationStockPhoneOrEmail: item.notificationStockPhoneOrEmail,
+          images:
+            this.quotationsService.supplierItemsAdjustmentsConfig
+              .itemsThatArentInSupplierSaleflow[index].images,
+          merchant: this.supplierMerchantId,
+          content: [],
+          currencies: [],
+          hasExtraPrice: false,
+          parentItem: item._id,
+          purchaseLocations: [],
+          showImages:
+            this.quotationsService.supplierItemsAdjustmentsConfig
+              .itemsThatArentInSupplierSaleflow[index].images.length > 0,
+          type: 'supplier',
+        },
+      };
+
+      if (itemsToUpdateOrToCreateById[item._id].operation === 'UPDATE')
+        delete itemsToUpdateOrToCreateById[item._id].data.images;
+
+      if (!itemsToUpdate[item._id]) itemsToCreateIds.push(item._id);
+      else {
+        if (!itemsToUpdateObjects) itemsToUpdateObjects = {};
+
+        itemsToUpdateObjects[parentItemsAndChildItems[item._id]] =
+          itemsToUpdateOrToCreateById[item._id].data;
+      }
+    });
+
+    const precreatedItemsResponse = await Promise.all(
+      itemsToCreateIds.map((idOfItemToCreate) =>
+        this.itemsService.createPreItem(
+          itemsToUpdateOrToCreateById[idOfItemToCreate].data
+        )
+      )
+    );
+
+    precreatedItemsResponse.forEach((promiseResponse) => {
+      idsOfCreatedItems.push(promiseResponse?.createPreItem._id);
+    });
+
+    unlockUI();
+
+    return {
+      createdItems: idsOfCreatedItems,
+      itemsToUpdate: itemsToUpdateObjects,
+    };
+  };
 }

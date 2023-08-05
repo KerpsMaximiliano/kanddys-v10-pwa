@@ -1,63 +1,76 @@
 * {
-    margin: 0;
-  }
-  
-  ::ng-deep .cdk-overlay-pane {
-    width: 100%;
-    max-width: 500px !important;
-  }
+  margin: 0;
+}
 
-  .list {
-    color: #ffffff;
-  
-    &.full-screen {
-      min-height: 100vh;
-    }
-  }
+::ng-deep .cdk-overlay-pane {
+  width: 100%;
+  max-width: 500px !important;
+}
 
-  ::ng-deep.mat-bottom-sheet-container {
-    padding: 24px;
-    padding-top: 0;
-    width: 100%;
-    min-width: 90%;
-    // margin: auto;
-    box-shadow: 0 8px 10px -5px #0003, 0 16px 24px 2px #00000024,
-      0 6px 30px 5px #0000001f;
-    background: #171d16;
-  }
+.list {
+  color: #ffffff;
 
-  .title {
-    font-family: "InterSemiBold";
-    font-size: 19px;
-    color: #FFF;
-    margin-bottom: 15px;
+  &.full-screen {
+    min-height: 100vh;
   }
+}
 
-  .description {
-    color: #FFFF;
-    font-size: 17px;
-    font-family: 'InterLight';
+::ng-deep.mat-bottom-sheet-container {
+  padding: 24px;
+  padding-top: 0;
+  width: 100%;
+  min-width: 90%;
+  // margin: auto;
+  box-shadow: 0 8px 10px -5px #0003, 0 16px 24px 2px #00000024,
+    0 6px 30px 5px #0000001f;
+  background: #171d16;
+}
+
+.title {
+  font-family: "InterSemiBold";
+  font-size: 19px;
+  color: #fff;
+  margin-bottom: 15px;
+}
+
+.description {
+  color: #ffff;
+  font-size: 17px;
+  font-family: "InterLight";
+}
+
+.button-flex {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.left-border {
+  height: 16px;
+  width: 2px;
+  background-color: #87cd9b;
+}
+
+.option-button {
+  color: #c4c5c3;
+  font-family: "InterLight";
+  font-size: 17px;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  white-space: normal;
+  line-height: 1.5rem;
+  margin-left: 13.5px;
+
+  &.active {
+    background-color: #87cd9b;
+    color: #181d17;
+    font-family: "InterBold";
+    border-radius: 9px;
+    padding-left: 10px;
+    transition: 0.2s all;
+    padding: 5px;
   }
-
-  .option-button {
-    color: #C4C5C3;
-    font-family: "InterLight";
-    font-size: 17px;
-    text-align: left;
-    background: transparent;
-    border: 0;
-    padding: 0;
-    margin-bottom: 20px;
-    white-space: normal;
-    line-height: 1.5rem;
-
-    &.active {
-        background-color: #87CD9B;
-        color: #181D17;
-        font-family: "InterBold";
-        border-radius: 9px;
-        padding-left: 10px;
-        transition: 0.2s all;
-        padding: 5px;
-    }
-  }
+}

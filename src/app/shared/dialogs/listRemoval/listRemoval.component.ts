@@ -7,6 +7,7 @@ import {
   Output,
 } from '@angular/core';
 import { MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
+import { environment } from 'src/environments/environment';
 
 export interface DialogTemplate {
   title: string;
@@ -37,12 +38,13 @@ export interface DialogTemplate {
 }
 
 @Component({
-  selector: 'app-tag-filtering',
-  templateUrl: './tag-filtering.component.html',
-  styleUrls: ['./tag-filtering.component.scss'],
+  selector: 'app-listRemoval',
+  templateUrl: './listRemoval.component.html',
+  styleUrls: ['./listRemoval.component.scss'],
 })
-export class TagFilteringComponent implements OnInit {
+export class ListRemoval implements OnInit {
   selectedCategories: string[] = [];
+  assetsURL: string = environment.assetsUrl;
 
   @Output() selectionOutput = new EventEmitter();
 
@@ -51,14 +53,6 @@ export class TagFilteringComponent implements OnInit {
   ngOnInit(): void {}
 
   select(id) {
-    this.data.categories.forEach((e) => {
-      if (e._id == id) {
-        e.selected = !e.selected;
-      }
-    });
-    this.selectedCategories = this.data.categories
-      .filter((e) => e.selected)
-      .map((e) => e._id);
-    this.selectionOutput.emit(this.selectedCategories);
+    this.selectionOutput.emit(id);
   }
 }

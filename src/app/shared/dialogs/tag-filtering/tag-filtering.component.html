@@ -20,6 +20,14 @@
 
     <mat-icon
       class="icons"
+      *ngIf="data.leftIcon"
+      (click)="data.leftIcon?.callback()"
+      [ngStyle]="data.leftIcon?.styles"
+      >{{ data.leftIcon.iconName }}</mat-icon
+    >
+
+    <mat-icon
+      class="icons"
       *ngIf="data.rightIcon"
       (click)="data.rightIcon?.callback()"
       [ngStyle]="data.rightIcon?.styles"

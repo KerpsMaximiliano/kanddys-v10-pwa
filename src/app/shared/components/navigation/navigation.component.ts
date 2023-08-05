@@ -287,6 +287,7 @@ export class NavigationComponent implements OnInit {
           text: 'Administración de mi KiosKo',
           callback: () => {
             this.router.navigate(['/admin/dashboard']);
+            this.close();
           },
         },
       },
@@ -314,7 +315,7 @@ export class NavigationComponent implements OnInit {
           },
           hardcodedURL: '/ecommerce/supplier-items-selector?supplierMode=true',
           linkName: 'quotations-link',
-        } 
+        },
       ],
       textList: [
         {
@@ -339,6 +340,7 @@ export class NavigationComponent implements OnInit {
                 supplierMode: true,
               },
             });
+            this.close();
           },
         },
       },
@@ -667,6 +669,8 @@ export class NavigationComponent implements OnInit {
     this.router.navigate(link.routerLink, {
       queryParams: link.queryParams ? link.queryParams : {},
     });
+
+    this.close();
   }
 
   @ViewChild('sidenav') sidenav: MatSidenav;

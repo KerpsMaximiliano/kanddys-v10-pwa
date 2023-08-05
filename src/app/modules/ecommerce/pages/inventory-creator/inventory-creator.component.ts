@@ -219,7 +219,6 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
               notificationStockPhoneOrEmail: [
                 this.itemsService.temporalItemInput
                   ?.notificationStockPhoneOrEmail || '',
-                Validators.compose([Validators.required]),
               ],
             });
 
@@ -593,7 +592,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
 
           if (
             this.quotationsService.supplierItemsAdjustmentsConfig
-              .quotationItemBeingEdited
+              ?.quotationItemBeingEdited
           ) {
             return this.router.navigate(
               [
@@ -610,8 +609,13 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
             );
           }
 
-          this.router.navigate(['/admin/dashboard']);
+          this.router.navigate(['/admin/supplier-dashboard'], {
+            queryParams: {
+              supplierMode: true,
+            },
+          });
         } catch (error) {
+          console.error(error);
           this.snackbar.open('Ocurrió un error al actualizar el producto', '', {
             duration: 5000,
           });
@@ -866,6 +870,12 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
   }
 
   back() {
+
+    if(this.headerService.flowRouteForEachPage['dashboard-to-supplier-creation']) {
+      this.headerService.flowRoute = this.headerService.flowRouteForEachPage['dashboard-to-supplier-creation'];
+      this.headerService.redirectFromQueryParams(); 
+    }
+
     if (
       this.quotationsService.supplierItemsAdjustmentsConfig
         ?.quotationItemBeingEdited.quotationItemInMemory
