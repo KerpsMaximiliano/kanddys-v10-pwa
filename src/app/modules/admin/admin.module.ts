@@ -67,6 +67,10 @@ import { RenameQuestionComponent } from './pages/rename-question/rename-question
 import { FormResponsesComponent } from 'src/app/shared/components/form-responses/form-responses.component';
 import { FormResponsesByQuestionComponent } from 'src/app/shared/components/form-responses-by-question/form-responses-by-question.component';
 import { MerchantsEntryComponent } from './pages/merchants-entry/merchants-entry.component';
+import { StarsLandingComponent } from './pages/stars-landing/stars-landing.component';
+import { UserStarsComponent } from './pages/user-stars/user-stars.component';
+import { StarsMetricsComponent } from './pages/stars-metrics/stars-metrics.component';
+// import { ItemCreationComponent } from './pages/item-creation/item-creation.component';
 import { ItemCreationComponent as ItemCreation2Component } from './pages/item-creation/item-creation.component';
 
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
@@ -495,7 +499,19 @@ const routes: Routes = [
   },
   {
     path: 'merchants-entry',
-    component: MerchantsEntryComponent,
+    component: MerchantsEntryComponent
+  },
+  {
+    path:'stars-landing',
+    component:StarsLandingComponent
+  },
+  {
+    path:'user-stars',
+    component: UserStarsComponent
+  },
+  {
+    path:'stars-metrics',
+    component: StarsMetricsComponent
   },
   /*
   {
@@ -613,6 +629,10 @@ const routes: Routes = [
     RenameQuestionComponent,
     RewardsDisplayComponent,
     MerchantsEntryComponent,
+    StarsLandingComponent,
+    UserStarsComponent,
+    StarsMetricsComponent,
+    // ItemCreationComponent,
     ItemCreation2Component,
     ItemSelectorComponent,
     SupplierRegisterComponent,
