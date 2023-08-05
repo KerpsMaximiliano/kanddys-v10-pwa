@@ -128,7 +128,6 @@ export class ItemCreationComponent implements OnInit {
   itemTagsIds: Array<string> = [];
   tagsString: string = null;
   tagsToCreate: Array<Tag> = [];
-  tagsToCreateIDs: Array<string> = [];
 
   //Categories to create
   allCategories: Array<ItemCategory> = [];
@@ -1423,25 +1422,23 @@ export class ItemCreationComponent implements OnInit {
 
     this.itemsService.temporalItemInput = itemInput;
 
-    /*
-    this.itemsService.allTags = this.allTags;
-    this.itemsService.tagsInItem = this.tagsInItem;
-    this.itemsService.itemTagsIds = this.itemTagsIds;
-    this.itemsService.tagsById = this.tagsById;
-    this.itemsService.tagsString = this.tagsString;
+    this.itemsService.tagDataForTheItemEdition = {
+      allTags: this.allTags,
+      tagsInItem: this.tagsInItem,
+      itemTagsIds: this.itemTagsIds,
+      tagsById: this.tagsById,
+      tagsString: this.tagsString,
+      tagsToCreate: this.tagsToCreate,
+    };
 
-    this.itemsService.allCategories = this.allCategories;
-    this.itemsService.categoriesInItem = this.categoriesInItem;
-    this.itemsService.itemCategoriesIds = this.itemCategoriesIds;
-    this.itemsService.categoryById = this.categoryById;
-    this.itemsService.categoriesString = this.categoriesString;
-
-    this.itemsService.tagsToCreate = this.tagsToCreate;
-    this.itemsService.tagsById = this.tagsById;
-
-    this.itemsService.categoriesToCreate = this.categoriesToCreate;
-    this.itemsService.categoryById = this.categoryById;
-    */
+    this.itemsService.categoriesDataForTheItemEdition = {
+      allCategories: this.allCategories,
+      categoriesInItem: this.categoriesInItem,
+      itemCategoriesIds: this.itemCategoriesIds,
+      categoryById: this.categoryById,
+      categoriesString: this.categoriesString,
+      categoriesToCreate: this.categoriesToCreate,
+    };
   };
 
   async saveItem() {

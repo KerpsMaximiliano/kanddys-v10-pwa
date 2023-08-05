@@ -218,6 +218,7 @@ import { CreateButtonLinkComponent } from './dialogs/create-button-link/create-b
 import { createTranslateLoader } from '../core/functions/create-translate-loader';
 import { HttpClient } from '@angular/common/http';
 import { FormComponent } from './dialogs/form/form.component';
+import { ListRemoval } from './dialogs/listRemoval/listRemoval.component';
 import { ItemsSlidesEditorComponent } from './components/items-slides-editor/items-slides-editor.component';
 import { StoreChatbotComponent } from './components/store-chatbot/store-chatbot.component';
 import { InputDialogComponent } from './dialogs/input-dialog/input-dialog.component';
@@ -458,6 +459,7 @@ const declarations = [
   PostsSlidesEditorComponent,
   CreateButtonLinkComponent,
   FormComponent,
+  ListRemoval,
   ItemsSlidesEditorComponent,
   StoreChatbotComponent,
   InputDialogComponent,

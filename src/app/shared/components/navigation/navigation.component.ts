@@ -652,6 +652,8 @@ export class NavigationComponent implements OnInit {
     this.router.navigate(link.routerLink, {
       queryParams: link.queryParams ? link.queryParams : {},
     });
+
+    this.close();
   }
 
   @ViewChild('sidenav') sidenav: MatSidenav;

@@ -15,6 +15,9 @@
 
     .card-l-side {
       max-width: 50%;
+      display: flex;
+      flex-direction: column;
+
       .card-title {
         font-family: InterBold;
         font-size: 21px;
@@ -24,6 +27,16 @@
       .card-description {
         font-family: InterRegular;
         font-size: 17px;
+      }
+
+      .stock-available {
+        margin-top: auto;
+        color: #2874ad;
+        font-family: InterBold;
+        font-size: 15px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
       }
     }
 

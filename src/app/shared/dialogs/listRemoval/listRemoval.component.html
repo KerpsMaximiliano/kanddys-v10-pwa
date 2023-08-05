@@ -1,0 +1,26 @@
+<div class="container">
+  <div class="modal-top-container">
+    <p class="modal-title">
+      <ng-container *ngIf="!data.titleIcon"> 🖇️️ </ng-container>
+      <ng-container *ngIf="data.titleIcon.show">
+        {{ data.titleIcon.icon }}
+      </ng-container>
+
+      {{ data.title }}
+    </p>
+    <!-- <mat-icon>add</mat-icon>
+        <mat-icon>remove</mat-icon> -->
+  </div>
+  <div class="modal-categories-container">
+    <div class="modal-category" *ngFor="let category of data.categories">
+      <img
+        [src]="assetsURL + '/trash-black.svg'"
+        class="delete-icon"
+        (click)="select(category._id)"
+      />
+      <span>
+        {{ category.name }}
+      </span>
+    </div>
+  </div>
+</div>

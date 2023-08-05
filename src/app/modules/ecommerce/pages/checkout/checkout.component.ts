@@ -757,6 +757,12 @@ export class CheckoutComponent implements OnInit {
   }
 
   createOrder = async () => {
+    //this property was set for the case when the product isn't part of the saleflow's items, but is included as part of the order
+    //it has to be deleted for createOrder() to work
+    this.headerService.order.products.forEach((product, index) => {
+      delete this.headerService.order.products[index].notAvailable;
+    });
+
     if (this.missingOrderData) {
       if (
         this.headerService.saleflow?.module?.appointment?.isActive &&

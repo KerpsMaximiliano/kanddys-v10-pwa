@@ -320,6 +320,13 @@ export const listItems = gql`
     }
   }
 `;
+
+export const itemsQuantityOfFilters = gql`
+  query itemsQuantityOfFilters($merchantId: ObjectID) {
+    itemsQuantityOfFilters(merchantId: $merchantId)
+  }
+`;
+
 export const listItemPackage = gql`
   query listItemPackage($params: PaginationInput) {
     listItemPackage(params: $params) {

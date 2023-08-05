@@ -88,6 +88,7 @@ import { AmbassadorPaymentsLibraryComponent } from './pages/ambassador-payments-
 import { AmbassadorsComponent } from './pages/ambassadors/ambassadors.component';
 import { UserSearchComponent } from './pages/user-search/user-search.component';
 import { UserEntryComponent } from './pages/user-entry/user-entry.component';
+import { NewAdminDashboardComponent } from './pages/new-admin-dashboard/new-admin-dashboard.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -227,11 +228,11 @@ const routes: Routes = [
       },
       {
         path: 'dashboard',
-        component: AdminDashboardComponent,
+        component: NewAdminDashboardComponent,
       },
       {
         path: 'supplier-dashboard',
-        component: AdminDashboardComponent,
+        component: NewAdminDashboardComponent,
       },
       {
         path: 'tags-view',
@@ -624,7 +625,8 @@ const routes: Routes = [
     AmbassadorPaymentsLibraryComponent,
     AmbassadorsComponent,
     UserSearchComponent,
-    UserEntryComponent
+    UserEntryComponent,
+    NewAdminDashboardComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [

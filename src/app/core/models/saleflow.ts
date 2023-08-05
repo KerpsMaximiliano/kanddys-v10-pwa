@@ -91,6 +91,7 @@ export class SaleFlow extends Model<SaleFlow> {
   itemNickname?: string;
   packageNickname?: string;
   canBuyMultipleItems?: boolean;
+  status?: string;
 }
 
 export class PaginationRangeInput {
@@ -161,4 +162,5 @@ export class SaleFlowInput {
   packageNickname?: string;
   canBuyMultipleItems?: boolean;
   layout?: string;
+  status?: string;
 }

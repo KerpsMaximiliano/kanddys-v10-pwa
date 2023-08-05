@@ -314,8 +314,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       if (jsondata) {
         let parsedData = JSON.parse(decodeURIComponent(jsondata));
 
-        //console.log('parsedData', parsedData);
-
         if (parsedData.createdItem) {
           try {
             lockUI();
@@ -435,6 +433,25 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
               (item.type !== 'supplier'
                 ? '/admin/dashboard'
                 : '/admin/supplier-dashboard?supplierMode=true');
+          } catch (error) {
+            unlockUI();
+
+            console.error(error);
+          }
+        }
+
+        if (parsedData.itemsToUpdate) {
+          try {
+            lockUI();
+            await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+
+            await Promise.all(Object.keys(parsedData.itemsToUpdate).map(itemId => this._ItemsService.updateItem(parsedData.itemsToUpdate[itemId], itemId)));
+
+            if(!parsedData.quotationItems) {
+              unlockUI();
+              window.location.href =
+                environment.uri + '/admin/supplier-dashboard?supplierMode=true';
+            }
           } catch (error) {
             unlockUI();
 
@@ -684,7 +701,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       },
       options: {
         sortBy: 'createdAt:desc',
-        limit: -1,
+        limit: this.paginationState.pageSize,
         page: this.paginationState.page,
       },
     };
