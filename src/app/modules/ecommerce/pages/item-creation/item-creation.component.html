@@ -19,7 +19,7 @@
 
     <div *ngIf="item" class="options-wrapper">
       <img
-        *ngIf="currentView === 'ITEM_FORM'"
+        *ngIf="currentView === 'ITEM_FORM' && !isTheUserAnAdmin"
         (click)="toggleItemVisibility()"
         [src]="
           assetsFolder +
@@ -60,7 +60,7 @@
       <ng-container *ngSwitchCase="'ITEM_FORM'">
         <p
           class="intro-text"
-          *ngIf="typeOfFlow !== 'ITEM_CREATION' && item?.status == 'active'"
+          *ngIf="typeOfFlow !== 'ITEM_CREATION' && item?.status == 'active' && !isTheUserAnAdmin"
         >
           {{
             typeOfFlow === "UPDATE_EXISTING_ITEM"

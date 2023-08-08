@@ -914,6 +914,8 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
           return await this.saveItem();
         }
       });
+
+      return;
     } else if (!this.itemFormData?.valid || this.itemSlides.length === 0) {
       return this.router.navigate(['/admin/provider-items-management']);
     }
