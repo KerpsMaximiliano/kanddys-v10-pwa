@@ -19,11 +19,17 @@
 
     <div *ngIf="item" class="options-wrapper">
       <img
-        *ngIf="currentView === 'ITEM_FORM' && !isTheUserAnAdmin"
+        *ngIf="currentView === 'ITEM_FORM'"
         (click)="toggleItemVisibility()"
         [src]="
           assetsFolder +
-          (item.status === 'active' ? '/toggle-on.svg' : '/toggle-off.svg')
+          (!isTheUserAnAdmin
+            ? item.status === 'active'
+              ? '/toggle-on.svg'
+              : '/toggle-off.svg'
+            : item.approvedByAdmin
+            ? '/toggle-on.svg'
+            : '/toggle-off.svg')
         "
       />
 
@@ -60,7 +66,11 @@
       <ng-container *ngSwitchCase="'ITEM_FORM'">
         <p
           class="intro-text"
-          *ngIf="typeOfFlow !== 'ITEM_CREATION' && item?.status == 'active' && !isTheUserAnAdmin"
+          *ngIf="
+            typeOfFlow !== 'ITEM_CREATION' &&
+            item?.status == 'active' &&
+            !isTheUserAnAdmin
+          "
         >
           {{
             typeOfFlow === "UPDATE_EXISTING_ITEM"
@@ -71,6 +81,10 @@
 
         <div class="disabled-item-container" *ngIf="item?.status == 'disabled'">
           El artículo está oculto
+        </div>
+
+        <div class="disabled-item-container" style="padding: 12px 43px;" *ngIf="isTheUserAnAdmin && !item?.approvedByAdmin">
+          El artículo no se está exhibiendo por falta aprobación.
         </div>
 
         <section
