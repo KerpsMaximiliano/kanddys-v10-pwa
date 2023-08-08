@@ -84,6 +84,15 @@ export class UsersService {
     return response?.deleteMe;
   }
 
+  async paginateUsers(input) {
+    const result = await this.graphql.query({
+      query: paginateUsers,
+      variables: { input },
+    });
+    if (!result || result?.errors) return undefined;
+    return result.paginateUsers?.results;
+  }
+  
   async ordersByUserSearchParam(merchantId: string, search: string, pagination: PaginationOptionsInput) {
     const response = await this.graphql.query({
       query: ordersByUserSearchParam,

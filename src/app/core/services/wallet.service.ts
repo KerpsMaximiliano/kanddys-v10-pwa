@@ -27,7 +27,9 @@ import {
   exchangeData,
   paymentreceiver,
   payOrderWithStripe,
-  payOrderWithElectronicPayments
+  payOrderWithElectronicPayments,
+  walletsByCurrency,
+  walletsUserStar,
 } from './../graphql/wallet.gql';
 import { Community } from './../models/community';
 import { User } from './../models/user';
@@ -270,7 +272,10 @@ export class WalletService {
     return result?.payOrderWithStripe;
   }
 
-  async payOrderWithElectronicPayments(payMode: string, orderId: string): Promise<any> {
+  async payOrderWithElectronicPayments(
+    payMode: string,
+    orderId: string
+  ): Promise<any> {
     const result = await this.graphql.mutate({
       mutation: payOrderWithElectronicPayments,
       variables: { payMode, orderId },
@@ -279,5 +284,27 @@ export class WalletService {
     if (!result || result?.errors) return undefined;
 
     return result?.payOrderWithElectronicPayments;
+  }
+
+  async walletsByCurrency(paginate: any): Promise<any> {
+    const result = await this.graphql.mutate({
+      mutation: walletsByCurrency,
+      variables: { paginate },
+    });
+
+    if (!result || result?.errors) return undefined;
+
+    return result?.walletsByCurrency;
+  }
+
+  async walletsUserStar(currencyTypeStar,paginate): Promise<any> {
+    const result = await this.graphql.query({
+      query: walletsUserStar,
+      variables: { currencyTypeStar,paginate },
+    });
+
+    if (!result || result?.errors) return undefined;
+
+    return result?.walletsUserStar;
   }
 }

@@ -106,10 +106,10 @@
         (keyup)="onKeywordSearch($event)"
       />
       <div class="input-items">
-        <!-- <div class="icon-button">⏰</div> -->
+        <div class="icon-button" (click)="openEstimatedDeliveryDialog()">⏰</div>
         <div class="icon-button" (click)="openPriceRangeDialog()">💰</div>
-        <div class="icon-button" (click)="openTagsDialog()" *ngIf="tags.length">🏷️</div>
-        <!-- <div class="icon-button">🖇️️</div> -->
+        <div class="icon-button" (click)="openTagsDialog()" *ngIf="tags.length">🖇️️</div>
+        <!-- <div class="icon-button">🏷️</div> -->
       </div>
       <!-- <div class="input-item-text">
         ⏰  Artículos que se entregan en menos de 2 horas en Santo Domingo
@@ -231,10 +231,11 @@
       </li>
     </ng-container>
   </ul>
-  <div style="display: flex; justify-content: center; align-items: center">
+  <div style="cursor: pointer; display: flex; justify-content: center; align-items: center;">
     <ng-container>
-      <img [src]="env + '/star-highlight.png'" alt="" style="width: 40px" />
-      <p class="highlighted-text">Stars for causes</p>
+      <!-- <img [src]="env + '/star-highlight.png'" alt="" style="width: 40px" /> -->
+      <p class="highlighted-text">Guarda y Monetiza</p>
+      <p style="font-size: 16px;">💚</p>
     </ng-container>
     <!-- <div
       class="cart-container"
