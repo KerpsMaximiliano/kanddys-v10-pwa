@@ -27,6 +27,10 @@ const user = `
     url
     userName
   }
+  roles {
+    name
+    code
+  }
 `;
 const sessionBody = `
   token

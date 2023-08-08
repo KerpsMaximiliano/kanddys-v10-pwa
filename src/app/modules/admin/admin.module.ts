@@ -90,6 +90,7 @@ import { AmbassadorsComponent } from './pages/ambassadors/ambassadors.component'
 import { UserSearchComponent } from './pages/user-search/user-search.component';
 import { UserEntryComponent } from './pages/user-entry/user-entry.component';
 import { NewAdminDashboardComponent } from './pages/new-admin-dashboard/new-admin-dashboard.component';
+import { ProviderItemsManagementComponent } from './pages/provider-items-management/provider-items-management.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -283,6 +284,10 @@ const routes: Routes = [
       {
         path: 'order-status-view',
         component: OrderStatusViewComponent,
+      },
+      {
+        path: 'provider-items-management',
+        component: ProviderItemsManagementComponent
       },
       {
         path: 'order-list',
@@ -632,7 +637,8 @@ const routes: Routes = [
     AmbassadorsComponent,
     UserSearchComponent,
     UserEntryComponent,
-    NewAdminDashboardComponent
+    NewAdminDashboardComponent,
+    ProviderItemsManagementComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [
