@@ -460,6 +460,16 @@ export class NavigationComponent implements OnInit {
         //If the current user is a supplier, it redirects them to the screen where they may adjust the quotation items prices and stock
         this.isCurrentUserASupplier = true;
       }
+
+      console.log(this.headerService.user.roles);
+      if (this.headerService.user.roles.some((role) => role.code === 'ADMIN')) {
+        console.log("ADMIN");
+        this.tabs[2].links.push({
+          text: 'Gestión de los Artículos Globales',
+          routerLink: ['/admin/provider-items-management'],
+          linkName: 'provider-items-management',
+        });
+      }
     }
 
     //console.log('this.isCurrentUserASupplier', this.isCurrentUserASupplier);
