@@ -109,6 +109,7 @@ export class ItemSelectorComponent implements OnInit {
           const pagination: PaginationInput = {
             findBy: {
               type: 'supplier',
+              approvedByAdmin: true,
             },
             options: {
               sortBy: 'createdAt:desc',

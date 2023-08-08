@@ -311,6 +311,7 @@ export const listItems = gql`
       visitorCounter {
         counter
       }
+      approvedByAdmin
       type
       stock
       notificationStockLimit
