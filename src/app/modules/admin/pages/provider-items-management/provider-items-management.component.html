@@ -2,9 +2,9 @@
   <div class="dashboard-page container">
     <header class="header">
       <button mat-icon-button style="margin-right: 25px" (click)="(null)">
-        <mat-icon [ngStyle]="{ color: 'white' }"
-            (click)="addProviderItem()"
-        >add</mat-icon>
+        <mat-icon [ngStyle]="{ color: 'white' }" (click)="addProviderItem()"
+          >add</mat-icon
+        >
 
         <!--
               <div
@@ -21,7 +21,7 @@
               </div>
           -->
       </button>
-      
+
       <!--
           <button class="header-btn" (click)="(null)">
             <img [src]="assetsURL + '/dots-black.svg'" alt="" />
@@ -54,8 +54,8 @@
           class="item-wrapper"
           *ngFor="let item of items; let itemIndex = index"
         >
-          <div class="item-card" (click)="redirectToItemEdition(item)">
-            <div class="left-column">
+          <div class="item-card">
+            <div class="left-column" (click)="redirectToItemEdition(item)">
               <div
                 class="product-image"
                 [ngStyle]="{
@@ -72,7 +72,13 @@
               ></div>
             </div>
 
-            <div class="middle-column">
+            <div
+              class="middle-column"
+              [ngClass]="{
+                fixedWidth: !item.approvedByAdmin
+              }"
+              (click)="redirectToItemEdition(item)"
+            >
               <div class="item-name">{{ item.name }}</div>
               <div class="item-description">{{ item.description }}</div>
               <div class="item-price">
@@ -86,14 +92,13 @@
               </div>
             </div>
 
-            <!--
-                <div
-                  class="right-column"
-                  (click)="null"
-                >
-                  <div class="edit-btn">Editar</div>
-                </div>
-            -->
+            <div
+              class="right-column"
+              *ngIf="!item.approvedByAdmin"
+              (click)="approveItem(item, itemIndex)"
+            >
+              <div class="edit-btn">Aprobar</div>
+            </div>
           </div>
         </div>
       </div>
