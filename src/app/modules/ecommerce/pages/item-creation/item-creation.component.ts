@@ -1861,8 +1861,8 @@ export class ItemCreationComponent implements OnInit {
     } else {
       this.itemsService.temporalItem = null;
 
-      if(this.item && this.isTheUserAnAdmin) {
-         return this.router.navigate(['/admin/provider-items-management']);
+      if (this.item && this.isTheUserAnAdmin) {
+        return this.router.navigate(['/admin/provider-items-management']);
       }
 
       if (this.item) {
@@ -1901,29 +1901,53 @@ export class ItemCreationComponent implements OnInit {
   }
 
   toggleItemVisibility = async (): Promise<boolean> => {
-    try {
+    if (this.isTheUserAnAdmin && this.item.type === 'supplier') {
       lockUI();
-      this.itemsService.updateItem(
-        {
-          status: this.item.status === 'disabled' ? 'active' : 'disabled',
-        },
-        this.item._id
-      );
 
-      this.item.status =
-        this.item.status === 'disabled' ? 'active' : 'disabled';
+      try {
+        const itemInput: ItemInput = {
+          approvedByAdmin: true,
+        };
 
-      unlockUI();
+        const updatedItem = await this.itemsService.updateItem(
+          itemInput,
+          this.item._id
+        );
 
-      return true;
-    } catch (error) {
-      unlockUI();
+        if (updatedItem) {
+          this.item.approvedByAdmin = this.item.approvedByAdmin ? false : true;
+        }
 
-      console.log(error);
-      this.headerService.showErrorToast();
-      return false;
+        unlockUI();
+      } catch (error) {
+        unlockUI();
+        this.headerService.showErrorToast();
+        console.error(error);
+      }
+    } else {
+      try {
+        lockUI();
+        this.itemsService.updateItem(
+          {
+            status: this.item.status === 'disabled' ? 'active' : 'disabled',
+          },
+          this.item._id
+        );
+
+        this.item.status =
+          this.item.status === 'disabled' ? 'active' : 'disabled';
+
+        unlockUI();
+
+        return true;
+      } catch (error) {
+        unlockUI();
+
+        console.log(error);
+        this.headerService.showErrorToast();
+        return false;
+      }
     }
-
     return false;
   };
 }

@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Item } from 'src/app/core/models/item';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { Item, ItemInput } from 'src/app/core/models/item';
 import { PaginationInput } from 'src/app/core/models/saleflow';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { environment } from 'src/environments/environment';
 
@@ -16,12 +18,17 @@ export class ProviderItemsManagementComponent implements OnInit {
   drawerOpened: boolean = false;
   items: Array<Item> = [];
 
-  constructor(private itemsService: ItemsService, private router: Router) {}
+  constructor(
+    private itemsService: ItemsService,
+    private router: Router,
+    private headerService: HeaderService
+  ) {}
 
   async ngOnInit() {
     const pagination: PaginationInput = {
       findBy: {
         type: 'supplier',
+        parentItem: null,
       },
       options: {
         sortBy: 'createdAt:desc',
@@ -31,7 +38,6 @@ export class ProviderItemsManagementComponent implements OnInit {
     };
 
     this.items = (await this.itemsService.listItems(pagination))?.listItems;
-    this.items = this.items.filter((item) => !item.parentItem);
 
     this.items.forEach((item, itemIndex) => {
       item.images.forEach((image) => {
@@ -49,5 +55,28 @@ export class ProviderItemsManagementComponent implements OnInit {
 
   addProviderItem() {
     this.router.navigate(['/ecommerce/inventory-creator']);
+  }
+
+  async approveItem(item: Item, index: number) {
+    lockUI();
+
+    try {
+      const itemInput: ItemInput = {
+        approvedByAdmin: true,
+      };
+
+      const updatedItem = await this.itemsService.updateItem(
+        itemInput,
+        item._id
+      );
+
+      if (updatedItem) this.items[index].approvedByAdmin = true;
+
+      unlockUI();
+    } catch (error) {
+      unlockUI();
+      this.headerService.showErrorToast();
+      console.error(error);
+    }
   }
 }
