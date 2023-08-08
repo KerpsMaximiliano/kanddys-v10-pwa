@@ -507,3 +507,9 @@ section {
     height: 25.28px;
   }
 }
+
+
+::ng-deep .confirmation-dialog .mat-dialog-container {
+  padding: 24px !important;
+  background: #fff !important;
+}

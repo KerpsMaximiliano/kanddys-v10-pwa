@@ -1463,6 +1463,7 @@ export class ItemCreationComponent implements OnInit {
         title: `Elminar artículo`,
         description: `Estás seguro que deseas borrar este artículo?`,
       },
+      panelClass: 'confirmation-dialog',
     });
     dialogRef.afterClosed().subscribe(async (result) => {
       if (result === 'confirm') {

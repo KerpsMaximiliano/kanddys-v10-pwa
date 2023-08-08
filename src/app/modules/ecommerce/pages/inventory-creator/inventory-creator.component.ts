@@ -908,6 +908,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
           title: `Salvar cambios`,
           description: `Estás seguro que deseas crear este artículo?`,
         },
+        panelClass: 'confirmation-dialog',
       });
       dialogRef.afterClosed().subscribe(async (result) => {
         if (result === 'confirm') {
