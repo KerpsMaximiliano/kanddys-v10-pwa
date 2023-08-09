@@ -18,6 +18,11 @@ export interface DialogTemplate {
     text: string;
     callback: () => void;
   };
+  leftIcon?: {
+    iconName: string;
+    styles?: Record<string, any>;
+    callback: () => void;
+  };
   rightIcon?: {
     iconName: string;
     styles?: Record<string, any>;

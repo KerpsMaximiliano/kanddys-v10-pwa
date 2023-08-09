@@ -39,6 +39,7 @@ import {
 })
 export class ItemSelectorComponent implements OnInit {
   items: Array<Item> = [];
+  supplierSpecificItems: Record<string, Item> = {};
   selectedItems: Array<string> = [];
   itemsToShow: Array<Item> = [];
   itemsForm: FormGroup = this.formBuilder.group({
@@ -108,6 +109,7 @@ export class ItemSelectorComponent implements OnInit {
           const pagination: PaginationInput = {
             findBy: {
               type: 'supplier',
+              approvedByAdmin: true,
             },
             options: {
               sortBy: 'createdAt:desc',
@@ -237,7 +239,9 @@ export class ItemSelectorComponent implements OnInit {
                 this.itemsToShow = this.items.filter(
                   (item) =>
                     item.name?.toLowerCase().includes(value.toLowerCase()) ||
-                    item.description?.toLowerCase().includes(value.toLowerCase())
+                    item.description
+                      ?.toLowerCase()
+                      .includes(value.toLowerCase())
                 );
               }
 
@@ -259,10 +263,38 @@ export class ItemSelectorComponent implements OnInit {
               }
             }
           );
+
+          if (this.supplierMode && this.headerService.user) {
+            await this.getItemsForCurrentSupplier();
+          }
         }
       );
     });
   }
+
+  getItemsForCurrentSupplier = async () => {
+    await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+
+    const supplierSpecificItemsInput: PaginationInput = {
+      findBy: {
+        merchant: this.merchantService.merchantData._id,
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: -1,
+        page: 1,
+      },
+    };
+
+    let supplierItems: Array<Item> = (
+      await this.itemsService.listItems(supplierSpecificItemsInput)
+    )?.listItems;
+    supplierItems = supplierItems.filter((item) => item.parentItem);
+
+    for (const item of supplierItems) {
+      this.supplierSpecificItems[item.parentItem] = item;
+    }
+  };
 
   goToArticleDetail(item: Item) {
     this.headerService.flowRoute = this.router.url;
@@ -572,6 +604,21 @@ export class ItemSelectorComponent implements OnInit {
       description: item.description,
     };
     this.itemsService.temporalItem = item;
+
+    if (this.supplierSpecificItems[item._id]) {
+      return this.router.navigate(
+        [
+          '/ecommerce/inventory-creator/' +
+            this.supplierSpecificItems[item._id]._id,
+        ],
+        {
+          queryParams: {
+            existingItem: true,
+            updateItem: true,
+          },
+        }
+      );
+    }
 
     this.router.navigate(['/ecommerce/inventory-creator'], {
       queryParams: {

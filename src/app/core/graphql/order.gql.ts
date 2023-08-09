@@ -828,3 +828,12 @@ export const incomeTotalByType = gql`
     )
   }
 `;
+
+
+
+export const ordersIncomeMerchantByUser = gql`
+  query ordersIncomeMerchantByUser($userId: [ObjectID!]!,$merchantId:ObjectID!) {
+    ordersIncomeMerchantByUser(userId:$userId,merchantId:$merchantId)
+   }
+`;
+

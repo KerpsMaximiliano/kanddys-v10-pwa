@@ -40,6 +40,7 @@ import {
   itemsByMerchantNosale,
   salesPositionOfItemByMerchant,
   buyersByItemInMerchantStore,
+  itemsQuantityOfFilters,
 } from '../graphql/items.gql';
 import {
   Item,
@@ -84,23 +85,22 @@ export class ItemsService {
   questionsToAddToItem: Array<ExtendedQuestionInput> = [];
   modifiedImagesFromExistingItem: boolean = false;
   createUserAlongWithItem: boolean = false;
-
-  //stores tags & categories for the current item being created
-  /*
-  allTags: Array<Tag> = null;
-  tagsInItem: Record<string, boolean> = null;
-  tagsById: Record<string, Tag> = null;
-  itemTagsIds: Array<string> = null;
-  tagsString: string = null;
-  tagsToCreate: Array<Tag> = null;
-  tagsToCreateIDs: Array<string> = null;
-
-  allCategories: Array<ItemCategory> = null;
-  categoriesInItem: Record<string, boolean> = null;
-  categoryById: Record<string, ItemCategory> = null;
-  itemCategoriesIds: Array<string> = null;
-  categoriesString: string = null;
-  categoriesToCreate: Array<ItemCategory> = null;*/
+  tagDataForTheItemEdition: {
+    allTags: Array<Tag>;
+    tagsInItem: Record<string, boolean>;
+    tagsById: Record<string, Tag>;
+    itemTagsIds: Array<string>;
+    tagsString: string;
+    tagsToCreate: Array<Tag>;
+  };
+  categoriesDataForTheItemEdition: {
+    allCategories: Array<ItemCategory>;
+    categoriesInItem: Record<string, boolean>;
+    categoryById: Record<string, ItemCategory>;
+    itemCategoriesIds: Array<string>;
+    categoriesString: string;
+    categoriesToCreate: Array<ItemCategory>;
+  };
 
   storeTemporalItem(item: any) {
     this.temporalItem = item;
@@ -308,7 +308,9 @@ export class ItemsService {
   async totalByItem(
     merchantId: string,
     itemId?: string[]
-  ): Promise<{ item: Item; itemInOrder: number; total: number;itemUnits:number }[]> {
+  ): Promise<
+    { item: Item; itemInOrder: number; total: number; itemUnits: number }[]
+  > {
     try {
       const response = await this.graphql.query({
         query: totalByItem,
@@ -391,7 +393,10 @@ export class ItemsService {
   }
 
   // Agregar categoria
-  async createItemCategory(input: ItemCategoryInput, isAdmin = false): Promise<ItemCategory> {
+  async createItemCategory(
+    input: ItemCategoryInput,
+    isAdmin = false
+  ): Promise<ItemCategory> {
     const result = await this.graphql.mutate({
       mutation: createItemCategory,
       variables: { isAdmin, input },
@@ -590,4 +595,29 @@ export class ItemsService {
     if (!result) return;
     return result;
   }
+
+  itemsQuantityOfFilters = async (
+    merchantId: string,
+    typeOfItem: string = null
+  ): Promise<{
+    all: number;
+    archived: number;
+    commissionable: number;
+    hidden: number;
+    lowStock: number;
+    noSale: number;
+  }> => {
+    try {
+      const response = await this.graphql.query({
+        query: itemsQuantityOfFilters, //add listItems to gqls,
+        variables: { merchantId, typeOfItem },
+        fetchPolicy: 'no-cache',
+      });
+      if (!response) return;
+
+      return response?.itemsQuantityOfFilters;
+    } catch (e) {
+      console.log(e);
+    }
+  };
 }

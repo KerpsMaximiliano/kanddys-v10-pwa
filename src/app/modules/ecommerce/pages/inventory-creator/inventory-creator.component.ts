@@ -37,6 +37,7 @@ import {
 import { AuthService } from 'src/app/core/services/auth.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
+import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-inventory-creator',
@@ -88,6 +89,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
   supplierEdition: boolean = false;
   supplierItem: Item = null;
   loggedMerchant: Merchant = null;
+  isTheUserAnAdmin: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -127,6 +129,15 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
               merchantRegistration || 'false'
             );
             this.itemId = itemId;
+
+            if (!this.headerService.user) {
+              this.headerService.user = await this.authService.me();
+            }
+
+            const isTheUserAnAdmin = this.headerService.user?.roles?.find(
+              (role) => role.code === 'ADMIN'
+            );
+            if (isTheUserAnAdmin) this.isTheUserAnAdmin = true;
 
             this.loggedMerchant = await this.merchantsService.merchantDefault();
 
@@ -219,7 +230,6 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
               notificationStockPhoneOrEmail: [
                 this.itemsService.temporalItemInput
                   ?.notificationStockPhoneOrEmail || '',
-                Validators.compose([Validators.required]),
               ],
             });
 
@@ -250,6 +260,15 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
               this.itemsService.modifiedImagesFromExistingItem
             ) {
               this.itemSlides = this.itemsService.temporalItemInput.slides;
+            }
+
+            if (this.isTheUserAnAdmin && !this.itemsService.temporalItemInput) {
+              this.itemFormData.patchValue({
+                pricing: 10,
+                stock: 10,
+                useStock: true,
+                notificationStockLimit: 10,
+              });
             }
 
             this.addToastReminder(true);
@@ -411,7 +430,9 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
       }
     );
     const itemInput: ExtendedItemInput = {
-      name: this.itemsService.temporalItemInput?.name,
+      name:
+        this.itemsService.temporalItemInput?.name ||
+        this.itemFormData.value['title'],
       description: this.itemFormData.value['description'],
       pricing: this.itemFormData.value['pricing'],
       images,
@@ -593,7 +614,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
 
           if (
             this.quotationsService.supplierItemsAdjustmentsConfig
-              .quotationItemBeingEdited
+              ?.quotationItemBeingEdited
           ) {
             return this.router.navigate(
               [
@@ -610,8 +631,13 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
             );
           }
 
-          this.router.navigate(['/admin/dashboard']);
+          this.router.navigate(['/admin/supplier-dashboard'], {
+            queryParams: {
+              supplierMode: true,
+            },
+          });
         } catch (error) {
+          console.error(error);
           this.snackbar.open('Ocurrió un error al actualizar el producto', '', {
             duration: 5000,
           });
@@ -733,6 +759,12 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
           this.itemsService.temporalItem = null;
           this.itemsService.temporalItemInput = null;
           this.itemsService.modifiedImagesFromExistingItem = false;
+
+          if (this.isTheUserAnAdmin) {
+            unlockUI();
+
+            return this.router.navigate(['/admin/provider-items-management']);
+          }
 
           this.router.navigate(['/admin/supplier-dashboard'], {
             queryParams: {
@@ -865,7 +897,40 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
     }
   }
 
-  back() {
+  async back() {
+    if (
+      this.itemFormData?.valid &&
+      this.itemSlides.length > 0 &&
+      this.isTheUserAnAdmin
+    ) {
+      let dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          title: `Salvar cambios`,
+          description: `Estás seguro que deseas crear este artículo?`,
+        },
+        panelClass: 'confirmation-dialog',
+      });
+      dialogRef.afterClosed().subscribe(async (result) => {
+        if (result === 'confirm') {
+          return await this.saveItem();
+        }
+      });
+
+      return;
+    } else if (!this.itemFormData?.valid || this.itemSlides.length === 0) {
+      return this.router.navigate(['/admin/provider-items-management']);
+    }
+
+    if (
+      this.headerService.flowRouteForEachPage['dashboard-to-supplier-creation']
+    ) {
+      this.headerService.flowRoute =
+        this.headerService.flowRouteForEachPage[
+          'dashboard-to-supplier-creation'
+        ];
+      this.headerService.redirectFromQueryParams();
+    }
+
     if (
       this.quotationsService.supplierItemsAdjustmentsConfig
         ?.quotationItemBeingEdited.quotationItemInMemory

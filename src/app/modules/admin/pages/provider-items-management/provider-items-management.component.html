@@ -1,0 +1,107 @@
+<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
+  <div class="dashboard-page container">
+    <header class="header">
+      <button mat-icon-button style="margin-right: 25px" (click)="(null)">
+        <mat-icon [ngStyle]="{ color: 'white' }" (click)="addProviderItem()"
+          >add</mat-icon
+        >
+
+        <!--
+              <div
+                class="tooltip"
+                *ngIf="
+                  hiddenItems?.length === 0 &&
+                  soldItems?.length === 0 &&
+                  notSoldItems?.length === 0 &&
+                  allItemsCopy?.length === 0
+                "
+              >
+                <span>¡Empieza ya creando tu primer artículo!</span>
+                <div class="arrow"></div>
+              </div>
+          -->
+      </button>
+
+      <!--
+          <button class="header-btn" (click)="(null)">
+            <img [src]="assetsURL + '/dots-black.svg'" alt="" />
+          </button>
+          <img
+            (click)="(null)"
+            class="toggle-icon"
+            style="margin-left: 31px"
+            [src]="assetsURL + '/toggle-on.svg'"
+          />
+      -->
+
+      <button
+        style="
+          color: #87cd9b;
+          font-size: 17px;
+          font-family: InterBold;
+          margin-left: auto;
+        "
+        (click)="drawerOpened = true"
+      >
+        Artículos globales
+        <mat-icon style="color: #6fcf97; margin-left: 8px">menu</mat-icon>
+      </button>
+    </header>
+
+    <main>
+      <div class="list-of-items">
+        <div
+          class="item-wrapper"
+          *ngFor="let item of items; let itemIndex = index"
+        >
+          <div class="item-card">
+            <div class="left-column" (click)="redirectToItemEdition(item)">
+              <div
+                class="product-image"
+                [ngStyle]="{
+                  backgroundColor: 'white',
+                  backgroundImage: item.images?.length
+                    ? 'url(' +
+                      item.images[0].value +
+                      '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+                    : 'url(/assets/images/noimage.png)',
+                  backgroundPosition: 'center',
+                  backgroundSize: 'cover',
+                  backgroundRepeat: 'no-repeat'
+                }"
+              ></div>
+            </div>
+
+            <div
+              class="middle-column"
+              [ngClass]="{
+                fixedWidth: !item.approvedByAdmin
+              }"
+              (click)="redirectToItemEdition(item)"
+            >
+              <div class="item-name">{{ item.name }}</div>
+              <div class="item-description">{{ item.description }}</div>
+              <div class="item-price">
+                <ng-container *ngIf="item.pricing !== null">
+                  ${{ item.pricing | number : "1.2-2" }}
+                </ng-container>
+
+                <ng-container *ngIf="item.pricing === null">
+                  Adicione el precio
+                </ng-container>
+              </div>
+            </div>
+
+            <div
+              class="right-column"
+              *ngIf="!item.approvedByAdmin"
+              (click)="approveItem(item, itemIndex)"
+            >
+              <div class="edit-btn">Aprobar</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div></app-navigation
+>

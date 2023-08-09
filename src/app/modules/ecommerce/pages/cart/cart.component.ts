@@ -152,9 +152,9 @@ export class CartComponent implements OnInit {
   }
 
   private async getItems() {
-    let items = this.headerService.order.products.map(
-      (subOrder) => subOrder.item
-    );
+    let items = this.headerService.order.products
+      .filter((item) => !item.notAvailable)
+      .map((subOrder) => subOrder.item);
     if (!this.headerService.order?.products) console.log('No hay productos');
     if (!items.every((value) => typeof value === 'string')) {
       items = items.map((item: any) => item?._id || item);
@@ -205,8 +205,6 @@ export class CartComponent implements OnInit {
           }
         }
       );
-
-      console.log("no estan", arrayOfItemIdsOfQuotationThatArentInSupplierSaleflow)
 
       if (arrayOfItemIdsOfQuotationThatArentInSupplierSaleflow.length > 0)
         this.quotationItemsNotAvailableOrNotInSaleflow = (
@@ -282,6 +280,8 @@ export class CartComponent implements OnInit {
       });
     }
 
+    this.filterOutItemsThatArentInSaleflowButAreInCart();
+
     this.fixImagesURL(this.items);
     if (this.quotationItemsNotAvailableOrNotInSaleflow.length > 0)
       this.fixImagesURL(this.quotationItemsNotAvailableOrNotInSaleflow);
@@ -292,6 +292,23 @@ export class CartComponent implements OnInit {
       else this.headerService.removeOrderProduct(product.item);
     });
   }
+
+  filterOutItemsThatArentInSaleflowButAreInCart = () => {
+    const itemsNotAvailableInSaleflowsById: Record<string, boolean> = {};
+
+    this.headerService.order.products.filter((item) => {
+      if (item.notAvailable) itemsNotAvailableInSaleflowsById[item.item] = true;
+    });
+
+    for (const item of this.quotationItemsNotAvailableOrNotInSaleflow) {
+      if (itemsNotAvailableInSaleflowsById[item._id]) this.items.push(item);
+    }
+
+    this.quotationItemsNotAvailableOrNotInSaleflow =
+      this.quotationItemsNotAvailableOrNotInSaleflow.filter(
+        (item) => !itemsNotAvailableInSaleflowsById[item._id]
+      );
+  };
 
   // Checks if the URL has no HTTPS then fixes it
   private fixImagesURL(arrayOfItems: Array<ExtendedItem>) {
@@ -570,51 +587,91 @@ export class CartComponent implements OnInit {
   }
 
   changeAmount(itemId: string, type: 'add' | 'subtract') {
-    const product = this.headerService.order.products.find(
+    let product = this.headerService.order.products.find(
       (product) => product.item === itemId
     );
 
-    this.headerService.changeItemAmount(product.item, type);
+    if (!product) {
+      this.headerService.storeOrderProduct({
+        item: itemId,
+        amount: 1,
+        notAvailable: true,
+      });
+      product =
+        this.headerService.order.products[
+          this.headerService.order.products.length - 1
+        ];
 
-    this.headerService.changedItemAmountSubject.subscribe({
-      next: (value: Array<ItemSubOrderInput>) => {
-        const itemsIdsDeleted = {};
-
-        this.items.forEach((item) => {
-          itemsIdsDeleted[item._id] = true;
-        });
-
-        this.headerService.order.products.forEach((product) => {
-          if (product.amount) {
-            this.itemObjects[product.item] = product;
-            itemsIdsDeleted[product.item] = false;
-          }
-        });
-
-        this.items = this.items.filter((item) => !itemsIdsDeleted[item._id]);
-
-        this.totalPrice = this.items.reduce(
-          (acc, curr) => acc + curr.pricing * this.itemObjects[curr._id]?.amount,
-          0
+      const itemIndexInItemsThatDontBelongToThisSaleflowArray =
+        this.quotationItemsNotAvailableOrNotInSaleflow.findIndex(
+          (item) => item._id === itemId
         );
 
-        Object.keys(itemsIdsDeleted).forEach((itemId) => {
-          if (itemsIdsDeleted[itemId]) {
-            delete this.webformsByItem[itemId];
-          }
-        });
+      if (itemIndexInItemsThatDontBelongToThisSaleflowArray >= 0) {
+        this.items.push(
+          this.quotationItemsNotAvailableOrNotInSaleflow[
+            itemIndexInItemsThatDontBelongToThisSaleflowArray
+          ]
+        );
 
-        this.areItemsQuestionsAnswered();
+        this.quotationItemsNotAvailableOrNotInSaleflow.splice(
+          itemIndexInItemsThatDontBelongToThisSaleflowArray,
+          1
+        );
+      }
 
-        if (this.items.length === 0)
-          this.router.navigate([
-            '/ecommerce/' +
-              this.headerService.saleflow.merchant.slug +
-              '/store',
-          ]);
-      },
+      this.headerService.changedItemAmountSubject.next(
+        this.headerService.order.products
+      );
+      this.actionsToExecuteWhenOrderProductsAreModified(
+        this.headerService.order.products
+      );
+    } else {
+      this.headerService.changeItemAmount(product.item, type);
+    }
+
+    this.headerService.changedItemAmountSubject.subscribe({
+      next: (value: Array<ItemSubOrderInput>) =>
+        this.actionsToExecuteWhenOrderProductsAreModified(value),
     });
   }
+
+  actionsToExecuteWhenOrderProductsAreModified = (
+    value: Array<ItemSubOrderInput>
+  ) => {
+    const itemsIdsDeleted = {};
+
+    this.items.forEach((item) => {
+      itemsIdsDeleted[item._id] = true;
+    });
+
+    this.headerService.order.products.forEach((product) => {
+      if (product.amount) {
+        this.itemObjects[product.item] = product;
+        itemsIdsDeleted[product.item] = false;
+      }
+    });
+
+    this.items = this.items.filter((item) => !itemsIdsDeleted[item._id]);
+
+    this.totalPrice = this.items.reduce(
+      (acc, curr) => acc + curr.pricing * this.itemObjects[curr._id]?.amount,
+      0
+    );
+
+    Object.keys(itemsIdsDeleted).forEach((itemId) => {
+      if (itemsIdsDeleted[itemId]) {
+        delete this.webformsByItem[itemId];
+      }
+    });
+
+    this.areItemsQuestionsAnswered();
+
+    if (this.items.length === 0)
+      this.router.navigate([
+        '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/store',
+      ]);
+  };
 
   openImageModal(imageSourceURL: string | ArrayBuffer) {
     this.dialogService.open(ImageViewComponent, {
