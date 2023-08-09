@@ -29,6 +29,9 @@ export class ProviderItemsManagementComponent implements OnInit {
       findBy: {
         type: 'supplier',
         parentItem: null,
+        merchant: {
+          $ne: null,
+        },
       },
       options: {
         sortBy: 'createdAt:desc',
