@@ -576,7 +576,7 @@ const routes: Routes = [
     component: AmbassadorsComponent,
   },
   {
-    path: 'ambassador-dashboard',
+    path: 'ambassadors-dashboard',
     component: AmbassadorDashboardComponent,
   },
   {
