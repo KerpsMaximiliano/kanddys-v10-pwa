@@ -63,7 +63,7 @@ export class AmbassadorDashboardComponent {
     });
     const merchantsInfo = merchantsByTypeData[0]
     const merchantIds = merchantsInfo.map((data:any)=>{
-      return data.merchant
+      return data.reference.merchant
     })
     const merchants = await this.getMerchants(merchantIds);
     merchantsInfo.forEach((data:any)=>{
@@ -72,10 +72,12 @@ export class AmbassadorDashboardComponent {
         description: data.reference.description,
         pricing: data.reference.pricing,
         active: data.active,
-        merchant:merchants.filter(merchants => merchants._id === data.merchant),
+        merchant: merchants.filter(merchants => merchants._id === data.reference.merchant)[0],
         image: data.reference.images
       });
-    })
+    });
+
+    console.log(merchantsGroup);
     this.dashboardData = merchantsGroup;
   }
 
