@@ -50,6 +50,7 @@ import { CartComponent } from './pages/cart/cart.component';
 import { ReceiverFormComponent } from './pages/receiver-form/receiver-form.component';
 import { NewSymbolComponent } from './pages/new-symbol/new-symbol.component';
 import { GiftcardDetailsComponent } from './pages/giftcard-details/giftcard-details.component';
+import { AmbassadorStoreComponent } from './pages/ambassador-store/ambassador-store.component';
 import { SymbolDetailComponent } from './pages/symbol-detail/symbol-detail.component';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
@@ -239,6 +240,10 @@ const routes: Routes = [
     component: QrEditComponent,
   },
   {
+    path: 'ambassador-store',
+    component: AmbassadorStoreComponent,
+  },
+  {
     path: ':merchantSlug',
     component: EcommerceComponent,
     children: [
@@ -419,6 +424,7 @@ const routes: Routes = [
     ReceiverFormComponent,
     NewSymbolComponent,
     GiftcardDetailsComponent,
+    AmbassadorStoreComponent,
     SymbolDetailComponent,
     OrderConfirmationComponent,
     InvalidMagicLinkComponent,
