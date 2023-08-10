@@ -24,7 +24,7 @@
               <p class="item-articles">{{item?.cart?.products?.length || "0"}} artículos</p>
             </div>
           </div>
-          <p class="item-incomes">${{item?.cart?.total}}</p>
+          <p class="item-incomes">${{item?.cart?.total.toLocaleString('en-US')}}</p>
         </div>
       </div>
       

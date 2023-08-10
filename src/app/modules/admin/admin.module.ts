@@ -564,7 +564,7 @@ const routes: Routes = [
     component: AdminOrdersComponent
   },
   {
-    path: 'admin-carts',
+    path: 'carts',
     component: AdminCartsComponent
   },
   {
