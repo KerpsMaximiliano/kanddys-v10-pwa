@@ -52,16 +52,15 @@
         </div>
         <footer class="card-footer">
           <p class="price">RD$ {{data.pricing | CurrencyPipe}}</p>
-          <button type="button" *ngIf="data.active">
+          <button type="button" *ngIf="data.status === 'active'">
             <img
               src="../../../../../assets/icons/heart-green-filled.svg"
               alt="show"
             />
           </button>
-          <button type="button" *ngIf="!data.active">
+          <button type="button" *ngIf="data.status !== 'active'">
             OCULTO
             <img src="../../../../../assets/icons/heart-green.svg" alt="hidden" />
-            />
           </button>
         </footer>
       </div>

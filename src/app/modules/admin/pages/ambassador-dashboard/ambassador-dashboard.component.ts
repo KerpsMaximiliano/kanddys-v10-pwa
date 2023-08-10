@@ -20,8 +20,6 @@ export class AmbassadorDashboardComponent {
 
   async ngOnInit() {
     await this.getMerchantDefault();
-    
-    
   }
 
   async getMerchantDefault(){
@@ -71,13 +69,11 @@ export class AmbassadorDashboardComponent {
         name: data.reference.name,
         description: data.reference.description,
         pricing: data.reference.pricing,
-        active: data.active,
+        status: data.status,
         merchant: merchants.filter(merchants => merchants._id === data.reference.merchant)[0],
         image: data.reference.images
       });
     });
-
-    console.log(merchantsGroup);
     this.dashboardData = merchantsGroup;
   }
 
