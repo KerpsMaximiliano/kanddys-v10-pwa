@@ -173,12 +173,15 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
   initializeItemsAndTagsData = async () => {
     Promise.all([this.getTags(), this.getCategories()]);
 
+    this.getSoldItems();
+
     await this.inicializeItems(true, false, true, true);
+    this.getSoldItems();
+    
     /*
     this.getTags();
     this.getQueryParameters();
     this.getHiddenItems();
-    this.getSoldItems();
     this.getItemsThatHaventBeenSold();*/
     this.itemSearchbar.valueChanges.subscribe(
       async (change) => await this.inicializeItems(true, false)

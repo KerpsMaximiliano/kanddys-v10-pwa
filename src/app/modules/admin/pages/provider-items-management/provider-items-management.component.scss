@@ -12,6 +12,7 @@
   max-height: 100vh;
   overflow-y: scroll;
   overflow-x: hidden;
+  position: relative;
 }
 
 .header {
@@ -193,6 +194,128 @@
       &:hover {
         cursor: pointer;
       }
+    }
+  }
+}
+
+.items-metrics {
+  color: #7b7b7b;
+  text-align: center;
+  font-family: InterRegular;
+  font-size: 17px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: normal;
+  margin: 0px 16px;
+  padding: 0px;
+}
+
+.search-bar-wrapper {
+  display: flex;
+  justify-content: space-between;
+  margin: 16px;
+  margin-bottom: 13px;
+  padding-bottom: 0;
+  position: relative;
+
+  .search-bar {
+    /*
+        DESCOMENTAR LUEGO
+        width: 70.09%;
+      */
+    text-align: left;
+    height: fit-content;
+    padding: 8px 21px 12px 21px;
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 8px;
+    background: #d9d9d9;
+    color: #7b7b7b;
+    font-family: InterBold;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    border: none;
+    width: 100%;
+  }
+
+  .filters {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto 0;
+    display: flex;
+    gap: 20px;
+    right: 17px;
+    align-items: center;
+    background: #d9d9d9;
+    padding-left: 17px;
+
+    .option:hover {
+      cursor: pointer;
+    }
+  }
+}
+
+.search-opened {
+  position: relative;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  max-width: 500px;
+  margin: auto;
+  background: var(--el-mas-oscuro, #181d17);
+  padding: 25px 16px;
+  padding-top: 57px;
+  z-index: 9999;
+
+  .search-bar-wrapper {
+    display: flex;
+    justify-content: space-between;
+    margin: 0px;
+    padding-bottom: 0;
+    position: relative;
+  }
+
+  .search-bar {
+    border-radius: 0px;
+    background: var(--el-mas-oscuro, #181d17);
+    color: #7b7b7b;
+    font-family: InterBold;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    border-bottom: 1px solid #87cd9b;
+    width: 100%;
+    padding: 17px 0px;
+  }
+}
+
+.filters-container {
+  display: flex;
+  flex-wrap: wrap;
+  padding-top: 23px;
+  row-gap: 20px;
+  align-items: center;
+  column-gap: 17px;
+
+  .filter {
+    color: var(--fondo-de-pantallas, #f6f6f6);
+    font-family: InterRegular;
+    font-size: 16px;
+    font-style: normal;
+    line-height: normal;
+
+    &.selected {
+      font-family: InterBold;
+      color: #181d17;
+      padding: 0px 13px;
+      padding-top: 6px;
+      padding-bottom: 5px;
+      border-radius: 29px;
+      background: #c4c5c3;
     }
   }
 }
