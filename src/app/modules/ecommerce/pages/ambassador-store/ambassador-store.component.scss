@@ -30,17 +30,22 @@
       cursor: pointer;
       background: transparent;
     }
-    .avatar-img {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background: #e9e371;
+    .circle-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       margin-right: 10px;
+      .avatar-img {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: #e9e371;
+      }
     }
     .header-top-text {
       color: #181D17;
       font-weight: 700;
-      font-family: InterRegular;
+      font-family: InterBold;
       font-size: 18px;
       margin: 0;
       margin-right: 7px;
@@ -286,11 +291,29 @@ footer {
 }
 
 @media (max-width: 400px) {
+  .header {
+    .header-top-container {
+      .avatar-img {
+
+      }
+      .header-top-text {
+        text-overflow: ellipsis;
+        overflow: hidden; 
+        width: 160px; 
+        white-space: nowrap;
+      }
+    }
+  }
   .content-card {
     .card-body {
       .card-left-side {
         .card-description {
           font-size: 15px;
+        }
+      }
+      .card-right-side {
+        .featured-image {
+          max-width: 100%;
         }
       }
     }
