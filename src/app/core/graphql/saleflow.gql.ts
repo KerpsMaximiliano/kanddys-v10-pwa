@@ -261,6 +261,7 @@ export const listItems = gql`
         active
         createdAt
       }
+      approvedByAdmin
       webForms {
         _id
         createdAt
