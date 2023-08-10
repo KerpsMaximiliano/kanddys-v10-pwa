@@ -134,9 +134,10 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    max-width: calc(100% - 102px);
 
     &.fixedWidth {
-      max-width: 49.85%;
+      max-width: 43.35%;
     }
 
     .item-name {
@@ -176,13 +177,14 @@
   }
 
   .right-column {
+    width: 25.81%;
+
     .edit-btn {
       padding: 10px 28px;
       background: #87cd9b;
       border-radius: 39px;
       border: 0.5px #c4c5c3 solid;
       font-family: InterRegular;
-      font-size: 17px;
       font-style: normal;
       font-weight: 400;
       line-height: normal;
@@ -190,9 +192,16 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      width: 100%;
+      margin-left: auto;
+      max-width: 101px;
 
       &:hover {
         cursor: pointer;
+      }
+
+      span {
+        font-size: clamp(12px, 20vw, 17px);
       }
     }
   }
