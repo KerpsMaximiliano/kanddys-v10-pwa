@@ -45,6 +45,14 @@ nav {
   border: 4px solid #BDC3C7 !important;
 }
 
+:host ::ng-deep .mat-slide-toggle.mat-checked .mat-slide-toggle-thumb-container {
+  transform: translate3d(-5px,0,0) !important;
+}
+
+:host ::ng-deep .mat-slide-toggle .mat-slide-toggle-thumb-container {
+  transform: translate3d(-1px,0,0) !important;
+}
+
 :host ::ng-deep .mat-slide-toggle .mat-slide-toggle-thumb {
   background-color: #ECF0F1 !important;
   border: 1px solid #BDC3C7 !important;
@@ -52,9 +60,19 @@ nav {
   width: 12px;
   transform: translate3d(-1px,0,0) !important;
 }
+
 :host ::ng-deep .mat-slide-toggle.mat-checked .mat-slide-toggle-thumb {
   background-color: #ECF0F1 !important;
   transform: translate3d(-5px,0,0) !important;
+}
+
+:host ::ng-deep .mat-slide-toggle .mat-slide-toggle-ripple {
+  height: 30px;
+  width: 30px;
+}
+
+:host ::ng-deep .mat-slide-toggle.mat-checked .mat-ripple-element {
+  background-color: black !important;
 }
 
 .symbol-warning {
