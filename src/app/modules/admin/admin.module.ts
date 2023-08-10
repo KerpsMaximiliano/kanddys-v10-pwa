@@ -95,6 +95,7 @@ import { UserSearchComponent } from './pages/user-search/user-search.component';
 import { UserEntryComponent } from './pages/user-entry/user-entry.component';
 import { NewAdminDashboardComponent } from './pages/new-admin-dashboard/new-admin-dashboard.component';
 import { ProviderItemsManagementComponent } from './pages/provider-items-management/provider-items-management.component';
+import { SymbolEditorComponent } from './pages/symbol-editor/symbol-editor.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -581,6 +582,10 @@ const routes: Routes = [
   {
     path: 'user-entry',
     component: UserEntryComponent
+  },
+  {
+    path: 'symbol-editor',
+    component: SymbolEditorComponent
   }
 ];
 
@@ -659,6 +664,7 @@ const routes: Routes = [
     UserEntryComponent,
     NewAdminDashboardComponent,
     ProviderItemsManagementComponent,
+    SymbolEditorComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [
