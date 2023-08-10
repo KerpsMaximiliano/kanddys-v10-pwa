@@ -59,6 +59,7 @@ export class QrEditComponent implements OnInit {
   entity: string = null;
   redirectFromFlowRoute: boolean = false;
   useSlidesInMemory: boolean = false;
+  isTheUserAnAdmin: boolean = false;
 
   constructor(
     private _ItemsService: ItemsService,
@@ -94,7 +95,12 @@ export class QrEditComponent implements OnInit {
     if (itemId) {
       this.item = await this._ItemsService.item(itemId);
 
-      if (this.item?.merchant._id !== this._MerchantsService.merchantData._id) {
+      const isTheUserAnAdmin = this.headerService.user?.roles?.find(
+        (role) => role.code === 'ADMIN'
+      );
+      if (isTheUserAnAdmin) this.isTheUserAnAdmin = true;
+
+      if (this.item?.merchant._id !== this._MerchantsService.merchantData._id && !isTheUserAnAdmin) {
         this._Router.navigate(['../../'], {
           relativeTo: this._Route,
         });
