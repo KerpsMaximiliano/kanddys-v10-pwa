@@ -28,64 +28,40 @@
       </p>
     </div>
     <p class="information">
-      87 sin venderse. 4 ocultos. 74 con poca disponibilidad. 441 en total
+      {{headerData?.noSale}} sin venderse. {{headerData?.disabled}} ocultos. {{headerData?.lowStock}} con poca disponibilidad. {{totalRecords}} en total
     </p>
-    <section class="form-group form-optional-function">
-      <div class="card">
+    <section class="form-group form-optional-function" >
+      <div class="card" *ngFor="let data of dashboardData">
         <div class="card-container">
           <div class="left">
             <div class="info">
-              <p class="card-title">NombreID</p>
-              <p class="card-subtitle">Lavados</p>
+              <p class="card-title">{{data.name}}</p>
               <p class="card-text">
-                Lavado por fuera, aspiradora por dentro y brillo en las gomas.
+                {{data.description}}
               </p>
             </div>
-            <p class="card-text-extra">💰 con MerchantID</p>
+            <p class="card-text-extra">💰 con {{data.merchant[0].name}}</p>
           </div>
           <div class="right">
             <img
-              src="../../../../../assets/images/i-love-you.svg"
-              alt="A ballon with text I Love You"
+              [src]="data.image[0].value"
+              alt="img"
               loading="lazy"
             />
           </div>
         </div>
         <footer class="card-footer">
-          <p class="price">RD$ 3,800</p>
-          <button type="button">
+          <p class="price">RD$ {{data.pricing | CurrencyPipe}}</p>
+          <button type="button" *ngIf="data.active">
             <img
               src="../../../../../assets/icons/heart-green-filled.svg"
-              alt=""
+              alt="show"
             />
           </button>
-        </footer>
-      </div>
-      <div class="card">
-        <div class="card-container">
-          <div class="left">
-            <div class="info">
-              <p class="card-title">NombreID</p>
-              <p class="card-subtitle">Lavados</p>
-              <p class="card-text">
-                Lavado por fuera, aspiradora por dentro y brillo en las gomas.
-              </p>
-            </div>
-            <p class="card-text-extra">💰 con MerchantID</p>
-          </div>
-          <div class="right">
-            <img
-              src="../../../../../assets/images/i-love-you.svg"
-              alt="A ballon with text I Love You"
-              loading="lazy"
-            />
-          </div>
-        </div>
-        <footer class="card-footer">
-          <p class="price">RD$ 3,800</p>
-          <button type="button">
+          <button type="button" *ngIf="!data.active">
             OCULTO
-            <img src="../../../../../assets/icons/heart-green.svg" alt="" />
+            <img src="../../../../../assets/icons/heart-green.svg" alt="hidden" />
+            />
           </button>
         </footer>
       </div>

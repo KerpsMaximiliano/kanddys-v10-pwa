@@ -96,6 +96,7 @@ import { UserEntryComponent } from './pages/user-entry/user-entry.component';
 import { AmbassadorDashboardComponent } from './pages/ambassador-dashboard/ambassador-dashboard.component';
 import { NewAdminDashboardComponent } from './pages/new-admin-dashboard/new-admin-dashboard.component';
 import { ProviderItemsManagementComponent } from './pages/provider-items-management/provider-items-management.component';
+import { CurrencyFormatPipe } from 'src/app/core/pipes/currency-format.pipe';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -631,6 +632,7 @@ const routes: Routes = [
     OrderDataComponent,
     BuyerDataComponent,
     FilterPipeSearchPipe,
+    CurrencyFormatPipe,
     ExpendituresComponent,
     IncomesComponent,
     CreateExpenditureComponent,
