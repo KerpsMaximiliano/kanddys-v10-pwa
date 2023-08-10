@@ -210,9 +210,7 @@ export class ItemCreationComponent implements OnInit {
         notificationStockPhoneOrEmail: [
           this.itemsService.temporalItemInput?.notificationStockPhoneOrEmail ||
             '',
-          !this.isASupplierItem
-            ? []
-            : Validators.compose([Validators.required]),
+          [],
         ],
         categories: [this.itemsService.temporalItemInput?.categories || ''],
         tags: [this.itemsService.temporalItemInput?.tags || ''],
@@ -317,9 +315,7 @@ export class ItemCreationComponent implements OnInit {
         ],
         notificationStockPhoneOrEmail: [
           this.itemsService.temporalItem?.notificationStockPhoneOrEmail || '',
-          !this.isASupplierItem
-            ? []
-            : Validators.compose([Validators.required]),
+          [],
         ],
         tags: [this.itemsService.temporalItemInput?.tags || ''],
         defaultLayout: [this.itemsService.temporalItem?.layout || this.layout],
@@ -1741,6 +1737,24 @@ export class ItemCreationComponent implements OnInit {
       }
     } else {
       await this.itemsService.updateItem(itemInput, this.item._id);
+
+      this.itemsService.temporalItemInput = null;
+      this.itemsService.temporalItem = null;
+  
+      if(this.headerService.flowRouteForEachPage['provider-items-management']) {
+        this.headerService.flowRoute = this.headerService.flowRouteForEachPage['provider-items-management'];
+        this.headerService.redirectFromQueryParams();
+      }else {
+        this.router.navigate(['admin/dashboard']);
+      }
+  
+      unlockUI();
+
+      this.snackbar.open('Item actualizado exitosamente', 'Cerrar', {
+        duration: 3000,
+      });
+
+      return;
     }
 
     this.itemsService.temporalItemInput = null;
@@ -1906,7 +1920,7 @@ export class ItemCreationComponent implements OnInit {
 
       try {
         const itemInput: ItemInput = {
-          approvedByAdmin: true,
+          approvedByAdmin: !this.item.approvedByAdmin ? true : false,
         };
 
         const updatedItem = await this.itemsService.updateItem(
