@@ -95,6 +95,7 @@ import { UserSearchComponent } from './pages/user-search/user-search.component';
 import { UserEntryComponent } from './pages/user-entry/user-entry.component';
 import { NewAdminDashboardComponent } from './pages/new-admin-dashboard/new-admin-dashboard.component';
 import { ProviderItemsManagementComponent } from './pages/provider-items-management/provider-items-management.component';
+import { AdminCartsComponent } from './pages/admin-carts/admin-carts.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -563,6 +564,10 @@ const routes: Routes = [
     component: AdminOrdersComponent
   },
   {
+    path: 'admin-carts',
+    component: AdminCartsComponent
+  },
+  {
     path: 'ambassadors-pending-payments',
     component: AmbassadorsPaymentsComponent
   },
@@ -659,6 +664,7 @@ const routes: Routes = [
     UserEntryComponent,
     NewAdminDashboardComponent,
     ProviderItemsManagementComponent,
+    AdminCartsComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [

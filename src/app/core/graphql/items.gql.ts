@@ -293,6 +293,8 @@ export const listItems = gql`
       merchant {
         _id
         slug
+        image
+        name
       }
       pricing
       category {
