@@ -40,11 +40,12 @@
     font-size: 17px;
     margin: 0;
     margin-right: 7px;
+    margin-left: 10px;
   }
   
   .content {
     background: #f6f6f6;
-    padding: 14px 16px 80px 15px;
+    padding: 14px 16px 80px 16px;
   }
   
   .items-container {
@@ -142,4 +143,5 @@
 
   .article-income {
     color: #7B7B7B;
+    text-decoration: line-through;
   }
