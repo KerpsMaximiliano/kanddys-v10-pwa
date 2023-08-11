@@ -229,6 +229,7 @@ import { ItemSelectorComponent } from './components/item-selector/item-selector.
 import { InventoryComponent } from './components/inventory/inventory.component';
 import { SupplierRegistrationComponent } from './components/supplier-registration/supplier-registration.component';
 import { CardImageComponent } from './components/card-image/card-image.component';
+import { ConfirmationSimpleComponent } from './dialogs/confirmation-simple/confirmation-simple.component';
 
 const imports = [
   CommonModule,
@@ -459,6 +460,7 @@ const declarations = [
   PostsSlidesEditorComponent,
   CreateButtonLinkComponent,
   FormComponent,
+  ConfirmationSimpleComponent,
   ListRemoval,
   ItemsSlidesEditorComponent,
   StoreChatbotComponent,

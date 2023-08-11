@@ -1,0 +1,194 @@
+<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
+  <div class="dashboard-page container" (scroll)="infinitePagination()">
+    <header class="header" *ngIf="!searchOpened">
+      <button mat-icon-button style="margin-right: 25px" (click)="(null)">
+        <img
+          [src]="assetsFolder + '/icon_info.png'"
+          class="info-button"
+          alt="open internal information"
+          (click)="(null)"
+        />
+      </button>
+
+      <button
+        style="
+          color: #87cd9b;
+          font-size: 17px;
+          font-family: InterBold;
+          margin-left: auto;
+        "
+        (click)="drawerOpened = true"
+      >
+        Artículos de Proveedores
+        <mat-icon style="color: #6fcf97; margin-left: 8px">menu</mat-icon>
+      </button>
+    </header>
+
+    <div class="search-opened" *ngIf="searchOpened">
+      <form class="search-bar-wrapper">
+        <input
+          type="text"
+          name="item-search"
+          id="search-from-results-view"
+          class="input search-bar"
+          placeholder="Buscar..."
+          [formControl]="itemSearchbar"
+        />
+      </form>
+
+      <div class="filters-container">
+        <div
+          class="filter"
+          *ngFor="let filter of searchFilters; let filterIndex = index"
+          [ngClass]="{
+            selected: activatedSearchFilters[filter.key]
+          }"
+          (click)="activateOrDeactivateFilters(filter.key)"
+        >
+          {{ filter.label }}
+        </div>
+      </div>
+    </div>
+
+    <main>
+      <form
+        class="search-bar-wrapper"
+        style="margin-bottom: 21px"
+        *ngIf="!searchOpened"
+      >
+        <input
+          type="text"
+          (click)="showSearch()"
+          name="item-search"
+          class="input search-bar"
+          placeholder="Buscar..."
+          [formControl]="itemSearchbar"
+        />
+      </form>
+
+      <section *ngIf="itemsISell.length > 0">
+        <h3>ARTICULOS QUE ESTOY EXHIBIENDO A LOS MIEMBROS</h3>
+
+        <div class="list-of-items">
+          <div
+            class="item-wrapper"
+            *ngFor="let item of itemsISell; let itemIndex = index"
+          >
+            <ng-container
+              *ngTemplateOutlet="
+                itemCard;
+                context: {
+                  item: item,
+                  itemIndex: itemIndex,
+                  providedByMe: true
+                }
+              "
+            ></ng-container>
+          </div>
+        </div>
+      </section>
+
+      <section *ngIf="itemsIDontSell.length > 0">
+        <h3>ARTICULOS QUE NECESITAN LAS FLORISTERIAS MIEMBROS</h3>
+
+        <div class="list-of-items">
+          <div
+            class="item-wrapper"
+            *ngFor="let item of itemsIDontSell; let itemIndex = index"
+          >
+            <ng-container
+              *ngTemplateOutlet="
+                itemCard;
+                context: {
+                  item: item,
+                  itemIndex: itemIndex,
+                  providedByMe: false
+                }
+              "
+            ></ng-container>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer *ngIf="!searchOpened">
+      Comparte y vende lo que estás exhibiéndo
+    </footer>
+  </div>
+</app-navigation>
+
+<ng-template
+  #itemCard
+  let-item="item"
+  let-itemIndex="itemIndex"
+  let-providedByMe="providedByMe"
+>
+  <div class="item-card">
+    <div class="left-column" (click)="(null)">
+      <div
+        class="product-image"
+        [ngStyle]="{
+          backgroundColor: 'white',
+          backgroundImage: item.images?.length
+            ? 'url(' +
+              item.images[0].value +
+              '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+            : 'url(/assets/images/noimage.png)',
+          backgroundPosition: 'center',
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat'
+        }"
+      ></div>
+    </div>
+
+    <div class="middle-column fixedWidth" (click)="(null)">
+      <div class="item-name">{{ item.name }}</div>
+      <div class="item-description">{{ item.description }}</div>
+      <div class="item-price">
+        <ng-container *ngIf="item.pricing !== null">
+          ${{ item.pricing | number : "1.2-2" }}
+        </ng-container>
+      </div>
+    </div>
+
+    <div class="item-quantity" *ngIf="providedByMe">
+      <div class="quantity">
+        <span
+          mat-button
+          class="button icon"
+          (click)="
+            item.stock >= 1 ? changeAmount(item, 'subtract', itemIndex) : null
+          "
+        >
+          {{ item.stock > 1 ? "-" : "" }}
+          <mat-icon
+            *ngIf="item.stock === 1"
+            style="font-size: 19px; width: 23px"
+            >delete</mat-icon
+          >
+        </span>
+
+        <span style="position: relative; bottom: 2px">{{
+          !item.stock ? 0 : item.stock
+        }}</span>
+
+        <span
+          mat-button
+          class="button icon"
+          (click)="changeAmount(item, 'add', itemIndex)"
+          >+</span
+        >
+      </div>
+    </div>
+
+    <div
+      class="right-column"
+      *ngIf="!providedByMe"
+      (click)="createItemBasedOnExistingSupplierItems(item)"
+    >
+      <div class="edit-btn">
+        <span>Exhibir</span>
+      </div>
+    </div>
+  </div>
+</ng-template>

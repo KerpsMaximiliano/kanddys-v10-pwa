@@ -72,12 +72,18 @@ export class ProviderItemsManagementComponent implements OnInit {
   constructor(
     private itemsService: ItemsService,
     private saleflowService: SaleFlowService,
-    private merchantsService: MerchantsService,
+    public merchantsService: MerchantsService,
     private router: Router,
     private headerService: HeaderService
   ) {}
 
   async ngOnInit() {
+    const isTheUserAnAdmin = this.headerService.user.roles.find(
+      (role) => role.code === 'ADMIN'
+    );
+
+    if (!isTheUserAnAdmin) this.router.navigate(['auth/login']);
+
     for (const filter of this.searchFilters) {
       this.activatedSearchFilters[filter.key] = false;
     }
@@ -254,7 +260,9 @@ export class ProviderItemsManagementComponent implements OnInit {
           if (!image.value.includes('http'))
             image.value = 'https://' + image.value;
         });
-        itemsQueryResult[itemIndex].images = item.images.sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
+        itemsQueryResult[itemIndex].images = item.images.sort(
+          ({ index: a }, { index: b }) => (a > b ? 1 : -1)
+        );
       });
 
       if (itemsQueryResult.length === 0 && this.paginationState.page === 1) {
