@@ -9,6 +9,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 })
 export class SymbolEditorComponent implements OnInit {
   env : string = environment.assetsUrl;
+  toggleSwitch : boolean = false;
   constructor() {}
 
   ngOnInit(): void {
