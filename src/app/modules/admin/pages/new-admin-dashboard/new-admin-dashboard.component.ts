@@ -1221,4 +1221,12 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
       this.categoryById[category._id] = category;
     }
   }
+
+  goToOrderFilters() {
+    return this.router.navigate(['/admin/order-filtering',]);
+  }
+
+  goToOrderProgress() {
+    return this.router.navigate(['/admin/order-progress',]);
+  }
 }
