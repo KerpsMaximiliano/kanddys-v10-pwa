@@ -132,17 +132,21 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
     private headerService: HeaderService,
     private ngNavigatorShareService: NgNavigatorShareService,
     private queryParameterService: QueryparametersService,
-    private clipboard: Clipboard
+    private clipboard: Clipboard,
+    private _bottomSheet: MatBottomSheet
   ) {}
 
   async ngOnInit() {
+    //TODO: Delete this
+    this.authService.signin('584242630354', '123', true);
+
     this.queryParamsSubscription = this.route.queryParams.subscribe(
       async ({ view, showItems, jsondata, supplierMode }) => {
         supplierMode = JSON.parse(supplierMode || 'false');
         this.encodedJSONData = jsondata;
         this.mode = !supplierMode ? 'STANDARD' : 'SUPPLIER';
 
-        if(this.encodedJSONData) {
+        if (this.encodedJSONData) {
           this.parseMagicLinkData();
         }
 
@@ -468,8 +472,9 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
   async addNewArticle() {
     if (!this.headerService.flowRouteForEachPage)
       this.headerService.flowRouteForEachPage = {};
-    
-      this.headerService.flowRouteForEachPage['dashboard-to-supplier-creation'] = this.router.url;
+
+    this.headerService.flowRouteForEachPage['dashboard-to-supplier-creation'] =
+      this.router.url;
 
     if (this.mode === 'STANDARD')
       this.router.navigate(['ecommerce/item-management']);
@@ -1217,5 +1222,155 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
     for (const category of this.allCategories) {
       this.categoryById[category._id] = category;
     }
+  }
+
+  openEstimatedDeliveryDialog() {
+    this._bottomSheet.open(OptionsMenuComponent, {
+      data: {
+        title: `⏰ Artículos según la hora de entrega en Santo Domingo`,
+        options: [
+          {
+            value: `En menos de 2 horas`,
+            callback: async () => {
+              const itemsFiltered = await this.saleflowService.listItems({
+                findBy: {
+                  estimatedDeliveryTime: {
+                    until: 2,
+                  },
+                },
+              });
+              this.allItems = itemsFiltered.listItems;
+            },
+          },
+          {
+            value: `En menos de 8 horas`,
+            callback: async () => {
+              const itemsFiltered = await this.saleflowService.listItems({
+                findBy: {
+                  estimatedDeliveryTime: {
+                    until: 8,
+                  },
+                },
+              });
+              this.allItems = itemsFiltered.listItems;
+            },
+          },
+          {
+            value: `En menos de 30 horas`,
+            callback: async () => {
+              const itemsFiltered = await this.saleflowService.listItems({
+                findBy: {
+                  estimatedDeliveryTime: {
+                    until: 30,
+                  },
+                },
+              });
+              this.allItems = itemsFiltered.listItems;
+            },
+          },
+          {
+            value: `Entre 30 a 48 horas`,
+            callback: async () => {
+              const itemsFiltered = await this.saleflowService.listItems({
+                findBy: {
+                  estimatedDeliveryTime: {
+                    from: 30,
+                    until: 48,
+                  },
+                },
+              });
+              this.allItems = itemsFiltered.listItems;
+            },
+          },
+          {
+            value: `Más de 48 horas`,
+            callback: async () => {
+              const itemsFiltered = await this.saleflowService.listItems({
+                findBy: {
+                  estimatedDeliveryTime: {
+                    from: 48,
+                  },
+                },
+              });
+              this.allItems = itemsFiltered.listItems;
+            },
+          },
+        ],
+        styles: {
+          fullScreen: true,
+        },
+      },
+    });
+  }
+
+  openPriceRangeDialog() {
+    this._bottomSheet.open(OptionsMenuComponent, {
+      data: {
+        title: `💰 Artículos según el precio`,
+        options: [
+          {
+            value: `$0.00 - $2,000`,
+            callback: async () => {
+              const itemsFiltered = await this.saleflowService.listItems({
+                filter: {
+                  maxPricing: 2000,
+                },
+              });
+              console.log(itemsFiltered);
+            },
+          },
+          {
+            value: `$2,000 - $4,000`,
+            callback: async () => {
+              const itemsFiltered = await this.saleflowService.listItems({
+                filter: {
+                  minPricing: 2000,
+                  maxPricing: 4000,
+                },
+              });
+              console.log(itemsFiltered);
+            },
+          },
+          {
+            value: `$4,000 - $6,000`,
+            callback: async () => {
+              const itemsFiltered = await this.saleflowService.listItems({
+                filter: {
+                  minPricing: 4000,
+                  maxPricing: 6000,
+                },
+              });
+              console.log(itemsFiltered);
+            },
+          },
+          {
+            value: `$6,000 - $8,000`,
+            callback: async () => {
+              const itemsFiltered = await this.saleflowService.listItems({
+                filter: {
+                  minPricing: 6000,
+                  maxPricing: 8000,
+                },
+              });
+              console.log(itemsFiltered);
+            },
+          },
+          {
+            value: `$8,000+`,
+            callback: async () => {
+              const itemsFiltered = await this.saleflowService.listItems({
+                filter: {
+                  minPricing: 8000,
+                },
+              });
+              console.log(itemsFiltered);
+            },
+          },
+        ],
+        styles: {
+          fullScreen: true,
+        },
+      },
+    });
   }
 }
