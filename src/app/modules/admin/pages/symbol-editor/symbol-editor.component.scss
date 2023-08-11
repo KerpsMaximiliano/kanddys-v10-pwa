@@ -3,7 +3,6 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  height: 100%;
   background: #F2F2F2;
 }
 
@@ -18,10 +17,17 @@ nav {
   padding: 0 17px;
 }
 
+.subnav {
+  display: flex;
+  height: 46px;
+  align-items: center;
+}
+
 .exit {
-  font-family: Inter;
+  font-family: InterLight;
   font-weight: 300;
   font-size: 24px;
+  margin-right: 11px;
   color: #C4C5C3;
   cursor: pointer;
 }
@@ -31,6 +37,11 @@ nav {
   font-family: InterBold;
   font-size: 17px;
   font-weight: 700;
+  margin-right: 29px;
+}
+
+.toggle {
+  margin-right: 30px;
 }
 
 :host ::ng-deep .mat-slide-toggle .mat-slide-toggle-bar {
@@ -46,7 +57,7 @@ nav {
 }
 
 :host ::ng-deep .mat-slide-toggle.mat-checked .mat-slide-toggle-thumb-container {
-  transform: translate3d(-5px,0,0) !important;
+  transform: translate3d(5px,0,0) !important;
 }
 
 :host ::ng-deep .mat-slide-toggle .mat-slide-toggle-thumb-container {
@@ -63,7 +74,7 @@ nav {
 
 :host ::ng-deep .mat-slide-toggle.mat-checked .mat-slide-toggle-thumb {
   background-color: #ECF0F1 !important;
-  transform: translate3d(-5px,0,0) !important;
+  transform: translate3d(5px,0,0) !important;
 }
 
 :host ::ng-deep .mat-slide-toggle .mat-slide-toggle-ripple {
@@ -76,12 +87,11 @@ nav {
 }
 
 .symbol-warning {
-  width: 391px;
+  margin: 12px 21px 0 21px;
   height: 70px;
   flex-shrink: 0;
   border-radius: 7px;
   background: #702015;
-  margin-top: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -92,7 +102,7 @@ nav {
 .symbol-warning p {
   color: #F6F6F6;
   text-align: center;
-  font-family: Inter;
+  font-family: InterBold;
   font-size: 17px;
   font-style: normal;
   font-weight: 700;
@@ -100,12 +110,12 @@ nav {
 }
 
 .container {
-  width: 390px;
+  width: 100%;
   margin-top: 21px;
 }
 
 .info-card {
-  width: 100%;
+  margin: 0 21px 0 21px;
   height: 80px;
   border-radius: 4px;
   background: #FFF;
@@ -129,6 +139,19 @@ nav {
   margin: 0;
 }
 
+.placeholder-container {
+  display: flex;
+  width: 110px;
+  justify-content: space-between;
+}
+
+.placeholder {
+  border-radius: 2px;
+  background-color: #936105;
+  height: 25px;
+  width: 25px;
+}
+
 .explanatory {
   color: #7B7B7B;
   text-align: center;
@@ -141,11 +164,10 @@ nav {
 }
 
 .long-span {
-  width: 386px;
   border-top: 1px solid #000;
   display: block;
-  margin-top: 20px;
-  margin-bottom: 19px;
+  width: 90%;
+  margin: 20px 21px 19px 20px;
 }
 
 .data-title {
@@ -156,6 +178,7 @@ nav {
   font-weight: 300;
   line-height: normal;
   margin-bottom: 8px;
+  margin-left: 21px;
 }
 
 .input-card {
@@ -164,8 +187,7 @@ nav {
   display: flex;
   border-radius: 4px;
   align-items: center;
-  margin-bottom: 5px;
-  margin-top: 4px;
+  margin: 4px 21px 5px 21px;
   padding-left: 18px;
   padding-right: 13px;
   display: flex;
@@ -174,9 +196,9 @@ nav {
 
 .input-text {
   color: #000;
-  font-family: Inter;
-  font-size: 17px;
+  font-family: InterLight;
   font-style: italic;
+  font-size: 17px;
   font-weight: 300;
   line-height: normal;
 }
@@ -191,6 +213,8 @@ nav {
 }
 
 .preview {
+  display: flex;
+  align-items: center;
   background: #FFF;
   height: 40px;
   width: 100%;

@@ -1,18 +1,32 @@
 <div class="main-container">
   <nav>
-    <a class="exit">X</a>
-    <p class="title">🎗️ Causa de la recaudación</p>
-    <mat-slide-toggle>
-    </mat-slide-toggle>
-    <img src="{{env}}/info-icon.svg" />
+    <div class="subnav">
+      <a class="exit">X</a>
+      <p class="title">🎗️ Causa de la recaudación</p>
+    </div>
+    <div class="subnav">
+      <mat-slide-toggle
+        class="toggle"
+        [checked] = "toggleSwitch"
+        (change) = "toggleSwitch = !toggleSwitch"
+      >
+      </mat-slide-toggle>
+      <img src="{{env}}/info-icon.svg" />
+    </div>
   </nav>
-  <div class="symbol-warning">
+  <div *ngIf="!toggleSwitch" class="symbol-warning">
     <p>El simbolo de su causa esta oculto por falta de información</p>
   </div>
   <!--In the case that data has already been input, these should render-->
   <div class="container">
     <div class="info-card">
       <p class="card-title">Slides Visuales</p>
+      <div class="placeholder-container">
+        <div class="placeholder"></div>
+        <div class="placeholder"></div>
+        <div class="placeholder"></div>
+        <div class="placeholder"></div>
+      </div>
     </div>
     <div class="info-card">
       <p class="card-title">Categorias donde se exhibe</p>
