@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-monetizations',
@@ -6,7 +7,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./monetizations.component.scss']
 })
 export class MonetizationsComponent implements OnInit {
-
+  env : string = environment.assetsUrl;
+  toggleSwitch: boolean = false;
   constructor() { }
 
   ngOnInit(): void {
