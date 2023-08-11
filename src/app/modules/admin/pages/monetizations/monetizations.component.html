@@ -1,1 +1,17 @@
-<p>monetizations works!</p>
+<div class="main-container">
+  <nav>
+    <div class="subnav">
+      <a class="exit">X</a>
+      <p class="title">Monetizaciones</p>
+    </div>
+    <div class="subnav">
+      <mat-slide-toggle
+        class="toggle"
+        [checked] = "toggleSwitch"
+        (change) = "toggleSwitch = !toggleSwitch"
+      >
+      </mat-slide-toggle>
+      <img src="{{env}}/info-icon.svg" />
+    </div>
+  </nav>
+</div>
