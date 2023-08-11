@@ -137,9 +137,6 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
-    //TODO: Delete this
-    this.authService.signin('584242630354', '123', true);
-
     this.queryParamsSubscription = this.route.queryParams.subscribe(
       async ({ view, showItems, jsondata, supplierMode }) => {
         supplierMode = JSON.parse(supplierMode || 'false');
@@ -1316,7 +1313,7 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
                   maxPricing: 2000,
                 },
               });
-              console.log(itemsFiltered);
+              this.allItems = itemsFiltered.listItems;
             },
           },
           {
@@ -1328,7 +1325,7 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
                   maxPricing: 4000,
                 },
               });
-              console.log(itemsFiltered);
+              this.allItems = itemsFiltered.listItems;
             },
           },
           {
@@ -1340,7 +1337,7 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
                   maxPricing: 6000,
                 },
               });
-              console.log(itemsFiltered);
+              this.allItems = itemsFiltered.listItems;
             },
           },
           {
@@ -1352,7 +1349,7 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
                   maxPricing: 8000,
                 },
               });
-              console.log(itemsFiltered);
+              this.allItems = itemsFiltered.listItems;
             },
           },
           {
@@ -1363,7 +1360,7 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
                   minPricing: 8000,
                 },
               });
-              console.log(itemsFiltered);
+              this.allItems = itemsFiltered.listItems;
             },
           },
         ],
