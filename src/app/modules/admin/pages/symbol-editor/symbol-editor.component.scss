@@ -25,7 +25,6 @@ nav {
 
 .exit {
   font-family: InterLight;
-  font-weight: 300;
   font-size: 24px;
   margin-right: 11px;
   color: #C4C5C3;
@@ -36,7 +35,6 @@ nav {
   color: #272727;
   font-family: InterBold;
   font-size: 17px;
-  font-weight: 700;
   margin-right: 29px;
 }
 
@@ -105,7 +103,6 @@ nav {
   font-family: InterBold;
   font-size: 17px;
   font-style: normal;
-  font-weight: 700;
   line-height: normal;
 }
 
@@ -127,7 +124,6 @@ nav {
   font-family: InterLight;
   font-size: 13px;
   font-style: italic;
-  font-weight: 300;
   padding-top: 14px;
 }
 
@@ -135,7 +131,6 @@ nav {
   color: #7B7B7B;
   font-family: InterBold;
   font-size: 17px;
-  font-weight: 700;
   margin: 0;
 }
 
@@ -158,8 +153,6 @@ nav {
   font-family: InterLight;
   font-size: 17px;
   font-style: italic;
-  font-weight: 400;
-  line-height: normal;
   width: 394px;
 }
 
@@ -175,7 +168,6 @@ nav {
   font-family: InterLight;
   font-size: 13px;
   font-style: normal;
-  font-weight: 300;
   line-height: normal;
   margin-bottom: 8px;
   margin-left: 21px;
@@ -199,8 +191,6 @@ nav {
   font-family: InterLight;
   font-style: italic;
   font-size: 17px;
-  font-weight: 300;
-  line-height: normal;
 }
 
 .input-button {
@@ -219,11 +209,11 @@ nav {
   height: 40px;
   width: 100%;
   color: #272727;
+}
+
+.preview a {
   font-family: Inter;
   font-size: 17px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal; 
   padding-left: 18px;
   cursor: pointer;
 }
