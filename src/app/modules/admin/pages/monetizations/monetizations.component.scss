@@ -42,6 +42,10 @@ nav {
   margin-right: 30px;
 }
 
+.icon {
+  filter: brightness(0) saturate(100%);
+}
+
 :host ::ng-deep .mat-slide-toggle .mat-slide-toggle-bar {
   background-color: #702015 !important;
   border: 4px solid #BDC3C7 !important;
@@ -85,13 +89,14 @@ nav {
 }
 
 .explanatory {
-  width: 395px;
+  width: 100%;
   color: #7B7B7B;
   text-align: center;
   font-family: InterLight;
   font-size: 17px;
   font-style: italic;
   margin: 23px 0;
+  padding: 0 21px;
 }
 
 .info-container {
