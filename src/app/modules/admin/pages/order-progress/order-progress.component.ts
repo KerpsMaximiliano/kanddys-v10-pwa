@@ -5,6 +5,7 @@ import { OrderService } from 'src/app/core/services/order.service';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { shortFormatID } from 'src/app/core/helpers/strings.helpers'
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-order-progress',
@@ -23,6 +24,7 @@ export class OrderProgressComponent implements OnInit {
   constructor(
     private merchantsService: MerchantsService,
     private orderService: OrderService,
+    private router: Router
   ) {}
 
   orders = []
@@ -73,25 +75,26 @@ export class OrderProgressComponent implements OnInit {
     const selectedProgress = this.progress.map(p => {
       if (p.selected) return p.name
     })
-    return this.orders.filter(order => selectedProgress.indexOf(order.orderStatusDelivery) >=0 )
+    const filteredOrders = this.orders.filter(order => selectedProgress.indexOf(order.orderStatusDelivery) >= 0 )
+    return filteredOrders.length > 0 ? filteredOrders : this.orders;
   }
 
   async generate() {
 
     lockUI()
 
-    const {_id} = await this.merchantsService.merchantDefault();
+    const { _id } = await this.merchantsService.merchantDefault();
     console.log("merchant _id", _id)
     
     const pagination: PaginationInput = {
       findBy: {
-        orderStatus: "in progress",
+        orderStatus: ["to confirm", "completed"],
         // orderStatusDelivery: this.progress.map(progress => { 
         //   if (progress.selected) return progress.name
         // })
       },
       options: {
-        limit: -1,
+        limit: 25,
         sortBy: 'createdAt:desc'
       },
     };
@@ -105,6 +108,23 @@ export class OrderProgressComponent implements OnInit {
     console.log(orders);
 
     unlockUI()
+  }
+
+  goToOrderDetail(orderID: string) {
+    return this.router.navigate(
+      [
+        `/ecommerce/order-detail/${orderID}`
+      ],
+      {
+        queryParams: {
+          redirectTo: this.router.url
+        }
+      }
+    );
+  }
+
+  back() {
+    return this.router.navigate(['/admin/dashboard']);
   }
 
 }
