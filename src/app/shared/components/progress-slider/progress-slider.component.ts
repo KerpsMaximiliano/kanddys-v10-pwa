@@ -7,7 +7,7 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class ProgressSliderComponent implements OnInit {
 
-  @Input() title: string = "Title";
+  @Input() title: string = "";
   @Input() activeIndex: number = 0;
   @Input() statusList: Array<{
     name: string;

@@ -53,6 +53,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { ContactService } from 'src/app/core/services/contact.service';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ContactHeaderComponent } from 'src/app/shared/components/contact-header/contact-header.component';
+import * as moment from 'moment';
+
 
 interface Image {
   src: string;
@@ -325,15 +327,7 @@ export class OrderDetailComponent implements OnInit {
     this.orderStatus = this.orderService.getOrderStatusName(
       this.order.orderStatus
     );
-    const temporalDate = new Date(this.order.createdAt);
-    this.orderDate = temporalDate.toLocaleString('es-MX', {
-      hour12: true,
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    this.orderDate = moment(this.order.createdAt).format("DD MMM YYYY, h:mm:ss a" )
 
     if (!this.headerService.merchantContact) {
       this.headerService.merchantContact = (
