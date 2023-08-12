@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AmbassadorStoreComponent } from './ambassador-store.component';
+import { AdminCartsComponent } from './admin-carts.component';
 
-describe('AmbassadorStoreComponent', () => {
-  let component: AmbassadorStoreComponent;
-  let fixture: ComponentFixture<AmbassadorStoreComponent>;
+describe('AdminCartsComponent', () => {
+  let component: AdminCartsComponent;
+  let fixture: ComponentFixture<AdminCartsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AmbassadorStoreComponent ]
+      declarations: [ AdminCartsComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AmbassadorStoreComponent);
+    fixture = TestBed.createComponent(AdminCartsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,0 +1,73 @@
+<div class="page-container">
+  <header class="page-header">
+    <div class="btn-group">
+      <button type="button" class="btn-info">
+        <img src="../../../../../assets/icons/info.svg" alt="" />
+      </button>
+      <button class="btn-add" type="button">
+        <img src="../../../../../assets/icons/plus-white.svg" alt="" />
+      </button>
+    </div>
+    <div class="group">
+      <p>El KiosKo 💰 de mi 💚</p>
+      <button type="button" class="btn-burger">
+        <div></div>
+        <div></div>
+        <div></div>
+      </button>
+    </div>
+  </header>
+  <div class="page-body">
+    <div class="searchbar-container">
+      <input type="text" class="searchbar" placeholder="Buscar..." />
+      <p>
+        <button type="button">⏰</button>
+        <button type="button">💰</button>
+        <button type="button">🏷️</button>
+        <button type="button">🖇️️</button>
+      </p>
+    </div>
+    <p class="information">
+      {{headerData?.noSale}} sin venderse. {{headerData?.disabled}} ocultos. {{headerData?.lowStock}} con poca disponibilidad. {{totalRecords}} en total
+    </p>
+    <section class="form-group form-optional-function" >
+      <div class="card" *ngFor="let data of dashboardData">
+        <div class="card-container">
+          <div class="left">
+            <div class="info">
+              <p class="card-title">{{data?.name}}</p>
+              <p class="card-text">
+                {{data.description}}
+              </p>
+            </div>
+            <p class="card-text-extra">💰 con {{data.merchant?.name}}</p>
+          </div>
+          <div class="right">
+            <img
+              [src]="data.image[0].value"
+              alt="img"
+              loading="lazy"
+            />
+          </div>
+        </div>
+        <footer class="card-footer">
+          <p class="price">RD$ {{data.pricing | CurrencyPipe}}</p>
+          <button type="button" *ngIf="data.status === 'active'">
+            <img
+              src="../../../../../assets/icons/heart-green-filled.svg"
+              alt="show"
+            />
+          </button>
+          <button type="button" *ngIf="data.status !== 'active'">
+            OCULTO
+            <img src="../../../../../assets/icons/heart-green.svg" alt="hidden" />
+          </button>
+        </footer>
+      </div>
+    </section>
+  </div>
+  <footer class="page-footer">
+    <p>Preview de mi KiosKo</p>
+    <p>🎗️</p>
+  </footer>
+</div>

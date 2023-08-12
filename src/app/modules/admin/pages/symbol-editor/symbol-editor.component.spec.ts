@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AmbassadorStoreComponent } from './ambassador-store.component';
+import { SymbolEditorComponent } from './symbol-editor.component';
 
-describe('AmbassadorStoreComponent', () => {
-  let component: AmbassadorStoreComponent;
-  let fixture: ComponentFixture<AmbassadorStoreComponent>;
+describe('SymbolEditorComponent', () => {
+  let component: SymbolEditorComponent;
+  let fixture: ComponentFixture<SymbolEditorComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AmbassadorStoreComponent ]
+      declarations: [ SymbolEditorComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AmbassadorStoreComponent);
+    fixture = TestBed.createComponent(SymbolEditorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
