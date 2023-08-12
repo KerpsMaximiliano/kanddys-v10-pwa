@@ -97,6 +97,7 @@ import { UserEntryComponent } from './pages/user-entry/user-entry.component';
 import { AmbassadorDashboardComponent } from './pages/ambassador-dashboard/ambassador-dashboard.component';
 import { NewAdminDashboardComponent } from './pages/new-admin-dashboard/new-admin-dashboard.component';
 import { ProviderItemsManagementComponent } from './pages/provider-items-management/provider-items-management.component';
+import { MonetizationsComponent } from './pages/monetizations/monetizations.component';
 import { CurrencyFormatPipe } from 'src/app/core/pipes/currency-format.pipe';
 import { MerchantOffersComponent } from './pages/merchant-offers/merchant-offers.component';
 import { AdminCartsComponent } from './pages/admin-carts/admin-carts.component';
@@ -601,8 +602,12 @@ const routes: Routes = [
   },
   {
     path: 'user-entry',
-    component: UserEntryComponent,
+    component: UserEntryComponent
   },
+  {
+    path: 'monetizations',
+    component: MonetizationsComponent
+  }
 ];
 
 @NgModule({
@@ -683,6 +688,7 @@ const routes: Routes = [
     AmbassadorDashboardComponent,
     NewAdminDashboardComponent,
     ProviderItemsManagementComponent,
+    MonetizationsComponent,
     MerchantOffersComponent,
     AdminCartsComponent,
   ],
