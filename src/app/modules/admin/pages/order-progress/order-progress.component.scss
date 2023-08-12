@@ -15,6 +15,7 @@
   justify-content: space-between;
 
   .close-icon {
+    cursor: pointer;
     color: #c4c5c3;
     font-size: 28px;
     height: 28px;
@@ -104,6 +105,7 @@
 }
 
 .content-card {
+  cursor: pointer;
   width: 100%;
   padding-top: 11px;
   padding-left: 18px;

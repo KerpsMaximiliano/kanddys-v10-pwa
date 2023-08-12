@@ -612,3 +612,17 @@ export const ordersCommissionableItemsCount = gql`
     ordersCommissionableItemsCount (userId: $userId, merchantId: $merchantId)
   }
 `;
+
+export const merchantGroupByType = gql`
+query merchantGroupByType($input: PaginationInput){
+  merchantGroupByType(paginate: $input)
+}`;
+
+
+export const merchantGroupFiltersQuantity = gql`
+query merchantGroupFiltersQuantity($merchantId: ObjectID!, $type: String){
+  merchantGroupFiltersQuantity(
+    type: $type
+    merchantId: $merchantId
+  )
+}`;

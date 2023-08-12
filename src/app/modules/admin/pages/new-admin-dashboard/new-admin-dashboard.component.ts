@@ -173,12 +173,15 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
   initializeItemsAndTagsData = async () => {
     Promise.all([this.getTags(), this.getCategories()]);
 
+    this.getSoldItems();
+
     await this.inicializeItems(true, false, true, true);
+    this.getSoldItems();
+    
     /*
     this.getTags();
     this.getQueryParameters();
     this.getHiddenItems();
-    this.getSoldItems();
     this.getItemsThatHaventBeenSold();*/
     this.itemSearchbar.valueChanges.subscribe(
       async (change) => await this.inicializeItems(true, false)
@@ -1217,5 +1220,13 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
     for (const category of this.allCategories) {
       this.categoryById[category._id] = category;
     }
+  }
+
+  goToOrderFilters() {
+    return this.router.navigate(['/admin/order-filtering',]);
+  }
+
+  goToOrderProgress() {
+    return this.router.navigate(['/admin/order-progress',]);
   }
 }
