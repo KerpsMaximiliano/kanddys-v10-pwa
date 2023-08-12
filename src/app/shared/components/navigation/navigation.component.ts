@@ -246,6 +246,10 @@ export class NavigationComponent implements OnInit {
 
           this.tabs.push(this.providerTab);
           this.tabs.push(this.sellerTab);
+
+          if(this.isCurrentUserAnAdmin) {
+            this.tabs.unshift(this.adminTab);
+          }
         });
     }
 
@@ -300,6 +304,8 @@ export class NavigationComponent implements OnInit {
           this.sellerTab.active = true;
         } else if (this.tabByName[this.tabs[tabIndex].text] === 'PROVIDERS') {
           this.providerTab.active = true;
+        } else if (this.tabByName[this.tabs[tabIndex].text] === 'ADMIN') {
+          this.adminTab.active = true;
         }
       } else {
         this.tabs[tabIndex].active = false;
@@ -308,9 +314,15 @@ export class NavigationComponent implements OnInit {
           this.sellerTab.active = false;
         } else if (this.tabByName[this.tabs[tabIndex].text] === 'PROVIDERS') {
           this.providerTab.active = false;
+        } else if (this.tabByName[this.tabs[tabIndex].text] === 'ADMIN') {
+          this.adminTab.active = false;
         }
       }
     });
+
+    if(this.isCurrentUserAnAdmin) {
+      this.tabs.unshift(this.adminTab);
+    }
   }
 
   async checkIfUserIsAProviderOrASeller() {
@@ -319,7 +331,6 @@ export class NavigationComponent implements OnInit {
     );
     if (isTheUserAnAdmin) {
       this.isCurrentUserAnAdmin = true;
-      this.tabs.push(this.adminTab);
     }
 
     const normalItemsPagination: PaginationInput = {
