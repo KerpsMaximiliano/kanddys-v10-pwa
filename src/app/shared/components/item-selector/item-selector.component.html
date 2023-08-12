@@ -128,7 +128,7 @@
       <input
         class="checkbox"
         type="checkbox"
-        [formControlName]="i"
+        [formControlName]="filteredItemIndexInTheFullItemArray[i]"
         *ngIf="
           createdCheckboxes && currentView === 'ALL_ITEMS' && !supplierMode
         "

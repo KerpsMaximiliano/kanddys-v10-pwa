@@ -46,6 +46,7 @@ export class ItemSelectorComponent implements OnInit {
     searchbar: [''],
     checkboxes: this.formBuilder.array([]),
   });
+  filteredItemIndexInTheFullItemArray: Record<number, number> = []; //itemstoshow index 4 => items index 1
   createdCheckboxes: boolean = false;
   currentView: 'ALL_ITEMS' | 'SELECTED_ITEMS' = 'ALL_ITEMS';
   quotation: Quotation = null;
@@ -155,9 +156,11 @@ export class ItemSelectorComponent implements OnInit {
 
               this.currentView = 'SELECTED_ITEMS';
 
-              this.itemsToShow = this.items.filter((item) =>
+              this.itemsToShow = JSON.parse(JSON.stringify(this.items)).filter((item) =>
                 this.selectedItems.includes(item._id)
               );
+
+              this.assignCheckboxesIndexes();
             } else {
               //New quotations based on existing supplier items
               this.mode = this.headerService.isUserLogged()
@@ -191,10 +194,12 @@ export class ItemSelectorComponent implements OnInit {
 
                 this.currentView = 'SELECTED_ITEMS';
 
-                this.itemsToShow = this.items.filter((item) =>
+                this.itemsToShow = JSON.parse(JSON.stringify(this.items)).filter((item) =>
                   this.selectedItems.includes(item._id)
                 );
               }
+
+              this.assignCheckboxesIndexes();
             }
           } catch (error) {
             console.error(error);
@@ -219,9 +224,15 @@ export class ItemSelectorComponent implements OnInit {
               this.itemsToShow.forEach((item, index) => {
                 //checkboxes.push(this.formBuilder.control(false));
                 if (selectedItemIds[item._id]) {
-                  this.setValueAtIndex(index, true);
+                  this.setValueAtIndex(
+                    this.filteredItemIndexInTheFullItemArray[index],
+                    true
+                  );
                 } else {
-                  this.setValueAtIndex(index, false);
+                  this.setValueAtIndex(
+                    this.filteredItemIndexInTheFullItemArray[index],
+                    false
+                  );
                 }
               });
             }
@@ -236,7 +247,7 @@ export class ItemSelectorComponent implements OnInit {
               if (value === '') {
                 this.itemsToShow = JSON.parse(JSON.stringify(this.items));
               } else {
-                this.itemsToShow = this.items.filter(
+                this.itemsToShow = JSON.parse(JSON.stringify(this.items)).filter(
                   (item) =>
                     item.name?.toLowerCase().includes(value.toLowerCase()) ||
                     item.description
@@ -244,6 +255,7 @@ export class ItemSelectorComponent implements OnInit {
                       .includes(value.toLowerCase())
                 );
               }
+              this.assignCheckboxesIndexes();
 
               if (this.selectedItems.length) {
                 const selectedItemIds = {};
@@ -252,7 +264,7 @@ export class ItemSelectorComponent implements OnInit {
                   (selectedItem) => (selectedItemIds[selectedItem] = true)
                 );
 
-                this.itemsToShow.forEach((item, index) => {
+                this.items.forEach((item, index) => {
                   //checkboxes.push(this.formBuilder.control(false));
                   if (selectedItemIds[item._id]) {
                     this.setValueAtIndex(index, true);
@@ -269,6 +281,16 @@ export class ItemSelectorComponent implements OnInit {
           }
         }
       );
+    });
+  }
+
+  assignCheckboxesIndexes() {
+    this.filteredItemIndexInTheFullItemArray = {};
+    this.items.forEach((item, index) => {
+      this.itemsToShow.forEach((itemInFilteredList, index2) => {
+        if (itemInFilteredList._id === item._id)
+          this.filteredItemIndexInTheFullItemArray[index2] = index;
+      });
     });
   }
 
@@ -319,12 +341,7 @@ export class ItemSelectorComponent implements OnInit {
     this.quotationService.selectedItemsForQuotation = [];
 
     value.forEach((isSelected, index) => {
-      const isIncludedInItemsToShow = this.itemsToShow.find(
-        (item) => isSelected && item._id === this.items[index]._id
-      );
-
-      if (isIncludedInItemsToShow)
-        this.selectedItems.push(this.items[index]._id);
+      if (isSelected) this.selectedItems.push(this.items[index]._id);
     });
 
     this.quotationService.selectedItemsForQuotation = this.selectedItems;
@@ -335,12 +352,14 @@ export class ItemSelectorComponent implements OnInit {
       this.currentView === 'ALL_ITEMS' ? 'SELECTED_ITEMS' : 'ALL_ITEMS';
 
     if (this.currentView === 'SELECTED_ITEMS') {
-      this.itemsToShow = this.items.filter((item) =>
+      this.itemsToShow = JSON.parse(JSON.stringify(this.items)).filter((item) =>
         this.selectedItems.includes(item._id)
       );
     } else {
       this.itemsToShow = JSON.parse(JSON.stringify(this.items));
     }
+
+    this.assignCheckboxesIndexes();
 
     if (this.selectedItems.length) {
       const selectedItemIds = {};
@@ -352,9 +371,15 @@ export class ItemSelectorComponent implements OnInit {
       this.itemsToShow.forEach((item, index) => {
         //checkboxes.push(this.formBuilder.control(false));
         if (selectedItemIds[item._id]) {
-          this.setValueAtIndex(index, true);
+          this.setValueAtIndex(
+            this.filteredItemIndexInTheFullItemArray[index],
+            true
+          );
         } else {
-          this.setValueAtIndex(index, false);
+          this.setValueAtIndex(
+            this.filteredItemIndexInTheFullItemArray[index],
+            false
+          );
         }
       });
     }

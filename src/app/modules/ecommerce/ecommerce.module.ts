@@ -67,6 +67,7 @@ import { ItemCreationComponent } from './pages/item-creation/item-creation.compo
 import { FormCreatorComponent } from 'src/app/shared/components/form-creator/form-creator.component';
 import { ItemsSlidesEditorComponent } from 'src/app/shared/components/items-slides-editor/items-slides-editor.component';
 import { ProviderItemsComponent } from './pages/provider-items/provider-items.component';
+import { ClubLandingComponent } from './pages/club-landing/club-landing.component';
 
 const routes: Routes = [
   {
@@ -247,6 +248,10 @@ const routes: Routes = [
   {
     path: 'provider-items',
     component: ProviderItemsComponent
+  },
+  {
+    path: 'club-landing',
+    component: ClubLandingComponent
   },
   {
     path: ':merchantSlug',
@@ -437,7 +442,8 @@ const routes: Routes = [
     InventoryCreatorComponent,
     ConfirmQuotationComponent,
     ItemCreationComponent,
-    ProviderItemsComponent
+    ProviderItemsComponent,
+    ClubLandingComponent
   ],
   imports: [
     CommonModule,
