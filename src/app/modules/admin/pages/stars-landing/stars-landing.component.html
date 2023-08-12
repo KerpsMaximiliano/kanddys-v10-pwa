@@ -1,0 +1,67 @@
+<app-navigation [opened]="openNavigation" (closed)="openNavigation = false">
+<div class="container">
+  <div class="header">
+    <div class="header-top-container">
+      <img src="../../../../../assets/icons/triangle.svg" />
+      <div class="flex" (click)="openNavigation = !openNavigation">
+        <p class="header-top-text">Programa de ✨ para 🚀</p>
+        <mat-icon>menu</mat-icon>
+      </div>
+    </div>
+    <p class="header-text">Haz sentir queridos a tus compradores</p>
+    <p class="header-secondary-text">“A quién no le gustan las recompensas?”</p>
+  </div>
+  <div class="content">
+    <p class="content-text" *ngIf="active">Configuración de la recompensa:</p>
+    <p class="content-text" *ngIf="!active">Responde para empezar:</p>
+    <div class="content-box content-first-box" *ngIf="!active" (click)="openForm()">
+      ¿% del monto facturado que ganará el comprador? 
+    <p>0%</p>
+    </div>
+    <div class="content-box content-first-box" *ngIf="active" (click)="openForm()">
+      El comprador gana el {{merchantFunctionality.reward.rewardPercentage*100 + '%'}} de lo que facture.
+    </div>
+    <div class="content-box " *ngIf="!active" (click)="openForm()">
+     ¿Descuento de la recompensa? 
+    <p>$0.00</p>
+    </div>
+    <div class="content-box" *ngIf="active" (click)="openForm()">
+      Recompensas al comprador con {{merchantFunctionality.reward.amountBuyer | currency}}
+    </div>
+    <p class="desc-text" *ngIf="!active" >
+      El comprador irá acomulando ✨ para eventualmente canjearlas por el
+      descuento.
+    </p>
+    <p class="desc-text" *ngIf="active">
+      Tus compradores ganan 50 ✨ por cada $1.00 que facturen y alcanzarán la
+      suma de 1,000 ✨ para poder canjearlas.
+    </p>
+<div>
+  <p class="content-items-title"> Tienda</p>
+  <div class="content-item" (click)="copyClipboard()">
+      Copia el link
+    </div>
+    <div class="content-item" (click)="downloadQr()">
+      Descarga el QR
+    </div>
+    <div class="content-item" (click)="share()">
+     Compártela
+    </div>
+    <div class="content-item" (click)="navigate()">
+      Mirala como la ven los compradores
+    </div>
+    <qrcode style="display: none;"
+    #qrcodeTemplate
+    [qrdata]="getUrl()"
+    [elementType]="'img'"
+    [width]="500"
+    [style.margin-top.px]="-25"
+    [errorCorrectionLevel]="'M'"
+    [allowEmptyString]="true"
+    colorDark="#000000"
+    (click)="downloadQr()"
+    ></qrcode>
+  </div>
+  </div>
+</div>
+</app-navigation>

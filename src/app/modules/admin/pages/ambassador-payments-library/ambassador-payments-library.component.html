@@ -1,0 +1,9 @@
+<div class="container">
+<div class="header">
+    <mat-icon>chevron_left</mat-icon>
+    <p>Pagos de EmbajadorID</p>
+</div> 
+<div class="content" *ngFor="let user of users">
+    <app-card-image [paid]="true" [title]="getTitle(user.user[0])" [paymentText]="formatDate(user.createdAt)" [barText]="getComission(user.amount)" [imageUrl]="user.img"></app-card-image>
+</div>
+</div>

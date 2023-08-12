@@ -38,6 +38,10 @@ import {
   itemUpdateImage,
   itemTotalPagination,
   itemsByMerchantNosale,
+  salesPositionOfItemByMerchant,
+  buyersByItemInMerchantStore,
+  itemsQuantityOfFilters,
+  providersItemMetrics,
 } from '../graphql/items.gql';
 import {
   Item,
@@ -55,6 +59,8 @@ import { PaginationInput } from '../models/saleflow';
 import { ListParams } from '../types/general.types';
 import { ExtendedQuestionInput } from 'src/app/shared/components/form-creator/form-creator.component';
 import { SlideInput } from '../models/post';
+import { Tag } from '../models/tags';
+import { CommunityCategory } from '../models/community-categories';
 
 export interface ExtendedItemInput extends ItemInput {
   slides?: Array<SlideInput>;
@@ -76,9 +82,26 @@ export class ItemsService {
   itemDesc: string;
   itemPassword: string;
   editingImageId: string;
-  editingSlide: number;
+  editingSlide: number = null;
   questionsToAddToItem: Array<ExtendedQuestionInput> = [];
   modifiedImagesFromExistingItem: boolean = false;
+  createUserAlongWithItem: boolean = false;
+  tagDataForTheItemEdition: {
+    allTags: Array<Tag>;
+    tagsInItem: Record<string, boolean>;
+    tagsById: Record<string, Tag>;
+    itemTagsIds: Array<string>;
+    tagsString: string;
+    tagsToCreate: Array<Tag>;
+  };
+  categoriesDataForTheItemEdition: {
+    allCategories: Array<ItemCategory>;
+    categoriesInItem: Record<string, boolean>;
+    categoryById: Record<string, ItemCategory>;
+    itemCategoriesIds: Array<string>;
+    categoriesString: string;
+    categoriesToCreate: Array<ItemCategory>;
+  };
 
   storeTemporalItem(item: any) {
     this.temporalItem = item;
@@ -251,10 +274,44 @@ export class ItemsService {
     }
   }
 
+  async salesPositionOfItemByMerchant(
+    itemID: string,
+    paginate: PaginationInput
+  ): Promise<number> {
+    try {
+      const response = await this.graphql.query({
+        query: salesPositionOfItemByMerchant,
+        variables: { itemID, paginate },
+        fetchPolicy: 'no-cache',
+      });
+      return response?.salesPositionOfItemByMerchant;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async buyersByItemInMerchantStore(
+    itemID: string,
+    paginate: PaginationInput
+  ): Promise<number> {
+    try {
+      const response = await this.graphql.query({
+        query: buyersByItemInMerchantStore,
+        variables: { itemID, paginate },
+        fetchPolicy: 'no-cache',
+      });
+      return response?.buyersByItemInMerchantStore;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   async totalByItem(
     merchantId: string,
     itemId?: string[]
-  ): Promise<{ item: Item; itemInOrder: number; total: number;itemUnits:number }[]> {
+  ): Promise<
+    { item: Item; itemInOrder: number; total: number; itemUnits: number }[]
+  > {
     try {
       const response = await this.graphql.query({
         query: totalByItem,
@@ -337,10 +394,13 @@ export class ItemsService {
   }
 
   // Agregar categoria
-  async createItemCategory(input: ItemCategoryInput): Promise<ItemCategory> {
+  async createItemCategory(
+    input: ItemCategoryInput,
+    isAdmin = false
+  ): Promise<ItemCategory> {
     const result = await this.graphql.mutate({
       mutation: createItemCategory,
-      variables: { input },
+      variables: { isAdmin, input },
       context: { useMultipart: true },
     });
     if (!result || result?.errors) return undefined;
@@ -536,4 +596,43 @@ export class ItemsService {
     if (!result) return;
     return result;
   }
+
+  itemsQuantityOfFilters = async (
+    merchantId: string,
+    typeOfItem: string = null
+  ): Promise<{
+    all: number;
+    archived: number;
+    commissionable: number;
+    hidden: number;
+    lowStock: number;
+    noSale: number;
+  }> => {
+    try {
+      const response = await this.graphql.query({
+        query: itemsQuantityOfFilters, //add listItems to gqls,
+        variables: { merchantId, typeOfItem },
+        fetchPolicy: 'no-cache',
+      });
+      if (!response) return;
+
+      return response?.itemsQuantityOfFilters;
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  providersItemMetrics = async (): Promise<any> => {
+    try {
+      const response = await this.graphql.query({
+        query: providersItemMetrics, //add listItems to gqls,
+        fetchPolicy: 'no-cache',
+      });
+      if (!response) return;
+
+      return response?.providersItemMetrics;
+    } catch (e) {
+      console.log(e);
+    }
+  };
 }

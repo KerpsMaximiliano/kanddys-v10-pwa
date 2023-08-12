@@ -283,7 +283,7 @@ export class StoreComponent implements OnInit {
   openTagsDialog() {
     this._bottomSheet.open(TagFilteringComponent, {
       data: {
-        title: 'Tags de artículos',
+        title: 'Categorías de artículos',
         // rightCTA: {
         //   text: "Todas",
         //   callback: () => {
@@ -301,6 +301,75 @@ export class StoreComponent implements OnInit {
     );
   }
 
+  openEstimatedDeliveryDialog() {
+    this._bottomSheet.open(OptionsMenuComponent, {
+      data: {
+        title: `⏰ Artículos según la hora de entrega en Santo Domingo`,
+        options: [
+          {
+            value: `En menos de 2 horas`,
+            callback: () => {
+              this.saleflowService.notifyTrigger({
+                triggerID: 'estimatedDelivery',
+                data: {
+                  until: 2
+                },
+              });
+            },
+          },
+          {
+            value: `En menos de 8 horas`,
+            callback: () => {
+              this.saleflowService.notifyTrigger({
+                triggerID: 'estimatedDelivery',
+                data: {
+                  until: 8
+                },
+              });
+            },
+          },
+          {
+            value: `En menos de 30 horas`,
+            callback: () => {
+              this.saleflowService.notifyTrigger({
+                triggerID: 'estimatedDelivery',
+                data: {
+                  until: 30
+                },
+              });
+            },
+          },
+          {
+            value: `Entre 30 a 48 horas`,
+            callback: () => {
+              this.saleflowService.notifyTrigger({
+                triggerID: 'estimatedDelivery',
+                data: {
+                  from: 30,
+                  until: 48
+                },
+              });
+            },
+          },
+          {
+            value: `Más de 48 horas`,
+            callback: () => {
+              this.saleflowService.notifyTrigger({
+                triggerID: 'estimatedDelivery',
+                data: {
+                  from: 48
+                },
+              });
+            },
+          },
+        ],
+        styles: {
+          fullScreen: true,
+        },
+      },
+    });
+  }
+
   onTagSelectionChange(selectedCategories: any[]) {
     console.log(selectedCategories);
     this.saleflowService.notifyTrigger({
@@ -313,14 +382,11 @@ export class StoreComponent implements OnInit {
     console.log(event.target.value);
     const value = event.target.value;
     setTimeout(() => {
-      // Obtener el valor del input de búsqueda
-      if (value !== '') {
-        console.log("Enviando keyword");
-        this.saleflowService.notifyTrigger({
-          triggerID: 'search',
-          data: value,
-        });
-      }
+      console.log("Enviando keyword");
+      this.saleflowService.notifyTrigger({
+        triggerID: 'search',
+        data: value
+      });
     }, 500);
   }
 

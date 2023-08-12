@@ -180,8 +180,16 @@ export const createMerchant = gql`
 `;
 
 export const entryMerchant = gql`
-  mutation entryMerchant($merchantID: ObjectID!, $merchantInput: MerchantInput, $userInput: UserInput) {
-    entryMerchant(merchantID: $merchantID, merchantInput: $merchantInput, userInput: $userInput)
+  mutation entryMerchant(
+    $merchantID: ObjectID!
+    $merchantInput: MerchantInput
+    $userInput: UserInput
+  ) {
+    entryMerchant(
+      merchantID: $merchantID
+      merchantInput: $merchantInput
+      userInput: $userInput
+    )
   }
 `;
 
@@ -484,3 +492,137 @@ export const higherIncomeBuyersByMerchant = gql`
     higherIncomeBuyersByMerchant(paginate: $paginate)
   }
 `;
+
+export const currencyStartByMerchant = gql`
+  query currencyStartByMerchant($merchantId: ObjectID!) {
+    currencyStartByMerchant(merchantId: $merchantId)
+  }
+`;
+
+export const merchantFuncionality = gql`
+  query merchantFuncionality($merchantId: ObjectID!) {
+    merchantFuncionality(merchantId: $merchantId) {
+      _id
+      merchant
+      reward {
+        active
+        expiryMonth
+        expires
+        rewardPercentage
+        rewardPercentageReferral
+        buyersLimit
+        amountBuyer
+        affiliateLimit
+        amountAffiliate
+        solidaryLimit
+        amountSolidary
+      }
+      queryPercentage
+      minOrder
+      maxOrder
+      countOrder
+      payPlataformFee
+      questionDeliveryZone{
+        value
+      }
+    }
+  }
+`;
+
+export const walletsByCurrency = gql`
+  query walletsByCurrency($paginate: PaginationInput!) {
+    walletsByCurrency(paginate: $paginate) {
+      _id
+      balance
+      metadata {
+        usesStars
+        isRedeemable
+      }
+      currency {
+        merchant {
+          _id
+          name
+        }
+      }
+      owner {
+        _id
+      }
+      createdAt
+    }
+  }
+`;
+
+export const updateMerchantFuncionality = gql`
+mutation updateMerchantFuncionality($input: MerchantFuncionalityInput!,$merchantId:ObjectID!) {
+  updateMerchantFuncionality(input: $input,merchantId:$merchantId){
+    _id
+      merchant
+      reward {
+        active
+        expiryMonth
+        expires
+        rewardPercentage
+        rewardPercentageReferral
+        buyersLimit
+        amountBuyer
+        affiliateLimit
+        amountAffiliate
+        solidaryLimit
+        amountSolidary
+      }
+  }
+}
+`;
+
+export const paginateUsers = gql`
+  query paginateUsers($input: PaginationInput!) {
+    paginateUsers(input: $input) {
+      results {
+        _id
+        name
+        email
+        phone
+        createdAt
+      }
+    }
+  }
+`;
+
+export const payUserStarAffiliate = gql`
+  mutation payUserStarAffiliate(
+    $screenshot: Upload!
+    $paymentMethod: String!
+    $userId: ObjectID!
+    $merchantId: ObjectID!
+  ) {
+    payUserStarAffiliate(
+      screenshot: $screenshot
+      paymentMethod: $paymentMethod
+      userId: $userId
+      merchantId: $merchantId
+    ) {
+      _id
+      ammount
+    }
+  }
+`;
+
+export const ordersCommissionableItemsCount = gql`
+  query ordersCommissionableItemsCount ($userId: [ObjectID!]!, $merchantId: ObjectID!) {
+    ordersCommissionableItemsCount (userId: $userId, merchantId: $merchantId)
+  }
+`;
+
+export const merchantGroupByType = gql`
+query merchantGroupByType($input: PaginationInput){
+  merchantGroupByType(paginate: $input)
+}`;
+
+
+export const merchantGroupFiltersQuantity = gql`
+query merchantGroupFiltersQuantity($merchantId: ObjectID!, $type: String){
+  merchantGroupFiltersQuantity(
+    type: $type
+    merchantId: $merchantId
+  )
+}`;

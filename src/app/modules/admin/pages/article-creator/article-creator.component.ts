@@ -78,6 +78,7 @@ export class ArticleCreatorComponent implements OnInit {
   canvasElement: HTMLCanvasElement;
   public context: CanvasRenderingContext2D;
   redirectFromFlowRoute: boolean = false;
+  isTheUserAnAdmin: boolean = false;
 
   constructor(
     private ngZone: NgZone,
@@ -114,7 +115,13 @@ export class ArticleCreatorComponent implements OnInit {
       }
       this.item = await this._ItemsService.item(itemId);
       if (!this.item) this.goBack();
-      if (this.item.merchant._id !== this._MerchantsService.merchantData._id) {
+
+      const isTheUserAnAdmin = this._HeaderService.user?.roles?.find(
+        (role) => role.code === 'ADMIN'
+      );
+      if (isTheUserAnAdmin) this.isTheUserAnAdmin = true;
+
+      if (this.item.merchant._id !== this._MerchantsService.merchantData._id && !isTheUserAnAdmin) {
         this._Router.navigate(['../../'], {
           relativeTo: this._ActivatedRoute,
         });

@@ -293,6 +293,8 @@ export class QuotationBidsComponent implements OnInit {
             this.merchantsService.merchantData?._id;
         }
 
+        console.log("queryParams", queryParams);
+
         //console.log('/ecommerce/supplier-register/' + this.quotation._id);
         return this.router.navigate(
           ['/ecommerce/supplier-register/' + this.quotation._id],
@@ -401,6 +403,8 @@ export class QuotationBidsComponent implements OnInit {
   }
 
   async editQuotation() {
+    this.headerService.flowRouteForEachPage['quotations-link'] = this.router.url;
+
     if (this.typeOfQuotation === 'DATABASE_QUOTATION') {
       if (!this.headerService.user) {
         let quotationInput: QuotationInput = {
@@ -409,6 +413,12 @@ export class QuotationBidsComponent implements OnInit {
         };
 
         this.createTemporalQuotationBasedOnCurrentQuotation(quotationInput);
+
+        this.router.navigate(['/ecommerce/supplier-items-selector/'], {
+          queryParams: {
+            updatingTemporalQuotation: true,
+          },
+        });
 
         this.matSnackBar.open('Se ha creado un carrito nuevo!', 'Cerrar', {
           duration: 3000,

@@ -1,0 +1,263 @@
+<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
+  <div
+    class="dashboard-page container"
+    (scroll)="infinitePagination('LIST-VIEW')"
+  >
+    <header class="header">
+      <button
+        mat-icon-button
+        style="margin-right: 25px"
+        (click)="openAddButtonOptionsMenu()"
+      >
+        <mat-icon [ngStyle]="{ color: 'white' }">add</mat-icon>
+
+        <!--
+            <div
+              class="tooltip"
+              *ngIf="
+                hiddenItems?.length === 0 &&
+                soldItems?.length === 0 &&
+                notSoldItems?.length === 0 &&
+                allItemsCopy?.length === 0
+              "
+            >
+              <span>¡Empieza ya creando tu primer artículo!</span>
+              <div class="arrow"></div>
+            </div>
+        -->
+      </button>
+      <button class="header-btn" (click)="openHeaderDotOptions()">
+        <img [src]="assetsURL + '/dots-black.svg'" alt="" />
+      </button>
+
+      <img
+        (click)="toggleStoreVisibility()"
+        class="toggle-icon"
+        [src]="
+          assetsURL +
+          (!saleflowService.saleflowData?.status ||
+          saleflowService.saleflowData?.status === 'open'
+            ? '/toggle-on.svg'
+            : '/toggle-off.svg')
+        "
+      />
+
+      <button
+        style="
+          color: #87cd9b;
+          font-size: 17px;
+          font-family: InterBold;
+          margin-left: auto;
+        "
+        (click)="drawerOpened = true"
+      >
+        Mi KiosKo 💰
+        <mat-icon style="color: #6fcf97; margin-left: 8px">menu</mat-icon>
+      </button>
+    </header>
+
+    <main>
+      <ng-container [ngSwitch]="view">
+        <ng-container *ngSwitchCase="'LIST'">
+          <div
+            class="disabled"
+            *ngIf="saleflowService.saleflowData?.status === 'closed'"
+          >
+            El KiosKo lo tienes cerrado
+          </div>
+
+          <form class="search-bar-wrapper">
+            <input
+              type="text"
+              name="item-search"
+              (click)="changeView('SEARCH')"
+              class="input search-bar"
+              placeholder="Buscar..."
+              [formControl]="itemSearchbar"
+              *ngIf="showSearchbar"
+            />
+
+            <div class="filters">
+                <div class="option" (click)="goToOrderProgress()">⏰</div>
+                <div class="option" (click)="goToOrderFilters()">💰</div>
+              <div
+                class="option"
+                *ngIf="allTags.length > 0"
+                (click)="openTagsDialog()"
+              >
+                🏷️
+              </div>
+
+              <!--
+                <div
+                  class="option"
+                  *ngIf="allCategories.length > 0"
+                  (click)="openCategoriesDialog()"
+                >
+                  🖇️️
+                </div>
+              -->
+            </div>
+          </form>
+
+          <div class="items-metrics">
+            {{ itemsMetricsToDisplay.noSale }} sin venderse.
+            {{ itemsMetricsToDisplay.hidden }} ocultos.
+            {{ itemsMetricsToDisplay.lowStock }} con poca disponibilidad.
+            {{ itemsMetricsToDisplay.commissionable }} comisionables.
+            {{ itemsMetricsToDisplay.all }} en total
+          </div>
+
+          <div class="items-wrapper">
+            <div class="items-flex" *ngIf="allItems.length">
+              <div
+                class="capsize"
+                *ngFor="let item of allItems; let itemIndex = index"
+              >
+                <div class="item-wrapper">
+                  <app-item-admin-card
+                    [item]="item"
+                    [unitSalesCounter]="
+                      itemsSelledCountByItemId[item._id]
+                        ? itemsSelledCountByItemId[item._id]
+                        : 0
+                    "
+                    [hideDotsOptions]="true"
+                  ></app-item-admin-card>
+                </div>
+              </div>
+            </div>
+
+            <div
+              [ngStyle]="{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                height: '80px',
+                justifyContent: 'center'
+              }"
+              *ngIf="paginationState.status === 'loading'"
+            >
+              <app-dot-loader></app-dot-loader>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'SEARCH'">
+          <div
+            class="search-container"
+            (scroll)="infinitePagination('SEARCH-VIEW')"
+          >
+            <div class="close-wrapper">
+              <button class="close" (click)="changeView('LIST')">X</button>
+
+              <form class="search-bar-wrapper">
+                <input
+                  type="text"
+                  id="search-from-results-view"
+                  name="item-search"
+                  class="input search-bar"
+                  placeholder="Buscar..."
+                  [formControl]="itemSearchbar"
+                  *ngIf="showSearchbar"
+                />
+              </form>
+
+              <section class="search-section">
+                <h3 class="section-title">ARTICULOS</h3>
+
+                <ng-container
+                  *ngTemplateOutlet="
+                    itemsGrid;
+                    context: {
+                      arrayOfItems: allItems
+                    }
+                  "
+                ></ng-container>
+              </section>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+    </main>
+
+    <footer>
+      <button class="left" (click)="goToStore()">Preview</button>
+      <button class="right" (click)="shareStore()">Comparte</button>
+    </footer>
+
+    <qrcode
+      style="display: none"
+      #storeQrCode
+      [qrdata]="
+        URI +
+        '/ecommerce/' +
+        saleflowService.saleflowData?.merchant?.slug +
+        '/store'
+      "
+      [elementType]="'img'"
+      [width]="40"
+      [errorCorrectionLevel]="'M'"
+      [allowEmptyString]="true"
+      colorDark="#000"
+    ></qrcode>
+  </div>
+</app-navigation>
+
+<ng-template #itemsGrid let-arrayOfItems="arrayOfItems">
+  <div class="items-container" *ngIf="arrayOfItems.length > 0">
+    <div
+      class="item"
+      *ngFor="let item of arrayOfItems; let i = index"
+      [routerLink]="['/ecommerce/item-management/', item._id]"
+    >
+      <ng-container
+        *ngIf="
+          item.images?.length && isVideoWrapper(item.images[0].value);
+          else images
+        "
+      >
+        <div class="item-card" style="background-color: black">
+          <img
+            src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
+            alt="play"
+            (click)="playVideoOnFullscreen('media' + i)"
+            class="playVideoIcon"
+            style="
+              padding: 1.5rem !important;
+              z-index: 99;
+              z-index: 99;
+              left: 0;
+              right: 0;
+              max-width: 80px;
+              min-width: 70px;
+            "
+          />
+
+          <video
+            class="video-content"
+            [id]="'media' + i"
+            [muted]="true"
+            [src]="item.images[0].value"
+          ></video>
+        </div>
+      </ng-container>
+
+      <ng-template #images>
+        <div
+          class="item-card"
+          [ngStyle]="{
+            backgroundImage: item.images?.length
+              ? 'url(' + item.images[0].value + ')'
+              : 'url(/assets/images/noimage.png)',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            backgroundSize: 'cover'
+          }"
+        ></div>
+      </ng-template>
+
+      <div class="item-text">{{ item.name }}</div>
+    </div>
+  </div>
+</ng-template>

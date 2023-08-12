@@ -44,6 +44,22 @@
     width: 100%;
     height: 100%;
 
+    &.existingItemContainer {
+      padding-top: 18px;
+    }
+
+    .intro-text {
+      color: #7b7b7b;
+      text-align: center;
+      font-family: InterRegular;
+      font-size: 17px;
+      font-style: normal;
+      font-weight: 300;
+      line-height: normal;
+      margin: 0px;
+      margin-bottom: 40px;
+    }
+
     .img-input {
       width: 146px;
       height: 166px;
@@ -102,12 +118,18 @@
       }
 
       input,
-      textarea {
+      textarea,
+      span {
         border: none;
         font-size: 17px;
         font-family: InterBold;
 
         &::placeholder {
+          color: #7b7b7b;
+        }
+
+        &:disabled {
+          background-color: #fff;
           color: #7b7b7b;
         }
       }
@@ -193,6 +215,7 @@
 ::ng-deep.mat-expansion-panel {
   box-shadow: unset !important;
   background-color: #fff !important;
+  margin-bottom: 8px !important;
 }
 
 ::ng-deep.mat-expansion-panel-header:hover {
@@ -216,7 +239,7 @@
 }
 
 .layout-row {
-  margin-top: 12px;
+  margin-top: 8px;
 }
 
 .layouts-options {
@@ -288,7 +311,7 @@ footer {
   bottom: 0;
   max-width: 500px;
   width: 100%;
-  background-color: #87CD9B;
+  background-color: #87cd9b;
   padding: 11px 17px;
   display: flex;
   justify-content: space-between;
@@ -296,9 +319,9 @@ footer {
   font-size: 17px;
   button {
     border: none;
-    background-color: #87CD9B;
+    background-color: #87cd9b;
     font-size: 17px;
-    color: #181D17;
+    color: #181d17;
     font-family: InterMedium;
 
     &:hover {
@@ -312,24 +335,33 @@ footer {
   .right {
     font-family: InterBold;
   }
+
+  &.existingItem {
+    background-color: #fff;
+
+    button {
+      background-color: #fff;
+      color: #181d17;
+    }
+  }
 }
 
 .disabled-item-container {
-  border-radius: 7px;
-  background: #702015;
   height: 53px;
   width: 100%;
   color: #f6f6f6;
   text-align: center;
-  font-family: InterMedium;
+  font-family: InterBold;
   font-size: 17px;
   font-style: normal;
   font-weight: 700;
   line-height: normal;
   display: flex;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 40px;
   justify-content: center;
+  border-radius: 7px;
+  background: #936105;
 }
 
 //REDISEÑO
@@ -382,4 +414,102 @@ section {
       cursor: pointer;
     }
   }
+}
+
+.notification-limit {
+  color: #7b7b7b;
+  font-family: InterLight;
+  font-size: 13px;
+  font-style: italic;
+  font-weight: 300;
+  line-height: normal;
+  margin: 0px;
+  margin-top: 6px;
+}
+
+.content-inventary-detail {
+  color: #7b7b7b;
+  font-family: InterLight;
+  font-size: 13px;
+  font-style: italic;
+  font-weight: 300;
+  line-height: normal;
+  margin: 0;
+  margin-top: 6px;
+}
+
+.content-optionals-fuctions {
+  color: #000;
+  font-family: InterLight;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 300;
+  line-height: normal;
+  margin-bottom: 0;
+  margin-top: 70px;
+  margin-bottom: 12px;
+}
+
+.delete-icon {
+  margin-left: auto;
+  margin-top: -2px;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.recent-item-info {
+  position: absolute;
+  bottom: 10px;
+  left: 0px;
+  right: 0px;
+  margin: auto;
+  color: #181d17;
+  text-align: center;
+  font-family: InterBold;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
+
+.bubble-button-wrapper {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  margin: auto;
+  max-width: 500px;
+  bottom: 52px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.bubble-button {
+  z-index: 999;
+  margin-right: 26px;
+  width: 63px;
+  height: 63px;
+  background-color: #87cd9b;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+
+  img {
+    transform: rotate(180deg);
+    width: 25.28px;
+    height: 25.28px;
+  }
+}
+
+
+::ng-deep .confirmation-dialog .mat-dialog-container {
+  padding: 24px !important;
+  background: #fff !important;
 }

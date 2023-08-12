@@ -2,7 +2,7 @@
   margin: 0;
 }
 
-::ng-deep .cdk-overlay-pane {
+::ng-deep .tag-filtering .cdk-overlay-pane {
   width: 100%;
   max-width: 500px !important;
 }
@@ -11,7 +11,6 @@
   padding: 24px;
   padding-top: 0;
   width: 100%;
-  min-width: 90%;
   // margin: auto;
   box-shadow: 0 8px 10px -5px #0003, 0 16px 24px 2px #00000024,
     0 6px 30px 5px #0000001f;
@@ -31,6 +30,13 @@
     font-size: 40px;
     width: 40px;
     height: 40px;
+  }
+
+  .icons {
+    color: var(--el-verdecito, #87cd9b);
+    font-size: 32.381px;
+    width: fit-content;
+    font-weight: bold;
   }
 }
 
@@ -60,7 +66,6 @@
 }
 
 .modal-category {
- 
   color: #f6f6f6;
   font-family: InterMedium;
   font-size: 16px;
@@ -74,10 +79,10 @@
   border-radius: 29px;
 }
 
-.modal-category-selected{
- color: #181d17;
- background: #C4C5C3;
- font-weight: 700;
+.modal-category-selected {
+  color: #181d17;
+  background: #c4c5c3;
+  font-weight: 700;
 }
 
 ::ng-deep.mat-bottom-sheet-container {

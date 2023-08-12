@@ -27,6 +27,39 @@ import { SwiperOptions } from 'swiper';
 import { FormComponent, FormData } from '../../dialogs/form/form.component';
 import { FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslateService } from '@ngx-translate/core';
+import { environment } from 'src/environments/environment';
+
+interface NavigationTab {
+  headerText: string;
+  text: string;
+  active?: boolean;
+  links?: Array<{
+    text: string;
+    routerLink: Array<string>;
+    possibleRedirection?: Array<string>;
+    queryParams?: Record<string, any>;
+    possibleRedirectionQueryParams?: Record<string, any>;
+    hardcodedURL?: string;
+    linkName: string;
+  }>;
+  textList?: Array<{
+    title?: string;
+    content: string;
+  }>;
+  footer?: {
+    button: {
+      text: string;
+      callback: any;
+    };
+    swiper?: {
+      title: string;
+      slides: Array<{
+        content: string;
+      }>;
+    };
+  };
+}
 
 @Component({
   selector: 'app-navigation',
@@ -38,266 +71,90 @@ export class NavigationComponent implements OnInit {
   @Output() closed = new EventEmitter();
   quotations: Array<Quotation> = [];
   loggedUser: boolean = false;
+  isCurrentUserASeller: boolean = false;
   isCurrentUserASupplier: boolean = false;
+  isCurrentUserAnAdmin: boolean = false;
+  activeTabIndex: number = 0;
+  assetsFolder: string = environment.assetsUrl;
 
   tabName = {
     CLUB: 'El Club',
     ME: 'Yo',
-    FLORISTS: 'Mi floristeria',
+    FLORISTS: 'Floristeria',
     PROVIDERS: 'Proveedor',
+    ADMIN: 'Super Admin',
   };
 
   tabByName = {
     'El Club': 'CLUB',
     Yo: 'ME',
-    'Mi floristeria': 'FLORISTS',
+    Floristeria: 'FLORISTS',
     Proveedor: 'PROVIDERS',
+    'Super Admin': 'ADMIN',
   };
 
-  tabs: Array<{
-    headerText: string;
-    text: string;
-    active?: boolean;
-    links?: Array<any>;
-    textList?: Array<{
-      title?: string;
-      content: string;
-    }>;
-    footer?: {
-      button: {
-        text: string;
-        callback: any;
-      };
-      swiper?: {
-        title: string;
-        slides: Array<{
-          content: string;
-        }>;
-      };
-    };
-  }> = [
-    {
-      headerText: 'Proveedor de ✨',
-      text: this.tabName['ME'],
-      active: true,
-      links: [
-        {
-          text: 'Registrar nuevos afiliados 📒',
-          routerLink: ['/admin/merchants-entry'],
-        },
-      ],
-    },
-    {
-      headerText:
-        'Es un ecosistema digital en constante desarrollo, diseñado para proporcionar soluciones a los desafíos que enfrentan las floristerías y sus proveedores.',
-      text: this.tabName['CLUB'],
-      active: false,
-      links: [],
-      textList: [
-        {
-          title: 'Gestión de las Ordenes',
-          content:
-            'Mantén el control de las ordenes desde tu celular. Mira las ordenes según su estado y notificale a tus clientes por WhatsApp o correo electrónico.',
-        },
-        {
-          title: 'Cotización Eficiente con Proveedores',
-          content:
-            'Accede a una amplia red de proveedores de flores y obtén cotizaciones para tus compras. Compara y elige la oferta más conveniente para ti, maximizando tus ganancias.',
-        },
-        {
-          title: 'Gestión Simplificada de Compras',
-          content:
-            'Convierte las cotizaciones de los proveedores en compras con un solo clic, manteniendo un seguimiento detallado para optimizar tus beneficios.',
-        },
-        {
-          title: 'Inteligencia Artificial',
-          content:
-            'una bot entrenada a tu floristería para ahorrarte tiempo a ti o a tu personal de servicio y ser consistentes en el mensaje que reciben tus clientes.',
-        },
-        {
-          title: 'Ventas con #hashtag',
-          content:
-            'asigna un #hashtag a tus artículos para que desde el Bio de tu Instagram tus compradores aterricen directo a comprar.',
-        },
-        {
-          title: 'Ventas por WhatsApp',
-          content:
-            'Sube tus productos fácilmente y vende directamente a través de WhatsApp.Conecta con tus clientes donde ya se encuentran.',
-        },
-        {
-          title: 'Experiencia Mejorada para tus Clientes',
-          content:
-            'Permite a tus clientes añadir videos a sus mensajes dedicatorios, añadiendo un toque personal único a sus regalos.',
-        },
-        {
-          title: 'Tarifas de Entrega Personalizadas',
-          content:
-            'Ajusta tus tarifas de entrega en función de la zona de entrega, maximizando tus ingresos.',
-        },
-        {
-          title: 'Marketing Segmentado',
-          content:
-            'Cuenta con una base de datos segmentada de tus compradores, facilitándote la planificación de tus futuras campañas de marketing.',
-        },
-        {
-          title: 'Compra Fácil para los Clientes',
-          content:
-            'Tus clientes pueden comprar tus productos sin necesidad de descargar ninguna aplicación, facilitándoles la experiencia de compra.',
-        },
-        {
-          title: 'Recompensas para tus Clientes',
-          content:
-            'Ofrece incentivos a tus clientes para fomentar la fidelidad y satisfacción.',
-        },
-        {
-          title: 'Venden por Ti',
-          content:
-            'Paga comisiones a influencers e instituciones que están recaudando fondos dependiendo de las ventas enlazadas.',
-        },
-        {
-          title: 'Comunicación Efectiva',
-          content:
-            'Informa a tus clientes sobre el estado de su pedido a través de WhatsApp, proporcionando un servicio transparente y eficiente.',
-        },
-        {
-          title: '',
-          content:
-            'Giftcards de terceros (para que seas tu quien colabores y comisiones con spas, salones y restaurantes).',
-        },
-      ],
-    },
-    {
-      headerText:
-        'Vendes. Venden por ti. Recompensa a compradores. Cotiza y compra al proveedor conveniente',
-      text: this.tabName['FLORISTS'],
-      active: false,
-      links: [
-        {
-          text: 'Mi KiosKo 💰',
-          routerLink: ['/admin/dashboard'],
-        },/*
-        {
-          text: 'Recompensa a compradores ✨',
-          routerLink: ['/admin/tba'],
-        },
-        {
-          text: 'Comisiones a embajadores 📢',
-          routerLink: ['/admin/tba'],
-        },
-        {
-          text: 'Oferta de hoy de proveedores locales 🚨',
-          routerLink: ['/admin/tba'],
-        },
-        {
-          text: 'Carritos de proveedores',
-          routerLink: ['/admin/tba'],
-        },
-        {
-          text: 'Carritos de compradores',
-          routerLink: ['/admin/tba'],
-        },
-        {
-          text: 'Boletín del Genio 🧞‍♂️',
-          routerLink: ['/admin/tba'],
-        },
-        /*
-        {
-          text: 'Mi KiosKo 💰',
-          routerLink: ['/admin/dashboard'],
-        },
-        {
-          text: 'Lo vendido 🧾',
-          routerLink: ['/admin/reports/orders'],
-        },
-        {
-          text: 'Progreso de facturas ⏩',
-          routerLink: ['/admin/order-slides'],
-        },
-        {
-          text: 'Vista de compradores 👀',
-          routerLink: [
-            '/ecommerce',
-            this.merchantsService.merchantData?.slug ||
-              this.headerService.saleflow?.merchant.slug,
-            'store',
-          ],
-        },
-        {
-          text: 'Mis suplidores (compras y cotizaciones)',
-          routerLink: ['/ecommerce/supplier-items-selector'],
-          possibleRedirection: ['/ecommerce/quotations'],
-        },*/
-      ],
-      textList: [
-        {
-          title: 'Vende Fácil',
-          content: 'Desde tu celular, online y por WhatsApp',
-        },
-        {
-          title: 'Vende Más',
-          content: 'Paga comisión a los embajadores que vendieron por ti',
-        },
-        {
-          title: 'Sigue Vendiendo',
-          content: 'Recompensa a tus compradores',
-        },
-      ],
-      footer: {
-        button: {
-          text: 'Administración de mi KiosKo',
-          callback: () => {
-            this.router.navigate(['/admin/dashboard']);
-          },
-        },
+  adminTab: NavigationTab = {
+    headerText: 'Resuelve problemas a las floristerías para darle valor a la plataforma de ventas.',
+    text: this.tabName['ADMIN'],
+    active: false,
+    links: [
+      {
+        text: 'Gestión de los Artículos Globales',
+        routerLink: ['/admin/provider-items-management'],
+        linkName: 'provider-items-management',
       },
-    },
-    {
-      headerText:
-        'Alcanza a mas floristerías. Simplifica las cotizaciones y el proceso de ventas.',
-      text: this.tabName['PROVIDERS'],
-      active: false,
-      links: [
-        {
-          text: 'Mi KiosKo 💰',
-          routerLink: ['/admin/dashboard'],
+    ],
+  };
+
+  providerTab: NavigationTab = {
+    headerText:
+      'Alcanza a mas floristerías. Simplifica las cotizaciones y el proceso de ventas.',
+    text: this.tabName['PROVIDERS'],
+    active: false,
+    links: [
+      {
+        text: 'Mi KiosKo 💰',
+        routerLink: ['/admin/supplier-dashboard'],
+        queryParams: {
+          supplierMode: true,
         },
-        {
-          text: 'Carritos de compradores',
-          routerLink: ['/admin/tba'],
-        },
-        {
-          text: 'Tengo un problema',
-          routerLink: ['/admin/tba'],
-        },
-        {
-          text: 'Boletín del Genio 🧞‍♂️',
-          routerLink: ['/admin/tba'],
-        },
-      ],
-      textList: [
-        {
-          title: 'Alcanza a mas floristerías',
-          content: 'Desde tu celular, online y por WhatsApp',
-        },
-        {
-          title: 'Simplifica las cotizaciones',
-          content: 'Paga comisión a los embajadores que vendieron por ti',
-        },
-        {
-          title: 'Proceso de ventas',
-          content: 'Recompensa a tus compradores',
-        },
-      ],
-      footer: {
-        button: {
-          text: 'Administración de mis artículos',
-          callback: () => {
-            this.router.navigate(['/admin/dashboard']);
-          },
-        },
+        hardcodedURL: '/admin/supplier-dashboard?supplierMode=true',
+        linkName: 'my-dashboard',
       },
-    },
-  ];
+      {
+        text: 'Artículos de Proveedores',
+        routerLink: ['/ecommerce/provider-items'],
+        linkName: 'provider-pov-link',
+      },
+    ],
+  };
+
+  sellerTab: NavigationTab = {
+    headerText:
+      'Vendes. Venden por ti. Recompensa a compradores. Cotiza y compra al proveedor conveniente',
+    text: this.tabName['FLORISTS'],
+    active: false,
+    links: [
+      {
+        text: 'Mi KiosKo 💰',
+        routerLink: ['/admin/dashboard'],
+        linkName: 'my-dashboard',
+      },
+      {
+        text: 'Recompensa a compradores ✨',
+        routerLink: ['/admin/stars-landing'],
+        linkName: 'stars-landing',
+      },
+      {
+        text: 'Carrito del Proveedor (yo compro)',
+        routerLink: ['/ecommerce/supplier-items-selector'],
+        possibleRedirection: ['/ecommerce/quotations'],
+        linkName: 'quotations-link',
+      },
+    ],
+  };
+
+  tabs: Array<NavigationTab> = [];
 
   footerSwiperConfig: SwiperOptions = {
     slidesPerView: 1,
@@ -319,8 +176,12 @@ export class NavigationComponent implements OnInit {
     private itemsService: ItemsService,
     private router: Router,
     private matDialog: MatDialog,
+    private translate: TranslateService,
     private matSnackBar: MatSnackBar
-  ) {}
+  ) {
+    translate.setDefaultLang('en');
+    translate.use('en');
+  }
 
   async ngOnInit() {
     if (localStorage.getItem('session-token')) {
@@ -340,153 +201,149 @@ export class NavigationComponent implements OnInit {
     const isUserAMerchant =
       await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
 
-    if (!this.headerService.user || !isUserAMerchant) {
-      /*
-      this.tabs[2].links.splice(3, 1);
-      */
+    if (this.headerService.user) this.loggedUser = true;
+    else {
+      this.tabs.push(this.providerTab)
     }
 
-    if (!this.headerService.user) {
-      //tab floristeria no registrada
-      this.tabs[2].footer = {
-        button: {
-          text: 'Sube tu primer arreglo para vender',
-          callback: () => {
-            this.startArticleCreationForUnregisteredMerchant();
-          },
-        },
-        swiper: {
-          title: 'LO QUE MAS LE GUSTA A LOS MIEMBROS',
-          slides: [
-            {
-              content:
-                '“.. lo de las ventas a través de WhatsApp, mensajes de video para clientes, comunicación de estado de pedidos, y la base de datos de mis clientes segmentada”',
-            },
-            {
-              content:
-                '“.. lo fácil que es convertir cotizaciones en compras y mantener un seguimiento de todas las transacciones, me ayuda a gestionar los costos y mi inventario”',
-            },
-            {
-              content:
-                '“.. me aseguro de ahorrarme $ al obtener las cotizaciones de múltiples proveedores al mismo tiempo”',
-            },
-          ],
-        },
-      };
-    }
+    if (this.headerService.user && isUserAMerchant)
+      await this.checkIfUserIsAProviderOrASeller();
 
-    if (this.headerService.user) {
-      this.loggedUser = true;
-    }
-
-    if (this.headerService.user && isUserAMerchant) {
-      /*
-      this.tabs[2].links[3].routerLink = [
-        '/ecommerce',
-        this.merchantsService.merchantData?.slug ||
-          this.headerService.saleflow?.merchant.slug,
-        'store',
-      ];*/
-
-      const listItemsPagination: PaginationInput = {
-        findBy: {
-          merchant: this.merchantsService.merchantData._id,
-          type: 'supplier',
-        },
-        options: {
-          sortBy: 'createdAt:desc',
-          limit: -1,
-          page: 1,
-        },
-      };
-
-      const items: Array<Item> = (
-        await this.itemsService.listItems(listItemsPagination)
-      )?.listItems;
-
-      if (items.length) {
-        //If the current user is a supplier, it redirects them to the screen where they may adjust the quotation items prices and stock
-        this.isCurrentUserASupplier = true;
-      }
-    }
-
-    console.log("this.isCurrentUserASupplier", this.isCurrentUserASupplier);
-
-    if (!this.isCurrentUserASupplier) {
-      //tab proveedor no registrado
-      this.tabs[3].footer = {
-        button: {
-          text: 'Sube los artículos que te comprarán las floristerias',
-          callback: () => {
-            console.log(
-              'Comenzar flow de creacion de articulo para un proveedor'
-            );
-          },
-        },
-        swiper: {
-          title: 'LO QUE MAS LE GUSTA A LOS PROVEEDORES',
-          slides: [
-            {
-              content:
-                '“.. es que no hay manera más fácil de cotizarles a las floristerías, me ahorra tiempo y una empleada.”',
-            },
-            {
-              content:
-                '“.. las floristerías convierten las cotizaciones en compras con un solo clic y eso simplifica el proceso de venta”',
-            },
-          ],
-        },
-      };
-    }
+    //console.log('this.isCurrentUserASupplier', this.isCurrentUserASupplier);
 
     if (this.headerService.navigationTabState)
       this.tabs = this.headerService.navigationTabState;
 
     let activeTabIndex = 0;
 
+    let urlAlreadyFound: Record<string, boolean> = {};
+
     this.tabs.forEach((tab, tabIndex) => {
       const isCurrentURLInCurrentTab = tab.links.find((link, linkIndex) => {
+        const doesCurrentURLHaveQueryParams = this.router.url.includes('?');
+
         const doesRouterLinkMatchCurrentURL =
-          JSON.stringify(link.routerLink.join('/')) ===
-          JSON.stringify(this.router.url);
+          doesCurrentURLHaveQueryParams && link.queryParams && link.hardcodedURL
+            ? link.hardcodedURL === this.router.url
+            : !link.queryParams &&
+              JSON.stringify(link.routerLink.join('/')) ===
+                JSON.stringify(this.router.url);
+
         const doesPossibleRedirectionRouterLinkMatchURL =
-          link.possibleRedirection &&
-          JSON.stringify(link.possibleRedirection.join('/')) ===
-            JSON.stringify(this.router.url);
+          doesCurrentURLHaveQueryParams &&
+          link.possibleRedirectionQueryParams &&
+          link.hardcodedURL
+            ? link.hardcodedURL === this.router.url
+            : !link.possibleRedirectionQueryParams &&
+              link.possibleRedirection &&
+              JSON.stringify(link.possibleRedirection.join('/')) ===
+                JSON.stringify(this.router.url);
 
         if (doesPossibleRedirectionRouterLinkMatchURL) {
           this.tabs[tabIndex].links[linkIndex].routerLink =
             link.possibleRedirection;
+
+          if (link.possibleRedirectionQueryParams && link.hardcodedURL) {
+            this.tabs[tabIndex].links[linkIndex].queryParams =
+              link.possibleRedirectionQueryParams;
+          }
         }
 
-        return (
-          doesRouterLinkMatchCurrentURL ||
-          doesPossibleRedirectionRouterLinkMatchURL
-        );
+        if (!urlAlreadyFound[this.router.url]) {
+          return (
+            doesRouterLinkMatchCurrentURL ||
+            doesPossibleRedirectionRouterLinkMatchURL
+          );
+        }
       });
 
       if (isCurrentURLInCurrentTab) activeTabIndex = tabIndex;
     });
 
     this.tabs.forEach((tab, tabIndex) => {
-      if (tabIndex === activeTabIndex) this.tabs[activeTabIndex].active = true;
-      else this.tabs[tabIndex].active = false;
+      if (tabIndex === activeTabIndex) {
+        this.tabs[activeTabIndex].active = true;
+        this.activeTabIndex = activeTabIndex;
+      } else this.tabs[tabIndex].active = false;
     });
 
-    if (this.merchantsService.merchantData) {
-      this.quotations = await this.quotationsService.quotations({
-        findBy: {
-          merchant: this.merchantsService.merchantData._id,
-        },
-        options: { limit: -1 },
-      });
+    if (this.isCurrentUserASeller) {
+      this.quotationsService
+        .quotations({
+          findBy: {
+            merchant: this.merchantsService.merchantData._id,
+          },
+          options: { limit: -1 },
+        })
+        .then((quotations) => {
+          this.tabs = [];
 
-      if (this.quotations.length > 0) {
-        /*
-        this.tabs[2].links[this.tabs[2].links.length - 1].routerLink = [
-          '/ecommerce/quotations',
-        ];*/
-      }
+          if (quotations.length > 0) {
+            this.sellerTab.links[2].routerLink = ['/ecommerce/quotations'];
+          }
+
+          if (this.isCurrentUserASupplier) {
+            this.tabs.push(this.providerTab);
+          }
+
+          this.tabs.push(this.sellerTab);
+        });
+    }
+  }
+
+  async checkIfUserIsAProviderOrASeller() {
+    const isTheUserAnAdmin = this.headerService.user?.roles?.find(
+      (role) => role.code === 'ADMIN'
+    );
+    if (isTheUserAnAdmin) {
+      this.isCurrentUserAnAdmin = true;
+      this.tabs.push(this.adminTab);
+    }
+
+    const normalItemsPagination: PaginationInput = {
+      findBy: {
+        merchant: this.merchantsService.merchantData._id,
+        type: {
+          $ne: 'supplier',
+        },
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: 1,
+        page: 1,
+      },
+    };
+
+    const supplierItemsPagination: PaginationInput = {
+      findBy: {
+        merchant: this.merchantsService.merchantData._id,
+        type: 'supplier',
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: 1,
+        page: 1,
+      },
+    };
+
+    const [normalItemsPromiseResult, supplierItemsPromiseResult] =
+      await Promise.all([
+        this.itemsService.listItems(normalItemsPagination),
+        this.itemsService.listItems(supplierItemsPagination),
+      ]);
+
+    const normalItems: Array<Item> = normalItemsPromiseResult?.listItems;
+    const supplierItems: Array<Item> = supplierItemsPromiseResult?.listItems;
+
+    if (supplierItems.length) {
+      this.isCurrentUserASupplier = true;
+      this.tabs.push(this.providerTab);
+    }
+
+    //If the current user is a supplier, it redirects them to the screen where they may adjust the quotation items prices and stock
+    if (normalItems.length) {
+      this.isCurrentUserASeller = true;
+      this.tabs.push(this.sellerTab);
     }
   }
 
@@ -529,11 +386,14 @@ export class NavigationComponent implements OnInit {
             result?.value[field.fieldKey] &&
             result?.controls[field.fieldKey].valid
           ) {
+            this.itemsService.createUserAlongWithItem = true;
             this.itemsService.temporalItemInput[field.fieldName] =
               result?.value[field.fieldKey];
 
+            this.headerService.flowRouteForEachPage['florist-creating-item'] =
+              this.router.url;
             this.router.navigate(['/ecommerce/item-management']);
-          } else {
+          } else if (result?.value[field.fieldKey] !== undefined) {
             this.headerService.showErrorToast();
           }
         } catch (error) {
@@ -573,6 +433,23 @@ export class NavigationComponent implements OnInit {
         this.close();
       }
     });
+  }
+
+  redirectToLink(link: any) {
+    this.headerService.flowRouteForEachPage[link.linkName] = this.router.url;
+
+    //console.log("ARMANDO");
+
+    this.headerService.flowRoute = this.headerService.buildURL(
+      link.routerLink.join('/'),
+      link.queryParams ? link.queryParams : null
+    );
+
+    this.router.navigate(link.routerLink, {
+      queryParams: link.queryParams ? link.queryParams : {},
+    });
+
+    this.close();
   }
 
   @ViewChild('sidenav') sidenav: MatSidenav;

@@ -167,6 +167,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
   answerLimitOptionsForMultipleSelection = [
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
   ];
+  requiredFieldInterval: any = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -198,6 +199,10 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if (itemId && !isUserTheOwner) this.router.navigate(['/auth/login']);
 
+        if(this.webformsService.formCreationData?.steps?.length === 0) {
+          this.webformsService.formCreationData = null;
+        } 
+
         if (itemId && !formId && this.item.webForms?.length > 0)
           formId = this.item.webForms[0].reference;
         if (this.webformsService.formCreationData === null && !formId) {
@@ -218,6 +223,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
 
           if (formId) this.webform = await this.webformsService.webform(formId);
         } else if (this.webformsService.formCreationData === null && formId) {
+
           const isFormPartOfTheRoutesItem = this.item.webForms.find(
             (form) => form.reference === formId
           );
@@ -249,7 +255,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
           };
         }
 
-        setInterval(() => {
+        this.requiredFieldInterval = setInterval(() => {
           if (
             this.currentStepStatus === 'INVALID' &&
             this.currentStepIndex > 0
@@ -879,7 +885,8 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.item) {
       this.itemsService.questionsToAddToItem = questionsToAdd;
 
-      this.router.navigate(['admin/item-creation']);
+      this.router.navigate(['ecommerce/item-management']);
+      //this.router.navigate(['ecommerce/item-management']);
     }
 
     let createdWebform = null;
@@ -971,7 +978,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
           unlockUI();
 
           this.webformsService.formCreationData = null;
-          this.router.navigate(['/admin/item-creation/' + this.item._id]);
+          this.router.navigate(['/ecommerce/item-management/' + this.item._id]);
         } else {
           //console.log('NO SE CREO');
           throw new Error('Ocurrió un error al crear el formulario');
@@ -1147,7 +1154,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
         unlockUI();
 
         this.webformsService.formCreationData = null;
-        this.router.navigate(['/admin/item-creation/' + this.item._id]);
+        this.router.navigate(['/ecommerce/item-management/' + this.item._id]);
       } catch (error) {
         unlockUI();
 
@@ -1165,6 +1172,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
         title: `Guardar cambios`,
         description: `¿Quieres guardar el formulario sin esta pregunta que está incompleta?`,
       },
+      panelClass: 'confirmation-dialog'
     });
     dialogRef.afterClosed().subscribe(async (result) => {
       if (result === 'confirm') {
@@ -1294,6 +1302,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
         title: `Borrar pregunta`,
         description: `¿Estás seguro de que deseas borrar esta pregunta?`,
       },
+      panelClass: 'confirmation-dialog'
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result === 'confirm') {
@@ -1318,11 +1327,11 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   back() {
-    this.router.navigate(['/admin/item-creation/' + this.item?._id]);
+    this.router.navigate(['/ecommerce/item-management/' + this.item?._id]);
   }
 
   redirectToMediaUploadPage(optionIndex: number) {
-    //console.log('REDIRGIENDO AL MEDIA UPLOAD');
+    console.log('REDIRGIENDO AL MEDIA UPLOAD');
 
     this.router.navigate(['/admin/media-upload/webform-question'], {
       queryParams: {
@@ -1341,6 +1350,8 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
         step.statusChangeSubscription.unsubscribe();
       }
     }
+
+    clearInterval(this.requiredFieldInterval);
   }
 
   // Define a constant for the minimum distance to consider a swipe
@@ -1399,6 +1410,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
         title: `Pregunta incompleta`,
         description: `¿Quieres borrar el progreso de esta pregunta?`,
       },
+      panelClass: 'confirmation-dialog'
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result === 'confirm') {

@@ -68,6 +68,9 @@ const fullItem = `
   createdAt
   amountMerchantCoin
   stock
+  notificationStock
+  notificationStockLimit
+  notificationStockPhoneOrEmail
   images {
     _id
     active
@@ -133,10 +136,16 @@ const fullItem = `
     reference
     active
   }
+  categories {
+    _id
+    name
+    description
+  }
   layout
   ctaText
   ctaBehavior
   active
+  approvedByAdmin
 `;
 
 export const items = gql`
@@ -193,6 +202,24 @@ export const bestSellersByMerchant = gql`
     $paginate: PaginationInput!
   ) {
     bestSellersByMerchant(isObjectID: $isObjectID, paginate: $paginate)
+  }
+`;
+
+export const salesPositionOfItemByMerchant = gql`
+  query salesPositionOfItemByMerchant(
+    $itemID: ObjectID!
+    $paginate: PaginationInput!
+  ) {
+    salesPositionOfItemByMerchant(itemID: $itemID, paginate: $paginate)
+  }
+`;
+
+export const buyersByItemInMerchantStore = gql`
+  query buyersByItemInMerchantStore(
+    $itemID: ObjectID!
+    $paginate: PaginationInput!
+  ) {
+    buyersByItemInMerchantStore(itemID: $itemID, paginate: $paginate)
   }
 `;
 
@@ -267,6 +294,8 @@ export const listItems = gql`
       merchant {
         _id
         slug
+        image
+        name
       }
       pricing
       category {
@@ -285,13 +314,28 @@ export const listItems = gql`
       visitorCounter {
         counter
       }
+      approvedByAdmin
       type
       stock
       notificationStockLimit
+      notificationStockPhoneOrEmail
       parentItem
     }
   }
 `;
+
+export const itemsQuantityOfFilters = gql`
+  query itemsQuantityOfFilters($merchantId: ObjectID, $typeOfItem: String) {
+    itemsQuantityOfFilters(merchantId: $merchantId, typeOfItem: $typeOfItem)
+  }
+`;
+
+export const providersItemMetrics = gql`
+  query providersItemMetrics {
+    providersItemMetrics
+  }
+`;
+
 export const listItemPackage = gql`
   query listItemPackage($params: PaginationInput) {
     listItemPackage(params: $params) {
@@ -589,8 +633,8 @@ export const itemCategoriesList = gql`
 `;
 
 export const createItemCategory = gql`
-  mutation createItemCategory($input: ItemCategoryInput!) {
-    createItemCategory(input: $input) {
+  mutation createItemCategory($isAdmin: Boolean, $input: ItemCategoryInput!) {
+    createItemCategory(isAdmin: $isAdmin, input: $input) {
       merchant {
         _id
       }

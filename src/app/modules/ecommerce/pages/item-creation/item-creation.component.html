@@ -1,25 +1,45 @@
 <div class="container">
   <header>
     <div class="close" (click)="back()">X</div>
-    <h2>
+    <h2
+      [ngStyle]="{
+        fontSize: isTheUserAnAdmin ? '17px' : '15px'
+      }"
+    >
       {{
         !item
           ? "Nuevo artículo para vender"
-          : totalSells > 0
-          ? "Artículo que se ha vendido"
-          : "Detalles del articulo"
+          : typeOfFlow === "UPDATE_EXISTING_ITEM"
+          ? "Artículo en venta"
+          : !isTheUserAnAdmin
+          ? "Artículo de proveedor"
+          : item.name || "Artículo global"
       }}
     </h2>
 
     <div *ngIf="item" class="options-wrapper">
       <img
-        src="../../../../../assets/icons/switch-on.svg"
-        *ngIf="item.status != 'disabled'"
+        *ngIf="currentView === 'ITEM_FORM'"
+        (click)="toggleItemVisibility()"
+        [src]="
+          assetsFolder +
+          (!isTheUserAnAdmin
+            ? item.status === 'active'
+              ? '/toggle-on.svg'
+              : '/toggle-off.svg'
+            : item.approvedByAdmin
+            ? '/toggle-on.svg'
+            : '/toggle-off.svg')
+        "
       />
+
       <img
-        src="../../../../../assets/icons/switch-off.svg"
-        *ngIf="item.status == 'disabled'"
+        *ngIf="currentView === 'ITEM_METRICS'"
+        (click)="deleteItem()"
+        class="delete-icon"
+        [src]="assetsFolder + '/trash-black.svg'"
       />
+
       <img
         [src]="
           currentView === 'ITEM_FORM'
@@ -32,18 +52,47 @@
             currentView === 'ITEM_FORM' ? 'ITEM_METRICS' : 'ITEM_FORM'
         "
       />
-      <img [src]="assetsFolder + '/dots-black.svg'" alt="more options" />
     </div>
   </header>
 
-  <main [formGroup]="itemFormData">
+  <main
+    [formGroup]="itemFormData"
+    *ngIf="itemFormData"
+    [ngClass]="{
+      existingItemContainer: typeOfFlow !== 'ITEM_CREATION'
+    }"
+  >
     <ng-container [ngSwitch]="currentView">
       <ng-container *ngSwitchCase="'ITEM_FORM'">
+        <p
+          class="intro-text"
+          *ngIf="
+            typeOfFlow !== 'ITEM_CREATION' &&
+            item?.status == 'active' &&
+            !isTheUserAnAdmin
+          "
+        >
+          {{
+            typeOfFlow === "UPDATE_EXISTING_ITEM"
+              ? "Vendes. Si quieres pagas comisión a vendedores para más alcance."
+              : "Esta plataforma te pone al frente de floristerias que necesitan exactamente lo que ofreces."
+          }}
+        </p>
+
         <div class="disabled-item-container" *ngIf="item?.status == 'disabled'">
           El artículo está oculto
         </div>
 
-        <section *ngIf="true">
+        <div class="disabled-item-container" style="padding: 12px 43px;" *ngIf="isTheUserAnAdmin && !item?.approvedByAdmin">
+          El artículo no se está exhibiendo por falta aprobación.
+        </div>
+
+        <section
+          *ngIf="
+            itemSlides.length === 0 ||
+            itemFormData.controls['pricing'].value === 0
+          "
+        >
           <h2 class="section-title">DATOS POR LLENAR</h2>
 
           <ng-container *ngIf="itemSlides.length === 0">
@@ -74,7 +123,7 @@
           </ng-container>
         </section>
 
-        <section *ngIf="true">
+        <section>
           <h2 class="section-title">DATOS LLENOS</h2>
 
           <div
@@ -99,6 +148,35 @@
               placeholderColor="#7B7B7B"
               currencyLabel=""
             ></app-currency-input>
+          </div>
+
+          <div
+            class="field-text"
+            (click)="openFormForField('STOCK')"
+            *ngIf="itemFormData.controls['stock'].value && isASupplierItem"
+          >
+            <label for="">Cantidad disponible para vender</label>
+
+            <input
+              type="text"
+              placeholder="Escribe"
+              [formControlName]="'stock'"
+            />
+
+            <p
+              *ngIf="itemFormData.controls['notificationStockLimit'].value"
+              class="notification-limit"
+            >
+              Se notificará a tú numero de teléfono cuando lleguen a
+              {{ itemFormData.controls["notificationStockLimit"].value }}
+            </p>
+
+            <p
+              class="content-inventary-detail"
+              *ngIf="itemFormData.controls['stock'].value === '0'"
+            >
+              No se está mostrando a Floristerias
+            </p>
           </div>
 
           <div class="field-text" *ngIf="itemFormData.controls['title'].value">
@@ -138,7 +216,7 @@
             </button>
           </div>
 
-          <div class="field-text">
+          <div class="field-text" *ngIf="!isASupplierItem">
             <label for="">Nombre del botón</label>
 
             <input
@@ -154,13 +232,14 @@
           >
             <app-qr-content
               [slides]="itemSlides"
-              [showReorderButton]="true"
+              [showButton]="!isASupplierItem || isTheUserAnAdmin"
+              [showReorderButton]="!isASupplierItem || isTheUserAnAdmin"
               [title]="'Slides visuales'"
               [mode]="'SMALL'"
               [editing]="false"
               [defaultText]="'Incluyes fotos, memes, videos o música.'"
-              (buttonClicked)="emitFileInputClick()"
-              (buttonClicked2)="goToReorderMedia()"
+              (buttonClicked)="!isASupplierItem || isTheUserAnAdmin ? emitFileInputClick() : null"
+              (buttonClicked2)="!isASupplierItem || isTheUserAnAdmin ? goToReorderMedia() : null"
             ></app-qr-content>
           </div>
 
@@ -294,9 +373,62 @@
               </h4>
             </ng-template>
           </div>
+
+          <div
+            class="field-text"
+            (click)="openFormForField('STOCK')"
+            *ngIf="itemFormData.controls['stock'].value && !isASupplierItem"
+          >
+            <label for="">Cantidad disponible para vender</label>
+
+            <input
+              type="text"
+              placeholder="Escribe"
+              [formControlName]="'stock'"
+            />
+
+            <p
+              *ngIf="itemFormData.controls['notificationStockLimit'].value"
+              class="notification-limit"
+            >
+              Se notificará a tú numero de teléfono cuando lleguen a
+              {{ itemFormData.controls["notificationStockLimit"].value }}
+            </p>
+
+            <p
+              class="content-inventary-detail"
+              *ngIf="itemFormData.controls['stock'].value === '0'"
+            >
+              No se está mostrando a Floristerias
+            </p>
+          </div>
+
+          <ng-container
+            *ngIf="itemCategoriesIds.length > 0 && !isASupplierItem"
+          >
+            <div class="field-text" (click)="openCategoriesDialog()">
+              <label for="">Categorias donde se exhibe</label>
+
+              <span>{{ categoriesString }}</span>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="itemTagsIds.length > 0 && !isASupplierItem">
+            <div class="field-text" (click)="openTagsDialog()">
+              <label for="">Tags para búsquedas</label>
+
+              <span>{{ tagsString }}</span>
+            </div>
+          </ng-container>
         </section>
 
-        <section *ngIf="true">
+        <section
+          *ngIf="
+            (!itemFormData.controls['title'].value ||
+              !itemFormData.controls['description'].value) &&
+            typeOfFlow === 'ITEM_CREATION'
+          "
+        >
           <h2 class="section-title">
             OPCIONAL- DATOS QUE LOS COMPRADORES CONSIDERAN IMPORTANTES
           </h2>
@@ -330,8 +462,52 @@
             >
             </ng-container>
           </ng-container>
+        </section>
 
-          <ng-container *ngIf="!webform && item">
+        <section
+          *ngIf="
+            !itemFormData.controls['stock'].value &&
+            typeOfFlow === 'ITEM_CREATION'
+          "
+        >
+          <h2 class="section-title">OPCIONAL- PARA QUE VENDAN POR TI</h2>
+
+          <ng-container>
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Cantidad disponible para vender',
+                  iconCallback: openFormForField,
+                  fieldNameForCallback: 'STOCK',
+                  notRequired: true
+                }
+              "
+            >
+            </ng-container>
+          </ng-container>
+        </section>
+
+        <section
+          *ngIf="
+            (itemsService.questionsToAddToItem.length === 0 &&
+              !webform &&
+              !item) ||
+            (item && !webform && typeOfFlow === 'ITEM_CREATION') ||
+            (itemCategoriesIds.length === 0 &&
+              typeOfFlow === 'ITEM_CREATION') ||
+            (itemTagsIds.length === 0 && typeOfFlow === 'ITEM_CREATION')
+          "
+        >
+          <h2 class="section-title">FUNCIONALIDADES OPCIONALES</h2>
+
+          <ng-container
+            *ngIf="
+              itemsService.questionsToAddToItem.length === 0 &&
+              !webform &&
+              !item
+            "
+          >
             <ng-container
               *ngTemplateOutlet="
                 addField;
@@ -345,45 +521,36 @@
             </ng-container>
           </ng-container>
 
-          <div class="row" *ngIf="!webform && item">
-            <span>Preguntas a compradores</span>
+          <ng-container *ngIf="itemCategoriesIds.length === 0">
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Categorias donde se exhibe',
+                  iconCallback: openCategoriesDialog,
+                  notRequired: true
+                }
+              "
+            >
+            </ng-container>
+          </ng-container>
 
-            <img
-              (click)="goToWebformCreationOrEdition()"
-              [src]="assetsFolder + '/add_button_circle.svg'"
-              alt="add media"
-              class="upload-media"
-            />
-          </div>
-        </section>
-
-        <section *ngIf="true">
-          <h2 class="section-title">OPCIONAL- PARA QUE VENDAN POR TI</h2>
-
-          <ng-container
-            *ngTemplateOutlet="
-              addField;
-              context: {
-                fieldLabel: 'Cantidad disponible para vender',
-                iconCallback: openFormForField,
-                fieldNameForCallback: 'STOCK',
-                notRequired: true
-              }
-            "
-          >
+          <ng-container *ngIf="itemTagsIds.length === 0">
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Tags para  búsquedas',
+                  iconCallback: openTagsDialog,
+                  notRequired: true
+                }
+              "
+            >
+            </ng-container>
           </ng-container>
         </section>
 
-        <section
-          *ngIf="
-            !itemFormData.controls['title'].value ||
-            !itemFormData.controls['description'].value ||
-            (itemsService.questionsToAddToItem.length === 0 &&
-              !webform &&
-              !item) ||
-            (item && !webform)
-          "
-        >
+        <section *ngIf="typeOfFlow === 'UPDATE_EXISTING_ITEM'">
           <h2 class="section-title">FUNCIONALIDADES OPCIONALES</h2>
 
           <ng-container *ngIf="!itemFormData.controls['title'].value">
@@ -417,11 +584,7 @@
           </ng-container>
 
           <ng-container
-            *ngIf="
-              itemsService.questionsToAddToItem.length === 0 &&
-              !webform &&
-              !item
-            "
+            *ngIf="itemsService.questionsToAddToItem.length === 0 && !webform"
           >
             <ng-container
               *ngTemplateOutlet="
@@ -429,6 +592,49 @@
                 context: {
                   fieldLabel: 'Preguntas a compradores',
                   iconCallback: goToWebformCreationOrEdition,
+                  notRequired: true
+                }
+              "
+            >
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngIf="!itemFormData.controls['stock'].value">
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Cantidad disponible para vender',
+                  iconCallback: openFormForField,
+                  fieldNameForCallback: 'STOCK',
+                  notRequired: true
+                }
+              "
+            >
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngIf="itemCategoriesIds.length === 0">
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Categorias donde se exhibe',
+                  iconCallback: openCategoriesDialog,
+                  notRequired: true
+                }
+              "
+            >
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngIf="itemTagsIds.length === 0">
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Tags para búsquedas',
+                  iconCallback: openTagsDialog,
                   notRequired: true
                 }
               "
@@ -503,21 +709,56 @@
       </ng-container>
 
       <ng-container *ngSwitchCase="'ITEM_METRICS'">
-        <h3 class="metrics-title">Información interna que sólo tu ves:</h3>
+        <ng-container *ngIf="!isTheUserAnAdmin">
+          <h3 class="metrics-title">Información interna que sólo tu ves:</h3>
 
-        <div class="metric">
-          <h4>Cantidad de veces vendido</h4>
+          <div class="metric">
+            <h4>Cantidad de veces vendido</h4>
 
-          <p>{{ totalSells }} veces, ${{ totalIncome }}</p>
-        </div>
+            <p>{{ totalSells }} veces, ${{ totalIncome }}</p>
+          </div>
+
+          <div class="metric">
+            <h4>Lugar en ventas en tu KiosKo</h4>
+
+            <p>
+              {{
+                salesPositionInStore > 0
+                  ? salesPositionInStore
+                  : "No se ha vendido todavía"
+              }}
+            </p>
+          </div>
+
+          <div class="metric">
+            <h4>Cantidad de compradores diferentes</h4>
+
+            <p>
+              {{
+                buyersInStore > 0 ? buyersInStore : "No lo han comprado todavía"
+              }}
+            </p>
+          </div>
+        </ng-container>
       </ng-container>
     </ng-container>
   </main>
 
-  <footer>
+  <div
+    *ngIf="currentView === 'ITEM_METRICS' && isTheUserAnAdmin"
+    class="recent-item-info"
+  >
+    Información de los últimos 7 dias
+  </div>
+
+  <footer
+    *ngIf="currentView !== 'ITEM_METRICS'"
+    [ngClass]="{
+      existingItem: typeOfFlow !== 'ITEM_CREATION'
+    }"
+  >
     <button
       class="left"
-      style="color: #272727"
       (click)="
         !(itemFormData?.valid && itemSlides.length > 0)
           ? goToItemDetail('DEMO')
@@ -533,7 +774,6 @@
     <button
       class="right"
       *ngIf="itemFormData?.valid && itemSlides.length > 0 && !item"
-      style="color: #272727"
       (click)="saveItem()"
     >
       Guardar
@@ -544,12 +784,21 @@
       *ngIf="
         itemFormData?.valid && itemSlides.length > 0 && isFormUpdated && item
       "
-      style="color: #272727"
       (click)="saveItem()"
     >
       Actualizar
     </button>
   </footer>
+</div>
+
+<div class="bubble-button-wrapper">
+  <div
+    class="bubble-button"
+    *ngIf="currentView === 'ITEM_METRICS' && isTheUserAnAdmin"
+    (click)="currentView = 'ITEM_FORM'"
+  >
+    <img [src]="assetsFolder + '/dropdown_icon.png'" alt="wizard" />
+  </div>
 </div>
 
 <ng-template

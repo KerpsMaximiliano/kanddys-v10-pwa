@@ -72,6 +72,7 @@ export const body = `
     }
     index
   }
+  status
 `;
 
 export const saleflow = gql`
@@ -94,6 +95,7 @@ export const setDefaultSaleflow = gql`
       merchant {
         _id
         name
+        status
       }
     }
   }
@@ -127,6 +129,7 @@ export const hotSaleflow = gql`
         index
       }
       workingHours
+      status
     }
   }
 `;
@@ -140,6 +143,7 @@ export const saleflows = gql`
       items {
         _id
       }
+      status
     }
   }
 `;
@@ -220,6 +224,9 @@ export const listItems = gql`
         index
         active
       }
+      merchant {
+        _id
+      }
       fixedQuantity
       size
       quality
@@ -238,6 +245,7 @@ export const listItems = gql`
         _id
         name
       }
+      stock
       params {
         _id
         name
@@ -256,6 +264,7 @@ export const listItems = gql`
         active
         createdAt
       }
+      approvedByAdmin
       webForms {
         _id
         createdAt

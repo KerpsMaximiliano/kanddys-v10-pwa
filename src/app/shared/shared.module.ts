@@ -218,14 +218,18 @@ import { CreateButtonLinkComponent } from './dialogs/create-button-link/create-b
 import { createTranslateLoader } from '../core/functions/create-translate-loader';
 import { HttpClient } from '@angular/common/http';
 import { FormComponent } from './dialogs/form/form.component';
+import { ListRemoval } from './dialogs/listRemoval/listRemoval.component';
 import { ItemsSlidesEditorComponent } from './components/items-slides-editor/items-slides-editor.component';
 import { StoreChatbotComponent } from './components/store-chatbot/store-chatbot.component';
 import { InputDialogComponent } from './dialogs/input-dialog/input-dialog.component';
+import { ProgressBarComponent } from './components/progress-bar/progress-bar.component';
 import { OptionsMenuComponent } from './dialogs/options-menu/options-menu.component';
 import { TagFilteringComponent } from './dialogs/tag-filtering/tag-filtering.component';
 import { ItemSelectorComponent } from './components/item-selector/item-selector.component';
 import { InventoryComponent } from './components/inventory/inventory.component';
 import { SupplierRegistrationComponent } from './components/supplier-registration/supplier-registration.component';
+import { CardImageComponent } from './components/card-image/card-image.component';
+import { ConfirmationSimpleComponent } from './dialogs/confirmation-simple/confirmation-simple.component';
 
 const imports = [
   CommonModule,
@@ -456,6 +460,8 @@ const declarations = [
   PostsSlidesEditorComponent,
   CreateButtonLinkComponent,
   FormComponent,
+  ConfirmationSimpleComponent,
+  ListRemoval,
   ItemsSlidesEditorComponent,
   StoreChatbotComponent,
   InputDialogComponent,
@@ -463,7 +469,9 @@ const declarations = [
   TagFilteringComponent,
   ItemSelectorComponent,
   InventoryComponent,
-  SupplierRegistrationComponent
+  SupplierRegistrationComponent,
+  ProgressBarComponent,
+  CardImageComponent
 ];
 
 @NgModule({

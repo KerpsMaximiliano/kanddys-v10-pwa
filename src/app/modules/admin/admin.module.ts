@@ -67,6 +67,10 @@ import { RenameQuestionComponent } from './pages/rename-question/rename-question
 import { FormResponsesComponent } from 'src/app/shared/components/form-responses/form-responses.component';
 import { FormResponsesByQuestionComponent } from 'src/app/shared/components/form-responses-by-question/form-responses-by-question.component';
 import { MerchantsEntryComponent } from './pages/merchants-entry/merchants-entry.component';
+import { StarsLandingComponent } from './pages/stars-landing/stars-landing.component';
+import { UserStarsComponent } from './pages/user-stars/user-stars.component';
+import { StarsMetricsComponent } from './pages/stars-metrics/stars-metrics.component';
+// import { ItemCreationComponent } from './pages/item-creation/item-creation.component';
 import { ItemCreationComponent as ItemCreation2Component } from './pages/item-creation/item-creation.component';
 
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
@@ -83,6 +87,19 @@ import { OrderProgressFilteringComponent } from './pages/order-progress-filterin
 import { OrderProgressComponent } from './pages/order-progress/order-progress.component';
 import { OrderFilteringComponent } from './pages/order-filtering/order-filtering.component';
 import { MerchantEditorComponent } from './pages/merchant-editor/merchant-editor.component';
+import { MonetizationsFormComponent } from './pages/monetizations-form/monetizations-form.component';
+import { AdminOrdersComponent } from './pages/admin-orders/admin-orders.component';
+import { AmbassadorsPaymentsComponent } from './pages/ambassadors-payments/ambassadors-payments.component';
+import { AmbassadorPaymentsLibraryComponent } from './pages/ambassador-payments-library/ambassador-payments-library.component';
+import { AmbassadorsComponent } from './pages/ambassadors/ambassadors.component';
+import { UserSearchComponent } from './pages/user-search/user-search.component';
+import { UserEntryComponent } from './pages/user-entry/user-entry.component';
+import { AmbassadorDashboardComponent } from './pages/ambassador-dashboard/ambassador-dashboard.component';
+import { NewAdminDashboardComponent } from './pages/new-admin-dashboard/new-admin-dashboard.component';
+import { ProviderItemsManagementComponent } from './pages/provider-items-management/provider-items-management.component';
+import { CurrencyFormatPipe } from 'src/app/core/pipes/currency-format.pipe';
+import { MerchantOffersComponent } from './pages/merchant-offers/merchant-offers.component';
+import { AdminCartsComponent } from './pages/admin-carts/admin-carts.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -137,6 +154,10 @@ const routes: Routes = [
       {
         path: 'merchant-items',
         component: MerchantItemsComponent,
+      },
+      {
+        path: 'merchant-offers',
+        component: MerchantOffersComponent,
       },
       {
         path: 'orders',
@@ -222,7 +243,11 @@ const routes: Routes = [
       },
       {
         path: 'dashboard',
-        component: AdminDashboardComponent,
+        component: NewAdminDashboardComponent,
+      },
+      {
+        path: 'supplier-dashboard',
+        component: NewAdminDashboardComponent,
       },
       {
         path: 'tags-view',
@@ -272,6 +297,10 @@ const routes: Routes = [
       {
         path: 'order-status-view',
         component: OrderStatusViewComponent,
+      },
+      {
+        path: 'provider-items-management',
+        component: ProviderItemsManagementComponent
       },
       {
         path: 'order-list',
@@ -426,10 +455,11 @@ const routes: Routes = [
     path: 'order-process/:merchantId',
     component: OrderProcessComponent,
   },
+  /*
   {
     path: 'article-detail/:articleId',
     component: ArticleDetailComponent,
-  },
+  },*/
   {
     path: 'reportings',
     component: ReportingsComponent,
@@ -484,7 +514,19 @@ const routes: Routes = [
   },
   {
     path: 'merchants-entry',
-    component: MerchantsEntryComponent,
+    component: MerchantsEntryComponent
+  },
+  {
+    path:'stars-landing',
+    component:StarsLandingComponent
+  },
+  {
+    path:'user-stars',
+    component: UserStarsComponent
+  },
+  {
+    path:'stars-metrics',
+    component: StarsMetricsComponent
   },
   /*
   {
@@ -524,6 +566,42 @@ const routes: Routes = [
   {
     path: 'merchant-editor',
     component: MerchantEditorComponent,
+  },
+  {
+    path: 'monetization-form',
+    component: MonetizationsFormComponent,
+  },
+  {
+    path: 'admin-orders',
+    component: AdminOrdersComponent,
+  },
+  {
+    path: 'carts',
+    component: AdminCartsComponent
+  },
+  {
+    path: 'ambassadors-pending-payments',
+    component: AmbassadorsPaymentsComponent,
+  },
+  {
+    path: 'ambassador-payments',
+    component: AmbassadorPaymentsLibraryComponent,
+  },
+  {
+    path: 'ambassadors',
+    component: AmbassadorsComponent,
+  },
+  {
+    path: 'ambassadors-dashboard',
+    component: AmbassadorDashboardComponent,
+  },
+  {
+    path: 'user-search',
+    component: UserSearchComponent,
+  },
+  {
+    path: 'user-entry',
+    component: UserEntryComponent,
   },
 ];
 
@@ -569,6 +647,7 @@ const routes: Routes = [
     OrderDataComponent,
     BuyerDataComponent,
     FilterPipeSearchPipe,
+    CurrencyFormatPipe,
     ExpendituresComponent,
     IncomesComponent,
     CreateExpenditureComponent,
@@ -578,6 +657,10 @@ const routes: Routes = [
     RenameQuestionComponent,
     RewardsDisplayComponent,
     MerchantsEntryComponent,
+    StarsLandingComponent,
+    UserStarsComponent,
+    StarsMetricsComponent,
+    // ItemCreationComponent,
     ItemCreation2Component,
     ItemSelectorComponent,
     SupplierRegisterComponent,
@@ -590,6 +673,18 @@ const routes: Routes = [
     OrderProgressComponent,
     OrderFilteringComponent,
     MerchantEditorComponent,
+    MonetizationsFormComponent,
+    AdminOrdersComponent,
+    AmbassadorsPaymentsComponent,
+    AmbassadorPaymentsLibraryComponent,
+    AmbassadorsComponent,
+    UserSearchComponent,
+    UserEntryComponent,
+    AmbassadorDashboardComponent,
+    NewAdminDashboardComponent,
+    ProviderItemsManagementComponent,
+    MerchantOffersComponent,
+    AdminCartsComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [

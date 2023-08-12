@@ -1,7 +1,7 @@
 .container {
   height: 100vh;
   overflow-y: scroll;
-  background: #F6F6F6;
+  background: #f6f6f6;
   padding: 0px;
   height: 100%;
   overflow-y: scroll;
@@ -49,12 +49,13 @@
   cursor: pointer;
   background: #ffffff;
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
-  border-radius: 10px;
-  padding-left: 8px;
-  padding-right: 6px;
-  padding-top: 13px;
-  padding-bottom: 10px;
-  margin-top: 11px;
+  border-radius: 5px;
+  padding: 14px 8px;
+  margin-top: 4px;
+
+  &:first-child {
+    margin-top: 14px;
+  }
 }
 
 .hr-container {
@@ -101,7 +102,7 @@
   font-size: 15px;
   font-style: normal;
   line-height: normal;
-  margin:0;
+  margin: 0;
 }
 
 .content-card-desc {
@@ -153,8 +154,8 @@
   padding-right: 13px;
   border-radius: 29px;
   justify-self: baseline;
-  border: 1px solid #928C8B;
-  color: #181D17;
+  border: 1px solid #928c8b;
+  color: #181d17;
   height: 30px;
   display: flex;
   justify-content: center;

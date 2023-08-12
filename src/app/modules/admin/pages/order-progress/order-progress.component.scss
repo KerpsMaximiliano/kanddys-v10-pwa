@@ -15,6 +15,7 @@
   justify-content: space-between;
 
   .close-icon {
+    cursor: pointer;
     color: #c4c5c3;
     font-size: 28px;
     height: 28px;
@@ -64,6 +65,7 @@
   padding-bottom: 3px;
   border-radius: 29px;
   justify-self: baseline;
+  cursor: pointer;
 }
 
 .progress-selected {
@@ -103,6 +105,7 @@
 }
 
 .content-card {
+  cursor: pointer;
   width: 100%;
   padding-top: 11px;
   padding-left: 18px;
@@ -139,7 +142,7 @@
 
 .content-card-extra-info {
   color: #7b7b7b;
-  text-align: right;
+  text-align: left;
   font-family: InterMedium;
   font-size: 15px;
   font-style: italic;
@@ -163,6 +166,14 @@
         width: 40px;
         height: 40px;
     }
+}
+
+.display-flex {
+  display: flex;
+}
+
+.content-card-info {
+  margin: auto 15px;
 }
 
 @media (max-width: 400px) {

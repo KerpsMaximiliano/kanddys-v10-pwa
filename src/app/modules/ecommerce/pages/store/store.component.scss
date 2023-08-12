@@ -207,9 +207,11 @@ a {
   }
 
   .highlighted-text {
-    color: #f7d455;
+    text-align: right;
+    color: #87CD9B;
     font-size: 16px;
-    font-weight: bold;
+    font-family: 'InterBold';
+    padding-right: 7px;
   }
   .cart-container {
     cursor: pointer;
@@ -322,7 +324,7 @@ a {
   padding-top: 16px;
   padding-left: 16px;
   padding-right: 16px;
-  padding-bottom: 15px;
+  padding-bottom: 10px;
 
   input {
     width: 100%;

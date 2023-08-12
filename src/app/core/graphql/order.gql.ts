@@ -436,6 +436,20 @@ export const ordersByUser = gql`
   }
 `;
 
+export const ordersByUserSearchParam = gql`
+  query ordersByUserSearchParam(
+    $merchantId: ObjectID!
+    $paginationOptionsInput: PaginationOptionsInput
+    $search: String
+    ) {
+    ordersByUserSearchParam(
+      paginationOptionsInput: $paginationOptionsInput
+      merchantId: $merchantId
+      search: $search
+      )
+  }
+`;
+
 export const ordersTotal = gql`
   query ordersTotal(
     $status: [String!]!
@@ -814,3 +828,12 @@ export const incomeTotalByType = gql`
     )
   }
 `;
+
+
+
+export const ordersIncomeMerchantByUser = gql`
+  query ordersIncomeMerchantByUser($userId: [ObjectID!]!,$merchantId:ObjectID!) {
+    ordersIncomeMerchantByUser(userId:$userId,merchantId:$merchantId)
+   }
+`;
+
