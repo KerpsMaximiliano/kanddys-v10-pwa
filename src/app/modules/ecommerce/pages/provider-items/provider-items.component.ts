@@ -1,17 +1,32 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { AppService } from 'src/app/app.service';
-import { isVideo } from 'src/app/core/helpers/strings.helpers';
+import { urltoFile } from 'src/app/core/helpers/files.helpers';
+import {
+  completeImageURL,
+  isVideo,
+} from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { Item } from 'src/app/core/models/item';
+import { Item, ItemImageInput, ItemInput } from 'src/app/core/models/item';
+import { SlideInput } from 'src/app/core/models/post';
 import { PaginationInput } from 'src/app/core/models/saleflow';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import {
+  FormComponent,
+  FormData,
+} from 'src/app/shared/dialogs/form/form.component';
+import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -57,6 +72,7 @@ export class ProviderItemsComponent implements OnInit {
   itemsISell: Array<Item> = [];
   itemsIDontSell: Array<Item> = [];
   renderItemsPromise: Promise<{ listItems: Item[] }>;
+  unitsForItemsThatYouDontSell: Record<string, number> = {};
 
   //userSpecific variables
   isTheUserAMerchant: boolean = null;
@@ -75,8 +91,13 @@ export class ProviderItemsComponent implements OnInit {
     private appService: AppService,
     private saleflowService: SaleFlowService,
     public merchantsService: MerchantsService,
+    private dialog: MatDialog,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private bottomSheet: MatBottomSheet,
+    private dialogService: DialogService,
+    private authService: AuthService,
+    private snackbar: MatSnackBar
   ) {}
 
   async ngOnInit() {
@@ -365,23 +386,44 @@ export class ProviderItemsComponent implements OnInit {
     });
   }
 
-  async changeAmount(item: Item, type: 'add' | 'subtract', itemIndex: number) {
+  async changeAmount(
+    item: Item,
+    type: 'add' | 'subtract',
+    itemIndex: number,
+    providedByMe: boolean
+  ) {
     try {
       let newAmount: number;
-      if (type === 'add') {
+      if (type === 'add' && providedByMe) {
         newAmount = item.stock >= 0 ? item.stock + 1 : 1;
-      } else if (type === 'subtract') {
+      } else if (type === 'subtract' && providedByMe) {
         newAmount = item.stock >= 1 ? item.stock - 1 : 0;
       }
 
-      this.itemsService.updateItem(
-        {
-          stock: newAmount,
-        },
-        item._id
-      );
+      if (type === 'add' && !providedByMe) {
+        newAmount = !this.unitsForItemsThatYouDontSell[item._id]
+          ? 1
+          : this.unitsForItemsThatYouDontSell[item._id] + 1;
+      } else if (type === 'subtract' && !providedByMe) {
+        newAmount =
+          this.unitsForItemsThatYouDontSell[item._id] >= 1
+            ? this.unitsForItemsThatYouDontSell[item._id] - 1
+            : 0;
+      }
 
-      this.itemsISell[itemIndex].stock = newAmount;
+      if (providedByMe) {
+        this.itemsService.updateItem(
+          {
+            stock: newAmount,
+          },
+          item._id
+        );
+
+        this.itemsISell[itemIndex].stock = newAmount;
+      } else {
+        this.itemsIDontSell[itemIndex].stock = newAmount;
+        this.unitsForItemsThatYouDontSell[item._id] = newAmount;
+      }
     } catch (error) {
       this.headerService.showErrorToast();
     }
@@ -454,4 +496,229 @@ export class ProviderItemsComponent implements OnInit {
       console.error(error);
     }
   };
+
+  async addPrice(item: Item) {
+    let fieldsToCreate: FormData = {
+      fields: [
+        {
+          label:
+            '¿Cuál es el precio de venta de' +
+            (item.name ? ' ' + item.name : 'l articulo?'),
+          name: 'price',
+          type: 'currency',
+          validators: [Validators.pattern(/[\S]/), Validators.min(0)],
+        },
+      ],
+      buttonsTexts: {
+        accept: 'Exhibirlo a los Miembros',
+        cancel: 'Cancelar',
+      },
+      automaticallyFocusFirstField: true,
+    };
+
+    const dialogRef = this.dialog.open(FormComponent, {
+      data: fieldsToCreate,
+    });
+
+    dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+      if (result.controls.price.valid) {
+        const price = Number(result.value['price']);
+
+        if (!this.headerService.user) {
+          lockUI();
+          const itemInput = await this.getItemInputForItemsThatYouDontSell(
+            price,
+            item
+          );
+
+          unlockUI();
+
+          this.openMagicLinkDialog(itemInput);
+        } else {
+          lockUI();
+
+          const itemInput = await this.getItemInputForItemsThatYouDontSell(
+            price,
+            item
+          );
+
+          const saleflowDefault = await this.saleflowService.saleflowDefault(
+            this.merchantsService.merchantData._id
+          );
+
+          const createdItem = (await this.itemsService.createItem(itemInput))
+            ?.createItem;
+
+          await this.saleflowService.addItemToSaleFlow(
+            {
+              item: createdItem._id,
+            },
+            saleflowDefault._id
+          );
+
+          this.itemsISell.unshift(createdItem);
+
+          const itemIndex = this.itemsIDontSell.findIndex(
+            (itemInList) => item._id === itemInList._id
+          );
+
+          this.itemsIDontSell.splice(itemIndex, 1);
+
+          this.snackbar.open('Ahora estás exhibiendo el producto!', '', {
+            duration: 5000,
+          });
+
+          unlockUI();
+        }
+      }
+    });
+  }
+
+  getItemInputForItemsThatYouDontSell = async (
+    price: number,
+    item: Item
+  ): Promise<ItemInput> => {
+    const itemInput: ItemInput = {
+      name: item.name,
+      layout: item.layout,
+      description: item.description,
+      pricing: price,
+      stock:
+        this.unitsForItemsThatYouDontSell[item._id] >= 0
+          ? this.unitsForItemsThatYouDontSell[item._id]
+          : 0,
+      notificationStock: true,
+      notificationStockLimit: item.notificationStockLimit,
+      useStock: true,
+    };
+
+    if (this.merchantsService.merchantData) {
+      itemInput.merchant = this.merchantsService.merchantData._id;
+    }
+
+    const slides: any[] = item.images
+      .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
+      .map(({ index, ...image }) => {
+        return {
+          url: completeImageURL(image.value),
+          index,
+          type: 'poster',
+          text: '',
+          _id: image._id,
+        };
+      });
+
+    let itemSlideIndex = 0;
+
+    for await (const slide of slides) {
+      if (slide.url && !slide.media) {
+        slides[itemSlideIndex].media = await urltoFile(
+          slide.url,
+          'file' + itemSlideIndex
+        );
+      }
+
+      itemSlideIndex++;
+    }
+
+    let images: ItemImageInput[] = slides.map(
+      (slide: SlideInput, index: number) => {
+        return {
+          file: slide.media,
+          index,
+          active: true,
+        };
+      }
+    );
+
+    itemInput.images = images;
+
+    itemInput.parentItem = item._id;
+
+    return itemInput;
+  };
+
+  async openMagicLinkDialog(itemInput: ItemInput) {
+    let fieldsToCreate: FormData = {
+      title: {
+        text: 'Acceso al Club:',
+      },
+      buttonsTexts: {
+        accept: 'Recibir el enlace con acceso',
+        cancel: 'Cancelar',
+      },
+      fields: [
+        {
+          name: 'magicLinkEmailOrPhone',
+          type: 'email-or-phone',
+          placeholder: 'Escribe..',
+          validators: [Validators.pattern(/[\S]/)],
+        },
+      ],
+    };
+
+    const dialogRef = this.dialog.open(FormComponent, {
+      data: fieldsToCreate,
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+      if (result.controls.magicLinkEmailOrPhone.valid) {
+        const validEmail = new RegExp(
+          /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gim
+        );
+
+        let emailOrPhone = null;
+
+        if (
+          typeof result?.value['magicLinkEmailOrPhone'] === 'string' &&
+          validEmail.test(result?.value['magicLinkEmailOrPhone'])
+        ) {
+          emailOrPhone = result?.value['magicLinkEmailOrPhone'];
+        } else {
+          emailOrPhone =
+            result?.value['magicLinkEmailOrPhone'].e164Number.split('+')[1];
+        }
+
+        lockUI();
+
+        const createdItem = (await this.itemsService.createPreItem(itemInput))
+          ?.createPreItem;
+
+        let redirectionRoute = '/ecommerce/provider-items';
+
+        await this.authService.generateMagicLink(
+          emailOrPhone,
+          redirectionRoute,
+          null,
+          'MerchantAccess',
+          {
+            jsondata: JSON.stringify({
+              createdItem: createdItem._id,
+            }),
+          },
+          []
+        );
+
+        unlockUI();
+
+        this.dialogService.open(GeneralFormSubmissionDialogComponent, {
+          type: 'centralized-fullscreen',
+          props: {
+            icon: 'check-circle.svg',
+            showCloseButton: false,
+            message:
+              'Se ha enviado un link mágico a tu teléfono o a tu correo electrónico',
+          },
+          customClass: 'app-dialog',
+          flags: ['no-header'],
+        });
+      } else {
+        unlockUI();
+        this.snackbar.open('Datos invalidos', 'Cerrar', {
+          duration: 3000,
+        });
+      }
+    });
+  }
 }
