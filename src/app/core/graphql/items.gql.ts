@@ -145,6 +145,7 @@ const fullItem = `
   ctaText
   ctaBehavior
   active
+  approvedByAdmin
 `;
 
 export const items = gql`
@@ -326,6 +327,12 @@ export const listItems = gql`
 export const itemsQuantityOfFilters = gql`
   query itemsQuantityOfFilters($merchantId: ObjectID, $typeOfItem: String) {
     itemsQuantityOfFilters(merchantId: $merchantId, typeOfItem: $typeOfItem)
+  }
+`;
+
+export const providersItemMetrics = gql`
+  query providersItemMetrics {
+    providersItemMetrics
   }
 `;
 
