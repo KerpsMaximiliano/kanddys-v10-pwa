@@ -42,6 +42,10 @@ export interface FormData {
     text: string;
     styles?: Record<string, any>;
   };
+  buttonsTexts?: {
+    cancel?: string;
+    accept?: string;
+  };
   automaticallyFocusFirstField?: boolean;
 }
 

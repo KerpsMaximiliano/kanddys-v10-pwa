@@ -1,0 +1,101 @@
+<div class="main-container">
+  <nav>
+    <div class="subnav">
+      <a class="exit">X</a>
+      <p class="title">Monetizaciones</p>
+    </div>
+    <div class="subnav">
+      <mat-slide-toggle
+        class="toggle"
+        [checked] = "toggleSwitch"
+        (change) = "toggleSwitch = !toggleSwitch"
+      >
+      </mat-slide-toggle>
+      <img class="icon" title="icon" src="{{env}}/info-icon.svg" />
+    </div>
+  </nav>
+  <p class="explanatory">
+      Vas acumulando la comisión de lo que se venda desde tu KiosKo Virtual 
+      y al llegar a los US$50 el Emprendedor te pagará por PayPal. 
+  </p>
+  <div class="info-container">
+    <div class="info-card">
+      <p class="card-title">Comisiones</p>
+      <p class="info-card-content">147 veces, $14,986.31</p>
+    </div>
+    <div class="info-card">
+      <p class="card-title">Cantidad de compradores diferentes</p>
+      <p class="info-card-content">14</p>
+    </div>
+  </div>
+  <div class="content-card-container">
+    <div class="content-card">
+      <div class="content-card-top">
+        <div class="flex">
+          <div class="content-card-img"></div>
+          <p class="content-card-title">MerchantID</p>
+        </div>
+        <p class="content-card-payment">10 pagos</p>
+      </div>
+      <app-progress-bar
+        text="$35 de $50 para pagarle por PayPal"
+        [status]="65"
+      ></app-progress-bar>
+      <div class="hr-container">
+        <hr />
+      </div>
+      <p class="content-card-desc">xy</p>
+    </div>
+    <div class="content-card">
+      <div class="content-card-top">
+        <div class="flex">
+          <div class="content-card-img"></div>
+          <p class="content-card-title">MerchantID</p>
+        </div>
+        <p class="content-card-payment">10 pagos</p>
+      </div>
+      <app-progress-bar
+        text="$35 de $50 para pagarle por PayPal"
+        [status]="65"
+      ></app-progress-bar>
+      <div class="hr-container">
+        <hr />
+      </div>
+      <p class="content-card-desc">xy</p>
+    </div>
+    <div class="content-card">
+      <div class="content-card-top">
+        <div class="flex">
+          <div class="content-card-img"></div>
+          <p class="content-card-title">MerchantID</p>
+        </div>
+        <p class="content-card-payment">10 pagos</p>
+      </div>
+      <app-progress-bar
+        text="$35 de $50 para pagarle por PayPal"
+        [status]="65"
+      ></app-progress-bar>
+      <div class="hr-container">
+        <hr />
+      </div>
+      <p class="content-card-desc">xy</p>
+    </div>
+    <div class="content-card">
+      <div class="content-card-top">
+        <div class="flex">
+          <div class="content-card-img"></div>
+          <p class="content-card-title">MerchantID</p>
+        </div>
+        <p class="content-card-payment">10 pagos</p>
+      </div>
+      <app-progress-bar
+        text="$35 de $50 para pagarle por PayPal"
+        [status]="65"
+      ></app-progress-bar>
+      <div class="hr-container">
+        <hr />
+      </div>
+      <p class="content-card-desc">xy</p>
+    </div>
+  </div>
+</div>

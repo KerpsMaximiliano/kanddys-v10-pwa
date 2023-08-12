@@ -145,22 +145,41 @@
       <div class="item-name">{{ item.name }}</div>
       <div class="item-description">{{ item.description }}</div>
       <div class="item-price">
-        <ng-container *ngIf="item.pricing !== null">
+        <ng-container *ngIf="item.pricing !== null && providedByMe">
           ${{ item.pricing | number : "1.2-2" }}
         </ng-container>
       </div>
+
+      <div
+        class="item-add-price"
+        *ngIf="!providedByMe"
+        (click)="addPrice(item)"
+      >
+        Mi precio
+      </div>
     </div>
 
-    <div class="item-quantity" *ngIf="providedByMe">
-      <div class="quantity">
+    <div class="right-column">
+      <div class="quantity-title">VENDIENDO</div>
+
+      <div class="item-quantity">
         <span
           mat-button
           class="button icon"
           (click)="
-            item.stock >= 1 ? changeAmount(item, 'subtract', itemIndex) : null
+            item.stock >= 1
+              ? changeAmount(item, 'subtract', itemIndex, providedByMe)
+              : null
           "
         >
-          {{ item.stock > 1 ? "-" : "" }}
+          <ng-container *ngIf="providedByMe">
+            {{ item.stock > 1 ? "-" : "" }}
+          </ng-container>
+
+          <ng-container *ngIf="!providedByMe">
+            {{ unitsForItemsThatYouDontSell[item._id] > 1 ? "-" : "" }}
+          </ng-container>
+          
           <mat-icon
             *ngIf="item.stock === 1"
             style="font-size: 19px; width: 23px"
@@ -168,27 +187,35 @@
           >
         </span>
 
-        <span style="position: relative; bottom: 2px">{{
-          !item.stock ? 0 : item.stock
+        <span>{{
+          !item.stock
+            ? 0
+            : !providedByMe
+            ? unitsForItemsThatYouDontSell[item._id]
+              ? unitsForItemsThatYouDontSell[item._id]
+              : 0
+            : item.stock
         }}</span>
 
         <span
           mat-button
           class="button icon"
-          (click)="changeAmount(item, 'add', itemIndex)"
+          (click)="changeAmount(item, 'add', itemIndex, providedByMe)"
           >+</span
         >
       </div>
     </div>
 
-    <div
-      class="right-column"
-      *ngIf="!providedByMe"
-      (click)="createItemBasedOnExistingSupplierItems(item)"
-    >
-      <div class="edit-btn">
-        <span>Exhibir</span>
+    <!--
+      <div
+        class="right-column"
+        *ngIf="!providedByMe"
+        (click)="createItemBasedOnExistingSupplierItems(item)"
+      >
+        <div class="edit-btn">
+          <span>Exhibir</span>
+        </div>
       </div>
-    </div>
+    -->
   </div>
 </ng-template>
