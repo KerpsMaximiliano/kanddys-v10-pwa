@@ -93,8 +93,10 @@ import { AmbassadorPaymentsLibraryComponent } from './pages/ambassador-payments-
 import { AmbassadorsComponent } from './pages/ambassadors/ambassadors.component';
 import { UserSearchComponent } from './pages/user-search/user-search.component';
 import { UserEntryComponent } from './pages/user-entry/user-entry.component';
+import { AmbassadorDashboardComponent } from './pages/ambassador-dashboard/ambassador-dashboard.component';
 import { NewAdminDashboardComponent } from './pages/new-admin-dashboard/new-admin-dashboard.component';
 import { ProviderItemsManagementComponent } from './pages/provider-items-management/provider-items-management.component';
+import { CurrencyFormatPipe } from 'src/app/core/pipes/currency-format.pipe';
 import { MerchantOffersComponent } from './pages/merchant-offers/merchant-offers.component';
 import { AdminCartsComponent } from './pages/admin-carts/admin-carts.component';
 
@@ -566,7 +568,7 @@ const routes: Routes = [
   },
   {
     path: 'admin-orders',
-    component: AdminOrdersComponent
+    component: AdminOrdersComponent,
   },
   {
     path: 'carts',
@@ -574,24 +576,28 @@ const routes: Routes = [
   },
   {
     path: 'ambassadors-pending-payments',
-    component: AmbassadorsPaymentsComponent
+    component: AmbassadorsPaymentsComponent,
   },
   {
     path: 'ambassador-payments',
-    component: AmbassadorPaymentsLibraryComponent
+    component: AmbassadorPaymentsLibraryComponent,
   },
   {
     path: 'ambassadors',
-    component: AmbassadorsComponent
+    component: AmbassadorsComponent,
+  },
+  {
+    path: 'ambassadors-dashboard',
+    component: AmbassadorDashboardComponent,
   },
   {
     path: 'user-search',
-    component: UserSearchComponent
+    component: UserSearchComponent,
   },
   {
     path: 'user-entry',
-    component: UserEntryComponent
-  }
+    component: UserEntryComponent,
+  },
 ];
 
 @NgModule({
@@ -636,6 +642,7 @@ const routes: Routes = [
     OrderDataComponent,
     BuyerDataComponent,
     FilterPipeSearchPipe,
+    CurrencyFormatPipe,
     ExpendituresComponent,
     IncomesComponent,
     CreateExpenditureComponent,
@@ -667,6 +674,7 @@ const routes: Routes = [
     AmbassadorsComponent,
     UserSearchComponent,
     UserEntryComponent,
+    AmbassadorDashboardComponent,
     NewAdminDashboardComponent,
     ProviderItemsManagementComponent,
     MerchantOffersComponent,

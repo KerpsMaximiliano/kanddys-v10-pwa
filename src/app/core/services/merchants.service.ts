@@ -53,6 +53,8 @@ import {
   paginateUsers,
   payUserStarAffiliate,
   ordersCommissionableItemsCount,
+  merchantGroupFiltersQuantity,
+  merchantGroupByType,
 } from './../graphql/merchants.gql';
 import {
   EmployeeContract,
@@ -639,6 +641,28 @@ export class MerchantsService {
     });
 
     return response?.ordersCommissionableItemsCount;
+  }
+
+  async merchantGroupFiltersQuantity (merchantId: string, type:string) {
+    const result = await this.graphql.query({
+      query: merchantGroupFiltersQuantity,
+      variables: { merchantId, type },
+      fetchPolicy: 'no-cache',
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result?.merchantGroupFiltersQuantity;
+  }
+
+  async merchantGroupByType (input: PaginationInput) {
+    const result = await this.graphql.query({
+      query: merchantGroupByType,
+      variables: { input },
+      fetchPolicy: 'no-cache',
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result?.merchantGroupByType;
   }
 }
 
