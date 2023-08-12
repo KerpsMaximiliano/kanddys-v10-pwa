@@ -60,6 +60,7 @@ import {
   MerchantInput,
 } from './../models/merchant';
 import { Contact } from '../models/contact';
+import { carts, getMe } from '../graphql/cart.gql';
 
 @Injectable({ providedIn: 'root' })
 export class MerchantsService {
@@ -158,6 +159,29 @@ export class MerchantsService {
       fetchPolicy: 'cache-first',
     });
     return response;
+  }
+  async getCarts(paginate: PaginationInput) {
+    try {
+      const response = await this.graphql.query({
+        query: carts,
+        variables: { paginate },
+        fetchPolicy: 'no-cache',
+      });
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  async getMe() {
+    try {
+      const response = await this.graphql.query({
+        query: getMe,
+        fetchPolicy: 'no-cache',
+      });
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   async hotOrdersByMerchant(
