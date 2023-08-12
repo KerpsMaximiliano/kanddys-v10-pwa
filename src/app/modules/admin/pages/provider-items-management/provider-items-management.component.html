@@ -1,6 +1,6 @@
 <app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
-  <div class="dashboard-page container">
-    <header class="header">
+  <div class="dashboard-page container" (scroll)="infinitePagination()">
+    <header class="header" *ngIf="!searchOpened">
       <button mat-icon-button style="margin-right: 25px" (click)="(null)">
         <mat-icon [ngStyle]="{ color: 'white' }" (click)="addProviderItem()"
           >add</mat-icon
@@ -48,7 +48,68 @@
       </button>
     </header>
 
+    <div class="search-opened" *ngIf="searchOpened">
+      <form class="search-bar-wrapper">
+        <input
+          type="text"
+          name="item-search"
+          id="search-from-results-view"
+          class="input search-bar"
+          placeholder="Buscar..."
+          [formControl]="itemSearchbar"
+        />
+      </form>
+
+      <div class="filters-container">
+        <div
+          class="filter"
+          *ngFor="let filter of searchFilters; let filterIndex = index"
+          [ngClass]="{
+            selected: activatedSearchFilters[filter.key]
+          }"
+          (click)="activateOrDeactivateFilters(filter.key)"
+        >
+          {{ filter.label }} ({{ metrics[filter.key] }})
+        </div>
+      </div>
+    </div>
+
     <main>
+      <form class="search-bar-wrapper" *ngIf="!searchOpened">
+        <input
+          type="text"
+          (click)="showSearch()"
+          name="item-search"
+          class="input search-bar"
+          placeholder="Buscar..."
+          [formControl]="itemSearchbar"
+        />
+
+        <div class="filters">
+          <!--
+            <div class="option">⏰</div>
+            <div class="option">💰</div>
+          -->
+          <div class="option" (click)="(null)">🏷️</div>
+
+          <!--
+            <div
+              class="option"
+              *ngIf="allCategories.length > 0"
+              (click)="openCategoriesDialog()"
+            >
+              🖇️️
+            </div>
+          -->
+        </div>
+      </form>
+
+      <div class="items-metrics" *ngIf="!searchOpened">
+        {{ metrics.mine }} creados por mi. {{ metrics.hidden }} ocultos.
+        {{ metrics.notMine }} creados por otros. {{ metrics.toBeApproved }} en
+        espera de aprobación
+      </div>
+
       <div class="list-of-items">
         <div
           class="item-wrapper"
@@ -81,7 +142,10 @@
             >
               <div class="item-name">{{ item.name }}</div>
               <div class="item-description">{{ item.description }}</div>
-              <div class="item-price">
+              <div
+                class="item-price"
+                *ngIf="item.merchant._id !== merchantsService.merchantData._id"
+              >
                 <ng-container *ngIf="item.pricing !== null">
                   ${{ item.pricing | number : "1.2-2" }}
                 </ng-container>
@@ -97,11 +161,25 @@
               *ngIf="!item.approvedByAdmin"
               (click)="approveItem(item, itemIndex)"
             >
-              <div class="edit-btn">Aprobar</div>
+              <div class="edit-btn">
+                <span>Aprobar</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </main>
-  </div></app-navigation
->
+
+      <div
+        [ngStyle]="{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          height: '80px',
+          justifyContent: 'center'
+        }"
+        *ngIf="paginationState.status === 'loading'"
+      >
+        <app-dot-loader></app-dot-loader>
+      </div>
+    </main></div
+></app-navigation>

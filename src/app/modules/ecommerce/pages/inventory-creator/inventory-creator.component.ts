@@ -38,6 +38,10 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
+import {
+  ConfirmationSimpleComponent,
+  DialogData,
+} from 'src/app/shared/dialogs/confirmation-simple/confirmation-simple.component';
 
 @Component({
   selector: 'app-inventory-creator',
@@ -213,7 +217,11 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
               ],
               pricing: [
                 this.itemsService.temporalItemInput?.pricing || 0,
-                Validators.compose([Validators.required, Validators.min(0.1)]),
+                Validators.compose(
+                  !this.isTheUserAnAdmin
+                    ? [Validators.required, Validators.min(0.1)]
+                    : []
+                ),
               ],
               defaultLayout: [
                 this.itemsService.temporalItemInput?.layout || this.layout,
@@ -264,14 +272,12 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
 
             if (this.isTheUserAnAdmin && !this.itemsService.temporalItemInput) {
               this.itemFormData.patchValue({
-                pricing: 10,
+                pricing: 0,
                 stock: 10,
                 useStock: true,
                 notificationStockLimit: 10,
               });
             }
-
-            this.addToastReminder(true);
           }
         );
       }
@@ -792,6 +798,15 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
           this.itemsService.temporalItemInput = null;
           this.itemsService.modifiedImagesFromExistingItem = false;
 
+          if (this.headerService.flowRouteForEachPage['provider-items']) {
+            this.headerService.flowRoute =
+              this.headerService.flowRouteForEachPage['provider-items'];
+
+            unlockUI();
+
+            return this.headerService.redirectFromQueryParams();
+          }
+
           this.router.navigate(['/admin/supplier-dashboard'], {
             queryParams: {
               supplierMode: true,
@@ -801,88 +816,99 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
       } else {
         let fieldsToCreate: FormData = {
           title: {
-            text: '¿Dónde recibirás las facturas y órdenes?',
+            text:
+              !this.headerService.flowRouteForEachPage &&
+              this.headerService.flowRouteForEachPage['provider-items']
+                ? '¿Con cuál contacto te registraste?'
+                : '¿Dónde recibirás las facturas y órdenes?',
           },
           fields: [
             {
-              name: 'whatsapp',
-              placeholder: 'Escribe el WhatsApp..',
-              type: 'phone',
-              validators: [Validators.pattern(/[\S]/)],
-            },
-            {
-              name: 'email',
-              placeholder: 'Escribe el correo electrónico..',
-              type: 'email',
+              name: 'magicLinkEmailOrPhone',
+              type: 'email-or-phone',
+              placeholder: 'Escribe el WhatsApp o eMail..',
               validators: [Validators.pattern(/[\S]/)],
             },
           ],
         };
+
         const dialogRef = this.dialog.open(FormComponent, {
           data: fieldsToCreate,
           disableClose: true,
         });
 
         dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
-          if (!result?.value['whatsapp'] && !result?.value['email']) {
-            this.snackbar.open('Error al crear el producto', 'Cerrar', {
-              duration: 4000,
+          if (result.controls.magicLinkEmailOrPhone.valid) {
+            const validEmail = new RegExp(
+              /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gim
+            );
+
+            let emailOrPhone = null;
+
+            if (
+              typeof result?.value['magicLinkEmailOrPhone'] === 'string' &&
+              validEmail.test(result?.value['magicLinkEmailOrPhone'])
+            ) {
+              emailOrPhone = result?.value['magicLinkEmailOrPhone'];
+            } else {
+              emailOrPhone =
+                result?.value['magicLinkEmailOrPhone'].e164Number.split('+')[1];
+            }
+
+            itemInput.parentItem = this.itemId;
+
+            lockUI();
+
+            if (this.existingItem)
+              itemInput.parentItem = this.itemsService.temporalItem._id;
+
+            let createdItem = (await this.itemsService.createPreItem(itemInput))
+              ?.createPreItem;
+
+            if (!this.existingItem) {
+              itemInput.parentItem = createdItem._id;
+
+              createdItem = (await this.itemsService.createPreItem(itemInput))
+                ?.createPreItem;
+            }
+
+            let redirectionRoute = '/admin/dashboard';
+
+            if (this.headerService.flowRouteForEachPage['provider-items']) {
+              redirectionRoute = '/ecommerce/provider-items';
+            }
+
+            await this.authService.generateMagicLink(
+              emailOrPhone,
+              redirectionRoute,
+              null,
+              'MerchantAccess',
+              {
+                jsondata: JSON.stringify({
+                  createdItem: createdItem._id,
+                }),
+              },
+              []
+            );
+
+            unlockUI();
+
+            this.dialogService.open(GeneralFormSubmissionDialogComponent, {
+              type: 'centralized-fullscreen',
+              props: {
+                icon: 'check-circle.svg',
+                showCloseButton: false,
+                message:
+                  'Se ha enviado un link mágico a tu teléfono o a tu correo electrónico',
+              },
+              customClass: 'app-dialog',
+              flags: ['no-header'],
             });
           } else {
-            const phone = result?.value['whatsapp']
-              ? result?.value['whatsapp'].e164Number.split('+')[1]
-              : null;
-            const email = result?.value['email']
-              ? result?.value['email']
-              : null;
-
-            if (result.controls.email.valid || result.controls.phone.valid) {
-              itemInput.parentItem = this.itemId;
-
-              lockUI();
-              let createdItem = (
-                await this.itemsService.createPreItem(itemInput)
-              )?.createPreItem;
-
-              if (!this.existingItem) {
-                itemInput.parentItem = createdItem._id;
-
-                createdItem = (await this.itemsService.createPreItem(itemInput))
-                  ?.createPreItem;
-              }
-
-              await this.authService.generateMagicLink(
-                phone || email,
-                '/admin/dashboard',
-                null,
-                'MerchantAccess',
-                {
-                  jsondata: JSON.stringify({
-                    createdItem: createdItem._id,
-                  }),
-                },
-                []
-              );
-
-              unlockUI();
-
-              this.dialogService.open(GeneralFormSubmissionDialogComponent, {
-                type: 'centralized-fullscreen',
-                props: {
-                  icon: 'check-circle.svg',
-                  showCloseButton: false,
-                  message:
-                    'Se ha enviado un link mágico a tu teléfono o a tu correo electrónico',
-                },
-                customClass: 'app-dialog',
-                flags: ['no-header'],
-              });
-            } else {
-              unlockUI();
-              this.snackbar.open('Datos invalidos', 'Cerrar', {
-                duration: 3000,
-              });
-            }
+            unlockUI();
+            this.snackbar.open('Datos invalidos', 'Cerrar', {
+              duration: 3000,
+            });
           }
         });
       }
@@ -898,6 +924,56 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
   }
 
   async back() {
+    if (
+      this.headerService.flowRouteForEachPage['provider-items'] &&
+      !this.itemFormData?.valid
+    ) {
+      this.headerService.flowRoute =
+        this.headerService.flowRouteForEachPage['provider-items'];
+      return this.headerService.redirectFromQueryParams();
+    }
+
+    if (
+      this.headerService.flowRouteForEachPage[
+        'dashboard-to-supplier-creation'
+      ] &&
+      !this.itemFormData?.valid
+    ) {
+      this.headerService.flowRoute =
+        this.headerService.flowRouteForEachPage[
+          'dashboard-to-supplier-creation'
+        ];
+      return this.headerService.redirectFromQueryParams();
+    }
+
+    if (
+      this.quotationsService.supplierItemsAdjustmentsConfig
+        ?.quotationItemBeingEdited.quotationItemInMemory &&
+      !this.itemFormData?.valid
+    ) {
+      return this.router.navigate([
+        this.quotationId
+          ? `ecommerce/supplier-register/${this.quotationId}`
+          : `ecommerce/supplier-register`,
+      ]);
+    }
+
+    if (this.updateItem && !this.itemFormData?.valid) {
+      return this.router.navigate(
+        [
+          this.quotationId
+            ? `ecommerce/supplier-register/${this.quotationId}`
+            : `ecommerce/supplier-register`,
+        ],
+        {
+          queryParams: {
+            supplierMerchantId: this.merchantsService.merchantData?._id,
+            requesterId: this.requesterId,
+          },
+        }
+      );
+    }
+
     if (
       this.itemFormData?.valid &&
       this.itemSlides.length > 0 &&
@@ -917,73 +993,55 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
       });
 
       return;
+    } else if (this.itemFormData?.valid && this.itemSlides.length > 0) {
+      if (this.headerService.flowRouteForEachPage['provider-items']) {
+        let dialogData: DialogData = {
+          styles: {
+            dialogContainer: {
+              padding: '25px 20px',
+            },
+            title: {
+              marginBottom: '0px',
+            },
+            buttonsContainer: {
+              marginTop: '0px',
+              padding: '0px',
+            },
+            button: {
+              width: '41.07%',
+            },
+          },
+          texts: {
+            accept: 'Sí',
+            cancel: 'No',
+          },
+          title: {
+            text: 'Lo quieres vender a los Miembros del Club?',
+          },
+        };
+
+        const dialogRef = this.dialog.open(ConfirmationSimpleComponent, {
+          data: dialogData,
+        });
+
+        return dialogRef.afterClosed().subscribe(async (accepted: boolean) => {
+          if (accepted) {
+            return await this.saveItem();
+          } else {
+            this.headerService.flowRoute =
+              this.headerService.flowRouteForEachPage['provider-items'];
+
+            return this.headerService.redirectFromQueryParams();
+          }
+        });
+      } else {
+        return await this.saveItem();
+      }
     } else if (!this.itemFormData?.valid || this.itemSlides.length === 0) {
       return this.router.navigate(['/admin/provider-items-management']);
     }
 
-    if (
-      this.headerService.flowRouteForEachPage['dashboard-to-supplier-creation']
-    ) {
-      this.headerService.flowRoute =
-        this.headerService.flowRouteForEachPage[
-          'dashboard-to-supplier-creation'
-        ];
-      this.headerService.redirectFromQueryParams();
-    }
-
-    if (
-      this.quotationsService.supplierItemsAdjustmentsConfig
-        ?.quotationItemBeingEdited.quotationItemInMemory
-    ) {
-      return this.router.navigate([
-        this.quotationId
-          ? `ecommerce/supplier-register/${this.quotationId}`
-          : `ecommerce/supplier-register`,
-      ]);
-    }
-
-    if (this.updateItem) {
-      return this.router.navigate(
-        [
-          this.quotationId
-            ? `ecommerce/supplier-register/${this.quotationId}`
-            : `ecommerce/supplier-register`,
-        ],
-        {
-          queryParams: {
-            supplierMerchantId: this.merchantsService.merchantData?._id,
-            requesterId: this.requesterId,
-          },
-        }
-      );
-    }
-
     this.router.navigate(['ecommerce/supplier-items-selector']);
-  }
-
-  addToastReminder(firstLoad: boolean = false) {
-    if (this.reminderToast) {
-      this.reminderToast.timeoutId = setTimeout(
-        () => {
-          if (!this.reminderToast.warning) {
-            this.toastr.info(this.reminderToast.message, null, {
-              timeOut: 1500,
-              tapToDismiss: true,
-              positionClass: 'toast-top-center',
-            });
-          } else {
-            this.toastr.warning(this.reminderToast.message, null, {
-              timeOut: 1500,
-              tapToDismiss: true,
-              positionClass: 'toast-top-center',
-            });
-          }
-
-          this.addToastReminder();
-        },
-        !firstLoad ? this.reminderToast.secondsTrigger * 1000 : 3000
-      );
-    }
   }
 
   ngOnDestroy(): void {

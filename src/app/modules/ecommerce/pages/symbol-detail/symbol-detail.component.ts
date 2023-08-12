@@ -245,6 +245,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     this.redirectTo = redirectTo;
     this.supplierPreview = supplierPreview;
     this.supplierViewer = JSON.parse(supplierViewer || 'false');
+    this.mode = mode;
 
     if (
       this.entityPresentation === 'DEMO' ||
@@ -613,7 +614,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     try {
       this.itemData = await this.itemsService.item(this.entityId);
 
-      if (this.mode === 'preview' || this.mode === 'image-preview') {
+      if (this.entityPresentation === 'PREVIEW' || this.mode === 'image-preview') {
         if (!this.itemsService.itemPrice) return this.back();
         this.itemData.name = this.itemsService.itemName;
         this.itemData.description = this.itemsService.itemDesc;
@@ -792,7 +793,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
       return this.headerService.redirectFromQueryParams();
     }
 
-    if (this.mode === 'preview') {
+    if (this.entityPresentation === 'PREVIEW') {
       this.itemsService.itemUrls = [];
       return this.router.navigate([
         `/ecommerce/item-management/${this.itemData._id}`,
@@ -924,7 +925,9 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    if (this.mode === 'preview' || this.mode === 'image-preview') return;
+    if (this.entityPresentation === 'PREVIEW' || this.mode === 'image-preview') return;
+
+    
     if (!this.isItemInCart && this.headerService.saleflow && !this.headerService.saleflow?.canBuyMultipleItems)
       this.headerService.emptyOrderProducts();
 
@@ -946,7 +949,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   }
 
   goToCheckout() {
-    if (this.mode === 'preview') return;
+    if (this.entityPresentation === 'PREVIEW') return;
 
     this.router.navigate([
       '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/cart',

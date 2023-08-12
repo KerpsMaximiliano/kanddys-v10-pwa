@@ -232,14 +232,14 @@
           >
             <app-qr-content
               [slides]="itemSlides"
-              [showButton]="!isASupplierItem"
-              [showReorderButton]="!isASupplierItem"
+              [showButton]="!isASupplierItem || isTheUserAnAdmin"
+              [showReorderButton]="!isASupplierItem || isTheUserAnAdmin"
               [title]="'Slides visuales'"
               [mode]="'SMALL'"
               [editing]="false"
               [defaultText]="'Incluyes fotos, memes, videos o música.'"
-              (buttonClicked)="!isASupplierItem ? emitFileInputClick() : null"
-              (buttonClicked2)="!isASupplierItem ? goToReorderMedia() : null"
+              (buttonClicked)="!isASupplierItem || isTheUserAnAdmin ? emitFileInputClick() : null"
+              (buttonClicked2)="!isASupplierItem || isTheUserAnAdmin ? goToReorderMedia() : null"
             ></app-qr-content>
           </div>
 

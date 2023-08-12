@@ -1,7 +1,7 @@
 <div class="container">
     <div class="header">
         <div class="flex">
-            <mat-icon class="close-icon">close</mat-icon>
+            <mat-icon class="close-icon" (click)="back()">close</mat-icon>
             <p>⏰ Progresos de facturas</p>
         </div>
       <div class="flex">
@@ -23,9 +23,10 @@
       </div>
       <div class="content-cards-container">
         <div
-        class="content-card"
-        *ngFor="let order of filterData(); index as i"
-      >
+          class="content-card"
+          *ngFor="let order of filterData(); index as i"
+          (click)="goToOrderDetail(order._id)"
+        >
         <div class="display-flex">
           <!-- <img [src]=" order.user.image?order.user.image:'https://cdn-icons-png.flaticon.com/512/149/149071.png'" width="66px"> -->
           <div
