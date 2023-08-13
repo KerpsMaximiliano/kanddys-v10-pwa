@@ -59,10 +59,12 @@ export class UserStarsComponent implements OnInit {
   }
 
   getText(wallet) {
+    let value =  wallet.merchantFuncionality?.reward?.buyersLimit -
+    wallet.metadata?.usesStars || 0;
+    if(value<0) value = 0;
     return (
       (
-        wallet.merchantFuncionality?.reward?.buyersLimit -
-          wallet.metadata?.usesStars || 0
+       value
       ).toString() +
       ' por acomular para el descuento de ' +
       (wallet.merchantFuncionality?.reward?.amountBuyer != undefined
