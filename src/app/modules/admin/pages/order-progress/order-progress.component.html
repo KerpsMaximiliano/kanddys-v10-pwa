@@ -6,10 +6,12 @@
         </div>
     </div>
     <div class="dates-container">
-        <div class="progress" *ngFor="let i of progress" [ngClass]="{'progress-selected':i.selected}" (click)="select(i.id)">
-            {{orderDeliveryStatus(i.name)}}
-            {{"(" + orderDeliveryLength(i.name) + ")"}} 
+      <div class="progress-container">
+        <div class="progress" *ngFor="let i of progress" [ngClass]="{'progress-selected': i.selected}" (click)="select(i.id)">
+          {{ orderDeliveryStatus(i.name) }}
+          {{"(" + orderDeliveryLength(i.name) + ")"}} 
         </div>
+      </div>
     </div>
     <div class="content">
       <div class="content-title-container">
