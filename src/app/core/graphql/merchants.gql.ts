@@ -525,6 +525,18 @@ export const merchantFuncionality = gql`
       questionDeliveryZone{
         value
       }
+      postSolidary {
+        post {
+          _id
+          message
+          title
+          categories {
+            _id
+            name
+          }
+        }
+        active
+      }
     }
   }
 `;
