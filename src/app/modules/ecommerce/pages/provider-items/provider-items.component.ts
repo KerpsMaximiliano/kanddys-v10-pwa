@@ -14,8 +14,10 @@ import {
 } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item, ItemImageInput, ItemInput } from 'src/app/core/models/item';
+import { Merchant } from 'src/app/core/models/merchant';
 import { SlideInput } from 'src/app/core/models/post';
-import { PaginationInput } from 'src/app/core/models/saleflow';
+import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
+import { User } from 'src/app/core/models/user';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
@@ -85,6 +87,10 @@ export class ProviderItemsComponent implements OnInit {
   encodedJSONData: string;
   fetchedItemsFromMagicLink: Array<Item> = [];
 
+  //Tutorial-specific variables
+  searchTutorialsOpened: boolean = true;
+  itemsTutorialOpened: boolean = false;
+
   constructor(
     private headerService: HeaderService,
     private itemsService: ItemsService,
@@ -119,12 +125,14 @@ export class ProviderItemsComponent implements OnInit {
       async ({ jsondata, supplierMode }) => {
         supplierMode = JSON.parse(supplierMode || 'false');
         this.encodedJSONData = jsondata;
-
         if (this.encodedJSONData) {
           this.parseMagicLinkData();
         }
 
         await this.getItemsISell();
+
+        this.checkIfTutorialsWereSeenAlready();
+
         await this.getNewPageOfItemsIDontSell(true, false);
 
         this.itemSearchbar.valueChanges.subscribe(async (change) => {
@@ -151,6 +159,28 @@ export class ProviderItemsComponent implements OnInit {
       }
     }
   }
+
+  checkIfTutorialsWereSeenAlready = () => {
+    const tutorialsConfig = JSON.parse(
+      localStorage.getItem('tutorials-config')
+    );
+
+    console.log(
+      'provider-items' in tutorialsConfig,
+      tutorialsConfig['provider-items'],
+      this.itemsISell.length !== 0
+    );
+
+    if (
+      tutorialsConfig &&
+      'provider-items' in tutorialsConfig &&
+      tutorialsConfig['provider-items'] &&
+      this.itemsISell.length !== 0
+    ) {
+      this.searchTutorialsOpened = false;
+      this.itemsTutorialOpened = false;
+    }
+  };
 
   activateOrDeactivateFilters(filterKey: string) {
     this.activatedSearchFilters[filterKey] =
@@ -457,6 +487,14 @@ export class ProviderItemsComponent implements OnInit {
         await this.authenticateItemFromMagicLinkData(parsedData);
       }
 
+      if (parsedData.itemsToUpdate) {
+        await this.updateItemsFromMagicLinkData(parsedData);
+      }
+
+      if (parsedData.quotationItems) {
+        await this.authenticateSupplierQuotationItems(parsedData);
+      }
+
       return;
     }
   }
@@ -489,6 +527,99 @@ export class ProviderItemsComponent implements OnInit {
 
       unlockUI();
 
+      window.location.href = environment.uri + '/ecommerce/provider-items';
+    } catch (error) {
+      unlockUI();
+
+      console.error(error);
+    }
+  };
+
+  updateItemsFromMagicLinkData = async (parsedData: Record<string, any>) => {
+    try {
+      lockUI();
+      await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+
+      await Promise.all(
+        Object.keys(parsedData.itemsToUpdate).map((itemId) =>
+          this.itemsService.updateItem(parsedData.itemsToUpdate[itemId], itemId)
+        )
+      );
+
+      if (!parsedData.quotationItems) {
+        unlockUI();
+        window.location.href = environment.uri + '/ecommerce/provider-items';
+      }
+    } catch (error) {
+      unlockUI();
+
+      console.error(error);
+    }
+  };
+
+  authenticateSupplierQuotationItems = async (
+    parsedData: Record<string, any>
+  ) => {
+    try {
+      lockUI();
+      await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+
+      const saleflow = await this.saleflowService.saleflowDefault(
+        this.merchantsService.merchantData?._id
+      );
+
+      const quotationItemsIDs = parsedData.quotationItems.split('-');
+
+      this.headerService.saleflow = saleflow;
+      this.headerService.storeSaleflow(saleflow);
+
+      const supplierSpecificItemsInput: PaginationInput = {
+        findBy: {
+          _id: {
+            __in: ([] = quotationItemsIDs),
+          },
+        },
+        options: {
+          sortBy: 'createdAt:desc',
+          limit: -1,
+          page: 1,
+        },
+      };
+
+      //Fetches supplier specfic items, meaning they already are on the saleflow
+      let quotationItems: Array<Item> = [];
+
+      quotationItems = (
+        await this.itemsService.listItems(supplierSpecificItemsInput)
+      )?.listItems;
+
+      if (quotationItems?.length) {
+        this.fetchedItemsFromMagicLink = quotationItems;
+
+        if (!this.fetchedItemsFromMagicLink[0].merchant) {
+          await Promise.all(
+            this.fetchedItemsFromMagicLink.map((item) =>
+              this.itemsService.authItem(
+                this.merchantsService.merchantData._id,
+                item._id
+              )
+            )
+          );
+
+          await Promise.all(
+            this.fetchedItemsFromMagicLink.map((item) =>
+              this.saleflowService.addItemToSaleFlow(
+                {
+                  item: item._id,
+                },
+                this.headerService.saleflow._id
+              )
+            )
+          );
+        }
+      }
+
+      unlockUI();
       window.location.href = environment.uri + '/ecommerce/provider-items';
     } catch (error) {
       unlockUI();
@@ -574,6 +705,55 @@ export class ProviderItemsComponent implements OnInit {
     });
   }
 
+  async editPrice(item: Item, itemIndex: number) {
+    let fieldsToCreate: FormData = {
+      fields: [
+        {
+          label:
+            '¿Cuál es el precio de venta de' +
+            (item.name ? ' ' + item.name : 'l articulo?'),
+          name: 'price',
+          type: 'currency',
+          validators: [Validators.pattern(/[\S]/), Validators.min(0)],
+        },
+      ],
+      buttonsTexts: {
+        accept: 'Actualizar precio',
+        cancel: 'Cancelar',
+      },
+      automaticallyFocusFirstField: true,
+    };
+
+    const dialogRef = this.dialog.open(FormComponent, {
+      data: fieldsToCreate,
+    });
+
+    dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+      if (result.controls.price.valid) {
+        lockUI();
+
+        try {
+          const price = Number(result.value['price']);
+
+          await this.itemsService.updateItem(
+            {
+              pricing: price,
+            },
+            item._id
+          );
+
+          this.itemsISell[itemIndex].pricing = price;
+
+          unlockUI();
+        } catch (error) {
+          unlockUI();
+          this.headerService.showErrorToast();
+          console.error(error);
+        }
+      }
+    });
+  }
+
   getItemInputForItemsThatYouDontSell = async (
     price: number,
     item: Item
@@ -650,9 +830,13 @@ export class ProviderItemsComponent implements OnInit {
       fields: [
         {
           name: 'magicLinkEmailOrPhone',
-          type: 'email-or-phone',
-          placeholder: 'Escribe..',
+          type: 'email',
+          placeholder: 'Escribe el correo electrónico..',
           validators: [Validators.pattern(/[\S]/)],
+          bottomButton: {
+            text: 'Adiciona la clave',
+            callback: () => addPassword(),
+          },
         },
       ],
     };
@@ -663,22 +847,8 @@ export class ProviderItemsComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
-      if (result.controls.magicLinkEmailOrPhone.valid) {
-        const validEmail = new RegExp(
-          /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gim
-        );
-
-        let emailOrPhone = null;
-
-        if (
-          typeof result?.value['magicLinkEmailOrPhone'] === 'string' &&
-          validEmail.test(result?.value['magicLinkEmailOrPhone'])
-        ) {
-          emailOrPhone = result?.value['magicLinkEmailOrPhone'];
-        } else {
-          emailOrPhone =
-            result?.value['magicLinkEmailOrPhone'].e164Number.split('+')[1];
-        }
+      if (result?.controls?.magicLinkEmailOrPhone.valid) {
+        let emailOrPhone = result?.value['magicLinkEmailOrPhone'];
 
         lockUI();
 
@@ -713,12 +883,211 @@ export class ProviderItemsComponent implements OnInit {
           customClass: 'app-dialog',
           flags: ['no-header'],
         });
-      } else {
+      } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
         unlockUI();
         this.snackbar.open('Datos invalidos', 'Cerrar', {
           duration: 3000,
         });
       }
     });
+
+    const addPassword = async () => {
+      dialogRef.close();
+
+      let fieldsToCreate: FormData = {
+        title: {
+          text: 'Acceso al Club:',
+        },
+        buttonsTexts: {
+          accept: 'Accesar al Club',
+          cancel: 'Cancelar',
+        },
+        fields: [
+          {
+            name: 'email',
+            type: 'email',
+            placeholder: 'Escribe el correo electrónico..',
+            validators: [Validators.pattern(/[\S]/)],
+          },
+          {
+            name: 'password',
+            type: 'password',
+            placeholder: 'Escribe la contraseña',
+            validators: [Validators.pattern(/[\S]/)],
+            bottomButton: {
+              text: 'Prefiero recibir el correo con el enlace de acceso',
+              callback: () => {
+                //Cerrar 2do dialog
+
+                return switchToMagicLinkDialog();
+              },
+            },
+          },
+        ],
+      };
+
+      const dialog2Ref = this.dialog.open(FormComponent, {
+        data: fieldsToCreate,
+        disableClose: true,
+      });
+
+      dialog2Ref.afterClosed().subscribe(async (result: FormGroup) => {
+        try {
+          if (
+            result?.controls?.email.valid &&
+            result?.controls?.password.valid
+          ) {
+            let emailOrPhone = result?.value['email'];
+            let password = result?.value['password'];
+
+            lockUI();
+
+            const session = await this.authService.signin(
+              emailOrPhone,
+              password,
+              true
+            );
+
+            const { merchantDefault, saleflowDefault } =
+              await this.getDefaultMerchantAndSaleflows(session.user);
+
+            itemInput.merchant = merchantDefault._id;
+
+            const createdItem = (await this.itemsService.createItem(itemInput))
+              ?.createItem;
+
+            await this.saleflowService.addItemToSaleFlow(
+              {
+                item: createdItem._id,
+              },
+              saleflowDefault._id
+            );
+
+            window.location.href =
+              environment.uri + '/ecommerce/provider-items';
+
+            unlockUI();
+
+            this.dialogService.open(GeneralFormSubmissionDialogComponent, {
+              type: 'centralized-fullscreen',
+              props: {
+                icon: 'check-circle.svg',
+                showCloseButton: false,
+                message:
+                  'Se ha enviado un link mágico a tu teléfono o a tu correo electrónico',
+              },
+              customClass: 'app-dialog',
+              flags: ['no-header'],
+            });
+          } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
+            unlockUI();
+            this.snackbar.open('Datos invalidos', 'Cerrar', {
+              duration: 3000,
+            });
+          }
+        } catch (error) {
+          console.error(error);
+          this.headerService.showErrorToast();
+        }
+      });
+
+      const switchToMagicLinkDialog = () => {
+        dialog2Ref.close();
+        return this.openMagicLinkDialog(itemInput);
+      };
+    };
+  }
+
+  closeSearchTutorial = () => {
+    this.searchTutorialsOpened = false;
+    this.itemsTutorialOpened = true;
+  };
+
+  closeItemsTutorial = () => {
+    this.itemsTutorialOpened = false;
+
+    let tutorialsConfig = JSON.parse(localStorage.getItem('tutorials-config'));
+
+    if (!tutorialsConfig) tutorialsConfig = {};
+
+    localStorage.setItem(
+      'tutorials-config',
+      JSON.stringify({
+        ...tutorialsConfig,
+        'provider-items': true,
+      })
+    );
+  };
+
+  async getDefaultMerchantAndSaleflows(user: User): Promise<{
+    merchantDefault: Merchant;
+    saleflowDefault: SaleFlow;
+  }> {
+    if (!user?._id) return null;
+
+    let userMerchantDefault = await this.merchantsService.merchantDefault(
+      user._id
+    );
+
+    if (!userMerchantDefault) {
+      const merchants = await this.merchantsService.myMerchants();
+
+      if (merchants.length === 0) {
+        const { createMerchant: createdMerchant } =
+          await this.merchantsService.createMerchant({
+            owner: user._id,
+            name:
+              user.email?.split('@')[0] + '-saleflow' ||
+              user.phone + '-saleflow',
+            slug: user.email?.split('@')[0] || user.phone,
+          });
+
+        const { merchantSetDefault: defaultMerchant } =
+          await this.merchantsService.setDefaultMerchant(createdMerchant._id);
+
+        if (defaultMerchant) userMerchantDefault = defaultMerchant;
+      }
+    }
+
+    let userSaleflowDefault = await this.saleflowService.saleflowDefault(
+      userMerchantDefault._id
+    );
+
+    if (!userSaleflowDefault) {
+      const { createSaleflow: createdSaleflow } =
+        await this.saleflowService.createSaleflow({
+          merchant: userMerchantDefault._id,
+          name:
+            user.email?.split('@')[0] + '-saleflow' || user.phone + '-saleflow',
+          items: [],
+        });
+
+      const { saleflowSetDefault: defaultSaleflow } =
+        await this.saleflowService.setDefaultSaleflow(
+          userMerchantDefault._id,
+          createdSaleflow._id
+        );
+
+      await this.saleflowService.createSaleFlowModule({
+        saleflow: createdSaleflow._id,
+        delivery: {
+          deliveryLocation: true,
+          isActive: true,
+          moduleOrder: 0,
+        } as any,
+        post: {
+          isActive: true,
+          post: true,
+          moduleOrder: 1,
+        } as any,
+      });
+
+      userSaleflowDefault = defaultSaleflow;
+    }
+
+    return {
+      merchantDefault: userMerchantDefault,
+      saleflowDefault: userSaleflowDefault,
+    };
   }
 }
