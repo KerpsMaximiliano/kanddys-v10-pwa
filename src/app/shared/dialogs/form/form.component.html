@@ -23,6 +23,16 @@
               [formControlName]="field.name"
               [placeholder]="field.placeholder || 'Escribe..'"
             />
+
+            <ng-container *ngIf="field.bottomButton">
+              <button
+                class="field-button"
+                (click)="field.bottomButton.callback()"
+                [ngStyle]="field.bottomButton.containerStyles"
+              >
+                {{ field.bottomButton.text }}
+              </button>
+            </ng-container>
           </div>
         </ng-container>
 

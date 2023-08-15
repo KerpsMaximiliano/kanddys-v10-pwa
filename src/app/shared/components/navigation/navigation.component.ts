@@ -123,7 +123,7 @@ export class NavigationComponent implements OnInit {
         linkName: 'my-dashboard',
       },
       {
-        text: 'Artículos de Proveedores',
+        text: 'Artículos y ventas',
         routerLink: ['/ecommerce/provider-items'],
         linkName: 'provider-pov-link',
       },

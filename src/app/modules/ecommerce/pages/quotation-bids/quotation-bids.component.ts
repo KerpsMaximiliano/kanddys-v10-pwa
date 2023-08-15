@@ -55,6 +55,7 @@ export class QuotationBidsComponent implements OnInit {
   isCurrentUserASupplier: boolean = false;
   isTheCurrentUserTheQuotationMerchant: boolean = false;
   quotationLink: string;
+  tutorialOpened: boolean = false;
 
   constructor(
     private quotationsService: QuotationsService,
