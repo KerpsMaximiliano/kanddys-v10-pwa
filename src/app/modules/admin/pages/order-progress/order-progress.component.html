@@ -6,11 +6,21 @@
         </div>
     </div>
     <div class="dates-container">
-      <div class="progress-container">
+      <!-- <div class="progress-container">
         <div class="progress" *ngFor="let i of progress" [ngClass]="{'progress-selected': i.selected}" (click)="select(i.id)">
           {{ orderDeliveryStatus(i.name) }}
           {{"(" + orderDeliveryLength(i.name) + ")"}} 
         </div>
+      </div> -->
+      <div class="progress-container">
+        <ng-container *ngFor="let i of progress">
+          <div class="progress-item">
+            <div class="progress" [ngClass]="{'progress-selected': i.selected}" (click)="select(i.id)">
+              <span>{{ orderDeliveryStatus(i.name) }}</span>
+              <span>{{ "(" + orderDeliveryLength(i.name) + ")" }}</span>
+            </div>
+          </div>
+        </ng-container>
       </div>
     </div>
     <div class="content">

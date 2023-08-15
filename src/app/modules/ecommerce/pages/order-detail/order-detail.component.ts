@@ -798,7 +798,7 @@ export class OrderDetailComponent implements OnInit {
   }
 
   async handleStatusUpdated(updatedStatus: string) {
-    let status = this.statusList.map(a => a.status);
+    const status = this.statusList.map(a => a.status);
     this.activeStatusIndex = status.findIndex(
       (status) => status === updatedStatus
     );
