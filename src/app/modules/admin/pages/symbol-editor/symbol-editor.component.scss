@@ -131,20 +131,25 @@ nav {
   padding-top: 14px;
 }
 
+.flex {
+  display: flex;
+  gap: 6px;
+}
+
 .display-text {
   color: #7B7B7B;
   font-family: InterBold;
   font-size: 17px;
   margin: 0;
+  border: none;
 }
 
-.placeholder-container {
+.image-container {
   display: flex;
-  width: 110px;
-  justify-content: space-between;
+  gap: 2px;
 }
 
-.placeholder {
+.image {
   border-radius: 2px;
   background-color: #936105;
   height: 25px;
