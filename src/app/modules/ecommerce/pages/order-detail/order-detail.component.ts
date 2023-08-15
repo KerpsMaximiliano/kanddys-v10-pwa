@@ -326,7 +326,7 @@ export class OrderDetailComponent implements OnInit {
       this.order.orderStatus
     );
     const temporalDate = new Date(this.order.createdAt);
-    this.orderDate = temporalDate.toLocaleString('es-MX', {
+    const formattedOrderDate = temporalDate.toLocaleString('es-MX', {
       hour12: true,
       day: '2-digit',
       month: 'short',
@@ -334,6 +334,10 @@ export class OrderDetailComponent implements OnInit {
       hour: '2-digit',
       minute: '2-digit',
     });
+
+    const splittedDate = formattedOrderDate.split(' ');
+    const dateSubstring = splittedDate.pop();
+    this.orderDate = `${splittedDate.join(' ')} ${dateSubstring.replace(/\./g, '')}`;
 
     if (!this.headerService.merchantContact) {
       this.headerService.merchantContact = (
