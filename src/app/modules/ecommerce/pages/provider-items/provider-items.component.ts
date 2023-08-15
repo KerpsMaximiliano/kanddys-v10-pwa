@@ -165,12 +165,6 @@ export class ProviderItemsComponent implements OnInit {
       localStorage.getItem('tutorials-config')
     );
 
-    console.log(
-      'provider-items' in tutorialsConfig,
-      tutorialsConfig['provider-items'],
-      this.itemsISell.length !== 0
-    );
-
     if (
       tutorialsConfig &&
       'provider-items' in tutorialsConfig &&
