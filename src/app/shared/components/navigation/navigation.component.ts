@@ -114,7 +114,7 @@ export class NavigationComponent implements OnInit {
     active: false,
     links: [
       {
-        text: 'Mi KiosKo 💰',
+        text: 'Mi KiosKo',
         routerLink: ['/admin/supplier-dashboard'],
         queryParams: {
           supplierMode: true,
@@ -123,7 +123,7 @@ export class NavigationComponent implements OnInit {
         linkName: 'my-dashboard',
       },
       {
-        text: 'Artículos y ventas',
+        text: 'Artículos & Ventas 💰',
         routerLink: ['/ecommerce/provider-items'],
         linkName: 'provider-pov-link',
       },
