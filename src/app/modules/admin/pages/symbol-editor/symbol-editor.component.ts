@@ -32,7 +32,13 @@ interface Post {
 export class SymbolEditorComponent implements OnInit {
   env: string = environment.assetsUrl;
   active: boolean = false;
-  post: Post;
+  post: Post = {
+    _id: '',
+    title: '',
+    message: '',
+    categories: [],
+    ctaText: ''
+  };
   postImages: any[];
   itemFormData: FormGroup;
   categories: any[];
@@ -173,7 +179,6 @@ export class SymbolEditorComponent implements OnInit {
     bottomSheetRef.instance.selectionOutput.subscribe(
       async (categoriesAdded: Array<string>) => {
         this.categoryIds = categoriesAdded;
-        console.log(this.categoryIds)
         this.post.categories = this.categories.filter((category) => categoriesAdded.includes(category._id));
       }
     );
@@ -186,9 +191,6 @@ export class SymbolEditorComponent implements OnInit {
         message: this.message, 
         categories: this.categoryIds,
         ctaText: this.ctaText
-      }, this.post._id).then((res) => {
-        console.log(res);
-      }
-    )
+      }, this.post._id);
   }
 }
