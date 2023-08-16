@@ -63,6 +63,10 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
   unitsForItemsThatYouDontSell: Record<string, number> = {};
   quotationName: string = null;
   tutorialOpened: boolean = true;
+  itemsTutorialCardsOpened: Record<string, boolean> = {
+    price: true,
+    stock: true,
+  };
   assetsFolder: string = environment.assetsUrl;
 
   constructor(
@@ -211,6 +215,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
             );
 
             this.checkIfTutorialsWereSeenAlready();
+            await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
 
             this.itemSearchbar.valueChanges.subscribe(async (change) => {
               this.quotationItemsToShow = JSON.parse(
@@ -655,7 +660,8 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
 
   determineWhichItemsNeedToBeUpdatedAndWhichNeedToBeCreated = async (
     merchantDefault: Merchant,
-    itemsThatArentOnSupplierSaleflow: Array<QuotationItem>
+    itemsThatArentOnSupplierSaleflow: Array<QuotationItem>,
+    createItemsAndAuthThem: boolean = false
   ): Promise<{
     createdItems: Array<string>;
     itemsToUpdate: Record<string, ItemInput>;
@@ -702,30 +708,48 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
       parentItemsAndChildItems[item.parentItem] = item._id;
     });
 
-    itemsThatArentOnSupplierSaleflow.forEach((item, index) => {
+    for await (const item of itemsThatArentOnSupplierSaleflow) {
+      const itemSlides: Array<any> = item.images
+        .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
+        .map(({ index, ...image }) => {
+          return {
+            url: completeImageURL(image.value),
+            index,
+            type: 'poster',
+            text: '',
+            _id: image._id,
+          };
+        });
+
+      let images: ItemImageInput[] = await Promise.all(
+        itemSlides.map(async (slide: SlideInput, index: number) => {
+          return {
+            file: await urltoFile(slide.url, 'file' + index, null, true),
+            index,
+            active: true,
+          };
+        })
+      );
+
       itemsToUpdateOrToCreateById[item._id] = {
         operation: itemsToUpdate[item._id] ? 'UPDATE' : 'CREATE',
         data: {
           name: item.name,
           description: item.description,
-          pricing: item.pricing,
-          stock: item.stock,
+          pricing: item.pricing !== null ? item.pricing : 0,
+          stock: item.stock !== null ? item.stock : 0,
           useStock: true,
           notificationStock: true,
           notificationStockLimit: item.notificationStockLimit,
           notificationStockPhoneOrEmail: item.notificationStockPhoneOrEmail,
-          images:
-            this.quotationsService.supplierItemsAdjustmentsConfig
-              .itemsThatArentInSupplierSaleflow[index].images,
+          images: images,
           merchant: this.supplierMerchantId,
           content: [],
           currencies: [],
           hasExtraPrice: false,
           parentItem: item._id,
           purchaseLocations: [],
-          showImages:
-            this.quotationsService.supplierItemsAdjustmentsConfig
-              .itemsThatArentInSupplierSaleflow[index].images.length > 0,
+          showImages: images.length > 0,
           type: 'supplier',
         },
       };
@@ -740,19 +764,33 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
         itemsToUpdateObjects[parentItemsAndChildItems[item._id]] =
           itemsToUpdateOrToCreateById[item._id].data;
       }
-    });
+    }
 
-    const precreatedItemsResponse = await Promise.all(
-      itemsToCreateIds.map((idOfItemToCreate) =>
-        this.itemsService.createPreItem(
-          itemsToUpdateOrToCreateById[idOfItemToCreate].data
+    if (!createItemsAndAuthThem) {
+      const precreatedItemsResponse = await Promise.all(
+        itemsToCreateIds.map((idOfItemToCreate) =>
+          this.itemsService.createPreItem(
+            itemsToUpdateOrToCreateById[idOfItemToCreate].data
+          )
         )
-      )
-    );
+      );
 
-    precreatedItemsResponse.forEach((promiseResponse) => {
-      idsOfCreatedItems.push(promiseResponse?.createPreItem._id);
-    });
+      precreatedItemsResponse.forEach((promiseResponse) => {
+        idsOfCreatedItems.push(promiseResponse?.createPreItem._id);
+      });
+    } else {
+      const createdItemsResponse = await Promise.all(
+        itemsToCreateIds.map((idOfItemToCreate) =>
+          this.itemsService.createItem(
+            itemsToUpdateOrToCreateById[idOfItemToCreate].data
+          )
+        )
+      );
+
+      createdItemsResponse.forEach((promiseResponse) => {
+        idsOfCreatedItems.push(promiseResponse?.createItem._id);
+      });
+    }
 
     unlockUI();
 
@@ -863,7 +901,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
 
           this.askToTheUserIfHeFinishedAlready(itemInput);
         } else {
-          if (item.inSaleflow) {
+          if (!item.inSaleflow) {
             lockUI();
 
             const itemInput = await this.getItemInputForItemsThatYouDontSell(
@@ -907,6 +945,32 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
             }
 
             unlockUI();
+          } else {
+            const price = Number(result.value['price']);
+
+            await this.itemsService.updateItem(
+              {
+                pricing: price,
+              },
+              item._id
+            );
+
+            const itemIndexInFullList = this.quotationItems.findIndex(
+              (itemInList) => item._id === itemInList._id
+            );
+
+            if (itemIndexInFullList >= 0) {
+              this.quotationItems[itemIndexInFullList] = {
+                ...item,
+                pricing: price,
+              };
+              this.quotationItems[itemIndexInFullList].inSaleflow = true;
+              this.quotationItemsToShow = JSON.parse(
+                JSON.stringify(this.quotationItems)
+              );
+            } else {
+              console.error('item not in the list');
+            }
           }
         }
       }
@@ -1008,23 +1072,23 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     });
 
     return dialogRef.afterClosed().subscribe(async (accepted: boolean) => {
+      const itemIndexInFullList = this.quotationItems.findIndex(
+        (itemInList) => itemInput.parentItem === itemInList._id
+      );
+
+      if (itemIndexInFullList >= 0) {
+        this.quotationItems[itemIndexInFullList].pricing = itemInput.pricing;
+        this.quotationItems[itemIndexInFullList].stock = itemInput.stock;
+        this.quotationItemsToShow = JSON.parse(
+          JSON.stringify(this.quotationItems)
+        );
+      } else {
+        console.error('item not in the list');
+      }
+
       if (accepted) {
         return await this.openMagicLinkDialog(itemInput);
       } else {
-        const itemIndexInFullList = this.quotationItems.findIndex(
-          (itemInList) => itemInput.parentItem === itemInList._id
-        );
-
-        if (itemIndexInFullList >= 0) {
-          this.quotationItems[itemIndexInFullList].pricing = itemInput.pricing;
-          this.quotationItems[itemIndexInFullList].stock = itemInput.stock;
-          this.quotationItemsToShow = JSON.parse(
-            JSON.stringify(this.quotationItems)
-          );
-        } else {
-          console.error('item not in the list');
-        }
-
         dialogRef.close();
       }
     });
@@ -1070,42 +1134,59 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
           : null;
 
         const itemsThatArentOnSupplierSaleflow = this.quotationItems.filter(
-          (item) => !item.inSaleflow
+          (item) => !item.inSaleflow && item.pricing !== null
         );
 
         if (!myUser && !merchantDefaullt) {
           const idsOfCreatedItems: Array<string> = [];
 
-          lockUI();
-          const inputArray: Array<ItemInput> =
-            itemsThatArentOnSupplierSaleflow.map((item, index) => {
-              const input: ItemInput = {
-                name: item.name,
-                description: item.description,
-                pricing: item.pricing,
-                stock: item.stock,
-                useStock: true,
-                notificationStock: true,
-                notificationStockLimit: item.notificationStockLimit,
-                notificationStockPhoneOrEmail:
-                  item.notificationStockPhoneOrEmail,
-                images:
-                  this.quotationsService.supplierItemsAdjustmentsConfig
-                    .itemsThatArentInSupplierSaleflow[index].images,
-                merchant: this.supplierMerchantId,
-                content: [],
-                currencies: [],
-                hasExtraPrice: false,
-                parentItem: item._id,
-                purchaseLocations: [],
-                showImages:
-                  this.quotationsService.supplierItemsAdjustmentsConfig
-                    .itemsThatArentInSupplierSaleflow[index].images.length > 0,
-                type: 'supplier',
-              };
+          const inputArray: Array<ItemInput> = [];
 
-              return input;
-            });
+          for await (const item of itemsThatArentOnSupplierSaleflow) {
+            const itemSlides: Array<any> = item.images
+              .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
+              .map(({ index, ...image }) => {
+                return {
+                  url: completeImageURL(image.value),
+                  index,
+                  type: 'poster',
+                  text: '',
+                  _id: image._id,
+                };
+              });
+
+            let images: ItemImageInput[] = await Promise.all(
+              itemSlides.map(async (slide: SlideInput, index: number) => {
+                return {
+                  file: await urltoFile(slide.url, 'file' + index, null, true),
+                  index,
+                  active: true,
+                };
+              })
+            );
+
+            const input: ItemInput = {
+              name: item.name,
+              description: item.description,
+              pricing: item.pricing,
+              stock: item.stock,
+              useStock: true,
+              notificationStock: true,
+              notificationStockLimit: item.notificationStockLimit,
+              notificationStockPhoneOrEmail: item.notificationStockPhoneOrEmail,
+              images: images,
+              merchant: this.supplierMerchantId,
+              content: [],
+              currencies: [],
+              hasExtraPrice: false,
+              parentItem: item._id,
+              purchaseLocations: [],
+              showImages: images.length > 0,
+              type: 'supplier',
+            };
+
+            inputArray.push(input);
+          }
 
           for await (const itemInput of inputArray) {
             //console.log('itemInput', itemInput);
@@ -1117,14 +1198,13 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
             idsOfCreatedItems.push(createdItem._id);
           }
 
-          unlockUI();
-
           await this.generateMagicLinkFor(
             emailOrPhone,
             idsOfCreatedItems,
             null,
             true
           );
+          unlockUI();
         } else {
           const { createdItems, itemsToUpdate } =
             await this.determineWhichItemsNeedToBeUpdatedAndWhichNeedToBeCreated(
@@ -1138,6 +1218,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
             itemsToUpdate,
             true
           );
+          unlockUI();
         }
       } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
         unlockUI();
@@ -1204,37 +1285,29 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
               true
             );
 
-            const { merchantDefault, saleflowDefault } =
+            const { merchantDefault } =
               await this.getDefaultMerchantAndSaleflows(session.user);
 
-            itemInput.merchant = merchantDefault._id;
-
-            const createdItem = (await this.itemsService.createItem(itemInput))
-              ?.createItem;
-
-            await this.saleflowService.addItemToSaleFlow(
-              {
-                item: createdItem._id,
-              },
-              saleflowDefault._id
+            const itemsThatArentOnSupplierSaleflow = this.quotationItems.filter(
+              (item) => !item.inSaleflow && item.pricing !== null
             );
 
-            window.location.href =
-              environment.uri + '/ecommerce/provider-items';
+            const { createdItems, itemsToUpdate } =
+              await this.determineWhichItemsNeedToBeUpdatedAndWhichNeedToBeCreated(
+                merchantDefault,
+                itemsThatArentOnSupplierSaleflow,
+                true
+              );
 
-            unlockUI();
+            if (itemsToUpdate && Object.keys(itemsToUpdate).length > 0) {
+              await Promise.all(
+                Object.keys(itemsToUpdate).map((itemId) =>
+                  this.itemsService.updateItem(itemsToUpdate[itemId], itemId)
+                )
+              );
+            }
 
-            this.dialogService.open(GeneralFormSubmissionDialogComponent, {
-              type: 'centralized-fullscreen',
-              props: {
-                icon: 'check-circle.svg',
-                showCloseButton: false,
-                message:
-                  'Se ha enviado un link mágico a tu teléfono o a tu correo electrónico',
-              },
-              customClass: 'app-dialog',
-              flags: ['no-header'],
-            });
+            this.router.navigate(['/ecommerce/provider-items']);
           } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
             unlockUI();
             this.snackbar.open('Datos invalidos', 'Cerrar', {
@@ -1292,7 +1365,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
           );
 
           const itemIndexInFullList = this.quotationItems.findIndex(
-            (itemInList) => item.parentItem === itemInList._id
+            (itemInList) => item._id === itemInList._id
           );
 
           if (itemIndexInFullList >= 0) {
@@ -1314,20 +1387,29 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     });
   }
 
-  closeItemsTutorial = () => {
-    this.tutorialOpened = false;
+  closeItemsTutorial = (cardName: string) => {
+    this.itemsTutorialCardsOpened[cardName] = false;
 
-    let tutorialsConfig = JSON.parse(localStorage.getItem('tutorials-config'));
+    if (
+      !this.itemsTutorialCardsOpened['price'] &&
+      !this.itemsTutorialCardsOpened['stock']
+    ) {
+      this.tutorialOpened = false;
 
-    if (!tutorialsConfig) tutorialsConfig = {};
+      let tutorialsConfig = JSON.parse(
+        localStorage.getItem('tutorials-config')
+      );
 
-    localStorage.setItem(
-      'tutorials-config',
-      JSON.stringify({
-        ...tutorialsConfig,
-        'supplier-registration': true,
-      })
-    );
+      if (!tutorialsConfig) tutorialsConfig = {};
+
+      localStorage.setItem(
+        'tutorials-config',
+        JSON.stringify({
+          ...tutorialsConfig,
+          'supplier-registration': true,
+        })
+      );
+    }
   };
 
   async getDefaultMerchantAndSaleflows(user: User): Promise<{
