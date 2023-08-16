@@ -67,6 +67,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     price: true,
     stock: true,
   };
+  searchbarPlaceholder: string = 'Buscar...';
   assetsFolder: string = environment.assetsUrl;
 
   constructor(
@@ -216,6 +217,18 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
 
             this.checkIfTutorialsWereSeenAlready();
             await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+
+            if (this.queryParams.requesterId) {
+              lockUI();
+              const merchant = await this.merchantsService.merchant(
+                this.queryParams.requesterId,
+                true
+              );
+              unlockUI();
+
+              this.searchbarPlaceholder =
+                'Artículos que necesita ' + merchant.name;
+            }
 
             this.itemSearchbar.valueChanges.subscribe(async (change) => {
               this.quotationItemsToShow = JSON.parse(
