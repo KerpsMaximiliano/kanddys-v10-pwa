@@ -8,7 +8,7 @@
         name="item-search"
         id="search-from-results-view"
         class="input search-bar"
-        placeholder="Buscar..."
+        [placeholder]="searchbarPlaceholder"
         [formControl]="itemSearchbar"
       />
     </form>
@@ -160,7 +160,8 @@
           },
           middleText: 'Adiciona el precio de venta',
           bottomText: 'Ok',
-          bottomTextClickHandler: closeItemsTutorial
+          bottomTextClickHandler: closeItemsTutorial,
+          cardName: 'price'
         }
       "
     ></ng-container>
@@ -174,7 +175,8 @@
             marginTop: '11px'
           },
           bottomText: 'Ok',
-          bottomTextClickHandler: closeItemsTutorial
+          bottomTextClickHandler: closeItemsTutorial,
+          cardName: 'stock'
         }
       "
     ></ng-container>
@@ -190,8 +192,9 @@
   let-middleTextStyles="middleTextStyles"
   let-bottomText="bottomText"
   let-bottomTextClickHandler="bottomTextClickHandler"
+  let-cardName="cardName"
 >
-  <div class="help-card-container">
+  <div class="help-card-container" *ngIf="itemsTutorialCardsOpened[cardName]">
     <span class="topText" *ngIf="topText" [ngStyle]="topTextStyles">{{
       topText
     }}</span>
@@ -201,7 +204,7 @@
     }}</span>
     <span
       class="bottomText"
-      (click)="bottomTextClickHandler ? bottomTextClickHandler() : null"
+      (click)="bottomTextClickHandler ? bottomTextClickHandler(cardName) : null"
       >{{ bottomText }}</span
     >
   </div>

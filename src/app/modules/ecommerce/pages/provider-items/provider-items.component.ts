@@ -22,6 +22,7 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { QuotationItem } from 'src/app/core/services/quotations.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import {
@@ -88,8 +89,17 @@ export class ProviderItemsComponent implements OnInit {
   fetchedItemsFromMagicLink: Array<Item> = [];
 
   //Tutorial-specific variables
-  searchTutorialsOpened: boolean = true;
+  searchTutorialsOpened: boolean = false;
   itemsTutorialOpened: boolean = false;
+  itemsTutorialCardsOpened: Record<string, boolean> = {
+    price: true,
+    stock: true,
+  };
+  searchTutorialCardsOpened: Record<string, boolean> = {
+    searchbar: true,
+    sold: true,
+    orders: true,
+  };
 
   constructor(
     private headerService: HeaderService,
@@ -131,7 +141,7 @@ export class ProviderItemsComponent implements OnInit {
 
         await this.getItemsISell();
 
-        this.checkIfTutorialsWereSeenAlready();
+        this.openTutorials();
 
         await this.getNewPageOfItemsIDontSell(true, false);
 
@@ -160,25 +170,15 @@ export class ProviderItemsComponent implements OnInit {
     }
   }
 
-  checkIfTutorialsWereSeenAlready = () => {
-    const tutorialsConfig = JSON.parse(
-      localStorage.getItem('tutorials-config')
-    );
-
-    console.log(
-      'provider-items' in tutorialsConfig,
-      tutorialsConfig['provider-items'],
-      this.itemsISell.length !== 0
-    );
-
-    if (
-      tutorialsConfig &&
-      'provider-items' in tutorialsConfig &&
-      tutorialsConfig['provider-items'] &&
-      this.itemsISell.length !== 0
+  openTutorials = () => {
+    if (this.itemsISell.length === 0) {
+      this.itemsTutorialOpened = true;
+    } else if (
+      this.headerService.user &&
+      this.merchantsService.merchantData &&
+      this.itemsISell.length > 0
     ) {
-      this.searchTutorialsOpened = false;
-      this.itemsTutorialOpened = false;
+      this.searchTutorialsOpened = true;
     }
   };
 
@@ -487,6 +487,10 @@ export class ProviderItemsComponent implements OnInit {
         await this.authenticateItemFromMagicLinkData(parsedData);
       }
 
+      if (parsedData.updateItem) {
+        await this.updateSingleItemFromMagicLinkData(parsedData);
+      }
+
       if (parsedData.itemsToUpdate) {
         await this.updateItemsFromMagicLinkData(parsedData);
       }
@@ -527,6 +531,26 @@ export class ProviderItemsComponent implements OnInit {
 
       unlockUI();
 
+      window.location.href = environment.uri + '/ecommerce/provider-items';
+    } catch (error) {
+      unlockUI();
+
+      console.error(error);
+    }
+  };
+
+  updateSingleItemFromMagicLinkData = async (
+    parsedData: Record<string, any>
+  ) => {
+    try {
+      lockUI();
+      await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+
+      const { _id: itemToUpdate, ...rest } = parsedData.updateItem;
+
+      await this.itemsService.updateItem(rest, itemToUpdate);
+
+      unlockUI();
       window.location.href = environment.uri + '/ecommerce/provider-items';
     } catch (error) {
       unlockUI();
@@ -705,6 +729,48 @@ export class ProviderItemsComponent implements OnInit {
     });
   }
 
+  determineIfItemNeedsToBeUpdatedOrCreated = async (
+    merchantDefault: Merchant,
+    parentItemId: string
+  ): Promise<{
+    operation: 'UPDATE' | 'CREATE';
+    itemId?: string;
+  }> => {
+    lockUI();
+
+    const supplierSpecificItemsInput: PaginationInput = {
+      findBy: {
+        parentItem: {
+          $in: ([] = [parentItemId]),
+        },
+        merchant: merchantDefault?._id,
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: -1,
+        page: 1,
+      },
+    };
+
+    //Fetches supplier specfic items, meaning they already are on the saleflow
+    let itemsAlreadyProviderByTheMerchant: Array<QuotationItem> = [];
+
+    itemsAlreadyProviderByTheMerchant = (
+      await this.itemsService.listItems(supplierSpecificItemsInput)
+    )?.listItems;
+
+    unlockUI();
+
+    return {
+      operation:
+        itemsAlreadyProviderByTheMerchant.length > 0 ? 'UPDATE' : 'CREATE',
+      itemId:
+        itemsAlreadyProviderByTheMerchant.length > 0
+          ? itemsAlreadyProviderByTheMerchant[0]._id
+          : null,
+    };
+  };
+
   async editPrice(item: Item, itemIndex: number) {
     let fieldsToCreate: FormData = {
       fields: [
@@ -850,25 +916,65 @@ export class ProviderItemsComponent implements OnInit {
       if (result?.controls?.magicLinkEmailOrPhone.valid) {
         let emailOrPhone = result?.value['magicLinkEmailOrPhone'];
 
+        const myUser = await this.authService.checkUser(emailOrPhone);
+        const merchantDefault = myUser
+          ? await this.merchantsService.merchantDefault(myUser._id)
+          : null;
+
+        let toBeDone: {
+          operation: 'UPDATE' | 'CREATE';
+          itemId?: string;
+        } = {
+          operation: 'CREATE',
+        };
+
+        if (merchantDefault) {
+          toBeDone = await this.determineIfItemNeedsToBeUpdatedOrCreated(
+            merchantDefault,
+            itemInput.parentItem
+          );
+        }
+
         lockUI();
 
-        const createdItem = (await this.itemsService.createPreItem(itemInput))
-          ?.createPreItem;
+        if (toBeDone.operation === 'CREATE') {
+          const createdItem = (await this.itemsService.createPreItem(itemInput))
+            ?.createPreItem;
 
-        let redirectionRoute = '/ecommerce/provider-items';
+          let redirectionRoute = '/ecommerce/provider-items';
 
-        await this.authService.generateMagicLink(
-          emailOrPhone,
-          redirectionRoute,
-          null,
-          'MerchantAccess',
-          {
-            jsondata: JSON.stringify({
-              createdItem: createdItem._id,
-            }),
-          },
-          []
-        );
+          await this.authService.generateMagicLink(
+            emailOrPhone,
+            redirectionRoute,
+            null,
+            'MerchantAccess',
+            {
+              jsondata: JSON.stringify({
+                createdItem: createdItem._id,
+              }),
+            },
+            []
+          );
+        } else if (toBeDone.operation === 'UPDATE') {
+          let redirectionRoute = '/ecommerce/provider-items';
+
+          await this.authService.generateMagicLink(
+            emailOrPhone,
+            redirectionRoute,
+            null,
+            'MerchantAccess',
+            {
+              jsondata: JSON.stringify({
+                updateItem: {
+                  _id: toBeDone.itemId,
+                  stock: itemInput.stock,
+                  pricing: itemInput.pricing,
+                },
+              }),
+            },
+            []
+          );
+        }
 
         unlockUI();
 
@@ -998,25 +1104,27 @@ export class ProviderItemsComponent implements OnInit {
     };
   }
 
-  closeSearchTutorial = () => {
-    this.searchTutorialsOpened = false;
-    this.itemsTutorialOpened = true;
+  closeSearchTutorial = (cardName: string) => {
+    this.searchTutorialCardsOpened[cardName] = false;
+
+    if (
+      !this.searchTutorialCardsOpened['searchbar'] &&
+      !this.searchTutorialCardsOpened['sold'] &&
+      !this.searchTutorialCardsOpened['orders']
+    ) {
+      this.searchTutorialsOpened = false;
+    }
   };
 
-  closeItemsTutorial = () => {
-    this.itemsTutorialOpened = false;
+  closeItemsTutorial = (cardName: string) => {
+    this.itemsTutorialCardsOpened[cardName] = false;
 
-    let tutorialsConfig = JSON.parse(localStorage.getItem('tutorials-config'));
-
-    if (!tutorialsConfig) tutorialsConfig = {};
-
-    localStorage.setItem(
-      'tutorials-config',
-      JSON.stringify({
-        ...tutorialsConfig,
-        'provider-items': true,
-      })
-    );
+    if (
+      !this.itemsTutorialCardsOpened['price'] &&
+      !this.itemsTutorialCardsOpened['stock']
+    ) {
+      this.itemsTutorialOpened = false;
+    }
   };
 
   async getDefaultMerchantAndSaleflows(user: User): Promise<{
