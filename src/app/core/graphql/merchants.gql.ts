@@ -534,6 +534,7 @@ export const merchantFuncionality = gql`
             _id
             name
           }
+          ctaText
         }
         active
       }
