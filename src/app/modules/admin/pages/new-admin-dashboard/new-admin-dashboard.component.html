@@ -111,10 +111,29 @@
           </div>
 
           <div class="items-wrapper">
-            <div class="items-flex" *ngIf="allItems.length">
+            <div class="items-flex" *ngIf="allItems.length && !allItemsFiltered.length">
               <div
                 class="capsize"
                 *ngFor="let item of allItems; let itemIndex = index"
+              >
+                <div class="item-wrapper">
+                  <app-item-admin-card
+                    [item]="item"
+                    [unitSalesCounter]="
+                      itemsSelledCountByItemId[item._id]
+                        ? itemsSelledCountByItemId[item._id]
+                        : 0
+                    "
+                    [hideDotsOptions]="true"
+                  ></app-item-admin-card>
+                </div>
+              </div>
+            </div>
+
+            <div class="items-flex" *ngIf="allItemsFiltered.length">
+              <div
+                class="capsize"
+                *ngFor="let item of allItemsFiltered; let itemIndex = index"
               >
                 <div class="item-wrapper">
                   <app-item-admin-card

@@ -90,6 +90,8 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
   renderItemsPromise: Promise<{ listItems: Item[] }>;
   selectedTags: String[] = [];
   allItems: Item[] = [];
+  allItemsId: string[] = [];
+  allItemsFiltered: Item[] = [];
   allItemsCopy: Item[] = [];
   soldItems: Item[] = [];
 
@@ -138,7 +140,7 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     //TODO: Delete this
-    this.authService.signin('584242630354', '123', true);
+    // this.authService.signin('584242630354', '123', true);
 
     this.queryParamsSubscription = this.route.queryParams.subscribe(
       async ({ view, showItems, jsondata, supplierMode }) => {
@@ -252,10 +254,12 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
       this.paginationState.page++;
     }
 
+    this.allItemsId = saleflowItems.map((items) => items.itemId);
+
     const pagination: PaginationInput = {
       findBy: {
         _id: {
-          __in: ([] = saleflowItems.map((items) => items.itemId)),
+          __in: ([] = this.allItemsId),
         },
       },
       options: {
@@ -1232,87 +1236,82 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
           {
             value: `En menos de 2 horas`,
             callback: async () => {
-              const allItemsId = this.allItems.map((item) => item._id);
               const itemsFiltered = await this.saleflowService.listItems({
                 findBy: {
                   estimatedDeliveryTime: {
                     until: 2,
                   },
                   _id: {
-                    __in: allItemsId,
+                    __in: this.allItemsId,
                   },
                 },
               });
-              this.allItems = itemsFiltered.listItems;
+              this.allItemsFiltered = itemsFiltered.listItems;
             },
           },
           {
             value: `En menos de 8 horas`,
             callback: async () => {
-              const allItemsId = this.allItems.map((item) => item._id);
               const itemsFiltered = await this.saleflowService.listItems({
                 findBy: {
                   estimatedDeliveryTime: {
                     until: 8,
                   },
                   _id: {
-                    __in: allItemsId,
+                    __in: this.allItemsId,
                   },
                 },
               });
-              this.allItems = itemsFiltered.listItems;
+              this.allItemsFiltered = itemsFiltered.listItems;
             },
           },
           {
             value: `En menos de 30 horas`,
             callback: async () => {
-              const allItemsId = this.allItems.map((item) => item._id);
               const itemsFiltered = await this.saleflowService.listItems({
                 findBy: {
                   estimatedDeliveryTime: {
                     until: 30,
                   },
                   _id: {
-                    __in: allItemsId,
+                    __in: this.allItemsId,
                   },
                 },
               });
-              this.allItems = itemsFiltered.listItems;
+              this.allItemsFiltered = itemsFiltered.listItems;
             },
           },
           {
             value: `Entre 30 a 48 horas`,
             callback: async () => {
-              const allItemsId = this.allItems.map((item) => item._id);
               const itemsFiltered = await this.saleflowService.listItems({
                 findBy: {
                   estimatedDeliveryTime: {
                     from: 30,
                     until: 48,
                     _id: {
-                      __in: allItemsId,
+                      __in: this.allItemsId,
                     },
                   },
                 },
               });
-              this.allItems = itemsFiltered.listItems;
+              this.allItemsFiltered = itemsFiltered.listItems;
             },
           },
           {
             value: `Más de 48 horas`,
             callback: async () => {
-              const allItemsId = this.allItems.map((item) => item._id);
               const itemsFiltered = await this.saleflowService.listItems({
                 findBy: {
                   estimatedDeliveryTime: {
                     from: 48,
                   },
                   _id: {
-                    __in: allItemsId,
+                    __in: this.allItemsId,
                   },
                 },
               });
-              this.allItems = itemsFiltered.listItems;
+              this.allItemsFiltered = itemsFiltered.listItems;
             },
           },
         ],
@@ -1331,24 +1330,22 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
           {
             value: `$0.00 - $2,000`,
             callback: async () => {
-              const allItemsId = this.allItems.map((item) => item._id);
               const itemsFiltered = await this.saleflowService.listItems({
                 filter: {
                   maxPricing: 2000,
                 },
                 findBy: {
                   _id: {
-                    __in: allItemsId,
+                    __in: this.allItemsId,
                   },
                 },
               });
-              this.allItems = itemsFiltered.listItems;
+              this.allItemsFiltered = itemsFiltered.listItems;
             },
           },
           {
             value: `$2,000 - $4,000`,
             callback: async () => {
-              const allItemsId = this.allItems.map((item) => item._id);
               const itemsFiltered = await this.saleflowService.listItems({
                 filter: {
                   minPricing: 2000,
@@ -1356,17 +1353,16 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
                 },
                 findBy: {
                   _id: {
-                    __in: allItemsId,
+                    __in: this.allItemsId,
                   },
                 },
               });
-              this.allItems = itemsFiltered.listItems;
+              this.allItemsFiltered = itemsFiltered.listItems;
             },
           },
           {
             value: `$4,000 - $6,000`,
             callback: async () => {
-              const allItemsId = this.allItems.map((item) => item._id);
               const itemsFiltered = await this.saleflowService.listItems({
                 filter: {
                   minPricing: 4000,
@@ -1374,17 +1370,16 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
                 },
                 findBy: {
                   _id: {
-                    __in: allItemsId,
+                    __in: this.allItemsId,
                   },
                 },
               });
-              this.allItems = itemsFiltered.listItems;
+              this.allItemsFiltered = itemsFiltered.listItems;
             },
           },
           {
             value: `$6,000 - $8,000`,
             callback: async () => {
-              const allItemsId = this.allItems.map((item) => item._id);
               const itemsFiltered = await this.saleflowService.listItems({
                 filter: {
                   minPricing: 6000,
@@ -1392,28 +1387,27 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
                 },
                 findBy: {
                   _id: {
-                    __in: allItemsId,
+                    __in: this.allItemsId,
                   },
                 },
               });
-              this.allItems = itemsFiltered.listItems;
+              this.allItemsFiltered = itemsFiltered.listItems;
             },
           },
           {
             value: `$8,000+`,
             callback: async () => {
-              const allItemsId = this.allItems.map((item) => item._id);
               const itemsFiltered = await this.saleflowService.listItems({
                 filter: {
                   minPricing: 8000,
                 },
                 findBy: {
                   _id: {
-                    __in: allItemsId,
+                    __in: this.allItemsId,
                   },
                 },
               });
-              this.allItems = itemsFiltered.listItems;
+              this.allItemsFiltered = itemsFiltered.listItems;
             },
           },
         ],
