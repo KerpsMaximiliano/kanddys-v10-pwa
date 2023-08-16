@@ -7,7 +7,7 @@ import { Location } from '@angular/common';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
 import { Subscription } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
@@ -166,7 +166,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private authService: AuthService,
     private snackbar: MatSnackBar,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -181,7 +182,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   close() {
-    if (this.headerService.user) this.location.back();
+    // if (this.headerService.user) this.location.back();
+    if (this.headerService.user) this.openNavigation = true;
   }
 
   share() {
