@@ -1108,9 +1108,9 @@ export class ProviderItemsComponent implements OnInit {
     this.searchTutorialCardsOpened[cardName] = false;
 
     if (
-      !this.searchTutorialsOpened['searchbar'] &&
-      !this.searchTutorialsOpened['sold'] &&
-      !this.searchTutorialsOpened['orders']
+      !this.searchTutorialCardsOpened['searchbar'] &&
+      !this.searchTutorialCardsOpened['sold'] &&
+      !this.searchTutorialCardsOpened['orders']
     ) {
       this.searchTutorialsOpened = false;
     }
