@@ -23,6 +23,16 @@
               [formControlName]="field.name"
               [placeholder]="field.placeholder || 'Escribe..'"
             />
+
+            <ng-container *ngIf="field.bottomButton">
+              <button
+                class="field-button"
+                (click)="field.bottomButton.callback()"
+                [ngStyle]="field.bottomButton.containerStyles"
+              >
+                {{ field.bottomButton.text }}
+              </button>
+            </ng-container>
           </div>
         </ng-container>
 
@@ -151,10 +161,36 @@
   </div>
   <div mat-dialog-actions class="buttons-flex">
     <button class="cancel cancel-form-dialog" (click)="close()">
-      {{ "cancel" | translate }}
+      <ng-container
+        *ngIf="
+          data.buttonsTexts && data.buttonsTexts.cancel;
+          else defaultCancel
+        "
+      >
+        {{ data.buttonsTexts.cancel }}
+      </ng-container>
+
+      <ng-template #defaultCancel>
+        {{ "cancel" | translate }}
+      </ng-template>
     </button>
-    <button class="accept" [mat-dialog-close]="formGroup" [disabled]="!formGroup.valid">
-      {{ "save-changes" | translate }}
+    <button
+      class="accept"
+      [mat-dialog-close]="formGroup"
+      [disabled]="!formGroup.valid"
+    >
+      <ng-container
+        *ngIf="
+          data.buttonsTexts && data.buttonsTexts.accept;
+          else defaultAccept
+        "
+      >
+        {{ data.buttonsTexts.accept }}
+      </ng-container>
+
+      <ng-template #defaultAccept>
+        {{ "save-changes" | translate }}
+      </ng-template>
     </button>
   </div>
 </div>

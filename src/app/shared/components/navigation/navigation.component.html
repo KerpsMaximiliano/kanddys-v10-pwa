@@ -10,12 +10,14 @@
     <div class="navigation-main-container">
       <div class="header-wrapper">
         <div class="left-part">
-          <img
-            [src]="assetsFolder + '/icon_info.png'"
-            class="info-button"
-            alt="open internal information"
-            (click)="(null)"
-          />
+          <!--
+            <img
+              [src]="assetsFolder + '/icon_info.png'"
+              class="info-button"
+              alt="open internal information"
+              (click)="(null)"
+            />
+          -->
 
           <ng-container>
             <div class="tabs">
@@ -33,17 +35,9 @@
 
         <div class="right-part">
           <div class="member">
-            <div class="user-button">
-              {{
-                headerService.user
-                  ? headerService.user.name ||
-                    headerService.user.phone ||
-                    headerService.user.email
-                  : "Miembro?"
-              }}
+            <div class="user-button" *ngIf="!headerService.user">
+              (Invitado)
             </div>
-
-            <div class="check" *ngIf="headerService.user"> ✅</div>
           </div>
 
           <div class="close" style="cursor: pointer">

@@ -1,17 +1,34 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { AppService } from 'src/app/app.service';
-import { isVideo } from 'src/app/core/helpers/strings.helpers';
+import { urltoFile } from 'src/app/core/helpers/files.helpers';
+import {
+  completeImageURL,
+  isVideo,
+} from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { Item } from 'src/app/core/models/item';
-import { PaginationInput } from 'src/app/core/models/saleflow';
+import { Item, ItemImageInput, ItemInput } from 'src/app/core/models/item';
+import { Merchant } from 'src/app/core/models/merchant';
+import { SlideInput } from 'src/app/core/models/post';
+import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
+import { User } from 'src/app/core/models/user';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import {
+  FormComponent,
+  FormData,
+} from 'src/app/shared/dialogs/form/form.component';
+import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -57,6 +74,7 @@ export class ProviderItemsComponent implements OnInit {
   itemsISell: Array<Item> = [];
   itemsIDontSell: Array<Item> = [];
   renderItemsPromise: Promise<{ listItems: Item[] }>;
+  unitsForItemsThatYouDontSell: Record<string, number> = {};
 
   //userSpecific variables
   isTheUserAMerchant: boolean = null;
@@ -69,14 +87,23 @@ export class ProviderItemsComponent implements OnInit {
   encodedJSONData: string;
   fetchedItemsFromMagicLink: Array<Item> = [];
 
+  //Tutorial-specific variables
+  searchTutorialsOpened: boolean = true;
+  itemsTutorialOpened: boolean = false;
+
   constructor(
     private headerService: HeaderService,
     private itemsService: ItemsService,
     private appService: AppService,
     private saleflowService: SaleFlowService,
     public merchantsService: MerchantsService,
+    private dialog: MatDialog,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private bottomSheet: MatBottomSheet,
+    private dialogService: DialogService,
+    private authService: AuthService,
+    private snackbar: MatSnackBar
   ) {}
 
   async ngOnInit() {
@@ -98,12 +125,14 @@ export class ProviderItemsComponent implements OnInit {
       async ({ jsondata, supplierMode }) => {
         supplierMode = JSON.parse(supplierMode || 'false');
         this.encodedJSONData = jsondata;
-
         if (this.encodedJSONData) {
           this.parseMagicLinkData();
         }
 
         await this.getItemsISell();
+
+        this.checkIfTutorialsWereSeenAlready();
+
         await this.getNewPageOfItemsIDontSell(true, false);
 
         this.itemSearchbar.valueChanges.subscribe(async (change) => {
@@ -130,6 +159,28 @@ export class ProviderItemsComponent implements OnInit {
       }
     }
   }
+
+  checkIfTutorialsWereSeenAlready = () => {
+    const tutorialsConfig = JSON.parse(
+      localStorage.getItem('tutorials-config')
+    );
+
+    console.log(
+      'provider-items' in tutorialsConfig,
+      tutorialsConfig['provider-items'],
+      this.itemsISell.length !== 0
+    );
+
+    if (
+      tutorialsConfig &&
+      'provider-items' in tutorialsConfig &&
+      tutorialsConfig['provider-items'] &&
+      this.itemsISell.length !== 0
+    ) {
+      this.searchTutorialsOpened = false;
+      this.itemsTutorialOpened = false;
+    }
+  };
 
   activateOrDeactivateFilters(filterKey: string) {
     this.activatedSearchFilters[filterKey] =
@@ -365,23 +416,44 @@ export class ProviderItemsComponent implements OnInit {
     });
   }
 
-  async changeAmount(item: Item, type: 'add' | 'subtract', itemIndex: number) {
+  async changeAmount(
+    item: Item,
+    type: 'add' | 'subtract',
+    itemIndex: number,
+    providedByMe: boolean
+  ) {
     try {
       let newAmount: number;
-      if (type === 'add') {
+      if (type === 'add' && providedByMe) {
         newAmount = item.stock >= 0 ? item.stock + 1 : 1;
-      } else if (type === 'subtract') {
+      } else if (type === 'subtract' && providedByMe) {
         newAmount = item.stock >= 1 ? item.stock - 1 : 0;
       }
 
-      this.itemsService.updateItem(
-        {
-          stock: newAmount,
-        },
-        item._id
-      );
+      if (type === 'add' && !providedByMe) {
+        newAmount = !this.unitsForItemsThatYouDontSell[item._id]
+          ? 1
+          : this.unitsForItemsThatYouDontSell[item._id] + 1;
+      } else if (type === 'subtract' && !providedByMe) {
+        newAmount =
+          this.unitsForItemsThatYouDontSell[item._id] >= 1
+            ? this.unitsForItemsThatYouDontSell[item._id] - 1
+            : 0;
+      }
 
-      this.itemsISell[itemIndex].stock = newAmount;
+      if (providedByMe) {
+        this.itemsService.updateItem(
+          {
+            stock: newAmount,
+          },
+          item._id
+        );
+
+        this.itemsISell[itemIndex].stock = newAmount;
+      } else {
+        this.itemsIDontSell[itemIndex].stock = newAmount;
+        this.unitsForItemsThatYouDontSell[item._id] = newAmount;
+      }
     } catch (error) {
       this.headerService.showErrorToast();
     }
@@ -413,6 +485,14 @@ export class ProviderItemsComponent implements OnInit {
 
       if (parsedData.createdItem) {
         await this.authenticateItemFromMagicLinkData(parsedData);
+      }
+
+      if (parsedData.itemsToUpdate) {
+        await this.updateItemsFromMagicLinkData(parsedData);
+      }
+
+      if (parsedData.quotationItems) {
+        await this.authenticateSupplierQuotationItems(parsedData);
       }
 
       return;
@@ -454,4 +534,560 @@ export class ProviderItemsComponent implements OnInit {
       console.error(error);
     }
   };
+
+  updateItemsFromMagicLinkData = async (parsedData: Record<string, any>) => {
+    try {
+      lockUI();
+      await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+
+      await Promise.all(
+        Object.keys(parsedData.itemsToUpdate).map((itemId) =>
+          this.itemsService.updateItem(parsedData.itemsToUpdate[itemId], itemId)
+        )
+      );
+
+      if (!parsedData.quotationItems) {
+        unlockUI();
+        window.location.href = environment.uri + '/ecommerce/provider-items';
+      }
+    } catch (error) {
+      unlockUI();
+
+      console.error(error);
+    }
+  };
+
+  authenticateSupplierQuotationItems = async (
+    parsedData: Record<string, any>
+  ) => {
+    try {
+      lockUI();
+      await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+
+      const saleflow = await this.saleflowService.saleflowDefault(
+        this.merchantsService.merchantData?._id
+      );
+
+      const quotationItemsIDs = parsedData.quotationItems.split('-');
+
+      this.headerService.saleflow = saleflow;
+      this.headerService.storeSaleflow(saleflow);
+
+      const supplierSpecificItemsInput: PaginationInput = {
+        findBy: {
+          _id: {
+            __in: ([] = quotationItemsIDs),
+          },
+        },
+        options: {
+          sortBy: 'createdAt:desc',
+          limit: -1,
+          page: 1,
+        },
+      };
+
+      //Fetches supplier specfic items, meaning they already are on the saleflow
+      let quotationItems: Array<Item> = [];
+
+      quotationItems = (
+        await this.itemsService.listItems(supplierSpecificItemsInput)
+      )?.listItems;
+
+      if (quotationItems?.length) {
+        this.fetchedItemsFromMagicLink = quotationItems;
+
+        if (!this.fetchedItemsFromMagicLink[0].merchant) {
+          await Promise.all(
+            this.fetchedItemsFromMagicLink.map((item) =>
+              this.itemsService.authItem(
+                this.merchantsService.merchantData._id,
+                item._id
+              )
+            )
+          );
+
+          await Promise.all(
+            this.fetchedItemsFromMagicLink.map((item) =>
+              this.saleflowService.addItemToSaleFlow(
+                {
+                  item: item._id,
+                },
+                this.headerService.saleflow._id
+              )
+            )
+          );
+        }
+      }
+
+      unlockUI();
+      window.location.href = environment.uri + '/ecommerce/provider-items';
+    } catch (error) {
+      unlockUI();
+
+      console.error(error);
+    }
+  };
+
+  async addPrice(item: Item) {
+    let fieldsToCreate: FormData = {
+      fields: [
+        {
+          label:
+            '¿Cuál es el precio de venta de' +
+            (item.name ? ' ' + item.name : 'l articulo?'),
+          name: 'price',
+          type: 'currency',
+          validators: [Validators.pattern(/[\S]/), Validators.min(0)],
+        },
+      ],
+      buttonsTexts: {
+        accept: 'Exhibirlo a los Miembros',
+        cancel: 'Cancelar',
+      },
+      automaticallyFocusFirstField: true,
+    };
+
+    const dialogRef = this.dialog.open(FormComponent, {
+      data: fieldsToCreate,
+    });
+
+    dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+      if (result.controls.price.valid) {
+        const price = Number(result.value['price']);
+
+        if (!this.headerService.user) {
+          lockUI();
+          const itemInput = await this.getItemInputForItemsThatYouDontSell(
+            price,
+            item
+          );
+
+          unlockUI();
+
+          this.openMagicLinkDialog(itemInput);
+        } else {
+          lockUI();
+
+          const itemInput = await this.getItemInputForItemsThatYouDontSell(
+            price,
+            item
+          );
+
+          const saleflowDefault = await this.saleflowService.saleflowDefault(
+            this.merchantsService.merchantData._id
+          );
+
+          const createdItem = (await this.itemsService.createItem(itemInput))
+            ?.createItem;
+
+          await this.saleflowService.addItemToSaleFlow(
+            {
+              item: createdItem._id,
+            },
+            saleflowDefault._id
+          );
+
+          this.itemsISell.unshift(createdItem);
+
+          const itemIndex = this.itemsIDontSell.findIndex(
+            (itemInList) => item._id === itemInList._id
+          );
+
+          this.itemsIDontSell.splice(itemIndex, 1);
+
+          this.snackbar.open('Ahora estás exhibiendo el producto!', '', {
+            duration: 5000,
+          });
+
+          unlockUI();
+        }
+      }
+    });
+  }
+
+  async editPrice(item: Item, itemIndex: number) {
+    let fieldsToCreate: FormData = {
+      fields: [
+        {
+          label:
+            '¿Cuál es el precio de venta de' +
+            (item.name ? ' ' + item.name : 'l articulo?'),
+          name: 'price',
+          type: 'currency',
+          validators: [Validators.pattern(/[\S]/), Validators.min(0)],
+        },
+      ],
+      buttonsTexts: {
+        accept: 'Actualizar precio',
+        cancel: 'Cancelar',
+      },
+      automaticallyFocusFirstField: true,
+    };
+
+    const dialogRef = this.dialog.open(FormComponent, {
+      data: fieldsToCreate,
+    });
+
+    dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+      if (result.controls.price.valid) {
+        lockUI();
+
+        try {
+          const price = Number(result.value['price']);
+
+          await this.itemsService.updateItem(
+            {
+              pricing: price,
+            },
+            item._id
+          );
+
+          this.itemsISell[itemIndex].pricing = price;
+
+          unlockUI();
+        } catch (error) {
+          unlockUI();
+          this.headerService.showErrorToast();
+          console.error(error);
+        }
+      }
+    });
+  }
+
+  getItemInputForItemsThatYouDontSell = async (
+    price: number,
+    item: Item
+  ): Promise<ItemInput> => {
+    const itemInput: ItemInput = {
+      name: item.name,
+      layout: item.layout,
+      description: item.description,
+      pricing: price,
+      stock:
+        this.unitsForItemsThatYouDontSell[item._id] >= 0
+          ? this.unitsForItemsThatYouDontSell[item._id]
+          : 0,
+      notificationStock: true,
+      notificationStockLimit: item.notificationStockLimit,
+      useStock: true,
+    };
+
+    if (this.merchantsService.merchantData) {
+      itemInput.merchant = this.merchantsService.merchantData._id;
+    }
+
+    const slides: any[] = item.images
+      .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
+      .map(({ index, ...image }) => {
+        return {
+          url: completeImageURL(image.value),
+          index,
+          type: 'poster',
+          text: '',
+          _id: image._id,
+        };
+      });
+
+    let itemSlideIndex = 0;
+
+    for await (const slide of slides) {
+      if (slide.url && !slide.media) {
+        slides[itemSlideIndex].media = await urltoFile(
+          slide.url,
+          'file' + itemSlideIndex
+        );
+      }
+
+      itemSlideIndex++;
+    }
+
+    let images: ItemImageInput[] = slides.map(
+      (slide: SlideInput, index: number) => {
+        return {
+          file: slide.media,
+          index,
+          active: true,
+        };
+      }
+    );
+
+    itemInput.images = images;
+
+    itemInput.parentItem = item._id;
+
+    return itemInput;
+  };
+
+  async openMagicLinkDialog(itemInput: ItemInput) {
+    let fieldsToCreate: FormData = {
+      title: {
+        text: 'Acceso al Club:',
+      },
+      buttonsTexts: {
+        accept: 'Recibir el enlace con acceso',
+        cancel: 'Cancelar',
+      },
+      fields: [
+        {
+          name: 'magicLinkEmailOrPhone',
+          type: 'email',
+          placeholder: 'Escribe el correo electrónico..',
+          validators: [Validators.pattern(/[\S]/)],
+          bottomButton: {
+            text: 'Adiciona la clave',
+            callback: () => addPassword(),
+          },
+        },
+      ],
+    };
+
+    const dialogRef = this.dialog.open(FormComponent, {
+      data: fieldsToCreate,
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+      if (result?.controls?.magicLinkEmailOrPhone.valid) {
+        let emailOrPhone = result?.value['magicLinkEmailOrPhone'];
+
+        lockUI();
+
+        const createdItem = (await this.itemsService.createPreItem(itemInput))
+          ?.createPreItem;
+
+        let redirectionRoute = '/ecommerce/provider-items';
+
+        await this.authService.generateMagicLink(
+          emailOrPhone,
+          redirectionRoute,
+          null,
+          'MerchantAccess',
+          {
+            jsondata: JSON.stringify({
+              createdItem: createdItem._id,
+            }),
+          },
+          []
+        );
+
+        unlockUI();
+
+        this.dialogService.open(GeneralFormSubmissionDialogComponent, {
+          type: 'centralized-fullscreen',
+          props: {
+            icon: 'check-circle.svg',
+            showCloseButton: false,
+            message:
+              'Se ha enviado un link mágico a tu teléfono o a tu correo electrónico',
+          },
+          customClass: 'app-dialog',
+          flags: ['no-header'],
+        });
+      } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
+        unlockUI();
+        this.snackbar.open('Datos invalidos', 'Cerrar', {
+          duration: 3000,
+        });
+      }
+    });
+
+    const addPassword = async () => {
+      dialogRef.close();
+
+      let fieldsToCreate: FormData = {
+        title: {
+          text: 'Acceso al Club:',
+        },
+        buttonsTexts: {
+          accept: 'Accesar al Club',
+          cancel: 'Cancelar',
+        },
+        fields: [
+          {
+            name: 'email',
+            type: 'email',
+            placeholder: 'Escribe el correo electrónico..',
+            validators: [Validators.pattern(/[\S]/)],
+          },
+          {
+            name: 'password',
+            type: 'password',
+            placeholder: 'Escribe la contraseña',
+            validators: [Validators.pattern(/[\S]/)],
+            bottomButton: {
+              text: 'Prefiero recibir el correo con el enlace de acceso',
+              callback: () => {
+                //Cerrar 2do dialog
+
+                return switchToMagicLinkDialog();
+              },
+            },
+          },
+        ],
+      };
+
+      const dialog2Ref = this.dialog.open(FormComponent, {
+        data: fieldsToCreate,
+        disableClose: true,
+      });
+
+      dialog2Ref.afterClosed().subscribe(async (result: FormGroup) => {
+        try {
+          if (
+            result?.controls?.email.valid &&
+            result?.controls?.password.valid
+          ) {
+            let emailOrPhone = result?.value['email'];
+            let password = result?.value['password'];
+
+            lockUI();
+
+            const session = await this.authService.signin(
+              emailOrPhone,
+              password,
+              true
+            );
+
+            const { merchantDefault, saleflowDefault } =
+              await this.getDefaultMerchantAndSaleflows(session.user);
+
+            itemInput.merchant = merchantDefault._id;
+
+            const createdItem = (await this.itemsService.createItem(itemInput))
+              ?.createItem;
+
+            await this.saleflowService.addItemToSaleFlow(
+              {
+                item: createdItem._id,
+              },
+              saleflowDefault._id
+            );
+
+            window.location.href =
+              environment.uri + '/ecommerce/provider-items';
+
+            unlockUI();
+
+            this.dialogService.open(GeneralFormSubmissionDialogComponent, {
+              type: 'centralized-fullscreen',
+              props: {
+                icon: 'check-circle.svg',
+                showCloseButton: false,
+                message:
+                  'Se ha enviado un link mágico a tu teléfono o a tu correo electrónico',
+              },
+              customClass: 'app-dialog',
+              flags: ['no-header'],
+            });
+          } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
+            unlockUI();
+            this.snackbar.open('Datos invalidos', 'Cerrar', {
+              duration: 3000,
+            });
+          }
+        } catch (error) {
+          console.error(error);
+          this.headerService.showErrorToast();
+        }
+      });
+
+      const switchToMagicLinkDialog = () => {
+        dialog2Ref.close();
+        return this.openMagicLinkDialog(itemInput);
+      };
+    };
+  }
+
+  closeSearchTutorial = () => {
+    this.searchTutorialsOpened = false;
+    this.itemsTutorialOpened = true;
+  };
+
+  closeItemsTutorial = () => {
+    this.itemsTutorialOpened = false;
+
+    let tutorialsConfig = JSON.parse(localStorage.getItem('tutorials-config'));
+
+    if (!tutorialsConfig) tutorialsConfig = {};
+
+    localStorage.setItem(
+      'tutorials-config',
+      JSON.stringify({
+        ...tutorialsConfig,
+        'provider-items': true,
+      })
+    );
+  };
+
+  async getDefaultMerchantAndSaleflows(user: User): Promise<{
+    merchantDefault: Merchant;
+    saleflowDefault: SaleFlow;
+  }> {
+    if (!user?._id) return null;
+
+    let userMerchantDefault = await this.merchantsService.merchantDefault(
+      user._id
+    );
+
+    if (!userMerchantDefault) {
+      const merchants = await this.merchantsService.myMerchants();
+
+      if (merchants.length === 0) {
+        const { createMerchant: createdMerchant } =
+          await this.merchantsService.createMerchant({
+            owner: user._id,
+            name:
+              user.email?.split('@')[0] + '-saleflow' ||
+              user.phone + '-saleflow',
+            slug: user.email?.split('@')[0] || user.phone,
+          });
+
+        const { merchantSetDefault: defaultMerchant } =
+          await this.merchantsService.setDefaultMerchant(createdMerchant._id);
+
+        if (defaultMerchant) userMerchantDefault = defaultMerchant;
+      }
+    }
+
+    let userSaleflowDefault = await this.saleflowService.saleflowDefault(
+      userMerchantDefault._id
+    );
+
+    if (!userSaleflowDefault) {
+      const { createSaleflow: createdSaleflow } =
+        await this.saleflowService.createSaleflow({
+          merchant: userMerchantDefault._id,
+          name:
+            user.email?.split('@')[0] + '-saleflow' || user.phone + '-saleflow',
+          items: [],
+        });
+
+      const { saleflowSetDefault: defaultSaleflow } =
+        await this.saleflowService.setDefaultSaleflow(
+          userMerchantDefault._id,
+          createdSaleflow._id
+        );
+
+      await this.saleflowService.createSaleFlowModule({
+        saleflow: createdSaleflow._id,
+        delivery: {
+          deliveryLocation: true,
+          isActive: true,
+          moduleOrder: 0,
+        } as any,
+        post: {
+          isActive: true,
+          post: true,
+          moduleOrder: 1,
+        } as any,
+      });
+
+      userSaleflowDefault = defaultSaleflow;
+    }
+
+    return {
+      merchantDefault: userMerchantDefault,
+      saleflowDefault: userSaleflowDefault,
+    };
+  }
 }

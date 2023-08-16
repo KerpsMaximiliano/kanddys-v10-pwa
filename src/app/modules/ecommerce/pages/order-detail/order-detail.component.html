@@ -41,7 +41,7 @@
                       : (order?.items[0].saleflow.merchant?.name.slice(0, 26) +
                           ".." || "Tienda" | titlecase)
                   }}
-                  <span>facturó a {{ order.user.name || order.user.phone || order.user.email }}</span>
+                  <span>facturó a {{ order?.user?.name || order?.user?.phone || order?.user?.email }}</span>
                 </p>
                 
               </div>

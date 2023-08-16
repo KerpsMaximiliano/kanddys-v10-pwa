@@ -94,7 +94,8 @@ export class NavigationComponent implements OnInit {
   };
 
   adminTab: NavigationTab = {
-    headerText: 'Resuelve problemas a las floristerías para darle valor a la plataforma de ventas.',
+    headerText:
+      'Resuelve problemas a las floristerías para darle valor a la plataforma de ventas.',
     text: this.tabName['ADMIN'],
     active: false,
     links: [
@@ -122,9 +123,14 @@ export class NavigationComponent implements OnInit {
         linkName: 'my-dashboard',
       },
       {
-        text: 'Artículos de Proveedores',
+        text: 'Artículos y ventas',
         routerLink: ['/ecommerce/provider-items'],
         linkName: 'provider-pov-link',
+      },
+      {
+        text: 'El club',
+        routerLink: ['/ecommerce/club-landing'],
+        linkName: 'club-link',
       },
     ],
   };
@@ -150,6 +156,11 @@ export class NavigationComponent implements OnInit {
         routerLink: ['/ecommerce/supplier-items-selector'],
         possibleRedirection: ['/ecommerce/quotations'],
         linkName: 'quotations-link',
+      },
+      {
+        text: 'El club',
+        routerLink: ['/ecommerce/club-landing'],
+        linkName: 'club-link',
       },
     ],
   };
@@ -202,10 +213,10 @@ export class NavigationComponent implements OnInit {
       await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
 
     if (this.headerService.user) this.loggedUser = true;
-    else {
-      this.tabs.push(this.providerTab)
-    }
 
+    this.tabs.push(this.providerTab);
+    this.tabs.push(this.sellerTab);
+    
     if (this.headerService.user && isUserAMerchant)
       await this.checkIfUserIsAProviderOrASeller();
 
@@ -217,6 +228,30 @@ export class NavigationComponent implements OnInit {
     let activeTabIndex = 0;
 
     let urlAlreadyFound: Record<string, boolean> = {};
+
+    if (this.isCurrentUserASeller) {
+      this.quotationsService
+        .quotations({
+          findBy: {
+            merchant: this.merchantsService.merchantData._id,
+          },
+          options: { limit: -1 },
+        })
+        .then((quotations) => {
+          this.tabs = [];
+
+          if (quotations.length > 0) {
+            this.sellerTab.links[2].routerLink = ['/ecommerce/quotations'];
+          }
+
+          this.tabs.push(this.providerTab);
+          this.tabs.push(this.sellerTab);
+
+          if(this.isCurrentUserAnAdmin) {
+            this.tabs.unshift(this.adminTab);
+          }
+        });
+    }
 
     this.tabs.forEach((tab, tabIndex) => {
       const isCurrentURLInCurrentTab = tab.links.find((link, linkIndex) => {
@@ -262,32 +297,31 @@ export class NavigationComponent implements OnInit {
 
     this.tabs.forEach((tab, tabIndex) => {
       if (tabIndex === activeTabIndex) {
-        this.tabs[activeTabIndex].active = true;
-        this.activeTabIndex = activeTabIndex;
-      } else this.tabs[tabIndex].active = false;
+        this.tabs[tabIndex].active = true;
+        this.activeTabIndex = tabIndex;
+
+        if (this.tabByName[this.tabs[tabIndex].text] === 'FLORISTS') {
+          this.sellerTab.active = true;
+        } else if (this.tabByName[this.tabs[tabIndex].text] === 'PROVIDERS') {
+          this.providerTab.active = true;
+        } else if (this.tabByName[this.tabs[tabIndex].text] === 'ADMIN') {
+          this.adminTab.active = true;
+        }
+      } else {
+        this.tabs[tabIndex].active = false;
+
+        if (this.tabByName[this.tabs[tabIndex].text] === 'FLORISTS') {
+          this.sellerTab.active = false;
+        } else if (this.tabByName[this.tabs[tabIndex].text] === 'PROVIDERS') {
+          this.providerTab.active = false;
+        } else if (this.tabByName[this.tabs[tabIndex].text] === 'ADMIN') {
+          this.adminTab.active = false;
+        }
+      }
     });
 
-    if (this.isCurrentUserASeller) {
-      this.quotationsService
-        .quotations({
-          findBy: {
-            merchant: this.merchantsService.merchantData._id,
-          },
-          options: { limit: -1 },
-        })
-        .then((quotations) => {
-          this.tabs = [];
-
-          if (quotations.length > 0) {
-            this.sellerTab.links[2].routerLink = ['/ecommerce/quotations'];
-          }
-
-          if (this.isCurrentUserASupplier) {
-            this.tabs.push(this.providerTab);
-          }
-
-          this.tabs.push(this.sellerTab);
-        });
+    if(this.isCurrentUserAnAdmin) {
+      this.tabs.unshift(this.adminTab);
     }
   }
 
@@ -297,7 +331,6 @@ export class NavigationComponent implements OnInit {
     );
     if (isTheUserAnAdmin) {
       this.isCurrentUserAnAdmin = true;
-      this.tabs.push(this.adminTab);
     }
 
     const normalItemsPagination: PaginationInput = {
@@ -337,13 +370,11 @@ export class NavigationComponent implements OnInit {
 
     if (supplierItems.length) {
       this.isCurrentUserASupplier = true;
-      this.tabs.push(this.providerTab);
     }
 
     //If the current user is a supplier, it redirects them to the screen where they may adjust the quotation items prices and stock
     if (normalItems.length) {
       this.isCurrentUserASeller = true;
-      this.tabs.push(this.sellerTab);
     }
   }
 
@@ -410,6 +441,7 @@ export class NavigationComponent implements OnInit {
 
   changeTab(tabIndex: number) {
     this.tabs[tabIndex].active = true;
+    this.activeTabIndex = tabIndex;
 
     this.tabs.forEach((tab, index) => {
       if (index !== tabIndex) tab.active = false;

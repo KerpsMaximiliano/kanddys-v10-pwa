@@ -18,24 +18,6 @@ import { ViewportRuler } from '@angular/cdk/overlay';
 import { environment } from 'src/environments/environment';
 import { CountryISO, PhoneNumberFormat } from 'ngx-intl-tel-input';
 
-interface Field {
-  type:
-    | 'text'
-    | 'email'
-    | 'phone'
-    | 'file'
-    | 'number'
-    | 'currency'
-    | 'email-or-phone';
-  validators: Array<ValidatorFn>;
-  name: string;
-  placeholder?: string;
-  label?: string;
-  secondaryIcon?: boolean;
-  styles?: Record<string, string>;
-  secondaryIconCallback?: () => void;
-}
-
 export interface DialogData {
   styles?: {
     dialogContainer?: Record<string, any>;
