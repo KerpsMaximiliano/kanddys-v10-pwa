@@ -449,3 +449,67 @@ section {
   margin-top: 70px;
   margin-bottom: 12px;
 }
+
+.delete-icon {
+  margin-left: auto;
+  margin-top: -2px;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.recent-item-info {
+  position: absolute;
+  bottom: 10px;
+  left: 0px;
+  right: 0px;
+  margin: auto;
+  color: #181d17;
+  text-align: center;
+  font-family: InterBold;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+
+
+.bubble-button-wrapper {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  margin: auto;
+  max-width: 500px;
+  bottom: 52px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.bubble-button {
+  z-index: 999;
+  margin-right: 26px;
+  width: 63px;
+  height: 63px;
+  background-color: #87cd9b;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+
+  img {
+    transform: rotate(180deg);
+    width: 25.28px;
+    height: 25.28px;
+  }
+}
+
+
+::ng-deep .confirmation-dialog .mat-dialog-container {
+  padding: 24px !important;
+  background: #fff !important;
+}

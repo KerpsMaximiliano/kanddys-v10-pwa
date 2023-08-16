@@ -207,6 +207,8 @@ export class HeaderService {
     if (this.user && this.merchantService.merchantData) {
       return true;
     }
+
+    return false;
   }
 
   goBack() {

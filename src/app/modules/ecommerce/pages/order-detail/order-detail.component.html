@@ -41,7 +41,9 @@
                       : (order?.items[0].saleflow.merchant?.name.slice(0, 26) +
                           ".." || "Tienda" | titlecase)
                   }}
+                  <span>facturó a {{ order?.user?.name || order?.user?.phone || order?.user?.email }}</span>
                 </p>
+                
               </div>
             </mat-panel-title>
             <!-- <p class="userId" *ngIf="order">
@@ -51,14 +53,15 @@
               style="
                 all: unset;
                 cursor: pointer;
-                color: #7b7b7b;
-                font-family: 'InterLight';
-                font-size: 14px;
-                text-align: right;
               "
-              (click)="openContactInfo()"
+              *ngIf="messageLink"
+              (click)="goToWhatsapp()"
             >
-              Simbolos & Contactos
+              <img
+                [src]="env + '/whatsApp-img.webp'"
+                style="height: 25px; width: 25px"
+                alt=""
+              />
             </button>
           </mat-expansion-panel-header>
           <!-- <app-contact-header
@@ -71,7 +74,7 @@
       </mat-accordion>
     </div>
 
-    <button
+    <!-- <button
       style="
         all: unset;
         cursor: pointer;
@@ -87,12 +90,15 @@
         style="height: 22px; width: 22px"
         alt=""
       />
-    </button>
+    </button> -->
 
     <app-progress-slider
-      [title]="'Actualización del progreso'"
+      [title]=""
       [statusList]="statusList"
       [activeIndex]="activeStatusIndex"
+      [isAdmin]="isMerchant"
+      [orderId]="orderId"
+      (statusUpdated)="handleStatusUpdated($event)"
     ></app-progress-slider>
 
     <div style="position: fixed; max-width: 500px; width: 100%; bottom: 100px">
@@ -131,7 +137,7 @@
         </div>
         <div style="display: flex; align-items: center">
           <p style="margin-right: auto">Fecha <br /></p>
-          <span style="text-transform: capitalize">
+          <span style="text-transform: uppercase">
             {{ orderDate }}
           </span>
           <!-- <p>Dirección {{ order?.items[0].saleflow.merchant?.address }}</p> -->

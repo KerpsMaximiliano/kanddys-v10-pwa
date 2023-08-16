@@ -5,6 +5,7 @@ import { PaginationInput } from 'src/app/core/models/saleflow';
 import { shortFormatID } from 'src/app/core/helpers/strings.helpers'
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { ClassGetter } from '@angular/compiler/src/output/output_ast';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-order-filtering',
@@ -15,6 +16,7 @@ export class OrderFilteringComponent implements OnInit {
 
   constructor(
     private merchantsService: MerchantsService,
+    private router: Router
   ) {}
 
   start_date : String = new Date().toDateString()
@@ -68,7 +70,7 @@ export class OrderFilteringComponent implements OnInit {
         orderStatus: ["in progress", "to confirm", "completed"]
       },
       options: {
-        limit: -1,
+        limit: 25,
         sortBy: 'createdAt:desc'
       },
     };
@@ -104,6 +106,23 @@ export class OrderFilteringComponent implements OnInit {
 
   ngOnInit(): void {
     this.filterData();
+  }
+  
+  goToOrderDetail(orderID: string) {
+    return this.router.navigate(
+      [
+        `/ecommerce/order-detail/${orderID}`
+      ],
+      {
+        queryParams: {
+          redirectTo: this.router.url
+        }
+      }
+    );
+  }
+
+  back() {
+    return this.router.navigate(['/admin/dashboard']);
   }
 
 }

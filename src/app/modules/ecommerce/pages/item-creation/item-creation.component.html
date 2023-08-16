@@ -1,24 +1,45 @@
 <div class="container">
   <header>
     <div class="close" (click)="back()">X</div>
-    <h2>
+    <h2
+      [ngStyle]="{
+        fontSize: isTheUserAnAdmin ? '17px' : '15px'
+      }"
+    >
       {{
         !item
           ? "Nuevo artículo para vender"
           : typeOfFlow === "UPDATE_EXISTING_ITEM"
           ? "Artículo en venta"
-          : "Artículo de proveedor"
+          : !isTheUserAnAdmin
+          ? "Artículo de proveedor"
+          : item.name || "Artículo global"
       }}
     </h2>
 
     <div *ngIf="item" class="options-wrapper">
       <img
+        *ngIf="currentView === 'ITEM_FORM'"
         (click)="toggleItemVisibility()"
         [src]="
           assetsFolder +
-          (item.status === 'active' ? '/toggle-on.svg' : '/toggle-off.svg')
+          (!isTheUserAnAdmin
+            ? item.status === 'active'
+              ? '/toggle-on.svg'
+              : '/toggle-off.svg'
+            : item.approvedByAdmin
+            ? '/toggle-on.svg'
+            : '/toggle-off.svg')
         "
       />
+
+      <img
+        *ngIf="currentView === 'ITEM_METRICS'"
+        (click)="deleteItem()"
+        class="delete-icon"
+        [src]="assetsFolder + '/trash-black.svg'"
+      />
+
       <img
         [src]="
           currentView === 'ITEM_FORM'
@@ -45,7 +66,11 @@
       <ng-container *ngSwitchCase="'ITEM_FORM'">
         <p
           class="intro-text"
-          *ngIf="typeOfFlow !== 'ITEM_CREATION' && item?.status == 'active'"
+          *ngIf="
+            typeOfFlow !== 'ITEM_CREATION' &&
+            item?.status == 'active' &&
+            !isTheUserAnAdmin
+          "
         >
           {{
             typeOfFlow === "UPDATE_EXISTING_ITEM"
@@ -56,6 +81,10 @@
 
         <div class="disabled-item-container" *ngIf="item?.status == 'disabled'">
           El artículo está oculto
+        </div>
+
+        <div class="disabled-item-container" style="padding: 12px 43px;" *ngIf="isTheUserAnAdmin && !item?.approvedByAdmin">
+          El artículo no se está exhibiendo por falta aprobación.
         </div>
 
         <section
@@ -203,14 +232,14 @@
           >
             <app-qr-content
               [slides]="itemSlides"
-              [showButton]="!isASupplierItem"
-              [showReorderButton]="!isASupplierItem"
+              [showButton]="!isASupplierItem || isTheUserAnAdmin"
+              [showReorderButton]="!isASupplierItem || isTheUserAnAdmin"
               [title]="'Slides visuales'"
               [mode]="'SMALL'"
               [editing]="false"
               [defaultText]="'Incluyes fotos, memes, videos o música.'"
-              (buttonClicked)="!isASupplierItem ? emitFileInputClick() : null"
-              (buttonClicked2)="!isASupplierItem ? goToReorderMedia() : null"
+              (buttonClicked)="!isASupplierItem || isTheUserAnAdmin ? emitFileInputClick() : null"
+              (buttonClicked2)="!isASupplierItem || isTheUserAnAdmin ? goToReorderMedia() : null"
             ></app-qr-content>
           </div>
 
@@ -680,40 +709,50 @@
       </ng-container>
 
       <ng-container *ngSwitchCase="'ITEM_METRICS'">
-        <h3 class="metrics-title">Información interna que sólo tu ves:</h3>
+        <ng-container *ngIf="!isTheUserAnAdmin">
+          <h3 class="metrics-title">Información interna que sólo tu ves:</h3>
 
-        <div class="metric">
-          <h4>Cantidad de veces vendido</h4>
+          <div class="metric">
+            <h4>Cantidad de veces vendido</h4>
 
-          <p>{{ totalSells }} veces, ${{ totalIncome }}</p>
-        </div>
+            <p>{{ totalSells }} veces, ${{ totalIncome }}</p>
+          </div>
 
-        <div class="metric">
-          <h4>Lugar en ventas en tu KiosKo</h4>
+          <div class="metric">
+            <h4>Lugar en ventas en tu KiosKo</h4>
 
-          <p>
-            {{
-              salesPositionInStore > 0
-                ? salesPositionInStore
-                : "No se ha vendido todavía"
-            }}
-          </p>
-        </div>
+            <p>
+              {{
+                salesPositionInStore > 0
+                  ? salesPositionInStore
+                  : "No se ha vendido todavía"
+              }}
+            </p>
+          </div>
 
-        <div class="metric">
-          <h4>Cantidad de compradores diferentes</h4>
+          <div class="metric">
+            <h4>Cantidad de compradores diferentes</h4>
 
-          <p>
-            {{
-              buyersInStore > 0 ? buyersInStore : "No lo han comprado todavía"
-            }}
-          </p>
-        </div>
+            <p>
+              {{
+                buyersInStore > 0 ? buyersInStore : "No lo han comprado todavía"
+              }}
+            </p>
+          </div>
+        </ng-container>
       </ng-container>
     </ng-container>
   </main>
 
+  <div
+    *ngIf="currentView === 'ITEM_METRICS' && isTheUserAnAdmin"
+    class="recent-item-info"
+  >
+    Información de los últimos 7 dias
+  </div>
+
   <footer
+    *ngIf="currentView !== 'ITEM_METRICS'"
     [ngClass]="{
       existingItem: typeOfFlow !== 'ITEM_CREATION'
     }"
@@ -750,6 +789,16 @@
       Actualizar
     </button>
   </footer>
+</div>
+
+<div class="bubble-button-wrapper">
+  <div
+    class="bubble-button"
+    *ngIf="currentView === 'ITEM_METRICS' && isTheUserAnAdmin"
+    (click)="currentView = 'ITEM_FORM'"
+  >
+    <img [src]="assetsFolder + '/dropdown_icon.png'" alt="wizard" />
+  </div>
 </div>
 
 <ng-template

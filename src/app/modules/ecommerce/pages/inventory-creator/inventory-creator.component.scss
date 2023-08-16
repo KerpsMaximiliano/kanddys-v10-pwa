@@ -468,3 +468,9 @@ input[type="number"] {
     margin: 0px;
   }
 }
+
+
+::ng-deep .confirmation-dialog .mat-dialog-container {
+  padding: 24px !important;
+  background: #fff !important;
+}

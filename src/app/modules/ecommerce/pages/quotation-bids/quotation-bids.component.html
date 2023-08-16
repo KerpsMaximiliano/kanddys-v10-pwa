@@ -40,6 +40,11 @@
   <div class="content">
     <ng-container [ngSwitch]="currentView">
       <ng-container *ngSwitchCase="'SUPPLIERS_LIST'">
+        <div class="providers-config-header-wrapper" (click)="changeView(true)">
+          Proveedores le cotizan y venden fácilmente en el Club de las
+          Floristerías..<span>mira como</span>
+        </div>
+
         <p class="content-title">Precios de Suplidores Locales:</p>
         <div class="content-cards-container">
           <div
@@ -110,26 +115,6 @@
             </h6>
           </div>
         </div>
-
-        <div class="optional-stuff">
-          <p class="content-title-light">FUNCIONALIDADES PARA PROVEEDORES:</p>
-
-          <div class="item-field empty" (click)="changeView(true)">
-            <div class="field-name">
-              {{
-                isTheCurrentUserTheQuotationMerchant
-                  ? "Ajustar los precios de esta cotización"
-                  : "Añadir mi precio a los artículos de esta cotización"
-              }}
-            </div>
-
-            <img
-              class="add-icon"
-              [src]="assetsFolder + '/add_button_circle.svg'"
-              alt="fill value"
-            />
-          </div>
-        </div>
       </ng-container>
     </ng-container>
   </div>
@@ -159,10 +144,9 @@
   <footer *ngIf="currentView === 'SUPPLIERS_LIST'">
     <button
       class="share-btn"
-      *ngIf="typeOfQuotation === 'DATABASE_QUOTATION'"
       (click)="shareQuotation()"
     >
-      Comparte y monetiza
+      Comparte
     </button>
 
     <span class="average-label" *ngIf="quotationMatches?.length > 0"

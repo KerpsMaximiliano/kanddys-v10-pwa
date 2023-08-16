@@ -81,12 +81,13 @@ export class StarsMetricsComponent implements OnInit {
   }
 
   getText(wallet) {
+    let value =
+      this.merchantFunctionality?.reward?.buyersLimit -
+      (wallet.metadata?.usesStars || 0);
+    if (value < 0) value = 0;
     return (
       '$' +
-      (
-        this.merchantFunctionality?.reward?.buyersLimit -
-        (wallet.metadata?.usesStars || 0)
-      ).toString() +
+      value.toString() +
       ' por facturar para ganarse el descuento de $' +
       this.merchantFunctionality?.reward?.amountBuyer
     );
@@ -119,14 +120,12 @@ export class StarsMetricsComponent implements OnInit {
         },
       },
     });
-    console.log("result",result);
+
     if (result != undefined) {
       this.walletCurrencies.forEach((element) => {
-        let val = result.find((e:any) => e._id == element.owner._id);
-        if(val!=undefined)
-        element.owner = val;
+        let val = result.find((e: any) => e._id == element.owner._id);
+        if (val != undefined) element.owner = val;
       });
-      console.log("asd",this.walletCurrencies);
     }
   }
 }

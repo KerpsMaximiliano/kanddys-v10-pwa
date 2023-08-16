@@ -79,9 +79,11 @@
 
             <div class="filters">
 
-                <div class="option" (click)="openEstimatedDeliveryDialog()">⏰</div>
-                <div class="option" (click)="openPriceRangeDialog()">💰</div>
+                <!-- <div class="option" (click)="openEstimatedDeliveryDialog()">⏰</div>
+                <div class="option" (click)="openPriceRangeDialog()">💰</div> -->
 
+                <div class="option" (click)="goToOrderProgress()">⏰</div>
+                <div class="option" (click)="goToOrderFilters()">💰</div>
               <div
                 class="option"
                 *ngIf="allTags.length > 0"

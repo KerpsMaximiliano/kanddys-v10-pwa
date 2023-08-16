@@ -50,6 +50,7 @@ import { CartComponent } from './pages/cart/cart.component';
 import { ReceiverFormComponent } from './pages/receiver-form/receiver-form.component';
 import { NewSymbolComponent } from './pages/new-symbol/new-symbol.component';
 import { GiftcardDetailsComponent } from './pages/giftcard-details/giftcard-details.component';
+import { AmbassadorStoreComponent } from './pages/ambassador-store/ambassador-store.component';
 import { SymbolDetailComponent } from './pages/symbol-detail/symbol-detail.component';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
@@ -65,6 +66,8 @@ import { ConfirmQuotationComponent } from './pages/confirm-quotation/confirm-quo
 import { ItemCreationComponent } from './pages/item-creation/item-creation.component';
 import { FormCreatorComponent } from 'src/app/shared/components/form-creator/form-creator.component';
 import { ItemsSlidesEditorComponent } from 'src/app/shared/components/items-slides-editor/items-slides-editor.component';
+import { ProviderItemsComponent } from './pages/provider-items/provider-items.component';
+import { ClubLandingComponent } from './pages/club-landing/club-landing.component';
 
 const routes: Routes = [
   {
@@ -237,6 +240,18 @@ const routes: Routes = [
   {
     path: 'slides-editor-2',
     component: QrEditComponent,
+  },
+  {
+    path: 'ambassador-store',
+    component: AmbassadorStoreComponent,
+  },
+  {
+    path: 'provider-items',
+    component: ProviderItemsComponent
+  },
+  {
+    path: 'club-landing',
+    component: ClubLandingComponent
   },
   {
     path: ':merchantSlug',
@@ -419,13 +434,16 @@ const routes: Routes = [
     ReceiverFormComponent,
     NewSymbolComponent,
     GiftcardDetailsComponent,
+    AmbassadorStoreComponent,
     SymbolDetailComponent,
     OrderConfirmationComponent,
     InvalidMagicLinkComponent,
     QuotationBidsComponent,
     InventoryCreatorComponent,
     ConfirmQuotationComponent,
-    ItemCreationComponent
+    ItemCreationComponent,
+    ProviderItemsComponent,
+    ClubLandingComponent
   ],
   imports: [
     CommonModule,

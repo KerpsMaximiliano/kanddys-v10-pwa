@@ -224,6 +224,9 @@ export const listItems = gql`
         index
         active
       }
+      merchant {
+        _id
+      }
       fixedQuantity
       size
       quality
@@ -261,6 +264,7 @@ export const listItems = gql`
         active
         createdAt
       }
+      approvedByAdmin
       webForms {
         _id
         createdAt

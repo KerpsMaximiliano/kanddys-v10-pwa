@@ -1,0 +1,376 @@
+<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
+  <div class="dashboard-page container" (scroll)="infinitePagination()">
+    <header class="header" *ngIf="!searchOpened">
+      <button mat-icon-button style="margin-right: 25px" (click)="(null)">
+        <img
+          [src]="assetsFolder + '/icon_info.png'"
+          class="info-button"
+          alt="open internal information"
+          (click)="(null)"
+        />
+      </button>
+
+      <button
+        style="
+          color: #87cd9b;
+          font-size: 17px;
+          font-family: InterBold;
+          margin-left: auto;
+        "
+        (click)="drawerOpened = true"
+      >
+        Artículos y ventas
+        <mat-icon style="color: #6fcf97; margin-left: 8px">menu</mat-icon>
+      </button>
+    </header>
+
+    <div class="search-opened" *ngIf="searchOpened">
+      <form class="search-bar-wrapper">
+        <input
+          type="text"
+          name="item-search"
+          id="search-from-results-view"
+          class="input search-bar"
+          placeholder="Buscar..."
+          [formControl]="itemSearchbar"
+        />
+      </form>
+
+      <div class="filters-container">
+        <div
+          class="filter"
+          *ngFor="let filter of searchFilters; let filterIndex = index"
+          [ngClass]="{
+            selected: activatedSearchFilters[filter.key]
+          }"
+          (click)="activateOrDeactivateFilters(filter.key)"
+        >
+          {{ filter.label }}
+        </div>
+      </div>
+    </div>
+
+    <main>
+      <ng-container
+        *ngTemplateOutlet="
+          searchTutorial;
+          context: {
+            tutorialOpened: searchTutorialsOpened
+          }
+        "
+      ></ng-container>
+
+      <h6 class="intro-text" *ngIf="!searchOpened">
+        Esta plataforma te pone al frente de quienes necesitan exactamente lo
+        que ofreces.
+      </h6>
+
+      <form
+        class="search-bar-wrapper"
+        [ngClass]="{
+          tutorial: searchTutorialsOpened
+        }"
+        style="margin-bottom: 21px"
+        *ngIf="!searchOpened"
+      >
+        <input
+          type="text"
+          (click)="!searchTutorialsOpened ? showSearch() : null"
+          name="item-search"
+          class="input search-bar"
+          placeholder="Buscar..."
+          [formControl]="itemSearchbar"
+        />
+      </form>
+
+      <ng-container *ngTemplateOutlet="itemsTutorialOverlay"></ng-container>
+
+      <section *ngIf="itemsISell.length > 0">
+        <h3>ARTICULOS QUE ESTOY EXHIBIENDO A LOS MIEMBROS</h3>
+
+        <div class="list-of-items">
+          <div
+            class="item-wrapper"
+            *ngFor="let item of itemsISell; let itemIndex = index"
+          >
+            <ng-container
+              *ngTemplateOutlet="
+                itemCard;
+                context: {
+                  item: item,
+                  itemIndex: itemIndex,
+                  providedByMe: true,
+                  firstItem: itemIndex === 0 && itemsISell.length > 0
+                }
+              "
+            ></ng-container>
+          </div>
+        </div>
+      </section>
+
+      <section *ngIf="itemsIDontSell.length > 0">
+        <h3>ARTICULOS QUE NECESITAN LAS FLORISTERIAS MIEMBROS</h3>
+
+        <div class="list-of-items">
+          <div
+            class="item-wrapper"
+            *ngFor="let item of itemsIDontSell; let itemIndex = index"
+          >
+            <ng-container
+              *ngTemplateOutlet="
+                itemCard;
+                context: {
+                  item: item,
+                  itemIndex: itemIndex,
+                  providedByMe: false,
+                  firstItem:
+                    itemIndex === 0 &&
+                    itemsISell.length === 0 &&
+                    itemsIDontSell.length > 0
+                }
+              "
+            ></ng-container>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer *ngIf="!searchOpened && itemsIDontSell.length > 0">
+      Adiciona el precio para empezar a vender
+    </footer>
+  </div>
+</app-navigation>
+
+<ng-template
+  #itemCard
+  let-item="item"
+  let-itemIndex="itemIndex"
+  let-providedByMe="providedByMe"
+  let-firstItem="firstItem"
+>
+  <div
+    class="item-card"
+    [ngClass]="{
+      'tutorial-highlighted': firstItem && itemsTutorialOpened
+    }"
+  >
+    <div class="left-column" (click)="(null)">
+      <div
+        class="product-image"
+        [ngStyle]="{
+          backgroundColor: 'white',
+          backgroundImage: item.images?.length
+            ? 'url(' +
+              item.images[0].value +
+              '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+            : 'url(/assets/images/noimage.png)',
+          backgroundPosition: 'center',
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat'
+        }"
+      ></div>
+    </div>
+
+    <div class="middle-column fixedWidth" (click)="(null)">
+      <div class="item-name">{{ item.name }}</div>
+      <div class="item-description">{{ item.description }}</div>
+      <div class="item-price" (click)="editPrice(item, itemIndex)">
+        <ng-container *ngIf="item.pricing !== null && providedByMe">
+          ${{ item.pricing | number : "1.2-2" }}
+        </ng-container>
+      </div>
+
+      <div
+        class="item-add-price"
+        *ngIf="!providedByMe"
+        (click)="addPrice(item)"
+      >
+        Mi precio
+      </div>
+    </div>
+
+    <div class="right-column">
+      <div class="quantity-title">VENDIENDO</div>
+
+      <div class="item-quantity">
+        <span
+          mat-button
+          class="button icon"
+          (click)="
+            item.stock >= 1
+              ? changeAmount(item, 'subtract', itemIndex, providedByMe)
+              : null
+          "
+        >
+          <ng-container *ngIf="providedByMe">
+            {{ item.stock > 1 ? "-" : "" }}
+          </ng-container>
+
+          <ng-container *ngIf="!providedByMe">
+            {{ unitsForItemsThatYouDontSell[item._id] > 1 ? "-" : "" }}
+          </ng-container>
+
+          <mat-icon
+            *ngIf="item.stock === 1"
+            style="font-size: 19px; width: 23px"
+            >delete</mat-icon
+          >
+        </span>
+
+        <span>{{
+          !item.stock
+            ? 0
+            : !providedByMe
+            ? unitsForItemsThatYouDontSell[item._id]
+              ? unitsForItemsThatYouDontSell[item._id]
+              : 0
+            : item.stock
+        }}</span>
+
+        <span
+          mat-button
+          class="button icon"
+          (click)="changeAmount(item, 'add', itemIndex, providedByMe)"
+          >+</span
+        >
+      </div>
+    </div>
+  </div>
+
+  <ng-container *ngIf="firstItem && itemsTutorialOpened">
+    <ng-container *ngTemplateOutlet="itemsTutorialContent"></ng-container>
+  </ng-container>
+</ng-template>
+
+<ng-template #searchTutorial let-tutorialOpened="tutorialOpened">
+  <div
+    class="tutorial-wrapper"
+    [ngClass]="{
+      opened: tutorialOpened
+    }"
+  >
+    <div class="cards-wrapper" *ngIf="tutorialOpened">
+      <ng-container
+        *ngTemplateOutlet="
+          helpCard;
+          context: {
+            topText: 'Buscar..',
+            middleText: 'Encuentra y filtra artículos',
+            bottomText: 'Ok',
+            bottomTextClickHandler: closeSearchTutorial,
+            openedStateObject: searchTutorialCardsOpened,
+            cardName: 'searchbar'
+          }
+        "
+      ></ng-container>
+      <ng-container
+        *ngTemplateOutlet="
+          helpCard;
+          context: {
+            topText: '⏰',
+            topTextStyles: {
+              fontSize: '49px',
+              fontWeight: 500
+            },
+            middleText: 'Controla lo que te ordenaron',
+            bottomText: 'Ok',
+            bottomTextClickHandler: closeSearchTutorial,
+            openedStateObject: searchTutorialCardsOpened,
+            cardName: 'orders'
+          }
+        "
+      ></ng-container>
+      <ng-container
+        *ngTemplateOutlet="
+          helpCard;
+          context: {
+            topText: '💰',
+            topTextStyles: {
+              fontSize: '49px',
+              fontWeight: 500
+            },
+            middleText: 'Mira lo que vendiste',
+            bottomText: 'Ok',
+            bottomTextClickHandler: closeSearchTutorial,
+            openedStateObject: searchTutorialCardsOpened,
+            cardName: 'sold'
+          }
+        "
+      ></ng-container>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #itemsTutorialContent>
+  <div class="items-tutorial-wrapper">
+    <ng-container
+      *ngTemplateOutlet="
+        helpCard;
+        context: {
+          topText: 'Mi precio',
+          topTextStyles: {
+            color: '#2874AD'
+          },
+          middleText: 'Adiciona el precio de venta',
+          bottomText: 'Ok',
+          bottomTextClickHandler: closeItemsTutorial,
+          openedStateObject: itemsTutorialCardsOpened,
+          cardName: 'price'
+        }
+      "
+    ></ng-container>
+    <ng-container
+      *ngTemplateOutlet="
+        helpCard;
+        context: {
+          topImage: assetsFolder + '/amount-changer-simple.svg',
+          middleText: 'Adiciona la disponibilidad',
+          middleTextStyles: {
+            marginTop: '11px'
+          },
+          bottomText: 'Ok',
+          bottomTextClickHandler: closeItemsTutorial,
+          openedStateObject: itemsTutorialCardsOpened,
+          cardName: 'stock'
+        }
+      "
+    ></ng-container>
+  </div>
+</ng-template>
+
+<ng-template #itemsTutorialOverlay>
+  <div
+    class="tutorial-wrapper"
+    [ngClass]="{
+      opened: itemsTutorialOpened
+    }"
+  ></div>
+</ng-template>
+
+<ng-template
+  #helpCard
+  let-topText="topText"
+  let-topImage="topImage"
+  let-topTextStyles="topTextStyles"
+  let-middleText="middleText"
+  let-middleTextStyles="middleTextStyles"
+  let-bottomText="bottomText"
+  let-bottomTextClickHandler="bottomTextClickHandler"
+  let-cardName="cardName"
+  let-openedStateObject="openedStateObject"
+>
+  <div class="help-card-container" *ngIf="openedStateObject[cardName]">
+    <span class="topText" *ngIf="topText" [ngStyle]="topTextStyles">{{
+      topText
+    }}</span>
+    <img src="topImage" *ngIf="topImage" [src]="topImage" />
+    <span class="middleText" [ngStyle]="middleTextStyles">{{
+      middleText
+    }}</span>
+    <span
+      class="bottomText"
+      (click)="bottomTextClickHandler ? bottomTextClickHandler(cardName) : null"
+      >{{ bottomText }}</span
+    >
+  </div>
+</ng-template>

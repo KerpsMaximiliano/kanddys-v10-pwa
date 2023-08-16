@@ -4,6 +4,158 @@
   height: 100%;
 }
 
+.header-wrapper {
+  display: flex;
+  padding: 15px 16px;
+  padding-bottom: 0px;
+  align-items: center;
+  justify-content: space-between;
+
+  .left-part,
+  .right-part {
+    display: flex;
+    align-items: center;
+  }
+
+  .info-button {
+    width: 25.28px;
+    height: 25.28px;
+    flex-shrink: 0;
+  }
+
+  .tabs {
+    margin-left: 11.72px;
+    display: flex;
+    justify-content: flex-end;
+    height: fit-content;
+
+    .tab {
+      padding: 4px 13px;
+      border-radius: 29px;
+      border: 1px solid rgba(146, 140, 139, 0.94);
+      color: #fff;
+      font-family: "InterRegular";
+      font-size: 16px;
+      font-style: normal;
+      line-height: normal;
+      margin-right: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      @media (max-width: 420px) {
+        font-size: 13px;
+      }
+
+      &.active {
+        background-color: #c4c5c3;
+        font-family: InterBold;
+        color: #181d17;
+      }
+
+      &:hover {
+        cursor: pointer;
+        background-color: #c4c5c3;
+        color: #181d17;
+      }
+    }
+  }
+
+  .member {
+    margin-right: 13px;
+    display: flex;
+  }
+
+  .user-button {
+    color: var(--plomito, #c4c5c3);
+    font-family: InterRegular;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    max-width: 95px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+
+    @media (max-width: 420px) {
+      font-size: 15.495px;
+    }
+  }
+
+  .close {
+    margin: 0;
+    text-align: right;
+    color: #c4c5c3;
+    padding: 0px;
+
+    span {
+      font-size: 24px;
+      font-family: InterLight;
+      color: #c4c5c3;
+
+      &::hover {
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-right: 17px;
+  margin-bottom: 68px;
+
+  h2 {
+    color: #ffffff;
+    font-family: InterBold;
+    font-size: 24px;
+    margin: 0px;
+    padding: 0px;
+    padding-top: 25px;
+    padding-bottom: 30px;
+    text-align: right;
+    max-width: 90%;
+
+    &.logged-user-header {
+      color: #fff;
+      text-align: center;
+      font-family: InterBold;
+      font-size: 18.495px;
+      font-style: normal;
+      line-height: normal;
+      max-width: 95%;
+
+      @media (max-width: 420px) {
+        font-size: 15.495px;
+      }
+    }
+
+    &.club-title {
+      max-width: 98%;
+      text-align: center;
+    }
+  }
+
+  .header-border {
+    height: 1px;
+    background-color: #7b7b7b;
+    margin-bottom: 13px;
+    width: calc(100% - 17px);
+  }
+}
+
+.info-button {
+  filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(307deg)
+    brightness(102%) contrast(102%);
+}
+
 .footer {
   position: fixed;
   bottom: 0px;
@@ -13,7 +165,7 @@
   z-index: 999;
   max-width: 500px;
   margin: auto;
-  
+
   .content {
     padding-top: 21px;
     padding-bottom: 12px;
@@ -26,8 +178,6 @@
     text-align: center;
     margin: auto;
   }
-
-  
 }
 
 .top-border {
@@ -50,179 +200,98 @@
   right: 0;
 }
 
-.tabs {
-  display: flex;
-  justify-content: flex-end;
-  padding-right: 17px;
+ul {
+  margin: 0;
+  padding: 0;
 
-  .tab {
-    padding: 4px 13px;
-    border-radius: 29px;
-    border: 1px solid rgba(146, 140, 139, 0.94);
-    color: #fff;
-    font-family: "InterRegular";
-    font-size: 16px;
-    font-style: normal;
-    line-height: normal;
-    margin-right: 7px;
+  li {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
 
-    @media (max-width: 420px) {
-      font-size: 13px;
+    &:not(:first-child) {
+      margin-top: 8px;
+    }
+
+    a {
+      color: #c4c5c3;
+      font-family: InterRegular;
+      font-size: 17px;
+    }
+
+    .icon {
+      position: absolute;
+      visibility: hidden;
+      right: 17px;
     }
 
     &.active {
-      background-color: #c4c5c3;
-      font-family: InterBold;
-      color: #181d17;
-    }
-
-    &:hover {
-      cursor: pointer;
-      background-color: #c4c5c3;
-      color: #181d17;
-    }
-  }
-}
-
-nav {
-  section {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    margin-right: 17px;
-    margin-bottom: 68px;
-
-    h2 {
-      color: #ffffff;
-      font-family: InterBold;
-      font-size: 24px;
-      margin: 0px;
-      padding: 0px;
-      padding-bottom: 30px;
-      text-align: right;
-      max-width: 90%;
-
-      &.logged-user-header {
-        color: #fff;
-        text-align: center;
-        font-family: InterBold;
-        font-size: 18.495px;
-        font-style: normal;
-        line-height: normal;
-        max-width: 95%;
-
-        @media (max-width: 420px) {
-          font-size: 15.495px;
-        }
-      }
-
-      &.club-title {
-        max-width: 98%;
-        text-align: center;
-      }
-    }
-
-    .header-border {
-      height: 1px;
-      background-color: #7b7b7b;
-      margin-bottom: 13px;
-      width: calc(100% - 17px);
-    }
-  }
-
-  ul {
-    margin: 0;
-    padding: 0;
-
-    li {
-      list-style: none;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-
-      &:not(:first-child) {
-        margin-top: 8px;
-      }
+      color: #87cd9b;
 
       a {
-        color: #c4c5c3;
-        font-family: InterRegular;
-        font-size: 17px;
+        color: #87cd9b;
       }
 
       .icon {
-        position: absolute;
-        visibility: hidden;
-        right: 17px;
-      }
-
-      &.active {
-        color: #87cd9b;
-
-        a {
-          color: #87cd9b;
-        }
-
-        .icon {
-          visibility: visible;
-          // color: #87cd9b;
-        }
+        visibility: visible;
+        // color: #87cd9b;
       }
     }
+  }
 
-    .features-for-user {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      padding-left: 17px;
+  .features-for-user {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    padding-left: 17px;
 
-      &:not(:first-child) {
-        margin-top: 26px;
-      }
-
-      h4 {
-        margin: 0px;
-        padding: 0px;
-        color: #fff;
-        text-align: center;
-        font-family: InterBold;
-        font-size: 24px;
-        font-style: normal;
-        line-height: normal;
-        margin-bottom: 9px;
-      }
-
-      p {
-        margin: 0px;
-        padding: 0px;
-        color: #fff;
-        text-align: center;
-        font-family: InterMedium;
-        font-size: 19px;
-        font-style: normal;
-        line-height: normal;
-      }
+    &:not(:first-child) {
+      margin-top: 26px;
     }
 
-    .text-list {
-      margin-top: 15px;
-      margin-left: 26px;
-      list-style: inside;
-      display: list-item;
+    h4 {
+      margin: 0px;
+      padding: 0px;
       color: #fff;
-      font-family: InterRegular;
-      font-size: 15px;
+      text-align: center;
+      font-family: InterBold;
+      font-size: 24px;
       font-style: normal;
       line-height: normal;
+      margin-bottom: 9px;
+    }
 
-      .title {
-        color: #fff;
-        font-family: InterBold;
-        font-size: 15px;
-        font-style: normal;
-        font-weight: 700;
-        line-height: normal;
-      }
+    p {
+      margin: 0px;
+      padding: 0px;
+      color: #fff;
+      text-align: center;
+      font-family: InterMedium;
+      font-size: 19px;
+      font-style: normal;
+      line-height: normal;
+    }
+  }
+
+  .text-list {
+    margin-top: 15px;
+    margin-left: 26px;
+    list-style: inside;
+    display: list-item;
+    color: #fff;
+    font-family: InterRegular;
+    font-size: 15px;
+    font-style: normal;
+    line-height: normal;
+
+    .title {
+      color: #fff;
+      font-family: InterBold;
+      font-size: 15px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
     }
   }
 }
@@ -244,24 +313,6 @@ nav {
   background-color: #181d17;
   width: 100%;
 }
-.close {
-  margin: 0;
-  text-align: right;
-  color: #c4c5c3;
-  padding-right: 17px;
-  padding: 12px;
-  padding-bottom: 14px;
-
-  span {
-    font-size: 24px;
-    font-family: InterLight;
-    color: #c4c5c3;
-
-    &::hover {
-      cursor: pointer;
-    }
-  }
-}
 
 .footer-swiper {
   margin-top: -97px;
@@ -274,14 +325,13 @@ nav {
       width: 14px;
       height: 14px;
     }
-  
+
     ::ng-deep .swiper-pagination-bullet-active {
       background-color: white !important;
       border: 1px solid white !important;
     }
   }
 }
-
 
 .footer-swiper-title {
   color: var(--fondo-de-pantallas, #f6f6f6);

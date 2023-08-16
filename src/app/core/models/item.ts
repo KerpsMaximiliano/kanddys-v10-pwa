@@ -105,6 +105,7 @@ export class Item extends Model<Item> {
   notificationStockLimit?: number;
   type?: 'default' | 'supplier';
   notificationStockPhoneOrEmail?: string;
+  approvedByAdmin?: boolean;
 }
 
 export class ItemImage extends Model<ItemImage> {
@@ -210,6 +211,7 @@ export class ItemInput {
   type?: string;
   parentItem?: string;
   notificationStockPhoneOrEmail?: string;
+  approvedByAdmin?: boolean;
 }
 
 export class ItemImageInput {

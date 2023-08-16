@@ -1,14 +1,17 @@
 <div class="container" *ngIf="itemFormData" [formGroup]="itemFormData">
   <div class="header">
     <div class="flex">
-      <mat-icon
-        style="cursor: pointer"
-        (click)="back()"
-        >close</mat-icon
-      >
-      <p class="header-title">Artículo de proveedor de floristas</p>
+      <mat-icon style="cursor: pointer" (click)="back()">close</mat-icon>
+      <p class="header-title">
+        {{
+          !itemId && isTheUserAnAdmin
+            ? "Nuevo artículo global"
+            : "Artículo de proveedor de floristas"
+        }}
+      </p>
     </div>
     <img
+      *ngIf="!isTheUserAnAdmin"
       [src]="
         !showIntroParagraph
           ? assetsFolder + '/icon_info.png'
@@ -18,7 +21,7 @@
     />
   </div>
   <div class="content">
-    <div class="content-title" *ngIf="showIntroParagraph">
+    <div class="content-title" *ngIf="showIntroParagraph && !isTheUserAnAdmin">
       Esta plataforma te pone al frente de floristerias que necesitan
       exactamente lo que ofreces.
     </div>
@@ -77,7 +80,11 @@
         </ng-container>
       </ng-container>
 
-      <ng-container *ngIf="itemFormData.controls['pricing'].value === 0">
+      <ng-container
+        *ngIf="
+          itemFormData.controls['pricing'].value === 0 && !isTheUserAnAdmin
+        "
+      >
         <ng-container
           *ngTemplateOutlet="
             emptyItem;
@@ -136,14 +143,16 @@
         itemFormData.controls['title'].value ||
         itemFormData.controls['description'].value ||
         itemSlides.length !== 0 ||
-        itemFormData.controls['pricing'].value !== 0 ||
-        itemFormData.controls['stock'].value
+        (itemFormData.controls['pricing'].value !== 0 && !isTheUserAnAdmin) ||
+        (itemFormData.controls['stock'].value && !isTheUserAnAdmin)
       "
     >
       <h2 class="section-title">DATOS LLENOS</h2>
 
       <div
-        *ngIf="itemFormData.controls['pricing'].value !== 0"
+        *ngIf="
+          itemFormData.controls['pricing'].value !== 0 && !isTheUserAnAdmin
+        "
         class="price-wrapper"
         [ngClass]="{
           'no-shadows': itemFormData.controls['pricing'].value !== 0
@@ -241,7 +250,7 @@
       </div>
 
       <div
-        *ngIf="itemFormData.controls['stock'].value"
+        *ngIf="itemFormData.controls['stock'].value && !isTheUserAnAdmin"
         class="content-inventary-container"
         [ngClass]="{
           'no-shadows': itemFormData.controls['stock'].value
@@ -282,19 +291,6 @@
     -->
   </div>
 </div>
-
-<footer
-  [ngClass]="{
-    valid: itemFormData?.valid && itemSlides.length > 0
-  }"
->
-  <button
-    *ngIf="itemFormData?.valid && itemSlides.length > 0"
-    (click)="saveItem()"
-  >
-    Empezar a Exponerlo a Floristerias
-  </button>
-</footer>
 
 <ng-template
   #emptyItem

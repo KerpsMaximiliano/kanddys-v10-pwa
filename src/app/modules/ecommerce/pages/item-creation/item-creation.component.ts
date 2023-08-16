@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { ToastrService } from 'ngx-toastr';
 import { completeImageURL } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { CommunityCategory } from 'src/app/core/models/community-categories';
@@ -42,6 +43,7 @@ import {
 } from 'src/app/core/services/webforms.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { ExtendedQuestionInput } from 'src/app/shared/components/form-creator/form-creator.component';
+import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
 import {
   FormComponent,
   FormData,
@@ -137,6 +139,8 @@ export class ItemCreationComponent implements OnInit {
   categoriesString: string = null;
   categoriesToCreate: Array<ItemCategory> = [];
 
+  isTheUserAnAdmin: boolean = false;
+
   constructor(
     private fb: FormBuilder,
     public dialog: MatDialog,
@@ -148,9 +152,11 @@ export class ItemCreationComponent implements OnInit {
     private saleflowService: SaleFlowService,
     public merchantsService: MerchantsService,
     public headerService: HeaderService,
+    private matDialog: MatDialog,
     private translate: TranslateService,
     private tagsService: TagsService,
     private communityCategoriesService: CommunityCategoriesService,
+    private toastrService: ToastrService,
     private authService: AuthService,
     private location: Location,
     private route: ActivatedRoute,
@@ -204,9 +210,7 @@ export class ItemCreationComponent implements OnInit {
         notificationStockPhoneOrEmail: [
           this.itemsService.temporalItemInput?.notificationStockPhoneOrEmail ||
             '',
-          !this.isASupplierItem
-            ? []
-            : Validators.compose([Validators.required]),
+          [],
         ],
         categories: [this.itemsService.temporalItemInput?.categories || ''],
         tags: [this.itemsService.temporalItemInput?.tags || ''],
@@ -225,6 +229,15 @@ export class ItemCreationComponent implements OnInit {
         else this.requiredQuestionsCounter.notRequired++;
       }
     } else {
+      if (!this.headerService.user) {
+        this.headerService.user = await this.authService.me();
+      }
+
+      const isTheUserAnAdmin = this.headerService.user?.roles?.find(
+        (role) => role.code === 'ADMIN'
+      );
+      if (isTheUserAnAdmin) this.isTheUserAnAdmin = true;
+
       this.item = await this.itemsService.item(itemId);
 
       if (this.item.type === 'supplier') this.isASupplierItem = true;
@@ -269,7 +282,8 @@ export class ItemCreationComponent implements OnInit {
       if (
         this.item &&
         this.isCurrentUserAMerchant &&
-        !isCurrentMerchantTheSameAsTheItemMerchant
+        !isCurrentMerchantTheSameAsTheItemMerchant &&
+        !this.isTheUserAnAdmin
       ) {
         this.router.navigate(['/auth/login']);
       }
@@ -301,9 +315,7 @@ export class ItemCreationComponent implements OnInit {
         ],
         notificationStockPhoneOrEmail: [
           this.itemsService.temporalItem?.notificationStockPhoneOrEmail || '',
-          !this.isASupplierItem
-            ? []
-            : Validators.compose([Validators.required]),
+          [],
         ],
         tags: [this.itemsService.temporalItemInput?.tags || ''],
         defaultLayout: [this.itemsService.temporalItem?.layout || this.layout],
@@ -1441,6 +1453,61 @@ export class ItemCreationComponent implements OnInit {
     };
   };
 
+  async deleteItem() {
+    let dialogRef = this.matDialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: `Elminar artículo`,
+        description: `Estás seguro que deseas borrar este artículo?`,
+      },
+      panelClass: 'confirmation-dialog',
+    });
+    dialogRef.afterClosed().subscribe(async (result) => {
+      if (result === 'confirm') {
+        try {
+          lockUI();
+
+          const itemSaleflow = !this.isTheUserAnAdmin
+            ? this.saleflowService.saleflowData._id
+            : (
+                await this.saleflowService.saleflowDefault(
+                  this.item.merchant._id
+                )
+              )._id;
+
+          const removeItemFromSaleFlow =
+            await this.saleflowService.removeItemFromSaleFlow(
+              this.item._id,
+              itemSaleflow
+            );
+
+          if (!removeItemFromSaleFlow) return;
+          const deleteItem = await this.itemsService.deleteItem(this.item._id);
+
+          if (!deleteItem) return;
+          else {
+            this.toastrService.info('¡Item eliminado exitosamente!');
+
+            if (!this.isTheUserAnAdmin) {
+              this.saleflowService.saleflowData =
+                await this.saleflowService.saleflowDefault(
+                  this.merchantsService.merchantData._id
+                );
+              this.router.navigate(['/admin/dashboard']);
+            } else {
+              this.router.navigate(['/admin/provider-items-management']);
+            }
+            //this.router.navigate(['/admin/dashboard']);
+          }
+
+          unlockUI();
+        } catch (error) {
+          unlockUI();
+          this.headerService.showErrorToast();
+        }
+      }
+    });
+  }
+
   async saveItem() {
     let images: ItemImageInput[] = this.itemSlides.map(
       (slide: SlideInput, index: number) => {
@@ -1670,6 +1737,24 @@ export class ItemCreationComponent implements OnInit {
       }
     } else {
       await this.itemsService.updateItem(itemInput, this.item._id);
+
+      this.itemsService.temporalItemInput = null;
+      this.itemsService.temporalItem = null;
+  
+      if(this.headerService.flowRouteForEachPage['provider-items-management']) {
+        this.headerService.flowRoute = this.headerService.flowRouteForEachPage['provider-items-management'];
+        this.headerService.redirectFromQueryParams();
+      }else {
+        this.router.navigate(['admin/dashboard']);
+      }
+  
+      unlockUI();
+
+      this.snackbar.open('Item actualizado exitosamente', 'Cerrar', {
+        duration: 3000,
+      });
+
+      return;
     }
 
     this.itemsService.temporalItemInput = null;
@@ -1790,6 +1875,10 @@ export class ItemCreationComponent implements OnInit {
     } else {
       this.itemsService.temporalItem = null;
 
+      if (this.item && this.isTheUserAnAdmin) {
+        return this.router.navigate(['/admin/provider-items-management']);
+      }
+
       if (this.item) {
         const route =
           this.item.type !== 'supplier'
@@ -1826,29 +1915,53 @@ export class ItemCreationComponent implements OnInit {
   }
 
   toggleItemVisibility = async (): Promise<boolean> => {
-    try {
+    if (this.isTheUserAnAdmin && this.item.type === 'supplier') {
       lockUI();
-      this.itemsService.updateItem(
-        {
-          status: this.item.status === 'disabled' ? 'active' : 'disabled',
-        },
-        this.item._id
-      );
 
-      this.item.status =
-        this.item.status === 'disabled' ? 'active' : 'disabled';
+      try {
+        const itemInput: ItemInput = {
+          approvedByAdmin: !this.item.approvedByAdmin ? true : false,
+        };
 
-      unlockUI();
+        const updatedItem = await this.itemsService.updateItem(
+          itemInput,
+          this.item._id
+        );
 
-      return true;
-    } catch (error) {
-      unlockUI();
+        if (updatedItem) {
+          this.item.approvedByAdmin = this.item.approvedByAdmin ? false : true;
+        }
 
-      console.log(error);
-      this.headerService.showErrorToast();
-      return false;
+        unlockUI();
+      } catch (error) {
+        unlockUI();
+        this.headerService.showErrorToast();
+        console.error(error);
+      }
+    } else {
+      try {
+        lockUI();
+        this.itemsService.updateItem(
+          {
+            status: this.item.status === 'disabled' ? 'active' : 'disabled',
+          },
+          this.item._id
+        );
+
+        this.item.status =
+          this.item.status === 'disabled' ? 'active' : 'disabled';
+
+        unlockUI();
+
+        return true;
+      } catch (error) {
+        unlockUI();
+
+        console.log(error);
+        this.headerService.showErrorToast();
+        return false;
+      }
     }
-
     return false;
   };
 }

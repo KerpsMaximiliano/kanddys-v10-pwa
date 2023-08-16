@@ -1,0 +1,185 @@
+<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
+  <div class="dashboard-page container" (scroll)="infinitePagination()">
+    <header class="header" *ngIf="!searchOpened">
+      <button mat-icon-button style="margin-right: 25px" (click)="(null)">
+        <mat-icon [ngStyle]="{ color: 'white' }" (click)="addProviderItem()"
+          >add</mat-icon
+        >
+
+        <!--
+              <div
+                class="tooltip"
+                *ngIf="
+                  hiddenItems?.length === 0 &&
+                  soldItems?.length === 0 &&
+                  notSoldItems?.length === 0 &&
+                  allItemsCopy?.length === 0
+                "
+              >
+                <span>¡Empieza ya creando tu primer artículo!</span>
+                <div class="arrow"></div>
+              </div>
+          -->
+      </button>
+
+      <!--
+          <button class="header-btn" (click)="(null)">
+            <img [src]="assetsURL + '/dots-black.svg'" alt="" />
+          </button>
+          <img
+            (click)="(null)"
+            class="toggle-icon"
+            style="margin-left: 31px"
+            [src]="assetsURL + '/toggle-on.svg'"
+          />
+      -->
+
+      <button
+        style="
+          color: #87cd9b;
+          font-size: 17px;
+          font-family: InterBold;
+          margin-left: auto;
+        "
+        (click)="drawerOpened = true"
+      >
+        Artículos globales
+        <mat-icon style="color: #6fcf97; margin-left: 8px">menu</mat-icon>
+      </button>
+    </header>
+
+    <div class="search-opened" *ngIf="searchOpened">
+      <form class="search-bar-wrapper">
+        <input
+          type="text"
+          name="item-search"
+          id="search-from-results-view"
+          class="input search-bar"
+          placeholder="Buscar..."
+          [formControl]="itemSearchbar"
+        />
+      </form>
+
+      <div class="filters-container">
+        <div
+          class="filter"
+          *ngFor="let filter of searchFilters; let filterIndex = index"
+          [ngClass]="{
+            selected: activatedSearchFilters[filter.key]
+          }"
+          (click)="activateOrDeactivateFilters(filter.key)"
+        >
+          {{ filter.label }} ({{ metrics[filter.key] }})
+        </div>
+      </div>
+    </div>
+
+    <main>
+      <form class="search-bar-wrapper" *ngIf="!searchOpened">
+        <input
+          type="text"
+          (click)="showSearch()"
+          name="item-search"
+          class="input search-bar"
+          placeholder="Buscar..."
+          [formControl]="itemSearchbar"
+        />
+
+        <div class="filters">
+          <!--
+            <div class="option">⏰</div>
+            <div class="option">💰</div>
+          -->
+          <div class="option" (click)="(null)">🏷️</div>
+
+          <!--
+            <div
+              class="option"
+              *ngIf="allCategories.length > 0"
+              (click)="openCategoriesDialog()"
+            >
+              🖇️️
+            </div>
+          -->
+        </div>
+      </form>
+
+      <div class="items-metrics" *ngIf="!searchOpened">
+        {{ metrics.mine }} creados por mi. {{ metrics.hidden }} ocultos.
+        {{ metrics.notMine }} creados por otros. {{ metrics.toBeApproved }} en
+        espera de aprobación
+      </div>
+
+      <div class="list-of-items">
+        <div
+          class="item-wrapper"
+          *ngFor="let item of items; let itemIndex = index"
+        >
+          <div class="item-card">
+            <div class="left-column" (click)="redirectToItemEdition(item)">
+              <div
+                class="product-image"
+                [ngStyle]="{
+                  backgroundColor: 'white',
+                  backgroundImage: item.images?.length
+                    ? 'url(' +
+                      item.images[0].value +
+                      '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+                    : 'url(/assets/images/noimage.png)',
+                  backgroundPosition: 'center',
+                  backgroundSize: 'cover',
+                  backgroundRepeat: 'no-repeat'
+                }"
+              ></div>
+            </div>
+
+            <div
+              class="middle-column"
+              [ngClass]="{
+                fixedWidth: !item.approvedByAdmin
+              }"
+              (click)="redirectToItemEdition(item)"
+            >
+              <div class="item-name">{{ item.name }}</div>
+              <div class="item-description">{{ item.description }}</div>
+              <div
+                class="item-price"
+                *ngIf="item.merchant._id !== merchantsService.merchantData._id"
+              >
+                <ng-container *ngIf="item.pricing !== null">
+                  ${{ item.pricing | number : "1.2-2" }}
+                </ng-container>
+
+                <ng-container *ngIf="item.pricing === null">
+                  Adicione el precio
+                </ng-container>
+              </div>
+            </div>
+
+            <div
+              class="right-column"
+              *ngIf="!item.approvedByAdmin"
+              (click)="approveItem(item, itemIndex)"
+            >
+              <div class="edit-btn">
+                <span>Aprobar</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        [ngStyle]="{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          height: '80px',
+          justifyContent: 'center'
+        }"
+        *ngIf="paginationState.status === 'loading'"
+      >
+        <app-dot-loader></app-dot-loader>
+      </div>
+    </main></div
+></app-navigation>

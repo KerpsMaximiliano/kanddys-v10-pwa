@@ -125,12 +125,17 @@
   margin-bottom: 7px;
 
   .item-card {
+    position: relative;
     width: 100%;
     background: white;
     border-radius: 7px;
     padding: 15px;
     display: flex;
     column-gap: 10px;
+
+    &.tutorial-highlighted {
+      z-index: 1100;
+    }
   }
 
   .left-column {
@@ -148,6 +153,11 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    max-width: calc(100% - 102px);
+
+    &.fixedWidth {
+      max-width: 43.35%;
+    }
 
     .item-name {
       color: #181d17;
@@ -186,18 +196,80 @@
   }
 
   .right-column {
+    width: 25.81%;
+    margin-left: auto;
+
     .edit-btn {
       padding: 10px 28px;
       background: #87cd9b;
       border-radius: 39px;
       border: 0.5px #c4c5c3 solid;
       font-family: InterRegular;
-      font-size: 17px;
       font-style: normal;
       font-weight: 400;
       line-height: normal;
-      max-width: 101px;
       margin-top: 2px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+
+      &:hover {
+        cursor: pointer;
+      }
+
+      span {
+        font-size: clamp(12px, 20vw, 17px);
+      }
+    }
+  }
+}
+
+.help-card-container {
+  border-radius: 15.591px;
+  background: var(--el-mas-oscuro, #181d17);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32px 36px 20px 36px;
+  width: 63.084%;
+  max-width: 270.614px;
+  margin: auto;
+  margin-bottom: 8px;
+
+  .topText {
+    color: #7b7b7b;
+    font-family: InterBold;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    margin-bottom: 24px;
+  }
+
+  .middleText {
+    color: var(--blanco, #fff);
+    text-align: center;
+    font-family: InterSemiBold;
+    font-size: 23px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    margin-bottom: 40px;
+  }
+
+  .bottomText {
+    color: var(--el-verdecito, #87cd9b);
+    text-align: right;
+    font-family: InterSemiBold;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+
+    &:hover {
+      cursor: pointer;
     }
   }
 }
@@ -212,13 +284,12 @@ footer {
   justify-content: center;
   align-items: center;
   font-size: 17px;
-  background: var(--el-verdecito, #87CD9B);
-
+  background: var(--el-verdecito, #87cd9b);
 
   button {
     border: none;
-    color: #181D17 !important;
-    background: var(--el-verdecito, #87CD9B);
+    color: #181d17 !important;
+    background: var(--el-verdecito, #87cd9b);
     font-family: InterBold;
     font-size: 16px;
     font-style: normal;
@@ -251,4 +322,162 @@ footer {
   font-style: normal;
   font-weight: normal;
   line-height: normal;
+}
+
+.search-opened {
+  position: relative;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  max-width: 500px;
+  margin: auto;
+  background: var(--el-mas-oscuro, #181d17);
+  padding: 25px 16px;
+  padding-top: 57px;
+  margin-bottom: 21px;
+  z-index: 1000;
+
+  .close {
+    position: absolute;
+    top: 15px;
+    left: 18px;
+    color: #c4c5c3;
+    text-align: right;
+    font-family: InterLight;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    background-color: transparent;
+    border: none;
+    padding: 0px;
+  }
+
+  .search-bar-wrapper {
+    display: flex;
+    justify-content: space-between;
+    margin: 0px;
+    padding-bottom: 0;
+    position: relative;
+  }
+
+  .search-bar {
+    border-radius: 0px;
+    border: none;
+    background: var(--el-mas-oscuro, #181d17);
+    color: white;
+    font-family: InterBold;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    border-bottom: 1px solid #87cd9b;
+    width: 100%;
+    padding: 17px 0px;
+  }
+}
+
+.right-column {
+  display: flex;
+  flex-direction: column;
+
+  .quantity-title {
+    color: var(--plomo, #7b7b7b);
+    text-align: center;
+    font-family: InterRegular;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 105.023%; /* 13.653px */
+    margin-bottom: 6px;
+  }
+}
+
+.item-quantity {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #c4c5c3;
+  border-radius: 20px;
+  padding: 1px 10px;
+  height: fit-content;
+  margin-left: auto;
+  margin-top: 2px;
+  width: 100%;
+
+  &.deactivated {
+    background-color: darken($color: #fff, $amount: 3);
+  }
+
+  span {
+    font-size: 17px;
+    color: #000;
+    font-family: "InterRegular";
+
+    &.button {
+      cursor: pointer;
+
+      &.icon {
+        font-size: 28px;
+        width: 18.82px;
+        font-family: "InterSemiBold";
+      }
+
+      &.deactivated {
+        color: lighten($color: #000, $amount: 50);
+        cursor: not-allowed;
+      }
+    }
+
+    &.disabled {
+      color: rgba(0, 0, 0, 0.4);
+      cursor: not-allowed;
+    }
+  }
+}
+
+.item-add-price {
+  color: #2874ad;
+  font-family: InterBold;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  padding-top: 4px;
+  margin-top: auto;
+}
+
+.items-tutorial-wrapper {
+  position: absolute;
+  z-index: 999;
+  width: calc(100% + 36px);
+  margin-left: -18px;
+
+  .help-card-container {
+    &:first-child {
+      margin-top: 11px;
+    }
+  }
+}
+
+.tutorial-wrapper {
+  &.opened {
+    margin: auto;
+    max-width: 500px;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    right: 0px;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+
+    .cards-wrapper {
+      position: relative;
+      top: 189px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+    }
+  }
 }

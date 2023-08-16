@@ -1,6 +1,6 @@
 <div class="container">
   <div class="header">
-    <mat-icon>close</mat-icon>
+    <mat-icon style="cursor: pointer;" (click)="back()">close</mat-icon>
     <p>💰 Ventas en un intérvalo de tiempo</p>
   </div>
   <div class="dates-container">
@@ -44,6 +44,7 @@
       <div
         class="content-card"
         *ngFor="let order of orders; index as i"
+        (click)="goToOrderDetail(order._id)"
       >
         <div class="display-flex">
           <!-- <img [src]=" order.user.image?order.user.image:'https://cdn-icons-png.flaticon.com/512/149/149071.png'" width="66px"> -->

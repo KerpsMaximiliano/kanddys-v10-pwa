@@ -159,6 +159,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle'; 
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
@@ -229,6 +230,7 @@ import { ItemSelectorComponent } from './components/item-selector/item-selector.
 import { InventoryComponent } from './components/inventory/inventory.component';
 import { SupplierRegistrationComponent } from './components/supplier-registration/supplier-registration.component';
 import { CardImageComponent } from './components/card-image/card-image.component';
+import { ConfirmationSimpleComponent } from './dialogs/confirmation-simple/confirmation-simple.component';
 
 const imports = [
   CommonModule,
@@ -265,6 +267,7 @@ const imports = [
   MatTabsModule,
   MatToolbarModule,
   MatSidenavModule,
+  MatSlideToggleModule,
   TranslateModule,
 ];
 const declarations = [
@@ -459,6 +462,7 @@ const declarations = [
   PostsSlidesEditorComponent,
   CreateButtonLinkComponent,
   FormComponent,
+  ConfirmationSimpleComponent,
   ListRemoval,
   ItemsSlidesEditorComponent,
   StoreChatbotComponent,

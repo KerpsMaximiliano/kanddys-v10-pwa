@@ -41,6 +41,7 @@ import {
   salesPositionOfItemByMerchant,
   buyersByItemInMerchantStore,
   itemsQuantityOfFilters,
+  providersItemMetrics,
 } from '../graphql/items.gql';
 import {
   Item,
@@ -616,6 +617,20 @@ export class ItemsService {
       if (!response) return;
 
       return response?.itemsQuantityOfFilters;
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  providersItemMetrics = async (): Promise<any> => {
+    try {
+      const response = await this.graphql.query({
+        query: providersItemMetrics, //add listItems to gqls,
+        fetchPolicy: 'no-cache',
+      });
+      if (!response) return;
+
+      return response?.providersItemMetrics;
     } catch (e) {
       console.log(e);
     }

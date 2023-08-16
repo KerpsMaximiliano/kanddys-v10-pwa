@@ -1,0 +1,30 @@
+<div
+  class="dialog-container"
+  [ngStyle]="data.styles?.dialogContainer"
+>
+  <div mat-dialog-content>
+    <h2 class="title" *ngIf="data.title" [ngStyle]="data.styles?.title">
+      {{ data.title.text }}
+    </h2>
+  </div>
+  <div
+    mat-dialog-actions
+    class="buttons-flex"
+    [ngStyle]="data.styles?.buttonsContainer"
+  >
+    <button
+      class="cancel cancel-form-dialog"
+      [ngStyle]="data.styles?.button"
+      (click)="close()"
+    >
+      {{ data.texts.cancel }}
+    </button>
+    <button
+      class="accept"
+      [ngStyle]="data.styles?.button"
+      [mat-dialog-close]="true"
+    >
+      {{ data.texts.accept }}
+    </button>
+  </div>
+</div>

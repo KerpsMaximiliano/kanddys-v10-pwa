@@ -8,174 +8,71 @@
     disableClose
   >
     <div class="navigation-main-container">
-      <div class="close" style="cursor: pointer">
-        <span (click)="close()">X</span>
-      </div>
-      <div class="tabs">
-        <div
-          class="tab"
-          (click)="changeTab(i)"
-          *ngFor="let tab of tabs; index as i"
-          [ngClass]="{ active: tab.active }"
-        >
-          {{ tab.text }}
-        </div>
-      </div>
+      <div class="header-wrapper">
+        <div class="left-part">
+          <!--
+            <img
+              [src]="assetsFolder + '/icon_info.png'"
+              class="info-button"
+              alt="open internal information"
+              (click)="(null)"
+            />
+          -->
 
-      <div class="nav-container">
-        <nav *ngIf="!(!headerService.user && tabs[0].active)">
-          <ng-container *ngFor="let tab of tabs; let i = index">
-            <section *ngIf="tab.active">
-              <ng-container *ngIf="loggedUser">
-                <ng-container *ngIf="tab.text !== tabName['CLUB']">
-                  <ng-container
-                    *ngIf="
-                      tab.text === tabName['PROVIDERS'] &&
-                        !isCurrentUserASupplier;
-                      else loggedUserTabContent
-                    "
-                  >
-                    <!--PROVEEDOR NO REGISTRADO-->
-                    <ng-container
-                      *ngTemplateOutlet="
-                        unregisteredUserTypeTabContent;
-                        context: {
-                          tab: tab
-                        }
-                      "
-                    ></ng-container>
-                  </ng-container>
-
-                  <ng-template #loggedUserTabContent>
-                    <h2 class="logged-user-header">{{ tab.headerText }}</h2>
-                    <div class="header-border"></div>
-
-                    <ul>
-                      <ng-container *ngFor="let link of tab.links">
-                        <li routerLinkActive="active">
-
-                          <a
-                            mat-button
-                            [routerLink]="link.routerLink"
-                            (click)="redirectToLink(link)"
-                            [queryParams]="
-                              link.queryParams ? link.queryParams : null
-                            "
-                            style="padding: 0px"
-                          >
-                            {{ link.text }}
-                          </a>
-                        </li>
-                      </ng-container>
-                    </ul>
-                  </ng-template>
-                </ng-container>
-              </ng-container>
-
-              <ng-container *ngIf="!loggedUser">
-                <ng-container [ngSwitch]="tab.text">
-                  <ng-container *ngSwitchCase="tabName['FLORISTS']">
-                    <ng-container
-                      *ngTemplateOutlet="
-                        unregisteredUserTypeTabContent;
-                        context: {
-                          tab: tab
-                        }
-                      "
-                    ></ng-container>
-                  </ng-container>
-
-                  <ng-container *ngSwitchCase="tabName['PROVIDERS']">
-                    <ng-container
-                      *ngTemplateOutlet="
-                        unregisteredUserTypeTabContent;
-                        context: {
-                          tab: tab
-                        }
-                      "
-                    ></ng-container>
-                  </ng-container>
-                </ng-container>
-              </ng-container>
-
-              <ng-container *ngIf="tab.text === tabName['CLUB']">
-                <h2 class="club-title">{{ tab.headerText }}</h2>
-
-                <ul>
-                  <li class="text-list" *ngFor="let listBullet of tab.textList">
-                    <span class="title" *ngIf="listBullet.title">{{
-                      listBullet.title + ":"
-                    }}</span>
-                    {{ listBullet.content }}
-                  </li>
-                </ul>
-              </ng-container>
-            </section>
-          </ng-container>
-        </nav>
-
-        <div class="actions" *ngIf="tabs[0].active">
-          <button mat-button (click)="signout()" *ngIf="headerService.user">
-            <mat-icon>exit_to_app</mat-icon>
-            Cerrar sesión
-          </button>
-          <button mat-button (click)="login()" *ngIf="!headerService.user">
-            <mat-icon>input</mat-icon>
-            Iniciar sesión
-          </button>
-        </div>
-      </div>
-
-      <ng-container *ngFor="let tab of tabs">
-        <div
-          class="footer-swiper"
-          *ngIf="tab.active && tab.footer && tab.footer.swiper"
-        >
-          <h3 class="footer-swiper-title">{{ tab.footer.swiper.title }}</h3>
-
-          <div class="swiper-custom-container">
-            <swiper [config]="footerSwiperConfig">
+          <ng-container>
+            <div class="tabs">
               <div
-                *ngFor="let slide of tab.footer.swiper.slides; let i = index"
+                class="tab"
+                (click)="changeTab(i)"
+                *ngFor="let tab of tabs; index as i"
+                [ngClass]="{ active: tab.active }"
               >
-                <div class="slide-content">{{ slide.content }}</div>
-
-                <div class="blank-space"></div>
+                {{ tab.text }}
               </div>
-            </swiper>
-          </div>
+            </div>
+          </ng-container>
         </div>
 
-        <div class="footer" *ngIf="tab.active && tab.footer">
-          <div class="top-border"></div>
+        <div class="right-part">
+          <div class="member">
+            <div class="user-button" *ngIf="!headerService.user">
+              (Invitado)
+            </div>
+          </div>
 
-          <div
-            class="content"
-            *ngIf="tab.footer.button"
-            (click)="tab.footer.button.callback()"
-          >
-            {{ tab.footer.button.text }}
+          <div class="close" style="cursor: pointer">
+            <span (click)="close()">X</span>
           </div>
         </div>
-      </ng-container>
+      </div>
+
+      <section>
+        <ng-container *ngFor="let tab of tabs; index as i">
+          <ng-container *ngIf="tab.active">
+            <h2 class="logged-user-header">{{ tab.headerText }}</h2>
+            <div class="header-border"></div>
+
+            <ul>
+              <ng-container *ngFor="let link of tab.links">
+                <li routerLinkActive="active">
+                  <a
+                    mat-button
+                    [routerLink]="link.routerLink"
+                    (click)="redirectToLink(link)"
+                    [queryParams]="link.queryParams ? link.queryParams : null"
+                    style="padding: 0px"
+                  >
+                    {{ link.text }}
+                  </a>
+                </li>
+              </ng-container>
+            </ul>
+          </ng-container>
+        </ng-container>
+      </section>
     </div>
   </mat-sidenav>
   <mat-sidenav-content>
     <ng-content></ng-content>
   </mat-sidenav-content>
 </mat-sidenav-container>
-
-<ng-template #unregisteredUserTypeTabContent let-tab="tab">
-  <ul>
-    <li class="features-for-user" *ngFor="let listBullet of tab.textList">
-      <h4 class="title" *ngIf="listBullet.title">
-        {{ listBullet.title }}
-      </h4>
-
-      <p>
-        {{ listBullet.content }}
-      </p>
-    </li>
-  </ul>
-  <div class="top-border" style="margin-bottom: 22px; margin-top: 30px; width: calc(100% - 17px); margin-left: 0px; margin-right: 0px;"></div>
-</ng-template>
