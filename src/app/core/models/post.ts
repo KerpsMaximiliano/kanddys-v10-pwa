@@ -101,6 +101,7 @@ export class PostInput {
   ctaLink?: string;
   envelopeText?: string;
   virtualMessage?: boolean;
+  categories?: string[];
 }
 
 export class Slide extends Model<Slide> {
