@@ -1,7 +1,12 @@
 <div class="main-container">
   <nav>
     <div class="subnav">
-      <a class="exit">X</a>
+      <a 
+        class="exit"
+        (click)="updatePost()"
+      >
+        X
+      </a>
       <p class="title">🎗️ Causa de la recaudación</p>
     </div>
     <div class="subnav">
@@ -14,8 +19,23 @@
       <img class="icon" title="icon" src="{{env}}/info-icon.svg" />
     </div>
   </nav>
-  <div *ngIf="!active" class="symbol-warning">
-    <p>El simbolo de su causa está oculto por falta de información</p>
+  <div 
+    
+  >
+    <div *ngIf="!active" class="symbol-warning">
+      <p
+      *ngIf="postImages?.length === 0 || 
+      post?.categories.length === 0 || 
+      title.length === 0 || 
+      message.length === 0 || 
+      ctaText.length === 0; else fullWarning"
+      >
+        El simbolo de su causa está oculto por falta de información
+      </p>
+      <ng-template #fullWarning>
+        <p>El simbolo de su causa está oculto</p>
+      </ng-template>
+    </div>
   </div>
   <!--In the case that data has already been input, these should render-->
   <div class="container">
@@ -30,26 +50,70 @@
         />
       </div>
     </div>
-    <div *ngIf="post?.categories.length > 0" class="info-card">
+    <div 
+      *ngIf="post?.categories.length > 0" 
+      class="info-card"
+      (click)="openCategoriesDialog()"
+    >
       <p class="card-title">Categorias donde se exhibe</p>
       <div class="flex">
         <p *ngFor="let category of post.categories" class="display-text">{{category.name}}</p>
       </div>
     </div>
-    <div *ngIf="post?.title.length > 0" class="info-card">
+    <div *ngIf="title.length > 0" class="info-card">
       <p class="card-title">Texto principal y centralizado</p>
-      <input value="{{post.title}}" type="text" class="display-text" />
+      <input aria-label="titulo" [(ngModel)]="title" type="text" class="display-text" />
     </div>
-    <div *ngIf="post?.message.length > 0" class="info-card">
+    <div *ngIf="message.length > 0" class="info-card">
       <p class="card-title">Texto más largo</p>
-      <input value="{{post.message}}" type="text" class="display-text" />
+      <input 
+        aria-label="descripcion"
+        [(ngModel)]="message"
+        type="text"
+        class="display-text"
+      />
+    </div>
+    <div *ngIf="ctaText.length > 0" class="info-card">
+      <p class="card-title">Nombre del botón</p>
+      <input 
+        aria-label="nombre-boton"
+        [(ngModel)]="ctaText"
+        type="text"
+        class="display-text"
+      />
     </div>
   </div>
   <!--In the case that data is yet to be added -->
-  <p class="explanatory">Exhibe tu causa comunitaria para que los compradores te apoyen.</p>
-  <span class="long-span"></span>
+  <p 
+    *ngIf="postImages?.length === 0 || 
+    post?.categories.length === 0 || 
+    title.length === 0 || 
+    message.length === 0 || 
+    ctaText.length === 0" 
+    class="explanatory"
+  >
+    Exhibe tu causa comunitaria para que los compradores te apoyen.
+  </p>
+  <span
+    *ngIf="postImages?.length === 0 || 
+    post?.categories.length === 0 || 
+    title.length === 0 || 
+    message.length === 0 || 
+    ctaText.length === 0" 
+    class="long-span"
+  >
+  </span>
   <div class="container">
-    <p class="data-title">DATOS POR LLENAR</p>
+    <p 
+      *ngIf="postImages?.length === 0 || 
+      post?.categories.length === 0 || 
+      title.length === 0 || 
+      message.length === 0 || 
+      ctaText.length === 0" 
+      class="data-title"
+    >
+      DATOS POR LLENAR
+    </p>
       <div *ngIf="postImages?.length === 0" class="input-card">
         <p class="input-text">Imagen</p>
         <button class="input-button">
@@ -59,10 +123,14 @@
       <div *ngIf="post?.categories.length === 0" class="input-card">
         <p class="input-text">Categorias donde se exhibe</p>
         <button class="input-button">
-          <img src="../../../../../assets/icons/add-button.svg" alt="add item" />
+          <img 
+            src="../../../../../assets/icons/add-button.svg" 
+            alt="add item" 
+            (click)="openCategoriesDialog()"
+          />
         </button>
       </div>
-      <div *ngIf="post?.title.length === 0" class="input-card">
+      <div *ngIf="title.length === 0" class="input-card">
         <p class="input-text">Texto principal y centralizado</p>
         <button class="input-button">
           <img
@@ -72,7 +140,7 @@
           />
         </button>
       </div>
-      <div *ngIf="post?.message.length === 0" class="input-card">
+      <div *ngIf="message.length === 0" class="input-card">
         <p class="input-text">Texto más largo</p>
         <button class="input-button">
           <img 
@@ -82,13 +150,13 @@
           />
         </button>
       </div>
-    <div class="input-card">
+    <div *ngIf="ctaText.length === 0" class="input-card">
       <p class="input-text">Nombre del botón</p>
       <button class="input-button">
         <img
           src="../../../../../assets/icons/add-button.svg"
           alt="add item"
-          (click)="openFormForField('button-name')"
+          (click)="openFormForField('ctaText')"
         />
       </button>
     </div>

@@ -3,11 +3,15 @@ import { environment } from 'src/environments/environment';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { PostsService } from 'src/app/core/services/posts.service';
+import { CommunitiesService } from 'src/app/core/services/communities.service';
+import { HeaderService } from 'src/app/core/services/header.service';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { MatDialog } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FormComponent, FormData } from 'src/app/shared/dialogs/form/form.component';
 import { InputDialogComponent } from 'src/app/shared/dialogs/input-dialog/input-dialog.component';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { TagFilteringComponent } from 'src/app/shared/dialogs/tag-filtering/tag-filtering.component';
 
 interface Post {
   _id: string;
@@ -17,6 +21,7 @@ interface Post {
     _id: string;
     name: string;
   }[];
+  ctaText : string;
 }
 
 @Component({
@@ -30,17 +35,33 @@ export class SymbolEditorComponent implements OnInit {
   post: Post;
   postImages: any[];
   itemFormData: FormGroup;
+  categories: any[];
+
+  categoryIds: string[] = [];
+  title: string = "";
+  message: string = "";
+  ctaText : string = "";
   constructor(
     private MerchantsService: MerchantsService,
     private PostsService: PostsService,
     private MatSlideToggleModule: MatSlideToggleModule,
     private MatDialog: MatDialog,
     public dialog: MatDialog,
-    private _bottomSheet: MatBottomSheet
+    private _bottomSheet: MatBottomSheet,
+    private CommunitiesService: CommunitiesService,
+    private headerService: HeaderService,
+    private formBuilder: FormBuilder,
   ) { }
 
   ngOnInit(): void {
     this.getMerchantFunctionality()
+    this.CommunitiesService.communitycategoriesPaginate({findBy:{type:"solidary"}}).then((res) => {
+      console.log(res);
+      this.categories = res.results;
+      this.categories.forEach((category) => {
+        this.categoryIds.push(category._id);  
+      })
+    })
   }
 
   async getMerchantFunctionality() {
@@ -50,6 +71,9 @@ export class SymbolEditorComponent implements OnInit {
     });
     await this.MerchantsService.merchantFuncionality(merchantId).then((res) => {
       this.post = res.postSolidary.post;
+      this.title = this.post.title;
+      this.message = this.post.message;
+      this.ctaText = this.post.ctaText
       this.active = res.postSolidary.active;
     })
     this.PostsService.slidesByPost(this.post._id).then((res) => {
@@ -57,7 +81,7 @@ export class SymbolEditorComponent implements OnInit {
     })
   }
 
-  openFormForField(field: 'title' | 'message' | 'button-name') {
+  openFormForField(field: 'title' | 'message' | 'ctaText') {
     let fieldsToCreate: FormData = {
       fields: [],
     };
@@ -94,7 +118,7 @@ export class SymbolEditorComponent implements OnInit {
           },
         ];
         break;
-      case 'button-name':
+      case 'ctaText':
         fieldsToCreate.fields = [
           {
             label: 'Nombre del botón',
@@ -114,17 +138,57 @@ export class SymbolEditorComponent implements OnInit {
       console.log('The dialog was closed');
 
       if (result && result.value['item-title']) {
-        this.itemFormData.patchValue({
-          title: result.value['item-title'],
-        });
+        this.title = result.value['item-title']
       }
 
       if (result && result.value['item-description']) {
-        this.itemFormData.patchValue({
-          description: result.value['item-description'],
-        });
+        this.message = result.value['item-description']
+      }
+
+      if(result && result.value['button-name']){
+        this.ctaText = result.value['button-name']
       }
     });
   }
 
+  openCategoriesDialog = () => {
+    let postCategories = []
+    this.post.categories.forEach((category) => {
+      postCategories.push(category._id)
+    });
+    const bottomSheetRef = this._bottomSheet.open(TagFilteringComponent, {
+      data: {
+        title: 'Categorias',
+        titleIcon: {
+          show: false,
+        },
+        categories: this.categories.map((category) => ({
+          _id: category._id,
+          name: category.name,
+          selected: postCategories.includes(category._id),
+        })),
+      },
+    });
+
+    bottomSheetRef.instance.selectionOutput.subscribe(
+      async (categoriesAdded: Array<string>) => {
+        this.categoryIds = categoriesAdded;
+        console.log(this.categoryIds)
+        this.post.categories = this.categories.filter((category) => categoriesAdded.includes(category._id));
+      }
+    );
+  };
+
+  updatePost() {
+    this.PostsService.updatePost(
+      {
+        title: this.title, 
+        message: this.message, 
+        categories: this.categoryIds,
+        ctaText: this.ctaText
+      }, this.post._id).then((res) => {
+        console.log(res);
+      }
+    )
+  }
 }
