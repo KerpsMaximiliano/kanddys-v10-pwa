@@ -53,6 +53,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { ContactService } from 'src/app/core/services/contact.service';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ContactHeaderComponent } from 'src/app/shared/components/contact-header/contact-header.component';
+import * as moment from 'moment';
+
 
 interface Image {
   src: string;
@@ -83,6 +85,7 @@ export class OrderDetailComponent implements OnInit {
   env: string = environment.assetsUrl;
   URI: string = environment.uri;
   order: ItemOrder;
+  orderId;
   post: Post;
   slides: ExtendedSlide[];
   payment: number;
@@ -166,6 +169,7 @@ export class OrderDetailComponent implements OnInit {
 
   statusList: Array<{
     name: string;
+    status?:string;
   }> = [];
   activeStatusIndex = 0;
 
@@ -229,16 +233,16 @@ export class OrderDetailComponent implements OnInit {
 
       this.route.params.subscribe(async (params) => {
         const { orderId } = params;
-
+        this.orderId = orderId;
         await this.executeProcessesAfterLoading(orderId, notification);
-        //console.log(this.order.user._id);
       });
     });
+
   }
 
   async executeProcessesAfterLoading(orderId: string, notification?: string) {
     this.order = (await this.orderService.order(orderId, false))?.order;
-
+    await this.isMerchantOwner(this.order);
     this.buildStatusList();
 
     await this.getAnswersForEachItem();
@@ -325,15 +329,7 @@ export class OrderDetailComponent implements OnInit {
     this.orderStatus = this.orderService.getOrderStatusName(
       this.order.orderStatus
     );
-    const temporalDate = new Date(this.order.createdAt);
-    this.orderDate = temporalDate.toLocaleString('es-MX', {
-      hour12: true,
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    this.orderDate = moment(this.order.createdAt).format("DD MMM YYYY, h:mm:ss a" )
 
     if (!this.headerService.merchantContact) {
       this.headerService.merchantContact = (
@@ -795,11 +791,18 @@ export class OrderDetailComponent implements OnInit {
     );
   }
 
-  // async isMerchantOwner(merchant: string) {
-  //   this.orderMerchant = await this.merchantsService.merchantDefault();
-  //   this.isMerchant = merchant === this.orderMerchant?._id;
-  //   this.headerService.colorTheme = this.isMerchant ? '#2874AD' : '#272727';
-  // }
+  async isMerchantOwner(order: ItemOrder) {
+    const merchants = order.merchants;
+    const orderMerchant = await this.merchantsService.merchantDefault();
+    this.isMerchant = merchants.filter(merchant => merchant._id === orderMerchant?._id).length > 0;
+  }
+
+  async handleStatusUpdated(updatedStatus: string) {
+    const status = this.statusList.map(a => a.status);
+    this.activeStatusIndex = status.findIndex(
+      (status) => status === updatedStatus
+    );
+  }
 
   createTag() {
     let dialogRef = this.dialog.open(CreateTagComponent, {
@@ -1031,7 +1034,7 @@ export class OrderDetailComponent implements OnInit {
     });
   }
 
-  buildStatusList() {
+  buildStatusList() {    
     const statusList: OrderStatusDeliveryType[] = ['in progress', 'delivered'];
 
     const location = this.order.items[0].deliveryLocation;
@@ -1044,14 +1047,18 @@ export class OrderDetailComponent implements OnInit {
     for (const status of statusList) {
       this.statusList.push({
         name: this.orderService.orderDeliveryStatus(status),
+        status: status
       });
     }
 
-    const orderStatuDelivery = this.order.orderStatusDelivery;
+    const /* The above code is declaring a variable named "orderStatuDelivery" in TypeScript. */
+    orderStatuDelivery = this.order.orderStatusDelivery;
+    console.log("🚀 ~ file: order-detail.component.ts:1056 ~ OrderDetailComponent ~ buildStatusList ~ orderStatuDelivery:", orderStatuDelivery)
 
     this.activeStatusIndex = statusList.findIndex(
       (status) => status === orderStatuDelivery
     );
+    console.log("🚀 ~ file: order-detail.component.ts:1062 ~ OrderDetailComponent ~ buildStatusList ~ this.activeStatusIndex:", this.activeStatusIndex)
   }
 
   private getPaymentMethodName(paymentMethod: string): string {

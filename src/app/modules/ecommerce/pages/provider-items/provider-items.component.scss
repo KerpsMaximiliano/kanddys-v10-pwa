@@ -117,16 +117,35 @@ section {
   }
 }
 
+.items-tutorial-wrapper {
+  position: absolute;
+  z-index: 999;
+  width: calc(100% + 36px);
+  margin-left: -18px;
+
+  .help-card-container {
+    &:first-child {
+      margin-top: 11px;
+    }
+  }
+}
+
 .item-wrapper {
+  position: relative;
   margin-bottom: 7px;
 
   .item-card {
+    position: relative;
     width: 100%;
     background: white;
     border-radius: 7px;
     padding: 15px;
     display: flex;
     column-gap: 10px;
+
+    &.tutorial-highlighted {
+      z-index: 1100;
+    }
   }
 
   .left-column {
@@ -233,6 +252,91 @@ section {
     brightness(102%) contrast(102%);
 }
 
+.tutorial-wrapper {
+  &.opened {
+    margin: auto;
+    max-width: 500px;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    right: 0px;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+
+    .cards-wrapper {
+      position: relative;
+      top: 189px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}
+
+.help-card-container {
+  border-radius: 15.591px;
+  background: var(--el-mas-oscuro, #181d17);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32px 36px 20px 36px;
+  width: 63.084%;
+  max-width: 270.614px;
+  margin: auto;
+  margin-bottom: 8px;
+
+  .topText {
+    color: #7b7b7b;
+    font-family: InterBold;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    margin-bottom: 24px;
+  }
+
+  .middleText {
+    color: var(--blanco, #fff);
+    text-align: center;
+    font-family: InterSemiBold;
+    font-size: 23px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    margin-bottom: 40px;
+  }
+
+  .bottomText {
+    color: var(--el-verdecito, #87cd9b);
+    text-align: right;
+    font-family: InterSemiBold;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+
+.intro-text {
+  color: var(--el-mas-oscuro, #181d17);
+  text-align: center;
+  font-family: InterSemiBold;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  margin: 0px;
+  padding: 0px;
+  padding-top: 19px;
+  padding-bottom: 3px;
+}
+
 .search-bar-wrapper {
   display: flex;
   justify-content: space-between;
@@ -240,6 +344,10 @@ section {
   margin-bottom: 13px;
   padding-bottom: 0;
   position: relative;
+
+  &.tutorial {
+    z-index: 1000;
+  }
 
   .search-bar {
     /*
@@ -344,47 +452,61 @@ section {
   }
 }
 
+.right-column {
+  display: flex;
+  flex-direction: column;
+
+  .quantity-title {
+    color: var(--plomo, #7b7b7b);
+    text-align: center;
+    font-family: InterRegular;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 105.023%; /* 13.653px */
+    margin-bottom: 6px;
+  }
+}
+
 .item-quantity {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   border: 1px solid #c4c5c3;
   border-radius: 20px;
   padding: 1px 10px;
   height: fit-content;
   margin-left: auto;
   margin-top: 2px;
+  width: 100%;
 
   &.deactivated {
     background-color: darken($color: #fff, $amount: 3);
   }
 
-  .quantity {
-    span {
-      font-size: 17px;
-      color: #000;
-      font-family: "InterRegular";
+  span {
+    font-size: 17px;
+    color: #000;
+    font-family: "InterRegular";
 
-      &.button {
-        cursor: pointer;
+    &.button {
+      cursor: pointer;
 
-        &.icon {
-          font-size: 28px;
-          font-family: "InterSemiBold";
-        }
-
-        &.deactivated {
-          color: lighten($color: #000, $amount: 50);
-          cursor: not-allowed;
-        }
+      &.icon {
+        font-size: 28px;
+        width: 18.82px;
+        font-family: "InterSemiBold";
       }
 
-      &.disabled {
-        color: rgba(0, 0, 0, 0.4);
+      &.deactivated {
+        color: lighten($color: #000, $amount: 50);
         cursor: not-allowed;
       }
     }
 
-    span:nth-child(1),
-    span:nth-child(2) {
-      margin-right: 20px;
+    &.disabled {
+      color: rgba(0, 0, 0, 0.4);
+      cursor: not-allowed;
     }
   }
 }
@@ -396,7 +518,7 @@ footer {
   bottom: 0px;
   max-width: 500px;
   padding: 10px 0px 7px 0px;
-  background-color: #6fcf97;
+  background-color: #C4C5C3;
   color: #181d17;
   text-align: center;
   font-family: InterBold;
@@ -405,4 +527,15 @@ footer {
   font-weight: 700;
   line-height: normal;
   margin: auto;
+}
+
+.item-add-price {
+  color: #2874ad;
+  font-family: InterBold;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  padding-top: 4px;
+  margin-top: auto;
 }

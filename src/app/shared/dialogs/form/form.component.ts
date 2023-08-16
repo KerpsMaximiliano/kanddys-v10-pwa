@@ -26,7 +26,8 @@ interface Field {
     | 'file'
     | 'number'
     | 'currency'
-    | 'email-or-phone';
+    | 'email-or-phone'
+    | 'password';
   validators: Array<ValidatorFn>;
   name: string;
   placeholder?: string;
@@ -34,6 +35,11 @@ interface Field {
   secondaryIcon?: boolean;
   styles?: Record<string, string>;
   secondaryIconCallback?: () => void;
+  bottomButton?: {
+    text: string;
+    callback: () => any;
+    containerStyles?: Record<string, string | number>;
+  };
 }
 
 export interface FormData {
@@ -41,6 +47,10 @@ export interface FormData {
   title?: {
     text: string;
     styles?: Record<string, any>;
+  };
+  buttonsTexts?: {
+    cancel?: string;
+    accept?: string;
   };
   automaticallyFocusFirstField?: boolean;
 }
@@ -103,6 +113,7 @@ export class FormComponent implements OnInit {
         case 'text':
         case 'currency':
         case 'phone':
+        case 'password':
         case 'number':
           if (
             !firstEditableFieldFound &&
@@ -163,7 +174,7 @@ export class FormComponent implements OnInit {
     ) as HTMLElement;
     const dialog = document.querySelector(
       '#' + this.dialogRef.id
-      ) as HTMLElement;
+    ) as HTMLElement;
 
     if (
       container &&
@@ -177,7 +188,7 @@ export class FormComponent implements OnInit {
       const dialogHeight = dialog.clientHeight;
       const marginTop = (screenHeight - dialogHeight) / 2;
 
-      this.dialogRef.updatePosition({ top: marginTop + 'px' }); 
+      this.dialogRef.updatePosition({ top: marginTop + 'px' });
     }
   }
 

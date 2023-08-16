@@ -86,6 +86,7 @@ import { InventoryCreatorComponent } from './pages/inventory-creator/inventory-c
 import { OrderProgressFilteringComponent } from './pages/order-progress-filtering/order-progress-filtering.component';
 import { OrderProgressComponent } from './pages/order-progress/order-progress.component';
 import { OrderFilteringComponent } from './pages/order-filtering/order-filtering.component';
+import { MerchantEditorComponent } from './pages/merchant-editor/merchant-editor.component';
 import { MonetizationsFormComponent } from './pages/monetizations-form/monetizations-form.component';
 import { AdminOrdersComponent } from './pages/admin-orders/admin-orders.component';
 import { AmbassadorsPaymentsComponent } from './pages/ambassadors-payments/ambassadors-payments.component';
@@ -93,8 +94,14 @@ import { AmbassadorPaymentsLibraryComponent } from './pages/ambassador-payments-
 import { AmbassadorsComponent } from './pages/ambassadors/ambassadors.component';
 import { UserSearchComponent } from './pages/user-search/user-search.component';
 import { UserEntryComponent } from './pages/user-entry/user-entry.component';
+import { AmbassadorDashboardComponent } from './pages/ambassador-dashboard/ambassador-dashboard.component';
 import { NewAdminDashboardComponent } from './pages/new-admin-dashboard/new-admin-dashboard.component';
 import { ProviderItemsManagementComponent } from './pages/provider-items-management/provider-items-management.component';
+import { SymbolEditorComponent } from './pages/symbol-editor/symbol-editor.component';
+import { MonetizationsComponent } from './pages/monetizations/monetizations.component';
+import { CurrencyFormatPipe } from 'src/app/core/pipes/currency-format.pipe';
+import { MerchantOffersComponent } from './pages/merchant-offers/merchant-offers.component';
+import { AdminCartsComponent } from './pages/admin-carts/admin-carts.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -149,6 +156,10 @@ const routes: Routes = [
       {
         path: 'merchant-items',
         component: MerchantItemsComponent,
+      },
+      {
+        path: 'merchant-offers',
+        component: MerchantOffersComponent,
       },
       {
         path: 'orders',
@@ -555,32 +566,52 @@ const routes: Routes = [
     component: OrderFilteringComponent,
   },
   {
+    path: 'merchant-editor',
+    component: MerchantEditorComponent,
+  },
+  {
     path: 'monetization-form',
     component: MonetizationsFormComponent,
   },
   {
     path: 'admin-orders',
-    component: AdminOrdersComponent
+    component: AdminOrdersComponent,
+  },
+  {
+    path: 'carts',
+    component: AdminCartsComponent
   },
   {
     path: 'ambassadors-pending-payments',
-    component: AmbassadorsPaymentsComponent
+    component: AmbassadorsPaymentsComponent,
   },
   {
     path: 'ambassador-payments',
-    component: AmbassadorPaymentsLibraryComponent
+    component: AmbassadorPaymentsLibraryComponent,
   },
   {
     path: 'ambassadors',
-    component: AmbassadorsComponent
+    component: AmbassadorsComponent,
+  },
+  {
+    path: 'ambassadors-dashboard',
+    component: AmbassadorDashboardComponent,
   },
   {
     path: 'user-search',
-    component: UserSearchComponent
+    component: UserSearchComponent,
   },
   {
     path: 'user-entry',
     component: UserEntryComponent
+  },
+  {
+    path: 'symbol-editor',
+    component: SymbolEditorComponent
+  },
+  {
+    path: 'monetizations',
+    component: MonetizationsComponent
   }
 ];
 
@@ -626,6 +657,7 @@ const routes: Routes = [
     OrderDataComponent,
     BuyerDataComponent,
     FilterPipeSearchPipe,
+    CurrencyFormatPipe,
     ExpendituresComponent,
     IncomesComponent,
     CreateExpenditureComponent,
@@ -650,6 +682,7 @@ const routes: Routes = [
     OrderProgressFilteringComponent,
     OrderProgressComponent,
     OrderFilteringComponent,
+    MerchantEditorComponent,
     MonetizationsFormComponent,
     AdminOrdersComponent,
     AmbassadorsPaymentsComponent,
@@ -657,8 +690,13 @@ const routes: Routes = [
     AmbassadorsComponent,
     UserSearchComponent,
     UserEntryComponent,
+    AmbassadorDashboardComponent,
     NewAdminDashboardComponent,
     ProviderItemsManagementComponent,
+    SymbolEditorComponent,
+    MonetizationsComponent,
+    MerchantOffersComponent,
+    AdminCartsComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [

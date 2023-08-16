@@ -41,7 +41,7 @@
                       : (order?.items[0].saleflow.merchant?.name.slice(0, 26) +
                           ".." || "Tienda" | titlecase)
                   }}
-                  <span>facturó a {{ order.user.name || order.user.phone || order.user.email }}</span>
+                  <span>facturó a {{ order?.user?.name || order?.user?.phone || order?.user?.email }}</span>
                 </p>
                 
               </div>
@@ -93,9 +93,12 @@
     </button> -->
 
     <app-progress-slider
-      [title]="'Actualización del progreso'"
+      [title]=""
       [statusList]="statusList"
       [activeIndex]="activeStatusIndex"
+      [isAdmin]="isMerchant"
+      [orderId]="orderId"
+      (statusUpdated)="handleStatusUpdated($event)"
     ></app-progress-slider>
 
     <div style="position: fixed; max-width: 500px; width: 100%; bottom: 100px">
@@ -134,7 +137,7 @@
         </div>
         <div style="display: flex; align-items: center">
           <p style="margin-right: auto">Fecha <br /></p>
-          <span style="text-transform: capitalize">
+          <span style="text-transform: uppercase">
             {{ orderDate }}
           </span>
           <!-- <p>Dirección {{ order?.items[0].saleflow.merchant?.address }}</p> -->

@@ -1,0 +1,69 @@
+<app-navigation [opened]="openNavigation" (closed)="openNavigation = false">
+    <div class="container">
+      <div class="header-wrapper">
+        <div class="left-part">
+          <img
+            [src]="assetsFolder + '/icon_info.png'"
+            class="info-button"
+            alt="open internal information"
+            (click)="(null)"
+          />
+    
+          <div class="title">www.floristerias.club</div>
+        </div>
+    
+        <div class="right-part">
+          <div class="member">
+            <div class="user-button" (click)="enterClub()" *ngIf="!headerService.user">Ingresa al club</div>
+          </div>
+    
+          <div class="close" *ngIf="headerService.user" style="cursor: pointer">
+            <span (click)="close()">X</span>
+          </div>
+        </div>
+      </div>
+    
+      <main>
+        <div class="landing-title">
+          Es un ecosistema digital en constante desarrollo, diseñado para
+          proporcionar soluciones a los desafíos que enfrentan las floristerías y
+          sus proveedores.
+        </div>
+    
+        <ul>
+          <li class="text-list" *ngFor="let listBullet of listOfFeatures">
+            <span class="title" *ngIf="listBullet.title">{{
+              listBullet.title + ":"
+            }}</span>
+            <span class="list-content">{{ listBullet.content }}</span>
+          </li>
+        </ul>
+    
+        <div class="header-border"></div>
+    
+        <ng-container *ngFor="let swiper of swipers; let swiperIndex = index">
+          <div class="footer-swiper">
+            <h3 class="footer-swiper-title">{{ swiper.title }}</h3>
+    
+            <div class="swiper-custom-container">
+              <swiper [config]="swiperConfig">
+                <div *ngFor="let slide of swiper.slides; let i = index">
+                  <div class="slide-content">{{ slide.content }}</div>
+    
+                  <div class="blank-space"></div>
+                </div>
+              </swiper>
+            </div>
+          </div>
+    
+          <div
+            class="header-border"
+            *ngIf="swiperIndex !== swipers.length - 1"
+            style="margin-top: 42px"
+          ></div>
+        </ng-container>
+      </main>
+    
+      <footer (click)="share()">Comparte</footer>
+    </div>
+</app-navigation>
