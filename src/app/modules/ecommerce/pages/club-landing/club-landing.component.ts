@@ -19,6 +19,10 @@ import {
 import { FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import {
+  OptionsDialogComponent,
+  OptionsDialogTemplate,
+} from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
 
 interface ReviewsSwiper {
   title: string;
@@ -222,7 +226,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   async openMagicLinkDialog() {
-    let fieldsToCreate: FormData = {
+    let fieldsToCreateInEmailDialog: FormData = {
       title: {
         text: 'Acceso al Club:',
       },
@@ -230,80 +234,143 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         accept: 'Recibir el enlace con acceso',
         cancel: 'Cancelar',
       },
+      containerStyles: {
+        padding: '35px 23px 38px 18px',
+      },
+      hideBottomButtons: true,
       fields: [
         {
           name: 'magicLinkEmailOrPhone',
           type: 'email',
           placeholder: 'Escribe el correo electrónico..',
           validators: [Validators.pattern(/[\S]/), Validators.required],
-          bottomButton: {
-            text: 'Adiciona la clave',
-            callback: () => addPassword(),
+          inputStyles: {
+            padding: '11px 1px',
+          },
+          submitButton: {
+            text: '>',
+            styles: {
+              borderRadius: '8px',
+              background: '#87CD9B',
+              padding: '6px 15px',
+              color: '#181D17',
+              textAlign: 'center',
+              fontFamily: 'InterBold',
+              fontSize: '17px',
+              fontStyle: 'normal',
+              fontWeight: '700',
+              lineHeight: 'normal',
+              position: 'absolute',
+              right: '1px',
+              top: '8px',
+            },
           },
         },
       ],
     };
 
-    const dialogRef = this.dialog.open(FormComponent, {
-      data: fieldsToCreate,
+    const emailDialogRef = this.dialog.open(FormComponent, {
+      data: fieldsToCreateInEmailDialog,
       disableClose: true,
     });
 
-    dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+    emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
       if (result?.controls?.magicLinkEmailOrPhone.valid) {
-        const validEmail = new RegExp(
-          /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gim
-        );
+        const emailOrPhone = result?.value['magicLinkEmailOrPhone'];
 
-        let emailOrPhone = null;
+        let optionsDialogTemplate: OptionsDialogTemplate = {
+          options: [
+            {
+              value: 'Accederé con la clave',
+              callback: async () => {
+                await addPassword(emailOrPhone);
+              },
+            },
+            {
+              value: 'Prefiero recibir el enlace de acceso en mi correo',
+              callback: async () => {
+                if (result?.controls?.magicLinkEmailOrPhone.valid) {
+                  const validEmail = new RegExp(
+                    /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gim
+                  );
 
-        if (
-          typeof result?.value['magicLinkEmailOrPhone'] === 'string' &&
-          validEmail.test(result?.value['magicLinkEmailOrPhone'])
-        ) {
-          emailOrPhone = result?.value['magicLinkEmailOrPhone'];
-        } else {
-          emailOrPhone =
-            result?.value['magicLinkEmailOrPhone'].e164Number.split('+')[1];
-        }
+                  let emailOrPhone = null;
 
-        lockUI();
+                  if (
+                    typeof result?.value['magicLinkEmailOrPhone'] ===
+                      'string' &&
+                    validEmail.test(result?.value['magicLinkEmailOrPhone'])
+                  ) {
+                    emailOrPhone = result?.value['magicLinkEmailOrPhone'];
+                  } else {
+                    emailOrPhone =
+                      result?.value['magicLinkEmailOrPhone'].e164Number.split(
+                        '+'
+                      )[1];
+                  }
 
-        await this.authService.generateMagicLink(
-          emailOrPhone,
-          '/ecommerce/club-landing',
-          null,
-          'MerchantAccess',
-          {
-            jsondata: JSON.stringify({
-              openNavigation: true,
-            }),
-          },
-          []
-        );
+                  lockUI();
 
+                  await this.authService.generateMagicLink(
+                    emailOrPhone,
+                    '/ecommerce/club-landing',
+                    null,
+                    'MerchantAccess',
+                    {
+                      jsondata: JSON.stringify({
+                        openNavigation: true,
+                      }),
+                    },
+                    []
+                  );
+
+                  unlockUI();
+
+                  this.dialogService.open(
+                    GeneralFormSubmissionDialogComponent,
+                    {
+                      type: 'centralized-fullscreen',
+                      props: {
+                        icon: 'check-circle.svg',
+                        showCloseButton: false,
+                        message:
+                          'Se ha enviado un link mágico a tu correo electrónico',
+                      },
+                      customClass: 'app-dialog',
+                      flags: ['no-header'],
+                    }
+                  );
+                } else if (
+                  result?.controls?.magicLinkEmailOrPhone.valid === false
+                ) {
+                  unlockUI();
+                  this.snackbar.open('Datos invalidos', 'Cerrar', {
+                    duration: 3000,
+                  });
+                }
+              },
+            },
+          ],
+        };
+
+        this.dialog.open(OptionsDialogComponent, {
+          data: optionsDialogTemplate,
+          disableClose: true,
+        });
+      } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
         unlockUI();
-
-        this.dialogService.open(GeneralFormSubmissionDialogComponent, {
-          type: 'centralized-fullscreen',
-          props: {
-            icon: 'check-circle.svg',
-            showCloseButton: false,
-            message:
-              'Se ha enviado un link mágico a tu correo electrónico',
-          },
-          customClass: 'app-dialog',
-          flags: ['no-header'],
+        this.snackbar.open('Datos invalidos', 'Cerrar', {
+          duration: 3000,
         });
       }
     });
 
-    const addPassword = async () => {
-      dialogRef.close();
+    const addPassword = async (emailOrPhone: string) => {
+      emailDialogRef.close();
 
       let fieldsToCreate: FormData = {
         title: {
-          text: 'Acceso al Club:',
+          text: 'Clave de Acceso:',
         },
         buttonsTexts: {
           accept: 'Accesar al Club',
@@ -311,16 +378,10 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         },
         fields: [
           {
-            name: 'email',
-            type: 'email',
-            placeholder: 'Escribe el correo electrónico..',
-            validators: [Validators.pattern(/[\S]/), Validators.required],
-          },
-          {
             name: 'password',
             type: 'password',
             placeholder: 'Escribe la contraseña',
-            validators: [Validators.pattern(/[\S]/), Validators.required],
+            validators: [Validators.pattern(/[\S]/)],
             bottomButton: {
               text: 'Prefiero recibir el correo con el enlace de acceso',
               callback: () => {
@@ -340,11 +401,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
       dialog2Ref.afterClosed().subscribe(async (result: FormGroup) => {
         try {
-          if (
-            result?.controls?.email.valid &&
-            result?.controls?.password.valid
-          ) {
-            let emailOrPhone = result?.value['email'];
+          if (result?.controls?.password.valid) {
             let password = result?.value['password'];
 
             lockUI();
@@ -355,16 +412,19 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
               true
             );
 
+            if (!session) throw new Error('invalid credentials');
+
             if (session) this.openNavigation = true;
 
             unlockUI();
-          } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
+          } else if (result?.controls?.password.valid === false) {
             unlockUI();
             this.snackbar.open('Datos invalidos', 'Cerrar', {
               duration: 3000,
             });
           }
         } catch (error) {
+          unlockUI();
           console.error(error);
           this.headerService.showErrorToast();
         }
