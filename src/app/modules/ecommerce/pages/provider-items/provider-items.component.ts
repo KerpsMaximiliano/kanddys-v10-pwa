@@ -858,6 +858,7 @@ export class ProviderItemsComponent implements OnInit {
       notificationStock: true,
       notificationStockLimit: item.notificationStockLimit,
       useStock: true,
+      type: 'supplier'
     };
 
     if (this.merchantsService.merchantData) {
