@@ -1,6 +1,18 @@
 <div class="container">
   <div class="search-opened">
-    <button class="close" (click)="goBack()">X</button>
+    <div class="header-top">
+      <button class="close" (click)="goBack()">X</button>
+
+      <span
+        class="save"
+        *ngIf="!headerService.user"
+        [ngClass]="{
+          valid: atLeastOneHasPriceAdded
+        }"
+        (click)="openMagicLinkDialog()"
+        >Guardar</span
+      >
+    </div>
 
     <form class="search-bar-wrapper">
       <input
@@ -75,6 +87,13 @@
         <ng-container *ngIf="item.pricing !== null">
           ${{ item.pricing | number : "1.2-2" }}
         </ng-container>
+
+        <img
+          class="price-tutorial-img"
+          *ngIf="firstItem && tutorialOpened && item.pricing !== null"
+          [src]="assetsFolder + '/card-arrow-up.svg'"
+          alt=""
+        />
       </div>
 
       <div
@@ -83,6 +102,13 @@
         (click)="addPrice(item)"
       >
         Mi precio
+
+        <img
+          class="price-tutorial-img"
+          *ngIf="firstItem && tutorialOpened"
+          [src]="assetsFolder + '/card-arrow-up.svg'"
+          alt=""
+        />
       </div>
     </div>
 
@@ -154,29 +180,21 @@
       *ngTemplateOutlet="
         helpCard;
         context: {
-          topText: 'Mi precio',
-          topTextStyles: {
-            color: '#2874AD'
+          containerStyles: {
+            width: '86.91%',
+            maxWidth: '372px'
           },
-          middleText: 'Adiciona el precio de venta',
-          bottomText: 'Ok',
-          bottomTextClickHandler: closeItemsTutorial,
-          cardName: 'price'
-        }
-      "
-    ></ng-container>
-    <ng-container
-      *ngTemplateOutlet="
-        helpCard;
-        context: {
-          topImage: assetsFolder + '/amount-changer-simple.svg',
-          middleText: 'Adiciona la disponibilidad',
+          middleText: 'Adiciona el precio de los artículos que vendes',
           middleTextStyles: {
-            marginTop: '11px'
+            marginBottom: '16px',
+            fontFamily: 'InterSemiBold',
+            fontSize: '23px',
+            fontStyle: 'normal'
           },
           bottomText: 'Ok',
           bottomTextClickHandler: closeItemsTutorial,
-          cardName: 'stock'
+          openedStateObject: itemsTutorialCardsOpened,
+          cardName: 'price'
         }
       "
     ></ng-container>
@@ -185,6 +203,7 @@
 
 <ng-template
   #helpCard
+  let-containerStyles="containerStyles"
   let-topText="topText"
   let-topImage="topImage"
   let-topTextStyles="topTextStyles"
@@ -194,7 +213,11 @@
   let-bottomTextClickHandler="bottomTextClickHandler"
   let-cardName="cardName"
 >
-  <div class="help-card-container" *ngIf="itemsTutorialCardsOpened[cardName]">
+  <div
+    class="help-card-container"
+    [ngStyle]="containerStyles"
+    *ngIf="itemsTutorialCardsOpened[cardName]"
+  >
     <span class="topText" *ngIf="topText" [ngStyle]="topTextStyles">{{
       topText
     }}</span>
