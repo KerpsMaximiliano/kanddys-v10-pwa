@@ -326,14 +326,14 @@ export class ItemCreationComponent implements OnInit {
         this.isASupplierItem &&
         this.itemFormData.controls['title'].value !== ''
       ) {
-        this.itemFormData.controls['title'].disable();
+        // this.itemFormData.controls['title'].disable();
       }
 
       if (
         this.isASupplierItem &&
         this.itemFormData.controls['description'].value !== ''
       ) {
-        this.itemFormData.controls['description'].disable();
+        // this.itemFormData.controls['description'].disable();
       }
 
       this.itemFormData.valueChanges.subscribe(() => {
@@ -1487,14 +1487,17 @@ export class ItemCreationComponent implements OnInit {
           else {
             this.toastrService.info('¡Item eliminado exitosamente!');
 
-            if (!this.isTheUserAnAdmin) {
-              this.saleflowService.saleflowData =
-                await this.saleflowService.saleflowDefault(
-                  this.merchantsService.merchantData._id
-                );
+            if (!this.isASupplierItem) {
+              if (this.isTheUserAnAdmin)
+                this.saleflowService.saleflowData =
+                  await this.saleflowService.saleflowDefault(
+                    this.merchantsService.merchantData._id
+                  );
               this.router.navigate(['/admin/dashboard']);
             } else {
-              this.router.navigate(['/admin/provider-items-management']);
+              if (this.isTheUserAnAdmin)
+                this.router.navigate(['/admin/provider-items-management']);
+              else this.router.navigate(['/admin/supplier-dashboard'], { queryParams: { supplierMode: true } });
             }
             //this.router.navigate(['/admin/dashboard']);
           }

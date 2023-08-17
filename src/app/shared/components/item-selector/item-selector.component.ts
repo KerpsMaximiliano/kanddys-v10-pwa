@@ -418,7 +418,7 @@ export class ItemSelectorComponent implements OnInit {
       return;
     }
 
-    this.location.back();
+    return this.router.navigate(['/ecommerce/club-landing']);
   }
 
   async submit() {

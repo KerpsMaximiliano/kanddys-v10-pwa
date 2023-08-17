@@ -23,24 +23,8 @@
       color: '#FFF'
     }"
     bgColor="#2874AD"
-    [returnAble]="
-      (!nope && auth !== 'anonymous') ||
-      auth === 'order' ||
-      (loggin && auth !== 'payment') ||
-      (signUp && !toValidate) ||
-      auth === 'azul-login'
-        ? true
-        : false
-    "
-    (returnEvent)="
-      loggin
-        ? toggleLog()
-        : signUp
-        ? toSignUp()
-        : ['order', 'payment', 'address', 'azul-login'].includes(auth)
-        ? back()
-        : null
-    "
+    [returnAble]="true"
+    (returnEvent)="back()"
   ></app-helper-headerv2>
 
   <ng-container *ngIf="!recoverPasswordMode">

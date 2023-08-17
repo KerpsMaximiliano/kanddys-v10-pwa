@@ -83,7 +83,7 @@
           El artículo está oculto
         </div>
 
-        <div class="disabled-item-container" style="padding: 12px 43px;" *ngIf="isTheUserAnAdmin && !item?.approvedByAdmin">
+        <div class="disabled-item-container" *ngIf="isTheUserAnAdmin && !item?.approvedByAdmin">
           El artículo no se está exhibiendo por falta aprobación.
         </div>
 
@@ -185,6 +185,7 @@
             <input
               type="text"
               placeholder="Escribe"
+              readonly="{{ isASupplierItem ? true : false }}"
               [formControlName]="'title'"
             />
           </div>
@@ -200,11 +201,12 @@
               cols="30"
               rows="3"
               placeholder="Escribe"
+              readonly="{{ isASupplierItem ? true : false }}"
               [formControlName]="'description'"
             ></textarea>
 
             <button
-              *ngIf="merchantsService.merchantData"
+              *ngIf="merchantsService.merchantData && isASupplierItem"
               (click)="openMetaDescriptionDialog()"
               class="icon-button"
             >

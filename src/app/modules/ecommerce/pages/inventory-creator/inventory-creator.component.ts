@@ -746,17 +746,19 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
           const createdItem = (await this.itemsService.createItem(itemInput))
             ?.createItem;
 
-          itemInput.parentItem = createdItem._id;
+          if (!this.headerService.user.hasRoles('ADMIN')) {
+            itemInput.parentItem = createdItem._id;
 
-          const createdItem2 = (await this.itemsService.createItem(itemInput))
-            ?.createItem;
+            const createdItem2 = (await this.itemsService.createItem(itemInput))
+              ?.createItem;
 
-          await this.saleflowService.addItemToSaleFlow(
-            {
-              item: createdItem2._id,
-            },
-            saleflowDefault._id
-          );
+            await this.saleflowService.addItemToSaleFlow(
+              {
+                item: createdItem2._id,
+              },
+              saleflowDefault._id
+            );
+          }
 
           this.snackbar.open('Item creado exitosamente', 'Cerrar', {
             duration: 3000,
