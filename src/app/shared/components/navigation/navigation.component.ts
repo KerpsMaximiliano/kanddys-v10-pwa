@@ -147,11 +147,6 @@ export class NavigationComponent implements OnInit {
         linkName: 'my-dashboard',
       },
       {
-        text: 'Recompensa a compradores ✨',
-        routerLink: ['/admin/stars-landing'],
-        linkName: 'stars-landing',
-      },
-      {
         text: 'Carrito del Proveedor (yo compro)',
         routerLink: ['/ecommerce/supplier-items-selector'],
         possibleRedirection: ['/ecommerce/quotations'],
@@ -241,7 +236,7 @@ export class NavigationComponent implements OnInit {
           this.tabs = [];
 
           if (quotations.length > 0) {
-            this.sellerTab.links[2].routerLink = ['/ecommerce/quotations'];
+            this.sellerTab.links[1].routerLink = ['/ecommerce/quotations'];
           }
 
           this.tabs.push(this.providerTab);

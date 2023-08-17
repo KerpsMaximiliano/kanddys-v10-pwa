@@ -901,7 +901,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
                 icon: 'check-circle.svg',
                 showCloseButton: false,
                 message:
-                  'Se ha enviado un link mágico a tu teléfono o a tu correo electrónico',
+                  'Se ha enviado un link mágico a tu correo electrónico',
               },
               customClass: 'app-dialog',
               flags: ['no-header'],
