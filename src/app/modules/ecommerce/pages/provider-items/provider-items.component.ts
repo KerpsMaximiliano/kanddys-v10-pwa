@@ -1109,6 +1109,8 @@ export class ProviderItemsComponent implements OnInit {
               true
             );
 
+            if (!session) throw new Error('invalid credentials');
+
             const { merchantDefault, saleflowDefault } =
               await this.getDefaultMerchantAndSaleflows(session.user);
 
@@ -1128,18 +1130,6 @@ export class ProviderItemsComponent implements OnInit {
               environment.uri + '/ecommerce/provider-items';
 
             unlockUI();
-
-            this.dialogService.open(GeneralFormSubmissionDialogComponent, {
-              type: 'centralized-fullscreen',
-              props: {
-                icon: 'check-circle.svg',
-                showCloseButton: false,
-                message:
-                  'Se ha enviado un link mágico a tu teléfono o a tu correo electrónico',
-              },
-              customClass: 'app-dialog',
-              flags: ['no-header'],
-            });
           } else if (result?.controls?.password.valid === false) {
             unlockUI();
             this.snackbar.open('Datos invalidos', 'Cerrar', {
@@ -1147,6 +1137,7 @@ export class ProviderItemsComponent implements OnInit {
             });
           }
         } catch (error) {
+          unlockUI();
           console.error(error);
           this.headerService.showErrorToast();
         }
@@ -1254,7 +1245,9 @@ export class ProviderItemsComponent implements OnInit {
   sendWhatsappToAppOwner() {
     let message = `Hola, quiero agregar un artículo como proveedor de www.floristerias.club`;
 
-    const whatsappLink = `https://api.whatsapp.com/send?phone=19188156444&text=${encodeURIComponent(message)}`;
+    const whatsappLink = `https://api.whatsapp.com/send?phone=19188156444&text=${encodeURIComponent(
+      message
+    )}`;
 
     window.location.href = whatsappLink;
   }

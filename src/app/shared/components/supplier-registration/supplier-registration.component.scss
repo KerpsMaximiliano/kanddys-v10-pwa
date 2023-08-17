@@ -192,6 +192,7 @@
       word-wrap: break-word;
       padding-top: 4px;
       margin-top: auto;
+      position: relative;
     }
   }
 
@@ -333,24 +334,42 @@ footer {
   margin: auto;
   background: var(--el-mas-oscuro, #181d17);
   padding: 25px 16px;
-  padding-top: 57px;
+  padding-top: 0px;
   margin-bottom: 21px;
   z-index: 1000;
 
-  .close {
-    position: absolute;
-    top: 15px;
-    left: 18px;
-    color: #c4c5c3;
-    text-align: right;
-    font-family: InterLight;
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 300;
-    line-height: normal;
-    background-color: transparent;
-    border: none;
-    padding: 0px;
+  .header-top {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+
+    .close {
+      color: #c4c5c3;
+      text-align: right;
+      font-family: InterLight;
+      font-size: 24px;
+      font-style: normal;
+      font-weight: 300;
+      line-height: normal;
+      background-color: transparent;
+      border: none;
+      padding: 0px;
+    }
+
+    .save {
+      color: #7b7b7b;
+      text-align: right;
+      font-family: InterLight;
+      font-size: 17px;
+      font-style: normal;
+      line-height: normal;
+
+      &.valid {
+        color: #6fcf97;
+      }
+    }
   }
 
   .search-bar-wrapper {
@@ -445,17 +464,23 @@ footer {
   line-height: normal;
   padding-top: 4px;
   margin-top: auto;
+  position: relative;
+}
+
+.price-tutorial-img {
+  position: absolute;
+  top: 6px;
 }
 
 .items-tutorial-wrapper {
   position: absolute;
   z-index: 999;
-  width: calc(100% + 36px);
+  width: 100%;
   margin-left: -18px;
 
   .help-card-container {
     &:first-child {
-      margin-top: 11px;
+      margin-top: 25px;
     }
   }
 }
