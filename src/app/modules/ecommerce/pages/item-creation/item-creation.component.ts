@@ -1487,14 +1487,17 @@ export class ItemCreationComponent implements OnInit {
           else {
             this.toastrService.info('¡Item eliminado exitosamente!');
 
-            if (!this.isTheUserAnAdmin) {
-              this.saleflowService.saleflowData =
-                await this.saleflowService.saleflowDefault(
-                  this.merchantsService.merchantData._id
-                );
+            if (!this.isASupplierItem) {
+              if (this.isTheUserAnAdmin)
+                this.saleflowService.saleflowData =
+                  await this.saleflowService.saleflowDefault(
+                    this.merchantsService.merchantData._id
+                  );
               this.router.navigate(['/admin/dashboard']);
             } else {
-              this.router.navigate(['/admin/provider-items-management']);
+              if (this.isTheUserAnAdmin)
+                this.router.navigate(['/admin/provider-items-management']);
+              else this.router.navigate(['/admin/supplier-dashboard'], { queryParams: { supplierMode: true } });
             }
             //this.router.navigate(['/admin/dashboard']);
           }
