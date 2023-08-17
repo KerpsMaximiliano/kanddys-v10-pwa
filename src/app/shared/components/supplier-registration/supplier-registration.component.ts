@@ -1328,6 +1328,8 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
               true
             );
 
+            if (!session) throw new Error('invalid credentials');
+
             const { merchantDefault } =
               await this.getDefaultMerchantAndSaleflows(session.user);
 
@@ -1360,6 +1362,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
             });
           }
         } catch (error) {
+          unlockUI();
           console.error(error);
           this.headerService.showErrorToast();
         }

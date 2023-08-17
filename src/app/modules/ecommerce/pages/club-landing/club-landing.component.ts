@@ -412,6 +412,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
               true
             );
 
+            if (!session) throw new Error('invalid credentials');
+
             if (session) this.openNavigation = true;
 
             unlockUI();
@@ -422,6 +424,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
             });
           }
         } catch (error) {
+          unlockUI();
           console.error(error);
           this.headerService.showErrorToast();
         }
