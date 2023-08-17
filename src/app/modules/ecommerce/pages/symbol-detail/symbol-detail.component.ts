@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { formatNumber } from '@angular/common';
+import { formatNumber, Location } from '@angular/common';
 
 //Services
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -191,7 +191,8 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     private quotationsService: QuotationsService,
     private appService: AppService,
     private postsService: PostsService,
-    private elementRef: ElementRef
+    private elementRef: ElementRef,
+    private location: Location,
   ) {}
 
   async ngOnInit() {
@@ -795,9 +796,10 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
 
     if (this.entityPresentation === 'PREVIEW') {
       this.itemsService.itemUrls = [];
-      return this.router.navigate([
-        `/ecommerce/item-management/${this.itemData._id}`,
-      ]);
+      // return this.router.navigate([
+      //   `/ecommerce/item-management/${this.itemData._id}`,
+      // ]);
+      return this.location.back();
     }
     if (this.mode === 'image-preview') {
       this.itemsService.itemUrls = [];
