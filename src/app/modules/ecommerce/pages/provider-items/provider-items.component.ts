@@ -40,6 +40,7 @@ import { environment } from 'src/environments/environment';
 export class ProviderItemsComponent implements OnInit {
   drawerOpened: boolean = false;
   assetsFolder: string = environment.assetsUrl;
+  presentationOpened: boolean = false;
 
   //Searchbar variables
   searchOpened: boolean = false;
@@ -139,9 +140,9 @@ export class ProviderItemsComponent implements OnInit {
           this.parseMagicLinkData();
         }
 
-        await this.getItemsISell();
+        this.checkIfPresentationWasClosedBefore();
 
-        this.openTutorials();
+        await this.getItemsISell();
 
         await this.getNewPageOfItemsIDontSell(true, false);
 
@@ -170,7 +171,25 @@ export class ProviderItemsComponent implements OnInit {
     }
   }
 
+  checkIfPresentationWasClosedBefore = () => {
+    let providersPresentationClosed = localStorage.getItem(
+      'providersPresentationClosed'
+    );
+    providersPresentationClosed = providersPresentationClosed
+      ? JSON.parse(providersPresentationClosed)
+      : false;
+
+    if (!providersPresentationClosed && !this.headerService.user) {
+      this.presentationOpened = true;
+    } else {
+      this.openTutorials();
+    }
+  };
+
   openTutorials = () => {
+    this.presentationOpened = false;
+    localStorage.setItem('providersPresentationClosed', 'true');
+
     if (this.itemsISell.length === 0) {
       this.itemsTutorialOpened = true;
     } else if (
@@ -1119,10 +1138,7 @@ export class ProviderItemsComponent implements OnInit {
   closeItemsTutorial = (cardName: string) => {
     this.itemsTutorialCardsOpened[cardName] = false;
 
-    if (
-      !this.itemsTutorialCardsOpened['price'] &&
-      !this.itemsTutorialCardsOpened['stock']
-    ) {
+    if (!this.itemsTutorialCardsOpened['price']) {
       this.itemsTutorialOpened = false;
     }
   };

@@ -231,9 +231,13 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       fields: [
         {
           name: 'magicLinkEmailOrPhone',
-          type: 'email-or-phone',
-          placeholder: 'Escribe..',
-          validators: [Validators.pattern(/[\S]/)],
+          type: 'email',
+          placeholder: 'Escribe el correo electrónico..',
+          validators: [Validators.pattern(/[\S]/), Validators.required],
+          bottomButton: {
+            text: 'Adiciona la clave',
+            callback: () => addPassword(),
+          },
         },
       ],
     };
@@ -244,7 +248,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
-      if (result.controls.magicLinkEmailOrPhone.valid) {
+      if (result?.controls?.magicLinkEmailOrPhone.valid) {
         const validEmail = new RegExp(
           /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gim
         );
@@ -284,17 +288,90 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
             icon: 'check-circle.svg',
             showCloseButton: false,
             message:
-              'Se ha enviado un link mágico a tu teléfono o a tu correo electrónico',
+              'Se ha enviado un link mágico a tu correo electrónico',
           },
           customClass: 'app-dialog',
           flags: ['no-header'],
         });
-      } else {
-        unlockUI();
-        this.snackbar.open('Datos invalidos', 'Cerrar', {
-          duration: 3000,
-        });
       }
     });
+
+    const addPassword = async () => {
+      dialogRef.close();
+
+      let fieldsToCreate: FormData = {
+        title: {
+          text: 'Acceso al Club:',
+        },
+        buttonsTexts: {
+          accept: 'Accesar al Club',
+          cancel: 'Cancelar',
+        },
+        fields: [
+          {
+            name: 'email',
+            type: 'email',
+            placeholder: 'Escribe el correo electrónico..',
+            validators: [Validators.pattern(/[\S]/), Validators.required],
+          },
+          {
+            name: 'password',
+            type: 'password',
+            placeholder: 'Escribe la contraseña',
+            validators: [Validators.pattern(/[\S]/), Validators.required],
+            bottomButton: {
+              text: 'Prefiero recibir el correo con el enlace de acceso',
+              callback: () => {
+                //Cerrar 2do dialog
+
+                return switchToMagicLinkDialog();
+              },
+            },
+          },
+        ],
+      };
+
+      const dialog2Ref = this.dialog.open(FormComponent, {
+        data: fieldsToCreate,
+        disableClose: true,
+      });
+
+      dialog2Ref.afterClosed().subscribe(async (result: FormGroup) => {
+        try {
+          if (
+            result?.controls?.email.valid &&
+            result?.controls?.password.valid
+          ) {
+            let emailOrPhone = result?.value['email'];
+            let password = result?.value['password'];
+
+            lockUI();
+
+            const session = await this.authService.signin(
+              emailOrPhone,
+              password,
+              true
+            );
+
+            if (session) this.openNavigation = true;
+
+            unlockUI();
+          } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
+            unlockUI();
+            this.snackbar.open('Datos invalidos', 'Cerrar', {
+              duration: 3000,
+            });
+          }
+        } catch (error) {
+          console.error(error);
+          this.headerService.showErrorToast();
+        }
+      });
+
+      const switchToMagicLinkDialog = () => {
+        dialog2Ref.close();
+        return this.openMagicLinkDialog();
+      };
+    };
   }
 }
