@@ -185,6 +185,7 @@
             <input
               type="text"
               placeholder="Escribe"
+              readonly="{{ isASupplierItem ? true : false }}"
               [formControlName]="'title'"
             />
           </div>
@@ -200,11 +201,12 @@
               cols="30"
               rows="3"
               placeholder="Escribe"
+              readonly="{{ isASupplierItem ? true : false }}"
               [formControlName]="'description'"
             ></textarea>
 
             <button
-              *ngIf="merchantsService.merchantData"
+              *ngIf="merchantsService.merchantData && isASupplierItem"
               (click)="openMetaDescriptionDialog()"
               class="icon-button"
             >

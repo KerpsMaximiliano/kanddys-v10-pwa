@@ -326,14 +326,14 @@ export class ItemCreationComponent implements OnInit {
         this.isASupplierItem &&
         this.itemFormData.controls['title'].value !== ''
       ) {
-        this.itemFormData.controls['title'].disable();
+        // this.itemFormData.controls['title'].disable();
       }
 
       if (
         this.isASupplierItem &&
         this.itemFormData.controls['description'].value !== ''
       ) {
-        this.itemFormData.controls['description'].disable();
+        // this.itemFormData.controls['description'].disable();
       }
 
       this.itemFormData.valueChanges.subscribe(() => {
