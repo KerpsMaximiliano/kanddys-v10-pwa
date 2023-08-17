@@ -35,6 +35,10 @@ import {
   ConfirmationSimpleComponent,
   DialogData,
 } from '../../dialogs/confirmation-simple/confirmation-simple.component';
+import {
+  OptionsDialogComponent,
+  OptionsDialogTemplate,
+} from '../../dialogs/options-dialog/options-dialog.component';
 
 @Component({
   selector: 'app-supplier-registration',
@@ -69,13 +73,14 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
   };
   searchbarPlaceholder: string = 'Buscar...';
   assetsFolder: string = environment.assetsUrl;
+  atLeastOneHasPriceAdded: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     public quotationsService: QuotationsService,
     private itemsService: ItemsService,
     private merchantsService: MerchantsService,
-    private headerService: HeaderService,
+    public headerService: HeaderService,
     private saleflowService: SaleFlowService,
     private authService: AuthService,
     private dialogService: DialogService,
@@ -558,59 +563,6 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     );
   };
 
-  async redirectToItemEdition(item: Item, index: number) {
-    const { typeOfProvider } =
-      this.quotationsService.supplierItemsAdjustmentsConfig;
-
-    if (!this.authorized && typeOfProvider === 'REGISTERED_SUPPLIER')
-      return await this.executeAuthRequest();
-
-    this.itemsService.temporalItem = item;
-    this.itemsService.temporalItemInput = {
-      name: item.name,
-      description: item.description,
-      pricing: item.pricing,
-      layout: item.layout,
-      stock: item.stock,
-      notificationStockLimit: item.notificationStockLimit,
-      notificationStockPhoneOrEmail: item.notificationStockPhoneOrEmail,
-    };
-
-    if (!item.pricing || item.stock === null || !item.merchant) {
-      this.quotationsService.supplierItemsAdjustmentsConfig.quotationItemBeingEdited =
-        {
-          inSaleflow: false,
-          indexInQuotations: index,
-          quotationItemInMemory: true,
-        };
-
-      this.router.navigate(['/ecommerce/inventory-creator/'], {
-        queryParams: {
-          existingItem: true,
-          quotationId: this.quotationId,
-          requesterId: this.requester?._id,
-        },
-      });
-    } else {
-      this.quotationsService.supplierItemsAdjustmentsConfig.quotationItemBeingEdited =
-        {
-          id: item._id,
-          inSaleflow: true,
-          indexInQuotations: index,
-          quotationItemInMemory: false,
-        };
-
-      this.router.navigate(['/ecommerce/inventory-creator/' + item._id], {
-        queryParams: {
-          existingItem: true,
-          updateItem: true,
-          quotationId: this.quotationId,
-          requesterId: this.requester?._id,
-        },
-      });
-    }
-  }
-
   goBack() {
     this.quotationsService.supplierItemsAdjustmentsConfig = null;
     if (this.quotationId) {
@@ -639,15 +591,24 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
   ) {
     const magicLinkParams: any = {
       quotationItems: idsOfCreatedItems.join('-'),
+      fromProviderAdjustments: true
     };
 
     if (itemsToUpdate) {
       magicLinkParams.itemsToUpdate = itemsToUpdate;
     }
 
+    if (!this.quotationId) {
+      magicLinkParams.itemsForTemporalQuotation = this.quotationItems.map(
+        (item) => item._id
+      );
+    }
+
+    lockUI();
+
     await this.authService.generateMagicLink(
       emailOrPhone,
-      '/ecommerce/provider-items',
+      `ecommerce/quotation-bids/` + (this.quotationId ? this.quotationId : ''),
       null,
       'MerchantAccess',
       {
@@ -669,6 +630,8 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
         flags: ['no-header'],
       });
     }
+
+    unlockUI();
   }
 
   determineWhichItemsNeedToBeUpdatedAndWhichNeedToBeCreated = async (
@@ -912,7 +875,21 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
 
           unlockUI();
 
-          this.askToTheUserIfHeFinishedAlready(itemInput);
+          const itemIndexInFullList = this.quotationItems.findIndex(
+            (itemInList) => itemInput.parentItem === itemInList._id
+          );
+
+          if (itemIndexInFullList >= 0) {
+            this.quotationItems[itemIndexInFullList].pricing =
+              itemInput.pricing;
+            this.quotationItems[itemIndexInFullList].stock = itemInput.stock;
+            this.quotationItemsToShow = JSON.parse(
+              JSON.stringify(this.quotationItems)
+            );
+            this.atLeastOneHasPriceAdded = true;
+          } else {
+            console.error('item not in the list');
+          }
         } else {
           if (!item.inSaleflow) {
             lockUI();
@@ -953,6 +930,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
               this.quotationItemsToShow = JSON.parse(
                 JSON.stringify(this.quotationItems)
               );
+              this.atLeastOneHasPriceAdded = true;
             } else {
               console.error('item not in the list');
             }
@@ -1054,6 +1032,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     return itemInput;
   };
 
+  /*
   askToTheUserIfHeFinishedAlready = async (itemInput: ItemInput) => {
     let dialogData: DialogData = {
       styles: {
@@ -1105,10 +1084,10 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
         dialogRef.close();
       }
     });
-  };
+  };*/
 
-  async openMagicLinkDialog(itemInput: ItemInput) {
-    let fieldsToCreate: FormData = {
+  async openMagicLinkDialog() {
+    let fieldsToCreateInEmailDialog: FormData = {
       title: {
         text: 'Acceso al Club:',
       },
@@ -1116,123 +1095,184 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
         accept: 'Recibir el enlace con acceso',
         cancel: 'Cancelar',
       },
+      containerStyles: {
+        padding: '35px 23px 38px 18px',
+      },
+      hideBottomButtons: true,
       fields: [
         {
           name: 'magicLinkEmailOrPhone',
           type: 'email',
           placeholder: 'Escribe el correo electrónico..',
-          validators: [Validators.pattern(/[\S]/)],
-          bottomButton: {
-            text: 'Adiciona la clave',
-            callback: () => addPassword(),
+          validators: [Validators.pattern(/[\S]/), Validators.required],
+          inputStyles: {
+            padding: '11px 1px',
+          },
+          submitButton: {
+            text: '>',
+            styles: {
+              borderRadius: '8px',
+              background: '#87CD9B',
+              padding: '6px 15px',
+              color: '#181D17',
+              textAlign: 'center',
+              fontFamily: 'InterBold',
+              fontSize: '17px',
+              fontStyle: 'normal',
+              fontWeight: '700',
+              lineHeight: 'normal',
+              position: 'absolute',
+              right: '1px',
+              top: '8px',
+            },
           },
         },
       ],
     };
 
-    const dialogRef = this.matDialog.open(FormComponent, {
-      data: fieldsToCreate,
+    const emailDialogRef = this.matDialog.open(FormComponent, {
+      data: fieldsToCreateInEmailDialog,
       disableClose: true,
     });
 
-    dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+    emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
       if (result?.controls?.magicLinkEmailOrPhone.valid) {
-        let emailOrPhone = result?.value['magicLinkEmailOrPhone'];
+        const emailOrPhone = result?.value['magicLinkEmailOrPhone'];
 
-        lockUI();
+        let optionsDialogTemplate: OptionsDialogTemplate = {
+          options: [
+            {
+              value: 'Accederé con la clave',
+              callback: async () => {
+                await addPassword(emailOrPhone);
+              },
+            },
+            {
+              value: 'Prefiero recibir el enlace de acceso en mi correo',
+              callback: async () => {
+                if (result?.controls?.magicLinkEmailOrPhone.valid) {
+                  let emailOrPhone = result?.value['magicLinkEmailOrPhone'];
 
-        const myUser = await this.authService.checkUser(emailOrPhone);
-        const merchantDefaullt = myUser
-          ? await this.merchantsService.merchantDefault(myUser._id)
-          : null;
+                  lockUI();
 
-        const itemsThatArentOnSupplierSaleflow = this.quotationItems.filter(
-          (item) => !item.inSaleflow && item.pricing !== null
-        );
+                  const myUser = await this.authService.checkUser(emailOrPhone);
+                  const merchantDefaullt = myUser
+                    ? await this.merchantsService.merchantDefault(myUser._id)
+                    : null;
 
-        if (!myUser && !merchantDefaullt) {
-          const idsOfCreatedItems: Array<string> = [];
+                  const itemsThatArentOnSupplierSaleflow =
+                    this.quotationItems.filter(
+                      (item) => !item.inSaleflow && item.pricing !== null
+                    );
 
-          const inputArray: Array<ItemInput> = [];
+                  if (!myUser && !merchantDefaullt) {
+                    const idsOfCreatedItems: Array<string> = [];
 
-          for await (const item of itemsThatArentOnSupplierSaleflow) {
-            const itemSlides: Array<any> = item.images
-              .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
-              .map(({ index, ...image }) => {
-                return {
-                  url: completeImageURL(image.value),
-                  index,
-                  type: 'poster',
-                  text: '',
-                  _id: image._id,
-                };
-              });
+                    const inputArray: Array<ItemInput> = [];
 
-            let images: ItemImageInput[] = await Promise.all(
-              itemSlides.map(async (slide: SlideInput, index: number) => {
-                return {
-                  file: await urltoFile(slide.url, 'file' + index, null, true),
-                  index,
-                  active: true,
-                };
-              })
-            );
+                    for await (const item of itemsThatArentOnSupplierSaleflow) {
+                      const itemSlides: Array<any> = item.images
+                        .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
+                        .map(({ index, ...image }) => {
+                          return {
+                            url: completeImageURL(image.value),
+                            index,
+                            type: 'poster',
+                            text: '',
+                            _id: image._id,
+                          };
+                        });
 
-            const input: ItemInput = {
-              name: item.name,
-              description: item.description,
-              pricing: item.pricing,
-              stock: item.stock,
-              useStock: true,
-              notificationStock: true,
-              notificationStockLimit: item.notificationStockLimit,
-              notificationStockPhoneOrEmail: item.notificationStockPhoneOrEmail,
-              images: images,
-              merchant: this.supplierMerchantId,
-              content: [],
-              currencies: [],
-              hasExtraPrice: false,
-              parentItem: item._id,
-              purchaseLocations: [],
-              showImages: images.length > 0,
-              type: 'supplier',
-            };
+                      let images: ItemImageInput[] = await Promise.all(
+                        itemSlides.map(
+                          async (slide: SlideInput, index: number) => {
+                            return {
+                              file: await urltoFile(
+                                slide.url,
+                                'file' + index,
+                                null,
+                                true
+                              ),
+                              index,
+                              active: true,
+                            };
+                          }
+                        )
+                      );
 
-            inputArray.push(input);
-          }
+                      const input: ItemInput = {
+                        name: item.name,
+                        description: item.description,
+                        pricing: item.pricing,
+                        stock: item.stock,
+                        useStock: true,
+                        notificationStock: true,
+                        notificationStockLimit: item.notificationStockLimit,
+                        notificationStockPhoneOrEmail:
+                          item.notificationStockPhoneOrEmail,
+                        images: images,
+                        merchant: this.supplierMerchantId,
+                        content: [],
+                        currencies: [],
+                        hasExtraPrice: false,
+                        parentItem: item._id,
+                        purchaseLocations: [],
+                        showImages: images.length > 0,
+                        type: 'supplier',
+                      };
 
-          for await (const itemInput of inputArray) {
-            //console.log('itemInput', itemInput);
+                      inputArray.push(input);
+                    }
 
-            const createdItem = (
-              await this.itemsService.createPreItem(itemInput)
-            )?.createPreItem;
+                    for await (const itemInput of inputArray) {
+                      //console.log('itemInput', itemInput);
 
-            idsOfCreatedItems.push(createdItem._id);
-          }
+                      const createdItem = (
+                        await this.itemsService.createPreItem(itemInput)
+                      )?.createPreItem;
 
-          await this.generateMagicLinkFor(
-            emailOrPhone,
-            idsOfCreatedItems,
-            null,
-            true
-          );
-          unlockUI();
-        } else {
-          const { createdItems, itemsToUpdate } =
-            await this.determineWhichItemsNeedToBeUpdatedAndWhichNeedToBeCreated(
-              merchantDefaullt,
-              itemsThatArentOnSupplierSaleflow
-            );
+                      idsOfCreatedItems.push(createdItem._id);
+                    }
 
-          await this.generateMagicLinkFor(
-            emailOrPhone,
-            createdItems,
-            itemsToUpdate,
-            true
-          );
-          unlockUI();
-        }
+                    await this.generateMagicLinkFor(
+                      emailOrPhone,
+                      idsOfCreatedItems,
+                      null,
+                      true
+                    );
+                    unlockUI();
+                  } else {
+                    const { createdItems, itemsToUpdate } =
+                      await this.determineWhichItemsNeedToBeUpdatedAndWhichNeedToBeCreated(
+                        merchantDefaullt,
+                        itemsThatArentOnSupplierSaleflow
+                      );
+
+                    await this.generateMagicLinkFor(
+                      emailOrPhone,
+                      createdItems,
+                      itemsToUpdate,
+                      true
+                    );
+                    unlockUI();
+                  }
+                } else if (
+                  result?.controls?.magicLinkEmailOrPhone.valid === false
+                ) {
+                  unlockUI();
+                  this.snackbar.open('Datos invalidos', 'Cerrar', {
+                    duration: 3000,
+                  });
+                }
+              },
+            },
+          ],
+        };
+
+        this.matDialog.open(OptionsDialogComponent, {
+          data: optionsDialogTemplate,
+          disableClose: true,
+        });
       } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
         unlockUI();
         this.snackbar.open('Datos invalidos', 'Cerrar', {
@@ -1241,24 +1281,18 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
       }
     });
 
-    const addPassword = async () => {
-      dialogRef.close();
+    const addPassword = async (emailOrPhone: string) => {
+      emailDialogRef.close();
 
       let fieldsToCreate: FormData = {
         title: {
-          text: 'Acceso al Club:',
+          text: 'Clave de Acceso:',
         },
         buttonsTexts: {
           accept: 'Accesar al Club',
           cancel: 'Cancelar',
         },
         fields: [
-          {
-            name: 'email',
-            type: 'email',
-            placeholder: 'Escribe el correo electrónico..',
-            validators: [Validators.pattern(/[\S]/)],
-          },
           {
             name: 'password',
             type: 'password',
@@ -1283,11 +1317,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
 
       dialog2Ref.afterClosed().subscribe(async (result: FormGroup) => {
         try {
-          if (
-            result?.controls?.email.valid &&
-            result?.controls?.password.valid
-          ) {
-            let emailOrPhone = result?.value['email'];
+          if (result?.controls?.password.valid) {
             let password = result?.value['password'];
 
             lockUI();
@@ -1298,6 +1328,8 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
               true
             );
 
+            if (!session) throw new Error('invalid credentials');
+
             const { merchantDefault } =
               await this.getDefaultMerchantAndSaleflows(session.user);
 
@@ -1305,7 +1337,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
               (item) => !item.inSaleflow && item.pricing !== null
             );
 
-            const { createdItems, itemsToUpdate } =
+            const { itemsToUpdate } =
               await this.determineWhichItemsNeedToBeUpdatedAndWhichNeedToBeCreated(
                 merchantDefault,
                 itemsThatArentOnSupplierSaleflow,
@@ -1321,13 +1353,16 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
             }
 
             this.router.navigate(['/ecommerce/provider-items']);
-          } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
+
+            unlockUI();
+          } else if (result?.controls?.password.valid === false) {
             unlockUI();
             this.snackbar.open('Datos invalidos', 'Cerrar', {
               duration: 3000,
             });
           }
         } catch (error) {
+          unlockUI();
           console.error(error);
           this.headerService.showErrorToast();
         }
@@ -1335,7 +1370,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
 
       const switchToMagicLinkDialog = () => {
         dialog2Ref.close();
-        return this.openMagicLinkDialog(itemInput);
+        return this.openMagicLinkDialog();
       };
     };
   }
@@ -1403,10 +1438,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
   closeItemsTutorial = (cardName: string) => {
     this.itemsTutorialCardsOpened[cardName] = false;
 
-    if (
-      !this.itemsTutorialCardsOpened['price'] &&
-      !this.itemsTutorialCardsOpened['stock']
-    ) {
+    if (!this.itemsTutorialCardsOpened['price']) {
       this.tutorialOpened = false;
 
       let tutorialsConfig = JSON.parse(
