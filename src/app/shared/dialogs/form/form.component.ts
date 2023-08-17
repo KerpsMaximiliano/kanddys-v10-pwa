@@ -34,11 +34,16 @@ interface Field {
   label?: string;
   secondaryIcon?: boolean;
   styles?: Record<string, string>;
+  inputStyles?: Record<string, string>;
   secondaryIconCallback?: () => void;
   bottomButton?: {
     text: string;
     callback: () => any;
     containerStyles?: Record<string, string | number>;
+  };
+  submitButton?: {
+    text?: string;
+    styles?: Record<string, string>;
   };
 }
 
@@ -48,6 +53,8 @@ export interface FormData {
     text: string;
     styles?: Record<string, any>;
   };
+  containerStyles?: Record<string, string>;
+  hideBottomButtons?: boolean;
   buttonsTexts?: {
     cancel?: string;
     accept?: string;
@@ -148,8 +155,9 @@ export class FormComponent implements OnInit {
     this.close();
   }
 
-  close(): void {
-    this.dialogRef.close();
+  close(data?: any): void {
+    if (!data) this.dialogRef.close();
+    else this.dialogRef.close(data);
   }
 
   updateFieldValue(index: number, value: any) {

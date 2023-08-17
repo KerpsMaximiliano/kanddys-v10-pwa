@@ -11,6 +11,14 @@
       </button>
 
       <button
+        mat-icon-button
+        style="margin-right: 25px"
+        (click)="sendWhatsappToAppOwner()"
+      >
+        <mat-icon [ngStyle]="{ color: 'white' }">add</mat-icon>
+      </button>
+
+      <button
         style="
           color: #87cd9b;
           font-size: 17px;
@@ -36,18 +44,20 @@
         />
       </form>
 
-      <div class="filters-container">
-        <div
-          class="filter"
-          *ngFor="let filter of searchFilters; let filterIndex = index"
-          [ngClass]="{
-            selected: activatedSearchFilters[filter.key]
-          }"
-          (click)="activateOrDeactivateFilters(filter.key)"
-        >
-          {{ filter.label }}
+      <!--
+        <div class="filters-container">
+          <div
+            class="filter"
+            *ngFor="let filter of searchFilters; let filterIndex = index"
+            [ngClass]="{
+              selected: activatedSearchFilters[filter.key]
+            }"
+            (click)="activateOrDeactivateFilters(filter.key)"
+          >
+            {{ filter.label }}
+          </div>
         </div>
-      </div>
+      -->
     </div>
 
     <main>
@@ -196,7 +206,12 @@
       >
         Mi precio
 
-        <img class="price-tutorial-img" *ngIf="firstItem && itemsTutorialOpened" [src]="assetsFolder + '/card-arrow-up.svg'" alt="">
+        <img
+          class="price-tutorial-img"
+          *ngIf="firstItem && itemsTutorialOpened"
+          [src]="assetsFolder + '/card-arrow-up.svg'"
+          alt=""
+        />
       </div>
     </div>
 
@@ -457,12 +472,19 @@
   <div
     class="help-card-container"
     [ngStyle]="containerStyles"
-    *ngIf="!openedStateObject || (openedStateObject && openedStateObject[cardName])"
+    *ngIf="
+      !openedStateObject || (openedStateObject && openedStateObject[cardName])
+    "
   >
     <span class="topText" *ngIf="topText" [ngStyle]="topTextStyles">{{
       topText
     }}</span>
-    <img src="topImage" *ngIf="topImage" [ngStyle]="topImageStyles" [src]="topImage" />
+    <img
+      src="topImage"
+      *ngIf="topImage"
+      [ngStyle]="topImageStyles"
+      [src]="topImage"
+    />
 
     <span
       class="middleText"
