@@ -246,6 +246,13 @@ export class NavigationComponent implements OnInit {
 
           this.tabs.push(this.providerTab);
           this.tabs.push(this.sellerTab);
+
+          if (
+            this.isCurrentUserAnAdmin &&
+            !this.tabs.find((tab) => tab.text === this.tabName['ADMIN'])
+          ) {
+            this.tabs.unshift(this.adminTab);
+          }
         });
     }
 
@@ -315,6 +322,7 @@ export class NavigationComponent implements OnInit {
         }
       }
     });
+
 
     if (
       this.isCurrentUserAnAdmin &&
