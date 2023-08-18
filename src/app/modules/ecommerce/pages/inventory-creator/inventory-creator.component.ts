@@ -71,16 +71,6 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
   layout: 'EXPANDED-SLIDE' | 'ZOOMED-OUT-INFO' = 'EXPANDED-SLIDE';
   renderQrContent: boolean = true;
   showIntroParagraph: boolean = true;
-  reminderToast: {
-    message: string;
-    warning?: boolean;
-    secondsTrigger: number;
-    timeoutId?: ReturnType<typeof setTimeout>;
-  } = {
-    message: 'Los campos que tienen (*) son obligatorios',
-    secondsTrigger: 30,
-    warning: false,
-  };
   queryParamsSubscription: Subscription = null;
   routerParamsSubscription: Subscription = null;
   existingItem: boolean = false;
@@ -1047,9 +1037,6 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.reminderToast.timeoutId)
-      clearTimeout(this.reminderToast.timeoutId);
-
     this.queryParamsSubscription.unsubscribe();
   }
 }

@@ -183,7 +183,7 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
 
     await this.inicializeItems(true, false, true, true);
     this.getSoldItems();
-    
+
     /*
     this.getTags();
     this.getQueryParameters();
@@ -455,7 +455,32 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
           {
             value: `Un artículo para vender al por mayor`,
             callback: async () => {
-              this.router.navigate(['/ecommerce/inventory-creator']);
+              let fieldsToCreate: FormData = {
+                fields: [],
+              };
+
+              fieldsToCreate.fields = [
+                {
+                  label: 'Nombre del producto',
+                  name: 'product-name',
+                  type: 'text',
+                  validators: [Validators.pattern(/[\S]/)],
+                },
+              ];
+
+              const dialogRef = this.dialog.open(FormComponent, {
+                data: fieldsToCreate,
+              });
+
+              dialogRef.afterClosed().subscribe((result: FormGroup) => {
+                if (result && result.value['product-name']) {
+                  this.itemsService.temporalItemInput = {
+                    name: result.value['product-name'],
+                  };
+
+                  this.router.navigate(['/ecommerce/inventory-creator']);
+                }
+              });
             },
           },
           {
@@ -1420,12 +1445,12 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
       },
     });
   }
-  
+
   goToOrderFilters() {
-    return this.router.navigate(['/admin/order-filtering',]);
+    return this.router.navigate(['/admin/order-filtering']);
   }
 
   goToOrderProgress() {
-    return this.router.navigate(['/admin/order-progress',]);
+    return this.router.navigate(['/admin/order-progress']);
   }
 }

@@ -52,16 +52,6 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
   layout: 'EXPANDED-SLIDE' | 'ZOOMED-OUT-INFO' = 'EXPANDED-SLIDE';
   renderQrContent: boolean = true;
   showIntroParagraph: boolean = true;
-  reminderToast: {
-    message: string;
-    warning?: boolean;
-    secondsTrigger: number;
-    timeoutId?: ReturnType<typeof setTimeout>;
-  } = {
-    message: 'Los campos que tienen (*) son obligatorios',
-    secondsTrigger: 30,
-    warning: false,
-  };
   queryParamsSubscription: Subscription = null;
   routerParamsSubscription: Subscription = null;
   existingItem: boolean = false;
@@ -165,8 +155,6 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
             ) {
               this.itemSlides = this.itemsService.temporalItemInput.slides;
             }
-
-            this.addToastReminder(true);
           }
         );
       }
@@ -570,35 +558,8 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
     this.router.navigate(['admin/item-selector']);
   }
 
-  addToastReminder(firstLoad: boolean = false) {
-    if (this.reminderToast) {
-      this.reminderToast.timeoutId = setTimeout(
-        () => {
-          if (!this.reminderToast.warning) {
-            this.toastr.info(this.reminderToast.message, null, {
-              timeOut: 1500,
-              tapToDismiss: true,
-              positionClass: 'toast-top-center',
-            });
-          } else {
-            this.toastr.warning(this.reminderToast.message, null, {
-              timeOut: 1500,
-              tapToDismiss: true,
-              positionClass: 'toast-top-center',
-            });
-          }
-
-          this.addToastReminder();
-        },
-        !firstLoad ? this.reminderToast.secondsTrigger * 1000 : 3000
-      );
-    }
-  }
 
   ngOnDestroy(): void {
-    if (this.reminderToast.timeoutId)
-      clearTimeout(this.reminderToast.timeoutId);
-
     this.queryParamsSubscription.unsubscribe();
   }
 }
