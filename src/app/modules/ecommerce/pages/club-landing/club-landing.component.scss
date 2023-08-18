@@ -38,44 +38,6 @@
       brightness(102%) contrast(102%);
   }
 
-  .tabs {
-    margin-left: 11.72px;
-    display: flex;
-    justify-content: flex-end;
-    height: fit-content;
-
-    .tab {
-      padding: 4px 13px;
-      border-radius: 29px;
-      border: 1px solid rgba(146, 140, 139, 0.94);
-      color: #fff;
-      font-family: "InterRegular";
-      font-size: 16px;
-      font-style: normal;
-      line-height: normal;
-      margin-right: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      @media (max-width: 420px) {
-        font-size: 13px;
-      }
-
-      &.active {
-        background-color: #c4c5c3;
-        font-family: InterBold;
-        color: #181d17;
-      }
-
-      &:hover {
-        cursor: pointer;
-        background-color: #c4c5c3;
-        color: #181d17;
-      }
-    }
-  }
-
   .member {
     margin-right: 13px;
     display: flex;
@@ -307,4 +269,67 @@ footer {
   line-height: normal;
   text-align: center;
   background-color: #87cd9b;
+}
+
+.tabs-container {
+  margin-bottom: 4em;
+}
+
+.tabs {
+  margin-top: 1.5em;
+  margin-left: 11.72px;
+  display: flex;
+  justify-content: flex-start;
+  height: fit-content;
+
+  .tab {
+    padding: 4px 13px;
+    border-radius: 29px;
+    border: 1px solid rgba(146, 140, 139, 0.94);
+    color: #fff;
+    font-family: "InterRegular";
+    font-size: 16px;
+    font-style: normal;
+    line-height: normal;
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    @media (max-width: 420px) {
+      font-size: 13px;
+    }
+
+    &.active {
+      background-color: #c4c5c3;
+      font-family: InterBold;
+      color: #181d17;
+    }
+
+    &:hover {
+      cursor: pointer;
+      background-color: #c4c5c3;
+      color: #181d17;
+    }
+  }
+}
+
+.subtabs {
+  display: flex;
+  justify-content: flex-start;
+  &.active {
+    margin-bottom: 2em;
+  }
+  .subtab {
+    cursor: pointer;
+    margin-top: 1.5em;
+    margin-left: 12px;
+    color: #F6F6F6;
+    font-family: InterRegular;
+    font-size: 16px;
+    &.active {
+      padding-bottom: 3px;
+      border-bottom: 2px solid #6FCF97;
+    }
+  }
 }

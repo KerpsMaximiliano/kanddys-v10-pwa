@@ -31,6 +31,16 @@ interface ReviewsSwiper {
   }>;
 }
 
+interface Tabs {
+  text: string;
+  subTabs?: Array<{
+    text: string;
+    active: boolean;
+    content?: string[];
+  }>
+  active?: boolean;
+}
+
 @Component({
   selector: 'app-club-landing',
   templateUrl: './club-landing.component.html',
@@ -42,81 +52,86 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   openNavigation: boolean = false;
   queryParamsSubscription: Subscription = null;
   routerParamsSubscription: Subscription = null;
-  listOfFeatures: Array<{
-    title: string;
-    content: string;
-  }> = [
+
+  tabs: Array<Tabs> = [
     {
-      title: 'Gestión de las Ordenes',
-      content:
-        'Mantén el control de las ordenes desde tu celular. Mira las ordenes según su estado y notificale a tus clientes por WhatsApp o correo electrónico.',
+      text: "Control",
+      subTabs: [
+        {
+          text: "Ordenes",
+          active: true,
+          content: [
+            "“.. puedo ver el estado actualizado de cada orden desde mi celular”",
+            "“.. la función de notificar a los clientes por WhatsApp o correo electrónico es una verdadera maravilla!”",
+            "“¡Es como magia para mantener todo bajo control!”",
+            "“.. me permite estar al tanto de cada orden de una manera que nunca imaginé”",
+            "“.. puedo filtrar las facturas según su estado para priorizar lo que necesito atender primero”",
+            "“.. es como tener a tu asistente personal siempre contigo”",
+            "“.. puedo ver qué órdenes necesitan mi atención inmediata y cuáles están en camino”"
+          ]
+        },
+        {
+          text: "Entregas",
+          active: false,
+          content: [
+            "“.. puedo cobrar extra según la zona de entrega especificada por el comprador”",
+            "“..  maximizo lo que cobro y me permite entregar mas lejos”",
+            "“..  me muestra un enfoque estratégico de las entregas y eso me ayuda en la logística para entregar a tiempo”"
+          ]
+        },
+        {
+          text: "Clientes",
+          active: false,
+          content: [
+            "“.. los reportes que puedo exportar me ayudan a planificar y ejecutar campañas”",
+            "“..  puedo dirigir mis mensajes a grupos específicos con información precisa basado en sus preferencias”",
+            "“..  tener una visión clara de quiénes son mis compradores y qué quieren”"
+          ]
+        }
+      ],
+      active: false
     },
     {
-      title: 'Cotización Eficiente con Proveedores',
-      content:
-        'Accede a una amplia red de proveedores de flores y obtén cotizaciones para tus compras. Compara y elige la oferta más conveniente para ti, maximizando tus ganancias.',
-    },
-    {
-      title: 'Gestión Simplificada de Compras',
-      content:
-        'Convierte las cotizaciones de los proveedores en compras con un solo clic, manteniendo un seguimiento detallado para optimizar tus beneficios.',
-    },
-    {
-      title: 'Inteligencia Artificial',
-      content:
-        'una bot entrenada a tu floristería para ahorrarte tiempo a ti o a tu personal de servicio y ser consistentes en el mensaje que reciben tus clientes.',
-    },
-    {
-      title: 'Ventas con #hashtag',
-      content:
-        'asigna un #hashtag a tus artículos para que desde el Bio de tu Instagram tus compradores aterricen directo a comprar.',
-    },
-    {
-      title: 'Ventas por WhatsApp',
-      content:
-        'Sube tus productos fácilmente y vende directamente a través de WhatsApp. Conecta con tus clientes donde ya se encuentran.',
-    },
-    {
-      title: 'Experiencia Mejorada para tus Clientes',
-      content:
-        'Permite a tus clientes añadir videos a sus mensajes dedicatorios, añadiendo un toque personal único a sus regalos.',
-    },
-    {
-      title: 'Tarifas de Entrega Personalizadas',
-      content:
-        'Ajusta tus tarifas de entrega en función de la zona de entrega, maximizando tus ingresos.',
-    },
-    {
-      title: 'Marketing Segmentado',
-      content:
-        'Cuenta con una base de datos segmentada de tus compradores, facilitándote la planificación de tus futuras campañas de marketing.',
-    },
-    {
-      title: 'Compra Fácil para los Clientes',
-      content:
-        'Tus clientes pueden comprar tus productos sin necesidad de descargar ninguna aplicación, facilitándoles la experiencia de compra.',
-    },
-    {
-      title: 'Recompensas para tus Clientes',
-      content:
-        'Ofrece incentivos a tus clientes para fomentar la fidelidad y satisfacción.',
-    },
-    {
-      title: 'Venden por Ti',
-      content:
-        'Paga comisiones a influencers e instituciones que están recaudando fondos dependiendo de las ventas enlazadas.',
-    },
-    {
-      title: 'Comunicación Efectiva',
-      content:
-        'Informa a tus clientes sobre el estado de su pedido a través de WhatsApp, proporcionando un servicio transparente y eficiente.',
-    },
-    {
-      title: 'Giftcards de terceros',
-      content:
-        'Para que seas tu quien colabores y comisiones con spas, salones y restaurantes.',
-    },
+      text: "Más Ventas",
+      subTabs: [
+        {
+          text: "#hashtags",
+          active: false,
+          content: [
+            "“.. asigno un simple #hashtag y, voilà, los interesados pueden dirigirse directamente a la compra desde cualquier red social”",
+            "“.. es una manera genial de simplificar el proceso de compra desde las plataformas sociales”",
+            "“.. convierto a los seguidores en compradores de manera rápida y sencilla”"
+          ]
+        },
+        {
+          text: "Proveedores",
+          active: true,
+          content: [
+            "“.. puedo acceder a una red amplia de proveedores de flores en un abrir y cerrar de ojos.”",
+            "¡Esta función de Cotización Eficiente con Proveedores en la aplicación es como tener un equipo de compras personal a tu disposición!",
+            "“.. es como si los proveedores compitieran por ofrecerme las mejores ofertas, lo cual me siento confiado de donde comprar”",
+            "“.. me permite conectarme con un montón de proveedores y pedir cotizaciones en cuestión de minutos”",
+            "“.. significa que puedo tomar decisiones más inteligentes y aumentar mis ganancias”",
+            "“.. puedo pedir cotizaciones y luego simplemente comparar y elegir la opción más conveniente”",
+            "“.. no solo ahorro dinero, sino que también ahorro tiempo al evitar largas negociaciones, realmente es un ganar-ganar”"
+          ]
+        },
+        {
+          text: "Premios",
+          active: false,
+          content: [
+            "“.. brindo incentivos a mis clientes, lo que realmente fomenta la fidelidad y la satisfacción”",
+            "“.. el programa de recompensar su lealtad es simplemente brillante”",
+            "“..  los premios no solo los mantiene contentos, sino que también crea un vínculo más sólido con nosotros”"
+          ]
+        }
+      ],
+      active: true
+    }
   ];
+
+  activeTabIndex: number = 0;
+
   swipers: Array<ReviewsSwiper> = [
     {
       title: 'LO QUE MAS LE GUSTA A LAS FLORISTERIAS',
@@ -435,5 +450,22 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         return this.openMagicLinkDialog();
       };
     };
+  }
+
+  changeTab(tabIndex: number) {
+    this.tabs[tabIndex].active = true;
+    this.activeTabIndex = tabIndex;
+
+    this.tabs.forEach((tab, index) => {
+      if (index !== tabIndex) tab.active = false;
+    });
+  }
+
+  changeSubtab(tabIndex: number, subTabIndex: number) {
+    this.tabs[tabIndex].subTabs[subTabIndex].active = true;
+
+    this.tabs[tabIndex].subTabs.forEach((subTab, index) => {
+      if (index !== subTabIndex) subTab.active = false;
+    });
   }
 }
