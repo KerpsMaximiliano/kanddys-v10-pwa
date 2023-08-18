@@ -195,13 +195,13 @@ export class ProviderItemsComponent implements OnInit {
 
     if (this.itemsISell.length === 0) {
       this.itemsTutorialOpened = true;
-    } else if (
+    } /* else if (
       this.headerService.user &&
       this.merchantsService.merchantData &&
       this.itemsISell.length > 0
     ) {
       this.searchTutorialsOpened = true;
-    }
+    }*/
   };
 
   activateOrDeactivateFilters(filterKey: string) {
@@ -680,7 +680,11 @@ export class ProviderItemsComponent implements OnInit {
         {
           label:
             '¿Cuál es el precio de venta de' +
-            (item.name ? ' ' + item.name : 'l articulo?'),
+            (item.name
+              ? ' ' +
+                item.name +
+                (item.description ? '(' + item.description + ')?' : '')
+              : 'l articulo?'),
           name: 'price',
           type: 'currency',
           validators: [Validators.pattern(/[\S]/), Validators.min(0)],
@@ -858,6 +862,7 @@ export class ProviderItemsComponent implements OnInit {
       notificationStock: true,
       notificationStockLimit: item.notificationStockLimit,
       useStock: true,
+      type: 'supplier',
     };
 
     if (this.merchantsService.merchantData) {
@@ -1040,7 +1045,7 @@ export class ProviderItemsComponent implements OnInit {
                     icon: 'check-circle.svg',
                     showCloseButton: false,
                     message:
-                      'Se ha enviado un link mágico a tu teléfono o a tu correo electrónico',
+                      'Se ha enviado un link mágico a tu correo electrónico',
                   },
                   customClass: 'app-dialog',
                   flags: ['no-header'],

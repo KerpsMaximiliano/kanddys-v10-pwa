@@ -7,6 +7,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
+import { filter } from 'rxjs/operators';
+import { AppService } from 'src/app/app.service';
 import { completeImageURL } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { CommunityCategory } from 'src/app/core/models/community-categories';
@@ -155,23 +157,43 @@ export class ItemCreationComponent implements OnInit {
     private matDialog: MatDialog,
     private translate: TranslateService,
     private tagsService: TagsService,
-    private communityCategoriesService: CommunityCategoriesService,
     private toastrService: ToastrService,
     private authService: AuthService,
-    private location: Location,
+    private appService: AppService,
     private route: ActivatedRoute,
     private gpt3Service: Gpt3Service,
     private _bottomSheet: MatBottomSheet
   ) {}
 
   ngOnInit(): void {
+    if (!this.headerService.user) {
+      let sub = this.appService.events
+        .pipe(filter((e) => e.type === 'auth'))
+        .subscribe((e) => {
+          this.executeInitProcesses();
+
+          sub.unsubscribe();
+        });
+    } else this.executeInitProcesses();
+  }
+
+  async executeInitProcesses() {
     this.route.params.subscribe(async ({ itemId }) => {
       this.route.queryParams.subscribe(async ({ supplierItem }) => {
         this.isASupplierItem = JSON.parse(supplierItem || 'false');
 
-        if (this.headerService.user)
+        if (this.headerService.user) {
           this.isCurrentUserAMerchant =
             await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+
+          const isTheUserAnAdmin = this.headerService.user?.roles?.find(
+            (role) => role.code === 'ADMIN'
+          );
+
+          if (isTheUserAnAdmin) {
+            this.isTheUserAnAdmin = true;
+          }
+        }
 
         if (this.merchantsService.merchantData) {
           this.saleflowService.saleflowData =
@@ -232,11 +254,6 @@ export class ItemCreationComponent implements OnInit {
       if (!this.headerService.user) {
         this.headerService.user = await this.authService.me();
       }
-
-      const isTheUserAnAdmin = this.headerService.user?.roles?.find(
-        (role) => role.code === 'ADMIN'
-      );
-      if (isTheUserAnAdmin) this.isTheUserAnAdmin = true;
 
       this.item = await this.itemsService.item(itemId);
 
@@ -1497,7 +1514,10 @@ export class ItemCreationComponent implements OnInit {
             } else {
               if (this.isTheUserAnAdmin)
                 this.router.navigate(['/admin/provider-items-management']);
-              else this.router.navigate(['/admin/supplier-dashboard'], { queryParams: { supplierMode: true } });
+              else
+                this.router.navigate(['/admin/supplier-dashboard'], {
+                  queryParams: { supplierMode: true },
+                });
             }
             //this.router.navigate(['/admin/dashboard']);
           }
@@ -1698,8 +1718,7 @@ export class ItemCreationComponent implements OnInit {
               props: {
                 icon: 'check-circle.svg',
                 showCloseButton: false,
-                message:
-                  'Se ha enviado un link mágico a tu teléfono o a tu correo electrónico',
+                message: 'Se ha enviado un link mágico a tu correo electrónico',
               },
               customClass: 'app-dialog',
               flags: ['no-header'],
@@ -1743,14 +1762,17 @@ export class ItemCreationComponent implements OnInit {
 
       this.itemsService.temporalItemInput = null;
       this.itemsService.temporalItem = null;
-  
-      if(this.headerService.flowRouteForEachPage['provider-items-management']) {
-        this.headerService.flowRoute = this.headerService.flowRouteForEachPage['provider-items-management'];
+
+      if (
+        this.headerService.flowRouteForEachPage['provider-items-management']
+      ) {
+        this.headerService.flowRoute =
+          this.headerService.flowRouteForEachPage['provider-items-management'];
         this.headerService.redirectFromQueryParams();
-      }else {
+      } else {
         this.router.navigate(['admin/dashboard']);
       }
-  
+
       unlockUI();
 
       this.snackbar.open('Item actualizado exitosamente', 'Cerrar', {
