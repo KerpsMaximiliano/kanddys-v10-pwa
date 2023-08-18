@@ -66,14 +66,17 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
   itemSearchbar: FormControl = new FormControl('');
   unitsForItemsThatYouDontSell: Record<string, number> = {};
   quotationName: string = null;
-  tutorialOpened: boolean = true;
+  tutorialOpened: boolean = false;
   itemsTutorialCardsOpened: Record<string, boolean> = {
     price: true,
-    stock: true,
+    welcome: true,
+    membership: true,
   };
   searchbarPlaceholder: string = 'Buscar...';
   assetsFolder: string = environment.assetsUrl;
   atLeastOneHasPriceAdded: boolean = false;
+  logged: boolean = false;
+  notASingleItemOnMerchantSaleflow: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -234,6 +237,10 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
               this.searchbarPlaceholder =
                 'Artículos que necesita ' + merchant.name;
             }
+
+            this.logged = this.headerService.user ? true : false;
+            this.tutorialOpened =
+              !this.logged || this.notASingleItemOnMerchantSaleflow;
 
             this.itemSearchbar.valueChanges.subscribe(async (change) => {
               this.quotationItemsToShow = JSON.parse(
@@ -435,6 +442,9 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
         if (item.pricing > 0 && item.stock >= 0) item.valid = true;
       });
 
+      this.notASingleItemOnMerchantSaleflow =
+        supplierSpecificItems.length === 0;
+
       Object.keys(itemIdsOnTheSaleflow).forEach((itemId) => {
         if (!itemIdsOnTheSaleflow[itemId]) {
           itemIdsArentOnTheSaleflowArray.push(itemId);
@@ -467,7 +477,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
 
         itemsThatArentOnTheSaleflowArray = itemsThatArentOnTheSaleflow;
 
-        itemsThatArentOnTheSaleflowArray.forEach((item) => {
+        itemsThatArentOnTheSaleflowArray.forEach((item, index) => {
           item.pricing = null;
           item.merchant = null;
           item.stock = null;
@@ -591,7 +601,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
   ) {
     const magicLinkParams: any = {
       quotationItems: idsOfCreatedItems.join('-'),
-      fromProviderAdjustments: true
+      fromProviderAdjustments: true,
     };
 
     if (itemsToUpdate) {
@@ -623,8 +633,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
         props: {
           icon: 'check-circle.svg',
           showCloseButton: false,
-          message:
-            'Se ha enviado un link mágico a tu correo electrónico',
+          message: 'Se ha enviado un link mágico a tu correo electrónico',
         },
         customClass: 'app-dialog',
         flags: ['no-header'],
@@ -844,12 +853,12 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
       fields: [
         {
           label:
-          '¿Cuál es el precio de venta de' +
-          (item.name
-            ? ' ' +
-              item.name +
-              (item.description ? '(' + item.description + ')?' : '')
-            : 'l articulo?'),
+            '¿Cuál es el precio de venta de' +
+            (item.name
+              ? ' ' +
+                item.name +
+                (item.description ? '(' + item.description + ')?' : '')
+              : 'l articulo?'),
           name: 'price',
           type: 'currency',
           validators: [Validators.pattern(/[\S]/), Validators.min(0)],
@@ -988,6 +997,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
       notificationStock: true,
       notificationStockLimit: item.notificationStockLimit,
       useStock: true,
+      type: 'supplier',
     };
 
     if (this.merchantsService.merchantData) {
@@ -1112,6 +1122,37 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
           inputStyles: {
             padding: '11px 1px',
           },
+          styles: {
+            gap: '0px'
+          },
+          bottomTexts: [
+            {
+              text: 'Este correo también sirve para accesar al Club y aprovechar todas las herramientas que se están creando.',
+              styles: {
+                color: '#FFF',
+                fontFamily: 'InterLight',
+                fontSize: '19px',
+                fontStyle: 'normal',
+                fontWeight: '300',
+                lineHeight: 'normal',
+                marginBottom: '28px',
+                marginTop: '36px',
+              },
+            },
+            {
+              text: 'La promesa del Club es desarrollar funcionalidades que necesites.',
+              styles: {
+                color: '#FFF',
+                fontFamily: 'InterLight',
+                fontSize: '19px',
+                fontStyle: 'normal',
+                fontWeight: '300',
+                lineHeight: 'normal',
+                margin: '0px',
+                padding: '0px'
+              },
+            },
+          ],
           submitButton: {
             text: '>',
             styles: {
@@ -1442,7 +1483,11 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
   closeItemsTutorial = (cardName: string) => {
     this.itemsTutorialCardsOpened[cardName] = false;
 
-    if (!this.itemsTutorialCardsOpened['price']) {
+    if (
+      !this.itemsTutorialCardsOpened['price'] &&
+      !this.itemsTutorialCardsOpened['welcome'] &&
+      !this.itemsTutorialCardsOpened['membership']
+    ) {
       this.tutorialOpened = false;
 
       let tutorialsConfig = JSON.parse(

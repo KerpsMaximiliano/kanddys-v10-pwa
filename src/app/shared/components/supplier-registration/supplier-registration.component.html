@@ -5,7 +5,7 @@
 
       <span
         class="save"
-        *ngIf="!headerService.user"
+        *ngIf="!logged"
         [ngClass]="{
           valid: atLeastOneHasPriceAdded
         }"
@@ -105,7 +105,7 @@
 
         <img
           class="price-tutorial-img"
-          *ngIf="firstItem && tutorialOpened"
+          *ngIf="firstItem && tutorialOpened && itemsTutorialCardsOpened['price']"
           [src]="assetsFolder + '/card-arrow-up.svg'"
           alt=""
         />
@@ -181,8 +181,8 @@
         helpCard;
         context: {
           containerStyles: {
-            width: '86.91%',
-            maxWidth: '372px'
+            width: '92.52%',
+            maxWidth: '396px'
           },
           middleText: 'Adiciona el precio de los artículos que vendes',
           middleTextStyles: {
@@ -198,6 +198,90 @@
         }
       "
     ></ng-container>
+    <ng-container
+      *ngTemplateOutlet="
+        helpCard;
+        context: {
+          containerStyles: {
+            width: '92.52%',
+            maxWidth: '396px',
+            padding: '32px 50px 39px 50px'
+          },
+          topText: 'Bienvenido a www.floristerias.club',
+          topTextStyles: {
+            color: '#FFF',
+            textAlign: 'center',
+            fontFamily: 'InterSemiBold',
+            fontSize: '23px',
+            fontStyle: 'normal',
+            fontWeight: '600',
+            lineHeight: 'normal',
+            marginBottom: '44px'
+          },
+          middleText:
+            'Seguir desarrollando una plataforma de soluciones a los desafíos que enfrentan las floristerías y sus proveedores.',
+          middleTextStyles: {
+            color: '#FFF',
+            textAlign: 'center',
+            fontFamily: 'InterRegular',
+            fontSize: '20px',
+            fontStyle: 'normal',
+            fontWeight: 400,
+            lineHeight: 'normal',
+            marginBottom: '24px'
+          },
+          upperMiddleText: 'PROMESA A TODOS LOS MIEMBROS',
+          upperMiddleTextStyles: {
+            color: '#F6F6F6',
+            fontFamily: 'InterLight',
+            fontSize: '13px',
+            fontStyle: 'normal',
+            lineHeight: 'normal',
+            marginBottom: '15px'
+          },
+          bottomText: 'Ok',
+          bottomTextClickHandler: closeItemsTutorial,
+          openedStateObject: itemsTutorialCardsOpened,
+          cardName: 'welcome'
+        }
+      "
+    ></ng-container>
+    <ng-container
+      *ngTemplateOutlet="
+        helpCard;
+        context: {
+          containerStyles: {
+            width: '92.52%',
+            maxWidth: '396px'
+          },
+          topText: 'MEMBRESÍA DE PROVEEDORES (GRATIS)',
+          topTextStyles: {
+            color: '#F6F6F6',
+            fontFamily: 'InterLight',
+            fontSize: '13px',
+            fontStyle: 'normal',
+            lineHeight: 'normal',
+            marginBottom: '17px'
+          },
+          middleText:
+            'Esta plataforma exhibe lo que ofreces a Floristerías y Floristas',
+          middleTextStyles: {
+            color: '#FFF',
+            textAlign: 'center',
+            fontFamily: 'InterRegular',
+            fontSize: '20px',
+            fontStyle: 'normal',
+            fontWeight: 400,
+            lineHeight: 'normal',
+            marginBottom: '23px'
+          },
+          bottomText: 'Ok',
+          bottomTextClickHandler: closeItemsTutorial,
+          openedStateObject: itemsTutorialCardsOpened,
+          cardName: 'membership'
+        }
+      "
+    ></ng-container>
   </div>
 </ng-template>
 
@@ -207,6 +291,8 @@
   let-topText="topText"
   let-topImage="topImage"
   let-topTextStyles="topTextStyles"
+  let-upperMiddleText="upperMiddleText"
+  let-upperMiddleTextStyles="upperMiddleTextStyles"
   let-middleText="middleText"
   let-middleTextStyles="middleTextStyles"
   let-bottomText="bottomText"
@@ -221,7 +307,16 @@
     <span class="topText" *ngIf="topText" [ngStyle]="topTextStyles">{{
       topText
     }}</span>
+
     <img src="topImage" *ngIf="topImage" [src]="topImage" />
+
+    <span
+      class="middleText"
+      *ngIf="upperMiddleText"
+      [ngStyle]="upperMiddleTextStyles"
+      >{{ upperMiddleText }}</span
+    >
+
     <span class="middleText" [ngStyle]="middleTextStyles">{{
       middleText
     }}</span>
