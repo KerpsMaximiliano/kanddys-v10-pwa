@@ -185,7 +185,7 @@
             <input
               type="text"
               placeholder="Escribe"
-              readonly="{{ isASupplierItem ? true : false }}"
+              [readonly]="isASupplierItem && !isTheUserAnAdmin ? true : false"
               [formControlName]="'title'"
             />
           </div>
@@ -201,7 +201,7 @@
               cols="30"
               rows="3"
               placeholder="Escribe"
-              readonly="{{ isASupplierItem ? true : false }}"
+              [readonly]="isASupplierItem && !isTheUserAnAdmin ? true : false"
               [formControlName]="'description'"
             ></textarea>
 

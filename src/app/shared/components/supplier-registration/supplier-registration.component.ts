@@ -624,7 +624,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
           icon: 'check-circle.svg',
           showCloseButton: false,
           message:
-            'Se ha enviado un link mágico a tu teléfono o a tu correo electrónico',
+            'Se ha enviado un link mágico a tu correo electrónico',
         },
         customClass: 'app-dialog',
         flags: ['no-header'],
@@ -844,8 +844,12 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
       fields: [
         {
           label:
-            '¿Cuál es el precio de venta de' +
-            (item.name ? ' ' + item.name : 'l articulo?'),
+          '¿Cuál es el precio de venta de' +
+          (item.name
+            ? ' ' +
+              item.name +
+              (item.description ? '(' + item.description + ')?' : '')
+            : 'l articulo?'),
           name: 'price',
           type: 'currency',
           validators: [Validators.pattern(/[\S]/), Validators.min(0)],

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item, ItemInput } from 'src/app/core/models/item';
@@ -8,6 +9,7 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { FormComponent, FormData } from 'src/app/shared/dialogs/form/form.component';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -74,6 +76,7 @@ export class ProviderItemsManagementComponent implements OnInit {
     private saleflowService: SaleFlowService,
     public merchantsService: MerchantsService,
     private router: Router,
+    private matDialog: MatDialog,
     private headerService: HeaderService
   ) {}
 
@@ -107,7 +110,32 @@ export class ProviderItemsManagementComponent implements OnInit {
   }
 
   addProviderItem() {
-    this.router.navigate(['/ecommerce/inventory-creator']);
+    let fieldsToCreate: FormData = {
+      fields: [],
+    };
+
+    fieldsToCreate.fields = [
+      {
+        label: 'Nombre del producto',
+        name: 'product-name',
+        type: 'text',
+        validators: [Validators.pattern(/[\S]/)],
+      },
+    ];
+
+    const dialogRef = this.matDialog.open(FormComponent, {
+      data: fieldsToCreate,
+    });
+
+    dialogRef.afterClosed().subscribe((result: FormGroup) => {
+      if (result && result.value['product-name']) {
+        this.itemsService.temporalItemInput = {
+          name: result.value['product-name'],
+        };
+
+        this.router.navigate(['/ecommerce/inventory-creator']);
+      }
+    });
   }
 
   async approveItem(item: Item, index: number) {

@@ -32,7 +32,15 @@ export class AdminComponent implements OnInit {
 
       if (!this.merchantsService.merchantData) {
         this.headerService.flowRoute = this.router.url;
-        this.router.navigate([`auth/login/`]);
+
+        const myMerchants = await this.merchantsService.myMerchants();
+
+        console.log("MyMerchants", myMerchants);
+        
+        if (myMerchants.length === 0) this.router.navigate([`auth/login/`]);
+        else {
+          this.merchantsService.merchantData = myMerchants[0];
+        }
         return;
       }
       setTimeout(() => {
