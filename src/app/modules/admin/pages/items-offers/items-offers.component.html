@@ -1,0 +1,87 @@
+<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
+  <div class="container">
+    <header class="header">
+      <button
+        style="
+          color: #87cd9b;
+          font-size: 17px;
+          font-family: InterBold;
+          margin-left: auto;
+        "
+        (click)="drawerOpened = true"
+      >
+        Artículos de Oferta “Flash”
+        <mat-icon style="color: #6fcf97; margin-left: 8px">menu</mat-icon>
+      </button>
+    </header>
+
+    <div class="content">
+      <ng-container>
+        <div class="items-opinion">
+          Tus artículos estarán en oferta “Flash” hasta lo primero en ocurrir
+          entre agotar tu disponibilidad ó 24h.
+        </div>
+
+        <form class="search-bar-wrapper">
+          <input
+            type="text"
+            name="item-search"
+            (click)="changeView('SEARCH')"
+            class="input search-bar"
+            placeholder="Buscar..."
+            [formControl]="itemSearchbar"
+          />
+
+          <div class="filters">
+            <div class="option"></div>
+          </div>
+        </form>
+      </ng-container>
+
+      <mat-card
+        class="card"
+        
+      >
+        <div class="card-header flex">
+          <div class="left-side flex">
+            <div
+              class="featured-image"
+              [ngStyle]="{
+                backgroundImage: 'url(/assets/images/noimage.png)'
+              }"
+            ></div>
+
+            <div class="item-info-container">
+              <p class="main-text">Artículo sin nombre</p>
+              <p class="greyout-text">Hola</p>
+              <p class="main-text" style="margin-top: 3px">$ 1000</p>
+            </div>
+          </div>
+          <div class="right-side">
+            <div class="quantity-title">VENDIENDO</div>
+            <div
+              class="item-quantity"
+              
+            >
+              <div class="quantity">
+                <span mat-button class="button icon">
+                  <mat-icon style="font-size: 19px; width:18px"
+                    >delete</mat-icon
+                  >
+                </span>
+
+                <span style="position: relative; bottom: 2px"> 0 </span>
+                <span mat-button class="button icon">+</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer" (click)="addPrice()">Incluir en Oferta Flash 24h</div>
+      </mat-card>
+
+    </div>
+  </div>
+  <footer>
+    <button class="left" (click)="goToStore()">Preview</button>
+  </footer>
+</app-navigation>
