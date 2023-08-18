@@ -147,11 +147,6 @@ export class NavigationComponent implements OnInit {
         linkName: 'my-dashboard',
       },
       {
-        text: 'Recompensa a compradores ✨',
-        routerLink: ['/admin/stars-landing'],
-        linkName: 'stars-landing',
-      },
-      {
         text: 'Carrito del Proveedor (yo compro)',
         routerLink: ['/ecommerce/supplier-items-selector'],
         possibleRedirection: ['/ecommerce/quotations'],
@@ -241,11 +236,18 @@ export class NavigationComponent implements OnInit {
           this.tabs = [];
 
           if (quotations.length > 0) {
-            this.sellerTab.links[2].routerLink = ['/ecommerce/quotations'];
+            this.sellerTab.links[1].routerLink = ['/ecommerce/quotations'];
           }
 
           this.tabs.push(this.providerTab);
           this.tabs.push(this.sellerTab);
+
+          if (
+            this.isCurrentUserAnAdmin &&
+            !this.tabs.find((tab) => tab.text === this.tabName['ADMIN'])
+          ) {
+            this.tabs.unshift(this.adminTab);
+          }
         });
     }
 
@@ -315,6 +317,7 @@ export class NavigationComponent implements OnInit {
         }
       }
     });
+
 
     if (
       this.isCurrentUserAnAdmin &&

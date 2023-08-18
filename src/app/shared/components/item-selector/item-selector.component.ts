@@ -662,4 +662,14 @@ export class ItemSelectorComponent implements OnInit {
       panelClass: ['error-snackbar'], // CSS class for styling the snackbar
     });
   }
+
+  sendWhatsappToAppOwner() {
+    let message = `Hola, quiero agregar un artículo como proveedor de www.floristerias.club`;
+
+    const whatsappLink = `https://api.whatsapp.com/send?phone=19188156444&text=${encodeURIComponent(
+      message
+    )}`;
+
+    window.location.href = whatsappLink;
+  }
 }

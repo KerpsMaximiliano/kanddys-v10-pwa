@@ -1,4 +1,4 @@
-<div 
+<div
   class="top-flex"
   style="
     position: fixed;
@@ -10,10 +10,12 @@
   "
   *ngIf="currentView === 'ALL_ITEMS'"
 >
-  <div class="top-flex" style="cursor: pointer;" (click)="back()">
+  <div class="top-flex" style="cursor: pointer" (click)="back()">
     <mat-icon class="back-icon"> arrow_back_ios </mat-icon>
     <span class="back-text">www.floristerias.club</span>
   </div>
+
+  <mat-icon [ngStyle]="{ color: 'white' }" (click)="sendWhatsappToAppOwner()">add</mat-icon>
 
   <span
     class="selected-items-label"
@@ -27,7 +29,6 @@
 <div class="container" [formGroup]="itemsForm">
   <ng-container [ngSwitch]="currentView">
     <ng-container *ngSwitchCase="'ALL_ITEMS'">
-
       <ng-container *ngIf="items.length > 0 && supplierMode">
         <button
           class="add-button"
@@ -85,9 +86,7 @@
       *ngFor="let item of itemsToShow; let i = index"
       [formArrayName]="'checkboxes'"
       (click)="
-        !supplierMode
-          ? null
-          : createItemBasedOnExistingSupplierItems(item)
+        !supplierMode ? null : createItemBasedOnExistingSupplierItems(item)
       "
     >
       <ng-container
@@ -96,7 +95,9 @@
           else images
         "
       >
-        <div class="item-card" style="background-color: black"
+        <div
+          class="item-card"
+          style="background-color: black"
           (click)="!supplierMode && goToArticleDetail(item)"
         >
           <img
