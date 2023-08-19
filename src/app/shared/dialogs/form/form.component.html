@@ -35,6 +35,10 @@
               </button>
             </ng-container>
 
+            <ng-container *ngFor="let text of field.bottomTexts">
+              <p [ngStyle]="text.styles">{{text.text}}</p>
+            </ng-container>
+
             <ng-container *ngIf="field.bottomButton">
               <button
                 class="field-button"

@@ -45,6 +45,10 @@ interface Field {
     text?: string;
     styles?: Record<string, string>;
   };
+  bottomTexts?: Array<{
+    text?: string;
+    styles?: Record<string, string>;
+  }>;
 }
 
 export interface FormData {
