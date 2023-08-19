@@ -550,7 +550,12 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
                   [
                     `/ecommerce/${this.merchantsService.merchantData.slug}/store`,
                   ],
-                  { queryParams: { adminmode: true } }
+                  { 
+                    queryParams: { 
+                      adminmode: true,
+                      mode: this.mode === 'SUPPLIER' ? 'supplier' : 'standard'
+                    } 
+                  }
                 );
               },
             },
@@ -559,7 +564,7 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
               callback: () => {
                 this.ngNavigatorShareService.share({
                   title: '',
-                  url: link,
+                  url: `${link}?mode=${this.mode === 'SUPPLIER' ? 'supplier' : 'standard'}`,
                 });
               },
             },
@@ -567,7 +572,7 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
               title: 'Copiar el Link de compradores',
               callback: () => {
                 this.clipboard.copy(
-                  `${this.URI}/ecommerce/${this.merchantsService.merchantData.slug}/store`
+                  `${this.URI}/ecommerce/${this.merchantsService.merchantData.slug}/store?mode=${this.mode === 'SUPPLIER' ? 'supplier' : 'standard'}`
                 );
                 this.snackBar.open('Enlace copiado en el portapapeles', '', {
                   duration: 2000,
@@ -576,7 +581,7 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
             },
             {
               title: 'Descargar el QR',
-              link,
+              link: `${link}?mode=${this.mode === 'SUPPLIER' ? 'supplier' : 'standard'}`,
             },
           ],
           styles: {
@@ -596,7 +601,7 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
             value: `Copia el link`,
             callback: async () => {
               this.clipboard.copy(
-                `${this.URI}/ecommerce/${this.merchantsService.merchantData.slug}/store`
+                `${this.URI}/ecommerce/${this.merchantsService.merchantData.slug}/store?mode=${this.mode === 'SUPPLIER' ? 'supplier' : 'standard'}`
               );
               this.snackBar.open('Enlace copiado en el portapapeles', '', {
                 duration: 2000,
@@ -606,6 +611,7 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
           {
             value: `Descarga el QR`,
             callback: async () => {
+              // TODO ????
               this.downloadQr();
             },
           },
@@ -614,12 +620,12 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
             callback: async () => {
               this.ngNavigatorShareService.share({
                 title: '',
-                url: `${this.URI}/ecommerce/${this.merchantsService.merchantData.slug}/store`,
+                url: `${this.URI}/ecommerce/${this.merchantsService.merchantData.slug}/store?mode=${this.mode === 'SUPPLIER' ? 'supplier' : 'standard'}`,
               });
             },
           },
           {
-            value: `Mira como se ve`,
+            value: `Mira cómo se ve`,
             callback: async () => {
               this.goToStore();
             },
@@ -635,7 +641,12 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
   goToStore() {
     this.router.navigate([
       `/ecommerce/${this.merchantsService.merchantData.slug}/store`,
-    ]);
+    ], {
+      queryParams: {
+        adminmode: true,
+        mode: this.mode === 'SUPPLIER' ? 'supplier' : 'standard'
+      }
+    });
   }
 
   //MAGIC LINK SPECIFIC METHODS
