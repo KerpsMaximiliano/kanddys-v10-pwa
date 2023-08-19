@@ -216,7 +216,7 @@
         URI +
         '/ecommerce/' +
         saleflowService.saleflowData?.merchant?.slug +
-        '/store'
+        '/store?mode=' + mode === 'SUPPLIER' ? 'supplier' : 'standard'
       "
       [elementType]="'img'"
       [width]="40"
