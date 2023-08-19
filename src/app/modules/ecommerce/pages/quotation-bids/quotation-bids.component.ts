@@ -566,6 +566,13 @@ export class QuotationBidsComponent implements OnInit {
           quotationName: this.temporalQuotation.name,
           temporalQuotation: true,
         };
+
+        if (this.merchantsService.merchantData?._id && !this.requesterId) {
+          queryParams.requesterId = this.merchantsService.merchantData?._id;
+          queryParams.supplierMerchantId =
+            this.merchantsService.merchantData?._id;
+        }
+
         return this.router.navigate(['/ecommerce/supplier-register'], {
           queryParams: {
             jsondata: JSON.stringify(queryParams),
@@ -980,7 +987,7 @@ export class QuotationBidsComponent implements OnInit {
   }
 
   async shareQuotation() {
-    const queryParams: Record<string, string> = {};
+    const queryParams: Record<string, any> = {};
 
     if (this.typeOfQuotation === 'DATABASE_QUOTATION') {
       queryParams.requesterId =
@@ -994,7 +1001,7 @@ export class QuotationBidsComponent implements OnInit {
         : null;
     } else if (this.typeOfQuotation === 'TEMPORAL_QUOTATION') {
       queryParams.itemsForTemporalQuotation =
-        this.temporalQuotation.items.join('-');
+        this.temporalQuotation.items;
     }
 
     lockUI();

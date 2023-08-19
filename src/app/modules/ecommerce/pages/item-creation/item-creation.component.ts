@@ -179,7 +179,7 @@ export class ItemCreationComponent implements OnInit {
 
   async executeInitProcesses() {
     this.route.params.subscribe(async ({ itemId }) => {
-      this.route.queryParams.subscribe(async ({ supplierItem }) => {
+      this.route.queryParams.subscribe(async ({ supplierItem, isAdminFlow }) => {
         this.isASupplierItem = JSON.parse(supplierItem || 'false');
 
         if (this.headerService.user) {
@@ -1512,8 +1512,11 @@ export class ItemCreationComponent implements OnInit {
                   );
               this.router.navigate(['/admin/dashboard']);
             } else {
-              if (this.isTheUserAnAdmin)
+              if (this.isTheUserAnAdmin && this.headerService.flowRouteForEachPage['provider-items-management']) {
                 this.router.navigate(['/admin/provider-items-management']);
+                this.headerService.flowRouteForEachPage['provider-items-management'] = null;
+                return;
+              }
               else
                 this.router.navigate(['/admin/supplier-dashboard'], {
                   queryParams: { supplierMode: true },
@@ -1900,7 +1903,23 @@ export class ItemCreationComponent implements OnInit {
     } else {
       this.itemsService.temporalItem = null;
 
-      if (this.item && this.isTheUserAnAdmin) {
+      if (
+        this.headerService.flowRouteForEachPage['provider-items-management']
+      ) {
+        this.headerService.flowRoute =
+          this.headerService.flowRouteForEachPage['provider-items-management'];
+        this.headerService.redirectFromQueryParams();
+        this.headerService.flowRouteForEachPage['provider-items-management'] = null;
+        return;
+      }
+
+      // TODO - eliminar este if porque es redundante, el de arriba ya hace lo mismo
+      if (
+        this.item && 
+        this.isTheUserAnAdmin &&
+        this.headerService.flowRouteForEachPage['provider-items-management']
+      ) {
+        this.headerService.flowRouteForEachPage['provider-items-management'] = null;
         return this.router.navigate(['/admin/provider-items-management']);
       }
 
