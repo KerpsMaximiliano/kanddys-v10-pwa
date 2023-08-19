@@ -17,7 +17,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { User } from 'src/app/core/models/user';
 import { UsersService } from 'src/app/core/services/users.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { Merchant } from 'src/app/core/models/merchant';
+import { Merchant, MerchantInput } from 'src/app/core/models/merchant';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { completeImageURL } from 'src/app/core/helpers/strings.helpers';
@@ -597,8 +597,12 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     emailOrPhone: string,
     idsOfCreatedItems: Array<string>,
     itemsToUpdate?: Record<string, ItemInput>,
-    openSuccessDialog: boolean = true
+    openSuccessDialog: boolean = true,
+    merchantInput?: Record<string, any>,
+    redirectionRoute?: string,
+    redirectionRouteQueryParams?: Record<string, any>
   ) {
+
     const magicLinkParams: any = {
       quotationItems: idsOfCreatedItems.join('-'),
       fromProviderAdjustments: true,
@@ -614,6 +618,8 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
       );
     }
 
+    if (merchantInput) magicLinkParams.merchantInput = merchantInput;
+
     lockUI();
 
     await this.authService.generateMagicLink(
@@ -627,6 +633,13 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
       []
     );
 
+    unlockUI();
+
+    if (redirectionRoute)
+      return this.router.navigate([redirectionRoute], {
+        queryParams: redirectionRouteQueryParams,
+      });
+
     if (openSuccessDialog) {
       this.dialogService.open(GeneralFormSubmissionDialogComponent, {
         type: 'centralized-fullscreen',
@@ -639,8 +652,6 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
         flags: ['no-header'],
       });
     }
-
-    unlockUI();
   }
 
   determineWhichItemsNeedToBeUpdatedAndWhichNeedToBeCreated = async (
@@ -1123,7 +1134,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
             padding: '11px 1px',
           },
           styles: {
-            gap: '0px'
+            gap: '0px',
           },
           bottomTexts: [
             {
@@ -1149,7 +1160,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
                 fontWeight: '300',
                 lineHeight: 'normal',
                 margin: '0px',
-                padding: '0px'
+                padding: '0px',
               },
             },
           ],
@@ -1183,136 +1194,332 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
       if (result?.controls?.magicLinkEmailOrPhone.valid) {
         const emailOrPhone = result?.value['magicLinkEmailOrPhone'];
+        const myUser = await this.authService.checkUser(emailOrPhone);
+        const myMerchant = !myUser
+          ? null
+          : await this.merchantsService.merchantDefault(myUser._id);
 
-        let optionsDialogTemplate: OptionsDialogTemplate = {
-          options: [
-            {
-              value: 'Accederé con la clave',
-              callback: async () => {
-                await addPassword(emailOrPhone);
-              },
-            },
-            {
-              value: 'Prefiero recibir el enlace de acceso en mi correo',
-              callback: async () => {
-                if (result?.controls?.magicLinkEmailOrPhone.valid) {
-                  let emailOrPhone = result?.value['magicLinkEmailOrPhone'];
+        let optionsDialogTemplate: OptionsDialogTemplate = null;
 
-                  lockUI();
+        if (!myUser) {
+          optionsDialogTemplate = {
+            title:
+              'Notamos que es la primera vez que intentas acceder con este correo, prefieres:',
+            options: [
+              {
+                value:
+                  'Empezar mi Membresía al Club con este correo electrónico',
+                callback: async () => {
+                  let fieldsToCreateInMerchantRegistrationDialog: FormData = {
+                    buttonsTexts: {
+                      accept: 'Confirmar mi correo',
+                      cancel: 'Cancelar',
+                    },
+                    containerStyles: {
+                      padding: '39.74px 17px 47px 24px',
+                    },
+                    fields: [
+                      {
+                        label: 'Nombre Comercial que verán tus compradores:',
+                        name: 'merchantName',
+                        type: 'text',
+                        placeholder: 'Escribe el nombre comercial',
+                        validators: [
+                          Validators.pattern(/[\S]/),
+                          Validators.required,
+                        ],
+                        inputStyles: {
+                          padding: '11px 1px',
+                        },
+                      },
+                      {
+                        label:
+                          'WhatsApp que recibirá las facturas que te mandarán los compradores:',
+                        name: 'merchantPhone',
+                        type: 'phone',
+                        placeholder: 'Escribe el nombre comercial',
+                        validators: [
+                          Validators.pattern(/[\S]/),
+                          Validators.required,
+                        ],
+                        inputStyles: {
+                          padding: '11px 1px',
+                        },
+                      },
+                    ],
+                  };
 
-                  const myUser = await this.authService.checkUser(emailOrPhone);
-                  const merchantDefaullt = myUser
-                    ? await this.merchantsService.merchantDefault(myUser._id)
-                    : null;
+                  const merchantRegistrationDialogRef = this.matDialog.open(
+                    FormComponent,
+                    {
+                      data: fieldsToCreateInMerchantRegistrationDialog,
+                      disableClose: true,
+                    }
+                  );
 
-                  const itemsThatArentOnSupplierSaleflow =
-                    this.quotationItems.filter(
-                      (item) => !item.inSaleflow && item.pricing !== null
-                    );
+                  merchantRegistrationDialogRef
+                    .afterClosed()
+                    .subscribe(async (result: FormGroup) => {
+                      if (
+                        result?.controls?.merchantName.valid &&
+                        result?.controls?.merchantPhone.valid
+                      ) {
+                        const merchantInput: Record<string, any> = {
+                          name: result?.value['merchantName'],
+                          phone: result?.value['merchantPhone'],
+                        };
 
-                  if (!myUser && !merchantDefaullt) {
-                    const idsOfCreatedItems: Array<string> = [];
+                        lockUI();
+                        const itemsThatArentOnSupplierSaleflow =
+                          this.quotationItems.filter(
+                            (item) => !item.inSaleflow && item.pricing !== null
+                          );
+                        const idsOfCreatedItems: Array<string> = [];
 
-                    const inputArray: Array<ItemInput> = [];
+                        const inputArray: Array<ItemInput> = [];
 
-                    for await (const item of itemsThatArentOnSupplierSaleflow) {
-                      const itemSlides: Array<any> = item.images
-                        .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
-                        .map(({ index, ...image }) => {
-                          return {
-                            url: completeImageURL(image.value),
-                            index,
-                            type: 'poster',
-                            text: '',
-                            _id: image._id,
+                        for await (const item of itemsThatArentOnSupplierSaleflow) {
+                          const itemSlides: Array<any> = item.images
+                            .sort(({ index: a }, { index: b }) =>
+                              a > b ? 1 : -1
+                            )
+                            .map(({ index, ...image }) => {
+                              return {
+                                url: completeImageURL(image.value),
+                                index,
+                                type: 'poster',
+                                text: '',
+                                _id: image._id,
+                              };
+                            });
+
+                          let images: ItemImageInput[] = await Promise.all(
+                            itemSlides.map(
+                              async (slide: SlideInput, index: number) => {
+                                return {
+                                  file: await urltoFile(
+                                    slide.url,
+                                    'file' + index,
+                                    null,
+                                    true
+                                  ),
+                                  index,
+                                  active: true,
+                                };
+                              }
+                            )
+                          );
+
+                          const input: ItemInput = {
+                            name: item.name,
+                            description: item.description,
+                            pricing: item.pricing,
+                            stock: item.stock,
+                            useStock: true,
+                            notificationStock: true,
+                            notificationStockLimit: item.notificationStockLimit,
+                            notificationStockPhoneOrEmail:
+                              item.notificationStockPhoneOrEmail,
+                            images: images,
+                            merchant: this.supplierMerchantId,
+                            content: [],
+                            currencies: [],
+                            hasExtraPrice: false,
+                            parentItem: item._id,
+                            purchaseLocations: [],
+                            showImages: images.length > 0,
+                            type: 'supplier',
                           };
-                        });
 
-                      let images: ItemImageInput[] = await Promise.all(
-                        itemSlides.map(
-                          async (slide: SlideInput, index: number) => {
-                            return {
-                              file: await urltoFile(
-                                slide.url,
-                                'file' + index,
-                                null,
-                                true
-                              ),
-                              index,
-                              active: true,
-                            };
+                          inputArray.push(input);
+                        }
+
+                        for await (const itemInput of inputArray) {
+                          //console.log('itemInput', itemInput);
+
+                          const createdItem = (
+                            await this.itemsService.createPreItem(itemInput)
+                          )?.createPreItem;
+
+                          idsOfCreatedItems.push(createdItem._id);
+                        }
+
+                        await this.generateMagicLinkFor(
+                          emailOrPhone,
+                          idsOfCreatedItems,
+                          null,
+                          true,
+                          merchantInput,
+                          '/ecommerce/confirm-club-registration',
+                          {
+                            merchantName: merchantInput.name,
                           }
-                        )
-                      );
-
-                      const input: ItemInput = {
-                        name: item.name,
-                        description: item.description,
-                        pricing: item.pricing,
-                        stock: item.stock,
-                        useStock: true,
-                        notificationStock: true,
-                        notificationStockLimit: item.notificationStockLimit,
-                        notificationStockPhoneOrEmail:
-                          item.notificationStockPhoneOrEmail,
-                        images: images,
-                        merchant: this.supplierMerchantId,
-                        content: [],
-                        currencies: [],
-                        hasExtraPrice: false,
-                        parentItem: item._id,
-                        purchaseLocations: [],
-                        showImages: images.length > 0,
-                        type: 'supplier',
-                      };
-
-                      inputArray.push(input);
-                    }
-
-                    for await (const itemInput of inputArray) {
-                      //console.log('itemInput', itemInput);
-
-                      const createdItem = (
-                        await this.itemsService.createPreItem(itemInput)
-                      )?.createPreItem;
-
-                      idsOfCreatedItems.push(createdItem._id);
-                    }
-
-                    await this.generateMagicLinkFor(
-                      emailOrPhone,
-                      idsOfCreatedItems,
-                      null,
-                      true
-                    );
-                    unlockUI();
-                  } else {
-                    const { createdItems, itemsToUpdate } =
-                      await this.determineWhichItemsNeedToBeUpdatedAndWhichNeedToBeCreated(
-                        merchantDefaullt,
-                        itemsThatArentOnSupplierSaleflow
-                      );
-
-                    await this.generateMagicLinkFor(
-                      emailOrPhone,
-                      createdItems,
-                      itemsToUpdate,
-                      true
-                    );
-                    unlockUI();
-                  }
-                } else if (
-                  result?.controls?.magicLinkEmailOrPhone.valid === false
-                ) {
-                  unlockUI();
-                  this.snackbar.open('Datos invalidos', 'Cerrar', {
-                    duration: 3000,
-                  });
-                }
+                        );
+                        unlockUI();
+                      }
+                    });
+                },
               },
-            },
-          ],
-        };
+              {
+                value: 'Intentar con otro correo electrónico.',
+                callback: async () => {
+                  return this.openMagicLinkDialog();
+                },
+              },
+              {
+                value:
+                  'Algo anda mal porque no es la primera vez que trato de acceder con este correo',
+                callback: async () => {
+                  this.sendWhatsappToAppOwner(emailOrPhone);
+                },
+              },
+            ],
+          };
+        } else {
+          optionsDialogTemplate = {
+            title:
+              'Bienvenido de vuelta ' +
+              (myMerchant
+                ? myMerchant.name
+                : myUser.name || myUser.email || myUser.phone) +
+              ', prefieres:',
+            options: [
+              {
+                value: 'Prefiero acceder con la clave',
+                callback: () => {
+                  addPassword(emailOrPhone);
+                },
+              },
+              {
+                value: 'Prefiero recibir el enlace de acceso en mi correo',
+                callback: async () => {
+                  if (result?.controls?.magicLinkEmailOrPhone.valid) {
+                    let emailOrPhone = result?.value['magicLinkEmailOrPhone'];
+
+                    lockUI();
+
+                    const merchantDefaullt = myUser
+                      ? await this.merchantsService.merchantDefault(myUser._id)
+                      : null;
+
+                    const itemsThatArentOnSupplierSaleflow =
+                      this.quotationItems.filter(
+                        (item) => !item.inSaleflow && item.pricing !== null
+                      );
+
+                    if (!myUser && !merchantDefaullt) {
+                      const idsOfCreatedItems: Array<string> = [];
+
+                      const inputArray: Array<ItemInput> = [];
+
+                      for await (const item of itemsThatArentOnSupplierSaleflow) {
+                        const itemSlides: Array<any> = item.images
+                          .sort(({ index: a }, { index: b }) =>
+                            a > b ? 1 : -1
+                          )
+                          .map(({ index, ...image }) => {
+                            return {
+                              url: completeImageURL(image.value),
+                              index,
+                              type: 'poster',
+                              text: '',
+                              _id: image._id,
+                            };
+                          });
+
+                        let images: ItemImageInput[] = await Promise.all(
+                          itemSlides.map(
+                            async (slide: SlideInput, index: number) => {
+                              return {
+                                file: await urltoFile(
+                                  slide.url,
+                                  'file' + index,
+                                  null,
+                                  true
+                                ),
+                                index,
+                                active: true,
+                              };
+                            }
+                          )
+                        );
+
+                        const input: ItemInput = {
+                          name: item.name,
+                          description: item.description,
+                          pricing: item.pricing,
+                          stock: item.stock,
+                          useStock: true,
+                          notificationStock: true,
+                          notificationStockLimit: item.notificationStockLimit,
+                          notificationStockPhoneOrEmail:
+                            item.notificationStockPhoneOrEmail,
+                          images: images,
+                          merchant: this.supplierMerchantId,
+                          content: [],
+                          currencies: [],
+                          hasExtraPrice: false,
+                          parentItem: item._id,
+                          purchaseLocations: [],
+                          showImages: images.length > 0,
+                          type: 'supplier',
+                        };
+
+                        inputArray.push(input);
+                      }
+
+                      for await (const itemInput of inputArray) {
+                        //console.log('itemInput', itemInput);
+
+                        const createdItem = (
+                          await this.itemsService.createPreItem(itemInput)
+                        )?.createPreItem;
+
+                        idsOfCreatedItems.push(createdItem._id);
+                      }
+
+                      await this.generateMagicLinkFor(
+                        emailOrPhone,
+                        idsOfCreatedItems,
+                        null,
+                        true
+                      );
+                      unlockUI();
+                    } else {
+                      const { createdItems, itemsToUpdate } =
+                        await this.determineWhichItemsNeedToBeUpdatedAndWhichNeedToBeCreated(
+                          merchantDefaullt,
+                          itemsThatArentOnSupplierSaleflow
+                        );
+
+                      await this.generateMagicLinkFor(
+                        emailOrPhone,
+                        createdItems,
+                        itemsToUpdate,
+                        true
+                      );
+                      unlockUI();
+                    }
+                  } else if (
+                    result?.controls?.magicLinkEmailOrPhone.valid === false
+                  ) {
+                    unlockUI();
+                    this.snackbar.open('Datos invalidos', 'Cerrar', {
+                      duration: 3000,
+                    });
+                  }
+                },
+              },
+              {
+                value:
+                  'Algo anda mal porque no es la primera vez que trato de acceder con este correo',
+                callback: async () => {
+                  this.sendWhatsappToAppOwner(emailOrPhone);
+                },
+              },
+            ],
+          };
+        }
 
         this.matDialog.open(OptionsDialogComponent, {
           data: optionsDialogTemplate,
@@ -1418,6 +1625,18 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
         return this.openMagicLinkDialog();
       };
     };
+  }
+
+  sendWhatsappToAppOwner(emailOrPhone: string) {
+    let message =
+      `Algo anda mal porque es la primera vez que trato de acceder con este correo: ` +
+      emailOrPhone;
+
+    const whatsappLink = `https://api.whatsapp.com/send?phone=19188156444&text=${encodeURIComponent(
+      message
+    )}`;
+
+    window.location.href = whatsappLink;
   }
 
   async editPrice(item: Item, itemIndex: number) {
