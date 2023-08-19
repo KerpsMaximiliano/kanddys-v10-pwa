@@ -602,7 +602,6 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     redirectionRoute?: string,
     redirectionRouteQueryParams?: Record<string, any>
   ) {
-
     const magicLinkParams: any = {
       quotationItems: idsOfCreatedItems.join('-'),
       fromProviderAdjustments: true,
@@ -616,7 +615,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
       magicLinkParams.itemsForTemporalQuotation = this.quotationItems.map(
         (item) => item._id
       );
-    }
+    } 
 
     if (merchantInput) magicLinkParams.merchantInput = merchantInput;
 
