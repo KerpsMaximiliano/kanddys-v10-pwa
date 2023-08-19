@@ -106,7 +106,9 @@ export class ProviderItemsManagementComponent implements OnInit {
     this.headerService.flowRouteForEachPage['provider-items-management'] =
       this.router.url;
 
-    this.router.navigate(['/ecommerce/item-management/', item._id]);
+    this.router.navigate(['/ecommerce/item-management/', item._id], {
+      queryParams: { isAdminFlow: true }
+    });
   }
 
   addProviderItem() {
