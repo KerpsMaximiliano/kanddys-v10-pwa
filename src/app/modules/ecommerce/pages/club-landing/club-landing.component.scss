@@ -333,3 +333,7 @@ footer {
     }
   }
 }
+
+::ng-deep .merchant-registration .mat-dialog-content {
+  overflow: visible;
+}

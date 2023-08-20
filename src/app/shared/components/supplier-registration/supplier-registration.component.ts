@@ -1253,6 +1253,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
                     {
                       data: fieldsToCreateInMerchantRegistrationDialog,
                       disableClose: true,
+                      panelClass: 'merchant-registration',
                     }
                   );
 

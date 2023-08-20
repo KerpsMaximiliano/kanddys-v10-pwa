@@ -475,7 +475,7 @@ const declarations = [
   SupplierRegistrationComponent,
   ProgressBarComponent,
   CardImageComponent,
-  OptionsDialogComponent
+  OptionsDialogComponent,
 ];
 
 @NgModule({
