@@ -103,7 +103,6 @@ import { CurrencyFormatPipe } from 'src/app/core/pipes/currency-format.pipe';
 import { MerchantOffersComponent } from './pages/merchant-offers/merchant-offers.component';
 import { AdminCartsComponent } from './pages/admin-carts/admin-carts.component';
 import { ItemsOffersComponent } from './pages/items-offers/items-offers.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },

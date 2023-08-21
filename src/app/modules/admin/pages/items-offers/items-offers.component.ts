@@ -2,10 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { Item } from 'src/app/core/models/item';
+import { Item, ItemInput } from 'src/app/core/models/item';
+import { Merchant } from 'src/app/core/models/merchant';
+import { PaginationInput } from 'src/app/core/models/saleflow';
+import { ItemsService } from 'src/app/core/services/items.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { FormComponent, FormData } from 'src/app/shared/dialogs/form/form.component';
 import { environment } from 'src/environments/environment';
-
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-items-offers',
@@ -18,18 +23,90 @@ export class ItemsOffersComponent implements OnInit {
   showSearchbar: boolean = true;
   view: 'LIST' | 'SEARCH' = 'LIST';
   assetsURL: string = environment.assetsUrl;
-  constructor(private dialog: MatDialog,
-              ) { }
+  merchantId: string;
+  saleFlowItemsId = [];
+  listItems = [];
 
-  ngOnInit(): void {
+  constructor(private dialog: MatDialog,
+              private merchantService: MerchantsService,
+              private saleFlowService: SaleFlowService,
+              private itemService: ItemsService
+  ) { }
+
+  async ngOnInit() {
+    this.merchantId = await this.getMerchantId();
+    await this.getSaleFlowItemsId();
+    await this.getListItems();
   }
+
+  async getMerchantId() {
+    const merchant: Merchant = await this.merchantService.merchantDefault();
+    return merchant._id
+  }
+
+  async getSaleFlowItemsId(){
+    const saleFlowDefault = await this.saleFlowService.saleflowDefault(this.merchantId);
+   const saleFlow = Object.keys(saleFlowDefault).map(data =>{
+      return saleFlowDefault[data]
+    })
+   const getIds = this.getItemIds(saleFlow);
+   return getIds;
+  }
+
+  getItemIds(saleFlow) {
+    const ids = [];
+
+    saleFlow.forEach(item => {
+        if (Array.isArray(item)) {
+          item.forEach(subItem => {
+                if (subItem && subItem.item && subItem.item._id) {
+                    ids.push(subItem.item._id);
+                }
+            });
+        } else if (item && item.item && item.item._id) {
+            ids.push(item.item._id);
+        }
+    });
+
+    return ids;
+}
+
+async getListItems(searchName = ""){
+  const ids = await this.getSaleFlowItemsId();
+  const pagination: PaginationInput = {
+    findBy: {
+      _id: {
+        __in: ids
+      },
+    },
+    options: {
+      sortBy: 'createdAt:desc',
+      limit: -1,
+      page: 1,
+    },
+  };
+  const items = await this.saleFlowService.listItems(pagination, true,searchName);
+  const listItemsResponse = Object.keys(items).map(data =>{
+    return items[data]
+  })
+  listItemsResponse[0].forEach(item => {
+    this.listItems.push({
+      _id:item._id,
+      name: item.name,
+      images: item.images,
+      description: item.description,
+      pricing: item.pricing,
+      activeOffer: item.activeOffer,
+      offerExpiration: item.offerExpiration ? this.getTimeDifference(item.offerExpiration) : ""
+    })
+  })
+}
 
   changeView = async (newView: 'LIST' | 'SEARCH') => {
     this.view = newView;
-
     if (newView === 'SEARCH') {
       setTimeout(() => {
-        (
+       (
           document.querySelector(
             '#search-from-results-view'
           ) as HTMLInputElement
@@ -38,19 +115,28 @@ export class ItemsOffersComponent implements OnInit {
     }
   };
 
-  openAddButtonOptionsMenu(){}
-  openHeaderDotOptions(){}
-  goToStore(){}
+  async searchItems(event){
+    setTimeout(async () => {
+      lockUI();
+      this.listItems = [];
+      await this.getListItems(this.itemSearchbar.value);
+      unlockUI();
+     }, 500);
+  }
 
-  async addPrice() {
+  openAddButtonOptionsMenu() { }
+  openHeaderDotOptions() { }
+  goToStore() { }
+
+  async addPrice(item) {
     let fieldsToCreate: FormData = {
       fields: [
         {
           label:
-            '¿Cuál es el precio de tu Oferta Flash? (precio normal $xyzid)',
+            '¿Cuál es el precio de tu Oferta Flash? (precio normal $'+item.pricing+')',
           name: 'price',
           type: 'currency',
-          validators: [Validators.pattern(/[\S]/), Validators.min(0)],
+          validators: [Validators.pattern(/[\S]/), Validators.min(1)],
         },
       ],
       buttonsTexts: {
@@ -65,14 +151,26 @@ export class ItemsOffersComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
-      if (result.controls.price.valid) {
-        const price = Number(result.value['price']);
-
-      
-          lockUI();
-          unlockUI();
+      const price = Number(result.value['price']);
+      if (result.controls.price.valid && price > 0) {
+        lockUI();
+        const itemsInput:ItemInput = {
+          offerPrice: price,
+          activeOffer: true
         }
-      });
+        const updatePrice = await this.itemService.updateItem(itemsInput, item._id);
+        this.listItems = [];
+        await this.getListItems();
+        unlockUI();
+      }
+    });
+  }
+
+  getTimeDifference(time){
+    const targetDate = moment(time);
+    const currentDate = moment();
+    const hoursDifference = targetDate.diff(currentDate, 'hours');
+    return hoursDifference;
   }
 
 }

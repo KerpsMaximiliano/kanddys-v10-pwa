@@ -30,6 +30,7 @@
             class="input search-bar"
             placeholder="Buscar..."
             [formControl]="itemSearchbar"
+            (input)="searchItems($event)"
           />
 
           <div class="filters">
@@ -38,23 +39,25 @@
         </form>
       </ng-container>
 
-      <mat-card
-        class="card"
-        
-      >
+      <div *ngFor="let item of listItems; let i = index">
+      <mat-card class="card">
         <div class="card-header flex">
           <div class="left-side flex">
             <div
               class="featured-image"
               [ngStyle]="{
-                backgroundImage: 'url(/assets/images/noimage.png)'
+                backgroundImage: item?.images?.length
+                  ? 'url(' +
+                    item.images[0].value +
+                    '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+                  : 'url(/assets/images/noimage.png)'
               }"
             ></div>
 
             <div class="item-info-container">
-              <p class="main-text">Artículo sin nombre</p>
-              <p class="greyout-text">Hola</p>
-              <p class="main-text" style="margin-top: 3px">$ 1000</p>
+              <p class="main-text">{{item.name}}</p>
+              <p class="greyout-text">{{item.description}}</p>
+              <p class="main-text" style="margin-top: 3px">$ {{item.pricing}}</p>
             </div>
           </div>
           <div class="right-side">
@@ -76,9 +79,10 @@
             </div>
           </div>
         </div>
-        <div class="card-footer" (click)="addPrice()">Incluir en Oferta Flash 24h</div>
+        <div *ngIf="!item.activeOffer" class="card-footer" (click)="addPrice(item)">Incluir en Oferta Flash 24h</div>
+        <div *ngIf="item.activeOffer" class="card-footer-offer" (click)="addPrice(item)">Por {{item.offerExpiration}} horas en {{item.pricing}}</div>
       </mat-card>
-
+    </div>
     </div>
   </div>
   <footer>

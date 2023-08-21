@@ -218,6 +218,8 @@ export const listItems = gql`
       description
       createdAt
       parentItem
+      activeOffer
+      offerExpiration
       images {
         _id
         value
