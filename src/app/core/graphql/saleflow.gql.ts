@@ -1,3 +1,4 @@
+import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 
 export const body = `
@@ -317,5 +318,11 @@ export const updateSaleflow = gql`
     updateSaleflow(input: $input, id: $id) {
       _id
     }
+  }
+`;
+
+export const codeSearchKeywordByType = gql`
+  query codeSearchKeywordByType($pagination: PaginationInput) {
+    codeSearchKeywordByType(pagination: $pagination)
   }
 `;
