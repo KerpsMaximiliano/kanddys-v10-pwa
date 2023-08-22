@@ -114,7 +114,7 @@ export class NavigationComponent implements OnInit {
     active: false,
     links: [
       {
-        text: 'Mi KiosKo 💰',
+        text: 'Mi KiosKo',
         routerLink: ['/admin/supplier-dashboard'],
         queryParams: {
           supplierMode: true,
@@ -123,7 +123,7 @@ export class NavigationComponent implements OnInit {
         linkName: 'my-dashboard',
       },
       {
-        text: 'Artículos y ventas',
+        text: 'Artículos & Ventas 💰',
         routerLink: ['/ecommerce/provider-items'],
         linkName: 'provider-pov-link',
       },
@@ -145,11 +145,6 @@ export class NavigationComponent implements OnInit {
         text: 'Mi KiosKo 💰',
         routerLink: ['/admin/dashboard'],
         linkName: 'my-dashboard',
-      },
-      {
-        text: 'Recompensa a compradores ✨',
-        routerLink: ['/admin/stars-landing'],
-        linkName: 'stars-landing',
       },
       {
         text: 'Carrito del Proveedor (yo compro)',
@@ -216,7 +211,7 @@ export class NavigationComponent implements OnInit {
 
     this.tabs.push(this.providerTab);
     this.tabs.push(this.sellerTab);
-    
+
     if (this.headerService.user && isUserAMerchant)
       await this.checkIfUserIsAProviderOrASeller();
 
@@ -241,13 +236,16 @@ export class NavigationComponent implements OnInit {
           this.tabs = [];
 
           if (quotations.length > 0) {
-            this.sellerTab.links[2].routerLink = ['/ecommerce/quotations'];
+            this.sellerTab.links[1].routerLink = ['/ecommerce/quotations'];
           }
 
           this.tabs.push(this.providerTab);
           this.tabs.push(this.sellerTab);
 
-          if(this.isCurrentUserAnAdmin) {
+          if (
+            this.isCurrentUserAnAdmin &&
+            !this.tabs.find((tab) => tab.text === this.tabName['ADMIN'])
+          ) {
             this.tabs.unshift(this.adminTab);
           }
         });
@@ -320,7 +318,11 @@ export class NavigationComponent implements OnInit {
       }
     });
 
-    if(this.isCurrentUserAnAdmin) {
+
+    if (
+      this.isCurrentUserAnAdmin &&
+      !this.tabs.find((tab) => tab.text === this.tabName['ADMIN'])
+    ) {
       this.tabs.unshift(this.adminTab);
     }
   }

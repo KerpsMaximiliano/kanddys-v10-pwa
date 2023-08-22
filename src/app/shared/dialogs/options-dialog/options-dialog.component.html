@@ -1,0 +1,19 @@
+<div class="options-dialog-container">
+    <h3 class="title" *ngIf="data?.title">{{ data.title }}</h3>
+    <p class="description" *ngIf="data?.description">{{ data.description }}</p>
+  
+    <div style="display: flex; flex-direction: column;">
+      <div class="button-flex" *ngFor="let option of data.options; let i = index">
+        <div class="left-border"></div>
+        <button
+          mat-button
+          class="option-button"
+          [ngClass]="{ active: selectedIndex === i }"
+          (click)="onClick(i)"
+        >
+          {{ option.value }}
+        </button>
+      </div>
+    </div>
+  </div>
+  

@@ -17,7 +17,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { User } from 'src/app/core/models/user';
 import { UsersService } from 'src/app/core/services/users.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
-import { Merchant } from 'src/app/core/models/merchant';
+import { Merchant, MerchantInput } from 'src/app/core/models/merchant';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { completeImageURL } from 'src/app/core/helpers/strings.helpers';
@@ -35,6 +35,10 @@ import {
   ConfirmationSimpleComponent,
   DialogData,
 } from '../../dialogs/confirmation-simple/confirmation-simple.component';
+import {
+  OptionsDialogComponent,
+  OptionsDialogTemplate,
+} from '../../dialogs/options-dialog/options-dialog.component';
 
 @Component({
   selector: 'app-supplier-registration',
@@ -62,20 +66,24 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
   itemSearchbar: FormControl = new FormControl('');
   unitsForItemsThatYouDontSell: Record<string, number> = {};
   quotationName: string = null;
-  tutorialOpened: boolean = true;
+  tutorialOpened: boolean = false;
   itemsTutorialCardsOpened: Record<string, boolean> = {
     price: true,
-    stock: true,
+    welcome: true,
+    membership: true,
   };
   searchbarPlaceholder: string = 'Buscar...';
   assetsFolder: string = environment.assetsUrl;
+  atLeastOneHasPriceAdded: boolean = false;
+  logged: boolean = false;
+  notASingleItemOnMerchantSaleflow: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     public quotationsService: QuotationsService,
     private itemsService: ItemsService,
     private merchantsService: MerchantsService,
-    private headerService: HeaderService,
+    public headerService: HeaderService,
     private saleflowService: SaleFlowService,
     private authService: AuthService,
     private dialogService: DialogService,
@@ -229,6 +237,10 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
               this.searchbarPlaceholder =
                 'Artículos que necesita ' + merchant.name;
             }
+
+            this.logged = this.headerService.user ? true : false;
+            this.tutorialOpened =
+              !this.logged || this.notASingleItemOnMerchantSaleflow;
 
             this.itemSearchbar.valueChanges.subscribe(async (change) => {
               this.quotationItemsToShow = JSON.parse(
@@ -430,6 +442,9 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
         if (item.pricing > 0 && item.stock >= 0) item.valid = true;
       });
 
+      this.notASingleItemOnMerchantSaleflow =
+        supplierSpecificItems.length === 0;
+
       Object.keys(itemIdsOnTheSaleflow).forEach((itemId) => {
         if (!itemIdsOnTheSaleflow[itemId]) {
           itemIdsArentOnTheSaleflowArray.push(itemId);
@@ -462,7 +477,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
 
         itemsThatArentOnTheSaleflowArray = itemsThatArentOnTheSaleflow;
 
-        itemsThatArentOnTheSaleflowArray.forEach((item) => {
+        itemsThatArentOnTheSaleflowArray.forEach((item, index) => {
           item.pricing = null;
           item.merchant = null;
           item.stock = null;
@@ -558,59 +573,6 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     );
   };
 
-  async redirectToItemEdition(item: Item, index: number) {
-    const { typeOfProvider } =
-      this.quotationsService.supplierItemsAdjustmentsConfig;
-
-    if (!this.authorized && typeOfProvider === 'REGISTERED_SUPPLIER')
-      return await this.executeAuthRequest();
-
-    this.itemsService.temporalItem = item;
-    this.itemsService.temporalItemInput = {
-      name: item.name,
-      description: item.description,
-      pricing: item.pricing,
-      layout: item.layout,
-      stock: item.stock,
-      notificationStockLimit: item.notificationStockLimit,
-      notificationStockPhoneOrEmail: item.notificationStockPhoneOrEmail,
-    };
-
-    if (!item.pricing || item.stock === null || !item.merchant) {
-      this.quotationsService.supplierItemsAdjustmentsConfig.quotationItemBeingEdited =
-        {
-          inSaleflow: false,
-          indexInQuotations: index,
-          quotationItemInMemory: true,
-        };
-
-      this.router.navigate(['/ecommerce/inventory-creator/'], {
-        queryParams: {
-          existingItem: true,
-          quotationId: this.quotationId,
-          requesterId: this.requester?._id,
-        },
-      });
-    } else {
-      this.quotationsService.supplierItemsAdjustmentsConfig.quotationItemBeingEdited =
-        {
-          id: item._id,
-          inSaleflow: true,
-          indexInQuotations: index,
-          quotationItemInMemory: false,
-        };
-
-      this.router.navigate(['/ecommerce/inventory-creator/' + item._id], {
-        queryParams: {
-          existingItem: true,
-          updateItem: true,
-          quotationId: this.quotationId,
-          requesterId: this.requester?._id,
-        },
-      });
-    }
-  }
-
   goBack() {
     this.quotationsService.supplierItemsAdjustmentsConfig = null;
     if (this.quotationId) {
@@ -635,19 +597,33 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     emailOrPhone: string,
     idsOfCreatedItems: Array<string>,
     itemsToUpdate?: Record<string, ItemInput>,
-    openSuccessDialog: boolean = true
+    openSuccessDialog: boolean = true,
+    merchantInput?: Record<string, any>,
+    redirectionRoute?: string,
+    redirectionRouteQueryParams?: Record<string, any>
   ) {
     const magicLinkParams: any = {
       quotationItems: idsOfCreatedItems.join('-'),
+      fromProviderAdjustments: true,
     };
 
     if (itemsToUpdate) {
       magicLinkParams.itemsToUpdate = itemsToUpdate;
     }
 
+    if (!this.quotationId) {
+      magicLinkParams.itemsForTemporalQuotation = this.quotationItems.map(
+        (item) => item._id
+      );
+    } 
+
+    if (merchantInput) magicLinkParams.merchantInput = merchantInput;
+
+    lockUI();
+
     await this.authService.generateMagicLink(
       emailOrPhone,
-      '/ecommerce/provider-items',
+      `ecommerce/quotation-bids/` + (this.quotationId ? this.quotationId : ''),
       null,
       'MerchantAccess',
       {
@@ -656,14 +632,20 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
       []
     );
 
+    unlockUI();
+
+    if (redirectionRoute)
+      return this.router.navigate([redirectionRoute], {
+        queryParams: redirectionRouteQueryParams,
+      });
+
     if (openSuccessDialog) {
       this.dialogService.open(GeneralFormSubmissionDialogComponent, {
         type: 'centralized-fullscreen',
         props: {
           icon: 'check-circle.svg',
           showCloseButton: false,
-          message:
-            'Se ha enviado un link mágico a tu teléfono o a tu correo electrónico',
+          message: 'Se ha enviado un link mágico a tu correo electrónico',
         },
         customClass: 'app-dialog',
         flags: ['no-header'],
@@ -882,7 +864,11 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
         {
           label:
             '¿Cuál es el precio de venta de' +
-            (item.name ? ' ' + item.name : 'l articulo?'),
+            (item.name
+              ? ' ' +
+                item.name +
+                (item.description ? '(' + item.description + ')?' : '')
+              : 'l articulo?'),
           name: 'price',
           type: 'currency',
           validators: [Validators.pattern(/[\S]/), Validators.min(0)],
@@ -912,7 +898,21 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
 
           unlockUI();
 
-          this.askToTheUserIfHeFinishedAlready(itemInput);
+          const itemIndexInFullList = this.quotationItems.findIndex(
+            (itemInList) => itemInput.parentItem === itemInList._id
+          );
+
+          if (itemIndexInFullList >= 0) {
+            this.quotationItems[itemIndexInFullList].pricing =
+              itemInput.pricing;
+            this.quotationItems[itemIndexInFullList].stock = itemInput.stock;
+            this.quotationItemsToShow = JSON.parse(
+              JSON.stringify(this.quotationItems)
+            );
+            this.atLeastOneHasPriceAdded = true;
+          } else {
+            console.error('item not in the list');
+          }
         } else {
           if (!item.inSaleflow) {
             lockUI();
@@ -953,6 +953,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
               this.quotationItemsToShow = JSON.parse(
                 JSON.stringify(this.quotationItems)
               );
+              this.atLeastOneHasPriceAdded = true;
             } else {
               console.error('item not in the list');
             }
@@ -1006,6 +1007,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
       notificationStock: true,
       notificationStockLimit: item.notificationStockLimit,
       useStock: true,
+      type: 'supplier',
     };
 
     if (this.merchantsService.merchantData) {
@@ -1054,6 +1056,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     return itemInput;
   };
 
+  /*
   askToTheUserIfHeFinishedAlready = async (itemInput: ItemInput) => {
     let dialogData: DialogData = {
       styles: {
@@ -1105,10 +1108,10 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
         dialogRef.close();
       }
     });
-  };
+  };*/
 
-  async openMagicLinkDialog(itemInput: ItemInput) {
-    let fieldsToCreate: FormData = {
+  async openMagicLinkDialog() {
+    let fieldsToCreateInEmailDialog: FormData = {
       title: {
         text: 'Acceso al Club:',
       },
@@ -1116,123 +1119,411 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
         accept: 'Recibir el enlace con acceso',
         cancel: 'Cancelar',
       },
+      containerStyles: {
+        padding: '35px 23px 38px 18px',
+      },
+      hideBottomButtons: true,
       fields: [
         {
           name: 'magicLinkEmailOrPhone',
           type: 'email',
           placeholder: 'Escribe el correo electrónico..',
-          validators: [Validators.pattern(/[\S]/)],
-          bottomButton: {
-            text: 'Adiciona la clave',
-            callback: () => addPassword(),
+          validators: [Validators.pattern(/[\S]/), Validators.required],
+          inputStyles: {
+            padding: '11px 1px',
+          },
+          styles: {
+            gap: '0px',
+          },
+          bottomTexts: [
+            {
+              text: 'Este correo también sirve para accesar al Club y aprovechar todas las herramientas que se están creando.',
+              styles: {
+                color: '#FFF',
+                fontFamily: 'InterLight',
+                fontSize: '19px',
+                fontStyle: 'normal',
+                fontWeight: '300',
+                lineHeight: 'normal',
+                marginBottom: '28px',
+                marginTop: '36px',
+              },
+            },
+            {
+              text: 'La promesa del Club es desarrollar funcionalidades que necesites.',
+              styles: {
+                color: '#FFF',
+                fontFamily: 'InterLight',
+                fontSize: '19px',
+                fontStyle: 'normal',
+                fontWeight: '300',
+                lineHeight: 'normal',
+                margin: '0px',
+                padding: '0px',
+              },
+            },
+          ],
+          submitButton: {
+            text: '>',
+            styles: {
+              borderRadius: '8px',
+              background: '#87CD9B',
+              padding: '6px 15px',
+              color: '#181D17',
+              textAlign: 'center',
+              fontFamily: 'InterBold',
+              fontSize: '17px',
+              fontStyle: 'normal',
+              fontWeight: '700',
+              lineHeight: 'normal',
+              position: 'absolute',
+              right: '1px',
+              top: '8px',
+            },
           },
         },
       ],
     };
 
-    const dialogRef = this.matDialog.open(FormComponent, {
-      data: fieldsToCreate,
+    const emailDialogRef = this.matDialog.open(FormComponent, {
+      data: fieldsToCreateInEmailDialog,
       disableClose: true,
     });
 
-    dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+    emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
       if (result?.controls?.magicLinkEmailOrPhone.valid) {
-        let emailOrPhone = result?.value['magicLinkEmailOrPhone'];
-
-        lockUI();
-
+        const emailOrPhone = result?.value['magicLinkEmailOrPhone'];
         const myUser = await this.authService.checkUser(emailOrPhone);
-        const merchantDefaullt = myUser
-          ? await this.merchantsService.merchantDefault(myUser._id)
-          : null;
+        const myMerchant = !myUser
+          ? null
+          : await this.merchantsService.merchantDefault(myUser._id);
 
-        const itemsThatArentOnSupplierSaleflow = this.quotationItems.filter(
-          (item) => !item.inSaleflow && item.pricing !== null
-        );
+        let optionsDialogTemplate: OptionsDialogTemplate = null;
 
-        if (!myUser && !merchantDefaullt) {
-          const idsOfCreatedItems: Array<string> = [];
+        if (!myUser) {
+          optionsDialogTemplate = {
+            title:
+              'Notamos que es la primera vez que intentas acceder con este correo, prefieres:',
+            options: [
+              {
+                value:
+                  'Empezar mi Membresía al Club con este correo electrónico',
+                callback: async () => {
+                  let fieldsToCreateInMerchantRegistrationDialog: FormData = {
+                    buttonsTexts: {
+                      accept: 'Confirmar mi correo',
+                      cancel: 'Cancelar',
+                    },
+                    containerStyles: {
+                      padding: '39.74px 17px 47px 24px',
+                    },
+                    fields: [
+                      {
+                        label: 'Nombre Comercial que verán tus compradores:',
+                        name: 'merchantName',
+                        type: 'text',
+                        placeholder: 'Escribe el nombre comercial',
+                        validators: [
+                          Validators.pattern(/[\S]/),
+                          Validators.required,
+                        ],
+                        inputStyles: {
+                          padding: '11px 1px',
+                        },
+                      },
+                      {
+                        label:
+                          'WhatsApp que recibirá las facturas que te mandarán los compradores:',
+                        name: 'merchantPhone',
+                        type: 'phone',
+                        placeholder: 'Escribe el nombre comercial',
+                        validators: [
+                          Validators.pattern(/[\S]/),
+                          Validators.required,
+                        ],
+                        inputStyles: {
+                          padding: '11px 1px',
+                        },
+                      },
+                    ],
+                  };
 
-          const inputArray: Array<ItemInput> = [];
+                  const merchantRegistrationDialogRef = this.matDialog.open(
+                    FormComponent,
+                    {
+                      data: fieldsToCreateInMerchantRegistrationDialog,
+                      disableClose: true,
+                    }
+                  );
 
-          for await (const item of itemsThatArentOnSupplierSaleflow) {
-            const itemSlides: Array<any> = item.images
-              .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
-              .map(({ index, ...image }) => {
-                return {
-                  url: completeImageURL(image.value),
-                  index,
-                  type: 'poster',
-                  text: '',
-                  _id: image._id,
-                };
-              });
+                  merchantRegistrationDialogRef
+                    .afterClosed()
+                    .subscribe(async (result: FormGroup) => {
+                      if (
+                        result?.controls?.merchantName.valid &&
+                        result?.controls?.merchantPhone.valid
+                      ) {
+                        const merchantInput: Record<string, any> = {
+                          name: result?.value['merchantName'],
+                          phone: result?.value['merchantPhone'],
+                        };
 
-            let images: ItemImageInput[] = await Promise.all(
-              itemSlides.map(async (slide: SlideInput, index: number) => {
-                return {
-                  file: await urltoFile(slide.url, 'file' + index, null, true),
-                  index,
-                  active: true,
-                };
-              })
-            );
+                        lockUI();
+                        const itemsThatArentOnSupplierSaleflow =
+                          this.quotationItems.filter(
+                            (item) => !item.inSaleflow && item.pricing !== null
+                          );
+                        const idsOfCreatedItems: Array<string> = [];
 
-            const input: ItemInput = {
-              name: item.name,
-              description: item.description,
-              pricing: item.pricing,
-              stock: item.stock,
-              useStock: true,
-              notificationStock: true,
-              notificationStockLimit: item.notificationStockLimit,
-              notificationStockPhoneOrEmail: item.notificationStockPhoneOrEmail,
-              images: images,
-              merchant: this.supplierMerchantId,
-              content: [],
-              currencies: [],
-              hasExtraPrice: false,
-              parentItem: item._id,
-              purchaseLocations: [],
-              showImages: images.length > 0,
-              type: 'supplier',
-            };
+                        const inputArray: Array<ItemInput> = [];
 
-            inputArray.push(input);
-          }
+                        for await (const item of itemsThatArentOnSupplierSaleflow) {
+                          const itemSlides: Array<any> = item.images
+                            .sort(({ index: a }, { index: b }) =>
+                              a > b ? 1 : -1
+                            )
+                            .map(({ index, ...image }) => {
+                              return {
+                                url: completeImageURL(image.value),
+                                index,
+                                type: 'poster',
+                                text: '',
+                                _id: image._id,
+                              };
+                            });
 
-          for await (const itemInput of inputArray) {
-            //console.log('itemInput', itemInput);
+                          let images: ItemImageInput[] = await Promise.all(
+                            itemSlides.map(
+                              async (slide: SlideInput, index: number) => {
+                                return {
+                                  file: await urltoFile(
+                                    slide.url,
+                                    'file' + index,
+                                    null,
+                                    true
+                                  ),
+                                  index,
+                                  active: true,
+                                };
+                              }
+                            )
+                          );
 
-            const createdItem = (
-              await this.itemsService.createPreItem(itemInput)
-            )?.createPreItem;
+                          const input: ItemInput = {
+                            name: item.name,
+                            description: item.description,
+                            pricing: item.pricing,
+                            stock: item.stock,
+                            useStock: true,
+                            notificationStock: true,
+                            notificationStockLimit: item.notificationStockLimit,
+                            notificationStockPhoneOrEmail:
+                              item.notificationStockPhoneOrEmail,
+                            images: images,
+                            merchant: this.supplierMerchantId,
+                            content: [],
+                            currencies: [],
+                            hasExtraPrice: false,
+                            parentItem: item._id,
+                            purchaseLocations: [],
+                            showImages: images.length > 0,
+                            type: 'supplier',
+                          };
 
-            idsOfCreatedItems.push(createdItem._id);
-          }
+                          inputArray.push(input);
+                        }
 
-          await this.generateMagicLinkFor(
-            emailOrPhone,
-            idsOfCreatedItems,
-            null,
-            true
-          );
-          unlockUI();
+                        for await (const itemInput of inputArray) {
+                          //console.log('itemInput', itemInput);
+
+                          const createdItem = (
+                            await this.itemsService.createPreItem(itemInput)
+                          )?.createPreItem;
+
+                          idsOfCreatedItems.push(createdItem._id);
+                        }
+
+                        await this.generateMagicLinkFor(
+                          emailOrPhone,
+                          idsOfCreatedItems,
+                          null,
+                          true,
+                          merchantInput,
+                          '/ecommerce/confirm-club-registration',
+                          {
+                            merchantName: merchantInput.name,
+                          }
+                        );
+                        unlockUI();
+                      }
+                    });
+                },
+              },
+              {
+                value: 'Intentar con otro correo electrónico.',
+                callback: async () => {
+                  return this.openMagicLinkDialog();
+                },
+              },
+              {
+                value:
+                  'Algo anda mal porque no es la primera vez que trato de acceder con este correo',
+                callback: async () => {
+                  this.sendWhatsappToAppOwner(emailOrPhone);
+                },
+              },
+            ],
+          };
         } else {
-          const { createdItems, itemsToUpdate } =
-            await this.determineWhichItemsNeedToBeUpdatedAndWhichNeedToBeCreated(
-              merchantDefaullt,
-              itemsThatArentOnSupplierSaleflow
-            );
+          optionsDialogTemplate = {
+            title:
+              'Bienvenido de vuelta ' +
+              (myMerchant
+                ? myMerchant.name
+                : myUser.name || myUser.email || myUser.phone) +
+              ', prefieres:',
+            options: [
+              {
+                value: 'Prefiero acceder con la clave',
+                callback: () => {
+                  addPassword(emailOrPhone);
+                },
+              },
+              {
+                value: 'Prefiero recibir el enlace de acceso en mi correo',
+                callback: async () => {
+                  if (result?.controls?.magicLinkEmailOrPhone.valid) {
+                    let emailOrPhone = result?.value['magicLinkEmailOrPhone'];
 
-          await this.generateMagicLinkFor(
-            emailOrPhone,
-            createdItems,
-            itemsToUpdate,
-            true
-          );
-          unlockUI();
+                    lockUI();
+
+                    const merchantDefaullt = myUser
+                      ? await this.merchantsService.merchantDefault(myUser._id)
+                      : null;
+
+                    const itemsThatArentOnSupplierSaleflow =
+                      this.quotationItems.filter(
+                        (item) => !item.inSaleflow && item.pricing !== null
+                      );
+
+                    if (!myUser && !merchantDefaullt) {
+                      const idsOfCreatedItems: Array<string> = [];
+
+                      const inputArray: Array<ItemInput> = [];
+
+                      for await (const item of itemsThatArentOnSupplierSaleflow) {
+                        const itemSlides: Array<any> = item.images
+                          .sort(({ index: a }, { index: b }) =>
+                            a > b ? 1 : -1
+                          )
+                          .map(({ index, ...image }) => {
+                            return {
+                              url: completeImageURL(image.value),
+                              index,
+                              type: 'poster',
+                              text: '',
+                              _id: image._id,
+                            };
+                          });
+
+                        let images: ItemImageInput[] = await Promise.all(
+                          itemSlides.map(
+                            async (slide: SlideInput, index: number) => {
+                              return {
+                                file: await urltoFile(
+                                  slide.url,
+                                  'file' + index,
+                                  null,
+                                  true
+                                ),
+                                index,
+                                active: true,
+                              };
+                            }
+                          )
+                        );
+
+                        const input: ItemInput = {
+                          name: item.name,
+                          description: item.description,
+                          pricing: item.pricing,
+                          stock: item.stock,
+                          useStock: true,
+                          notificationStock: true,
+                          notificationStockLimit: item.notificationStockLimit,
+                          notificationStockPhoneOrEmail:
+                            item.notificationStockPhoneOrEmail,
+                          images: images,
+                          merchant: this.supplierMerchantId,
+                          content: [],
+                          currencies: [],
+                          hasExtraPrice: false,
+                          parentItem: item._id,
+                          purchaseLocations: [],
+                          showImages: images.length > 0,
+                          type: 'supplier',
+                        };
+
+                        inputArray.push(input);
+                      }
+
+                      for await (const itemInput of inputArray) {
+                        //console.log('itemInput', itemInput);
+
+                        const createdItem = (
+                          await this.itemsService.createPreItem(itemInput)
+                        )?.createPreItem;
+
+                        idsOfCreatedItems.push(createdItem._id);
+                      }
+
+                      await this.generateMagicLinkFor(
+                        emailOrPhone,
+                        idsOfCreatedItems,
+                        null,
+                        true
+                      );
+                      unlockUI();
+                    } else {
+                      const { createdItems, itemsToUpdate } =
+                        await this.determineWhichItemsNeedToBeUpdatedAndWhichNeedToBeCreated(
+                          merchantDefaullt,
+                          itemsThatArentOnSupplierSaleflow
+                        );
+
+                      await this.generateMagicLinkFor(
+                        emailOrPhone,
+                        createdItems,
+                        itemsToUpdate,
+                        true
+                      );
+                      unlockUI();
+                    }
+                  } else if (
+                    result?.controls?.magicLinkEmailOrPhone.valid === false
+                  ) {
+                    unlockUI();
+                    this.snackbar.open('Datos invalidos', 'Cerrar', {
+                      duration: 3000,
+                    });
+                  }
+                },
+              },
+              {
+                value:
+                  'Algo anda mal porque no es la primera vez que trato de acceder con este correo',
+                callback: async () => {
+                  this.sendWhatsappToAppOwner(emailOrPhone);
+                },
+              },
+            ],
+          };
         }
+
+        this.matDialog.open(OptionsDialogComponent, {
+          data: optionsDialogTemplate,
+          disableClose: true,
+        });
       } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
         unlockUI();
         this.snackbar.open('Datos invalidos', 'Cerrar', {
@@ -1241,24 +1532,18 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
       }
     });
 
-    const addPassword = async () => {
-      dialogRef.close();
+    const addPassword = async (emailOrPhone: string) => {
+      emailDialogRef.close();
 
       let fieldsToCreate: FormData = {
         title: {
-          text: 'Acceso al Club:',
+          text: 'Clave de Acceso:',
         },
         buttonsTexts: {
           accept: 'Accesar al Club',
           cancel: 'Cancelar',
         },
         fields: [
-          {
-            name: 'email',
-            type: 'email',
-            placeholder: 'Escribe el correo electrónico..',
-            validators: [Validators.pattern(/[\S]/)],
-          },
           {
             name: 'password',
             type: 'password',
@@ -1283,11 +1568,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
 
       dialog2Ref.afterClosed().subscribe(async (result: FormGroup) => {
         try {
-          if (
-            result?.controls?.email.valid &&
-            result?.controls?.password.valid
-          ) {
-            let emailOrPhone = result?.value['email'];
+          if (result?.controls?.password.valid) {
             let password = result?.value['password'];
 
             lockUI();
@@ -1298,6 +1579,8 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
               true
             );
 
+            if (!session) throw new Error('invalid credentials');
+
             const { merchantDefault } =
               await this.getDefaultMerchantAndSaleflows(session.user);
 
@@ -1305,7 +1588,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
               (item) => !item.inSaleflow && item.pricing !== null
             );
 
-            const { createdItems, itemsToUpdate } =
+            const { itemsToUpdate } =
               await this.determineWhichItemsNeedToBeUpdatedAndWhichNeedToBeCreated(
                 merchantDefault,
                 itemsThatArentOnSupplierSaleflow,
@@ -1321,13 +1604,16 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
             }
 
             this.router.navigate(['/ecommerce/provider-items']);
-          } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
+
+            unlockUI();
+          } else if (result?.controls?.password.valid === false) {
             unlockUI();
             this.snackbar.open('Datos invalidos', 'Cerrar', {
               duration: 3000,
             });
           }
         } catch (error) {
+          unlockUI();
           console.error(error);
           this.headerService.showErrorToast();
         }
@@ -1335,9 +1621,21 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
 
       const switchToMagicLinkDialog = () => {
         dialog2Ref.close();
-        return this.openMagicLinkDialog(itemInput);
+        return this.openMagicLinkDialog();
       };
     };
+  }
+
+  sendWhatsappToAppOwner(emailOrPhone: string) {
+    let message =
+      `Algo anda mal porque es la primera vez que trato de acceder con este correo: ` +
+      emailOrPhone;
+
+    const whatsappLink = `https://api.whatsapp.com/send?phone=19188156444&text=${encodeURIComponent(
+      message
+    )}`;
+
+    window.location.href = whatsappLink;
   }
 
   async editPrice(item: Item, itemIndex: number) {
@@ -1405,7 +1703,8 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
 
     if (
       !this.itemsTutorialCardsOpened['price'] &&
-      !this.itemsTutorialCardsOpened['stock']
+      !this.itemsTutorialCardsOpened['welcome'] &&
+      !this.itemsTutorialCardsOpened['membership']
     ) {
       this.tutorialOpened = false;
 

@@ -30,6 +30,10 @@ import {
   FormData,
 } from 'src/app/shared/dialogs/form/form.component';
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
+import {
+  OptionsDialogComponent,
+  OptionsDialogTemplate,
+} from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -40,6 +44,7 @@ import { environment } from 'src/environments/environment';
 export class ProviderItemsComponent implements OnInit {
   drawerOpened: boolean = false;
   assetsFolder: string = environment.assetsUrl;
+  presentationOpened: boolean = false;
 
   //Searchbar variables
   searchOpened: boolean = false;
@@ -138,10 +143,9 @@ export class ProviderItemsComponent implements OnInit {
         if (this.encodedJSONData) {
           this.parseMagicLinkData();
         }
-
         await this.getItemsISell();
 
-        this.openTutorials();
+        this.checkIfPresentationWasClosedBefore();
 
         await this.getNewPageOfItemsIDontSell(true, false);
 
@@ -170,16 +174,34 @@ export class ProviderItemsComponent implements OnInit {
     }
   }
 
+  checkIfPresentationWasClosedBefore = () => {
+    let providersPresentationClosed = localStorage.getItem(
+      'providersPresentationClosed'
+    );
+    providersPresentationClosed = providersPresentationClosed
+      ? JSON.parse(providersPresentationClosed)
+      : false;
+
+    if (!providersPresentationClosed && !this.headerService.user) {
+      this.presentationOpened = true;
+    } else {
+      this.openTutorials();
+    }
+  };
+
   openTutorials = () => {
+    this.presentationOpened = false;
+    localStorage.setItem('providersPresentationClosed', 'true');
+
     if (this.itemsISell.length === 0) {
       this.itemsTutorialOpened = true;
-    } else if (
+    } /* else if (
       this.headerService.user &&
       this.merchantsService.merchantData &&
       this.itemsISell.length > 0
     ) {
       this.searchTutorialsOpened = true;
-    }
+    }*/
   };
 
   activateOrDeactivateFilters(filterKey: string) {
@@ -658,7 +680,11 @@ export class ProviderItemsComponent implements OnInit {
         {
           label:
             '¿Cuál es el precio de venta de' +
-            (item.name ? ' ' + item.name : 'l articulo?'),
+            (item.name
+              ? ' ' +
+                item.name +
+                (item.description ? '(' + item.description + ')?' : '')
+              : 'l articulo?'),
           name: 'price',
           type: 'currency',
           validators: [Validators.pattern(/[\S]/), Validators.min(0)],
@@ -836,6 +862,7 @@ export class ProviderItemsComponent implements OnInit {
       notificationStock: true,
       notificationStockLimit: item.notificationStockLimit,
       useStock: true,
+      type: 'supplier',
     };
 
     if (this.merchantsService.merchantData) {
@@ -885,7 +912,7 @@ export class ProviderItemsComponent implements OnInit {
   };
 
   async openMagicLinkDialog(itemInput: ItemInput) {
-    let fieldsToCreate: FormData = {
+    let fieldsToCreateInEmailDialog: FormData = {
       title: {
         text: 'Acceso al Club:',
       },
@@ -893,101 +920,144 @@ export class ProviderItemsComponent implements OnInit {
         accept: 'Recibir el enlace con acceso',
         cancel: 'Cancelar',
       },
+      containerStyles: {
+        padding: '35px 23px 38px 18px',
+      },
+      hideBottomButtons: true,
       fields: [
         {
           name: 'magicLinkEmailOrPhone',
           type: 'email',
           placeholder: 'Escribe el correo electrónico..',
-          validators: [Validators.pattern(/[\S]/)],
-          bottomButton: {
-            text: 'Adiciona la clave',
-            callback: () => addPassword(),
+          validators: [Validators.pattern(/[\S]/), Validators.required],
+          inputStyles: {
+            padding: '11px 1px',
+          },
+          submitButton: {
+            text: '>',
+            styles: {
+              borderRadius: '8px',
+              background: '#87CD9B',
+              padding: '6px 15px',
+              color: '#181D17',
+              textAlign: 'center',
+              fontFamily: 'InterBold',
+              fontSize: '17px',
+              fontStyle: 'normal',
+              fontWeight: '700',
+              lineHeight: 'normal',
+              position: 'absolute',
+              right: '1px',
+              top: '8px',
+            },
           },
         },
       ],
     };
 
-    const dialogRef = this.dialog.open(FormComponent, {
-      data: fieldsToCreate,
+    const emailDialogRef = this.dialog.open(FormComponent, {
+      data: fieldsToCreateInEmailDialog,
       disableClose: true,
     });
 
-    dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+    emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
       if (result?.controls?.magicLinkEmailOrPhone.valid) {
-        let emailOrPhone = result?.value['magicLinkEmailOrPhone'];
+        const emailOrPhone = result?.value['magicLinkEmailOrPhone'];
 
-        const myUser = await this.authService.checkUser(emailOrPhone);
-        const merchantDefault = myUser
-          ? await this.merchantsService.merchantDefault(myUser._id)
-          : null;
+        let optionsDialogTemplate: OptionsDialogTemplate = {
+          options: [
+            {
+              value: 'Accederé con la clave',
+              callback: async () => {
+                await addPassword(emailOrPhone);
+              },
+            },
+            {
+              value: 'Prefiero recibir el enlace de acceso en mi correo',
+              callback: async () => {
+                const myUser = await this.authService.checkUser(emailOrPhone);
+                const merchantDefault = myUser
+                  ? await this.merchantsService.merchantDefault(myUser._id)
+                  : null;
 
-        let toBeDone: {
-          operation: 'UPDATE' | 'CREATE';
-          itemId?: string;
-        } = {
-          operation: 'CREATE',
+                let toBeDone: {
+                  operation: 'UPDATE' | 'CREATE';
+                  itemId?: string;
+                } = {
+                  operation: 'CREATE',
+                };
+
+                if (merchantDefault) {
+                  toBeDone =
+                    await this.determineIfItemNeedsToBeUpdatedOrCreated(
+                      merchantDefault,
+                      itemInput.parentItem
+                    );
+                }
+
+                lockUI();
+
+                if (toBeDone.operation === 'CREATE') {
+                  const createdItem = (
+                    await this.itemsService.createPreItem(itemInput)
+                  )?.createPreItem;
+
+                  let redirectionRoute = '/ecommerce/provider-items';
+
+                  await this.authService.generateMagicLink(
+                    emailOrPhone,
+                    redirectionRoute,
+                    null,
+                    'MerchantAccess',
+                    {
+                      jsondata: JSON.stringify({
+                        createdItem: createdItem._id,
+                      }),
+                    },
+                    []
+                  );
+                } else if (toBeDone.operation === 'UPDATE') {
+                  let redirectionRoute = '/ecommerce/provider-items';
+
+                  await this.authService.generateMagicLink(
+                    emailOrPhone,
+                    redirectionRoute,
+                    null,
+                    'MerchantAccess',
+                    {
+                      jsondata: JSON.stringify({
+                        updateItem: {
+                          _id: toBeDone.itemId,
+                          stock: itemInput.stock,
+                          pricing: itemInput.pricing,
+                        },
+                      }),
+                    },
+                    []
+                  );
+                }
+
+                unlockUI();
+
+                this.dialogService.open(GeneralFormSubmissionDialogComponent, {
+                  type: 'centralized-fullscreen',
+                  props: {
+                    icon: 'check-circle.svg',
+                    showCloseButton: false,
+                    message:
+                      'Se ha enviado un link mágico a tu correo electrónico',
+                  },
+                  customClass: 'app-dialog',
+                  flags: ['no-header'],
+                });
+              },
+            },
+          ],
         };
 
-        if (merchantDefault) {
-          toBeDone = await this.determineIfItemNeedsToBeUpdatedOrCreated(
-            merchantDefault,
-            itemInput.parentItem
-          );
-        }
-
-        lockUI();
-
-        if (toBeDone.operation === 'CREATE') {
-          const createdItem = (await this.itemsService.createPreItem(itemInput))
-            ?.createPreItem;
-
-          let redirectionRoute = '/ecommerce/provider-items';
-
-          await this.authService.generateMagicLink(
-            emailOrPhone,
-            redirectionRoute,
-            null,
-            'MerchantAccess',
-            {
-              jsondata: JSON.stringify({
-                createdItem: createdItem._id,
-              }),
-            },
-            []
-          );
-        } else if (toBeDone.operation === 'UPDATE') {
-          let redirectionRoute = '/ecommerce/provider-items';
-
-          await this.authService.generateMagicLink(
-            emailOrPhone,
-            redirectionRoute,
-            null,
-            'MerchantAccess',
-            {
-              jsondata: JSON.stringify({
-                updateItem: {
-                  _id: toBeDone.itemId,
-                  stock: itemInput.stock,
-                  pricing: itemInput.pricing,
-                },
-              }),
-            },
-            []
-          );
-        }
-
-        unlockUI();
-
-        this.dialogService.open(GeneralFormSubmissionDialogComponent, {
-          type: 'centralized-fullscreen',
-          props: {
-            icon: 'check-circle.svg',
-            showCloseButton: false,
-            message:
-              'Se ha enviado un link mágico a tu teléfono o a tu correo electrónico',
-          },
-          customClass: 'app-dialog',
-          flags: ['no-header'],
+        this.dialog.open(OptionsDialogComponent, {
+          data: optionsDialogTemplate,
+          disableClose: true,
         });
       } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
         unlockUI();
@@ -997,24 +1067,18 @@ export class ProviderItemsComponent implements OnInit {
       }
     });
 
-    const addPassword = async () => {
-      dialogRef.close();
+    const addPassword = async (emailOrPhone: string) => {
+      emailDialogRef.close();
 
       let fieldsToCreate: FormData = {
         title: {
-          text: 'Acceso al Club:',
+          text: 'Clave de Acceso:',
         },
         buttonsTexts: {
           accept: 'Accesar al Club',
           cancel: 'Cancelar',
         },
         fields: [
-          {
-            name: 'email',
-            type: 'email',
-            placeholder: 'Escribe el correo electrónico..',
-            validators: [Validators.pattern(/[\S]/)],
-          },
           {
             name: 'password',
             type: 'password',
@@ -1039,11 +1103,7 @@ export class ProviderItemsComponent implements OnInit {
 
       dialog2Ref.afterClosed().subscribe(async (result: FormGroup) => {
         try {
-          if (
-            result?.controls?.email.valid &&
-            result?.controls?.password.valid
-          ) {
-            let emailOrPhone = result?.value['email'];
+          if (result?.controls?.password.valid) {
             let password = result?.value['password'];
 
             lockUI();
@@ -1053,6 +1113,8 @@ export class ProviderItemsComponent implements OnInit {
               password,
               true
             );
+
+            if (!session) throw new Error('invalid credentials');
 
             const { merchantDefault, saleflowDefault } =
               await this.getDefaultMerchantAndSaleflows(session.user);
@@ -1073,25 +1135,14 @@ export class ProviderItemsComponent implements OnInit {
               environment.uri + '/ecommerce/provider-items';
 
             unlockUI();
-
-            this.dialogService.open(GeneralFormSubmissionDialogComponent, {
-              type: 'centralized-fullscreen',
-              props: {
-                icon: 'check-circle.svg',
-                showCloseButton: false,
-                message:
-                  'Se ha enviado un link mágico a tu teléfono o a tu correo electrónico',
-              },
-              customClass: 'app-dialog',
-              flags: ['no-header'],
-            });
-          } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
+          } else if (result?.controls?.password.valid === false) {
             unlockUI();
             this.snackbar.open('Datos invalidos', 'Cerrar', {
               duration: 3000,
             });
           }
         } catch (error) {
+          unlockUI();
           console.error(error);
           this.headerService.showErrorToast();
         }
@@ -1119,10 +1170,7 @@ export class ProviderItemsComponent implements OnInit {
   closeItemsTutorial = (cardName: string) => {
     this.itemsTutorialCardsOpened[cardName] = false;
 
-    if (
-      !this.itemsTutorialCardsOpened['price'] &&
-      !this.itemsTutorialCardsOpened['stock']
-    ) {
+    if (!this.itemsTutorialCardsOpened['price']) {
       this.itemsTutorialOpened = false;
     }
   };
@@ -1197,5 +1245,15 @@ export class ProviderItemsComponent implements OnInit {
       merchantDefault: userMerchantDefault,
       saleflowDefault: userSaleflowDefault,
     };
+  }
+
+  sendWhatsappToAppOwner() {
+    let message = `Hola, quiero agregar un artículo como proveedor de www.floristerias.club`;
+
+    const whatsappLink = `https://api.whatsapp.com/send?phone=19188156444&text=${encodeURIComponent(
+      message
+    )}`;
+
+    window.location.href = whatsappLink;
   }
 }

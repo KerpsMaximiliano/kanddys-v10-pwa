@@ -56,6 +56,8 @@ export class StoreComponent implements OnInit {
     selected: boolean;
   }> = [];
 
+  mode: 'standard' | 'supplier' = 'standard';
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -71,7 +73,7 @@ export class StoreComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     setTimeout(() => {
       this.route.queryParams.subscribe(async (queryParams) => {
-        let { startOnSnapshot, adminView } = queryParams;
+        let { startOnSnapshot, adminView, mode } = queryParams;
         startOnSnapshot = Boolean(startOnSnapshot);
         localStorage.removeItem('flowRoute');
         localStorage.removeItem('selectedTemporalQuotation');
@@ -80,6 +82,17 @@ export class StoreComponent implements OnInit {
         this.headerService.flowRoute = null;
 
         if (adminView) this.adminView = true;
+        if (mode) {
+          this.mode = mode;
+          if (mode === 'supplier') {
+            this.saleflowService.notifyTrigger({
+              triggerID: 'supplier',
+              data: {
+                type: 'supplier'
+              }
+            })
+          }
+        }
 
         if (
           !this.headerService.storeTemporalData &&
