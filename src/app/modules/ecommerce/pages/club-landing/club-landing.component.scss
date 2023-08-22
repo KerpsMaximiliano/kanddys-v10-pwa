@@ -61,16 +61,31 @@
     margin: 0;
     text-align: right;
     color: #c4c5c3;
-    padding: 0px;
+    padding-right: 10px;
 
     span {
-      font-size: 24px;
-      font-family: InterLight;
-      color: #c4c5c3;
+      font-size: 21px;
+      font-family: InterRegular;
+      color: #87CD9B;
 
       &::hover {
         cursor: pointer;
       }
+    }
+  }
+}
+
+.close-content {
+  height: 50px;
+  background-color: #7B7B7B;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  span {
+    color: #181D17;
+    font-size: 24px;
+    &::hover {
+      cursor: pointer;
     }
   }
 }
@@ -272,7 +287,33 @@ footer {
 }
 
 .tabs-container {
-  margin-bottom: 4em;
+  margin-bottom: 32px;
+  .title {
+    color: #C4C5C3;
+    margin-top: 30px;
+    margin-left: 11.72px;
+    font-size: 16px;
+  }
+  .tab-question {
+    font-size: 19px;
+    color: white;
+    font-weight: 600;
+    font-family: InterRegular;
+    margin: 17px 14px;
+  }
+  .tab-content {
+    margin-left: 14px;
+  }
+  .tab-content-item {
+    font-size: 17px;
+    font-family: InterRegular;
+    padding-left: 12px;
+    padding-right: 12px;
+    line-height: normal;
+    color: white;
+    margin-bottom: 12px;
+    border-left: 2px solid #87CD9B;
+  }
 }
 
 .tabs {

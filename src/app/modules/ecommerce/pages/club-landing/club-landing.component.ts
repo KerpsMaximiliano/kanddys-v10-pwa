@@ -6,6 +6,7 @@ import { NgNavigatorShareService } from 'ng-navigator-share';
 import { Location } from '@angular/common';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
+import { ClubDialogComponent } from 'src/app/shared/dialogs/club-dialog/club-dialog.component';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
@@ -52,6 +53,58 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   openNavigation: boolean = false;
   queryParamsSubscription: Subscription = null;
   routerParamsSubscription: Subscription = null;
+
+  isFlag = false;
+  tabIndex = 0;
+  userID = ""
+
+  tabContents = {
+    tab1: [
+      "💰 Adicionar mi primer artículo para venderlo online y por WhatsApp",
+      "🛟 Cotizar fácilmente con los Proveedores",
+      "🧞 Saber de las “Ofertas Flash” de los Proveedores",
+      "📢 Más alcance pagándoles comisiones a quienes venden por mi",
+      "🎁 Más alcance premiando a quienes me mencionan en sus cuentas sociales ",
+      "✨ Recompensar a mis clientes según lo que facturaron",
+      "✋ Saber la opinión de mis clientes después que recibieron lo que compraron ",
+      "Preparar un 🛒 con algunas cosas que vendo para cotizar o facturar (NCF es opcional)",
+      "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
+      "Volver a ver la opiniones de los Miembros del Club"
+    ],
+    tab2: [
+      "💰 Empezar a cotizar online y vender automáticamante",
+      "🧞 Adicionar artículos que vendo en el boletín con de “Ofertas Flash” que reciben los miembros",
+      "📢 Más alcance pagándoles comisiones a quienes venden por mi",
+      "🎁 Más alcance premiando a quienes me mencionan en sus cuentas sociales ",
+      "✨ Recompensar a mis clientes según lo que facturaron",
+      "✋ Saber la opinión de mis clientes después que recibieron lo que compraron ",
+      "Preparar un 🛒 con algunas cosas que vendo para cotizar o facturar (NCF es opcional)",
+      "Déjanos saber lo que mas te gusta de las herramientas o lo que necesitas"
+    ],
+    tab3: [
+      " 💰 Gestionar lo que vendo, ver mis beneficios, compartir mi tienda",
+      "📦 Organización de lo vendido,  notificar a mis clientes del status de lo que facturaron ",
+      "🛟 Cotizaciones que comparan los precios de los Proveedores antes de comprarles ",
+      " 📢 Gestionar las comisiones de quienes venden por mi",
+      "✨ Gestionar los premios y las recompensas de mis clientes",
+      "📢 Gestionar los premios de quienes me mencionan en sus cuentas sociales",
+      "✋ Ver las opiniones de mis compradores ",
+      "Gestionar los  🛒 cpara mandar cotizaciones o facturas a mis clientes (NCF es opcional)",
+      "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
+      "Déjanos saber lo que mas te gusta de las herramientas o lo que necesitas"
+    ],
+    tab4: [
+      " 💰 Gestionar y compartir lo que vendo, ver mis beneficios",
+      "📦 Organización de lo vendido,  notificar a mis clientes del status de lo que facturaron ",
+      "🧞 Adicionar artículos que vendo en el boletín con de “Ofertas Flash” que reciben los miembros",
+      " 📢 Gestionar las comisiones de quienes venden por mi",
+      "✨ Gestionar los premios y las recompensas de mis clientes",
+      "📢 Gestionar los premios de quienes me mencionan en sus cuentas sociales",
+      "✋ Ver las opiniones de mis compradores ",
+      "Gestionar los  🛒 con cotizaciones que he hecho, crear facturas y mandar cotizaciones",
+      "Déjanos saber lo que mas te gusta de las herramientas o lo que necesitas"
+    ]
+  }
 
   tabs: Array<Tabs> = [
     {
@@ -189,20 +242,47 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     private router: Router
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.queryParamsSubscription = this.route.queryParams.subscribe(
       async ({ jsondata }) => {
         if (jsondata) {
           const { openNavigation } = JSON.parse(decodeURIComponent(jsondata));
-          this.openNavigation = JSON.parse(openNavigation || 'false');
+          this.openNavigation = JSON.parse(openNavigation || false);
         }
       }
     );
+    lockUI()
+    const me = await this.authService.me()
+    this.userID = me.name || me.email || me.phone;
+    unlockUI()
   }
 
   close() {
     // if (this.headerService.user) this.location.back();
     if (this.headerService.user) this.openNavigation = true;
+  }
+
+  openDialog() {
+    this.bottomSheet.open(ClubDialogComponent, {
+      data: {
+        title: "SELECCION DE HERRAMIENTAS",
+        styles: {
+          fullScreen: true,
+        },
+        tabIndex: this.tabIndex
+      },
+    });
+  }
+
+  filterData () {
+    if (this.isFlag) {
+      if (this.tabIndex) return this.tabContents.tab2
+      else return this.tabContents.tab1
+    }
+    else {
+      if (this.tabIndex) return this.tabContents.tab4
+      else return this.tabContents.tab3
+    }
   }
 
   share() {

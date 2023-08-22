@@ -232,6 +232,7 @@ import { SupplierRegistrationComponent } from './components/supplier-registratio
 import { CardImageComponent } from './components/card-image/card-image.component';
 import { ConfirmationSimpleComponent } from './dialogs/confirmation-simple/confirmation-simple.component';
 import { OptionsDialogComponent } from './dialogs/options-dialog/options-dialog.component';
+import { ClubDialogComponent } from './dialogs/club-dialog/club-dialog.component';
 
 const imports = [
   CommonModule,
@@ -475,7 +476,8 @@ const declarations = [
   SupplierRegistrationComponent,
   ProgressBarComponent,
   CardImageComponent,
-  OptionsDialogComponent
+  OptionsDialogComponent,
+  ClubDialogComponent
 ];
 
 @NgModule({
