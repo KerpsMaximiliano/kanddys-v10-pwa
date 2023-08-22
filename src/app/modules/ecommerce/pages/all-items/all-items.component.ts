@@ -217,7 +217,7 @@ export class AllItemsComponent implements OnInit {
       estimatedDeliveryTime = filterCriteriaData;
 
 
-    if (filterCriteria === 'hashtag') {
+    if (filterCriteria == 'hashtag') {
       const keyword = filterCriteriaData.slice(1)
       const pagination: PaginationInput = {
         findBy: {
@@ -227,7 +227,13 @@ export class AllItemsComponent implements OnInit {
       };
       this.saleflowService.codeSearchKeywordByType(pagination)
         .then((items) => {
-          this.items = items.results.map(item => item.reference)
+          const itemsResult = items.results.map(item => item.reference)
+          const itemsQueryResult = Array.from(new Set(itemsResult))
+          this.items = this.paginationState.page === 1
+            ? itemsQueryResult
+            : this.items.concat(itemsQueryResult);
+          if (itemsQueryResult.length === 0) this.reachedTheEndOfPagination = true;
+          this.paginationState.status = 'complete';
         })
         .catch((err) => console.log(err));
     } else {

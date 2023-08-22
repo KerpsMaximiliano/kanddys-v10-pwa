@@ -50,43 +50,6 @@
           ></app-saleflow-item>
         </a>
       </div>
-
-      <div class="capsize" *ngFor="let item of items; let itemIndex = index">
-        <a
-          [routerLink]="['../../../article-detail/item', item._id]"
-          [queryParams]="{ mode: 'saleflow' }"
-        >
-          <app-saleflow-item
-            [itemIndex]="itemIndex"
-            [itemId]="item._id"
-            [type]="4"
-            [inactive]="
-              item.status != 'active' && item.status != 'featured'
-                ? true
-                : false
-            "
-            [imgURL]="item.images?.length ? item.images[0].value : ''"
-            [price]="item.pricing"
-            [showPrice]="true"
-            [dynamicStyles]="{
-              itemContainer: {
-                width: '100%',
-                height: '315px',
-                margin: '0px'
-              },
-              simpleCard: {
-                height: '100%'
-              },
-              itemImg: {
-                height: '82.8571%'
-              },
-              video: {
-                height: '82.8571%'
-              }
-            }"
-          ></app-saleflow-item>
-        </a>
-      </div>
     </div>
     <div
       class="description-view"

@@ -380,11 +380,8 @@ export class StoreComponent implements OnInit {
   }
 
   onKeywordSearch(event: any) {
-    // console.log(event.target.value);
     const value: string = event.target.value;
     setTimeout(() => {
-      // console.log('Enviando keyword');
-
       if (value.startsWith("#")) {
         this.saleflowService.notifyTrigger({
           triggerID: 'hashtag',
