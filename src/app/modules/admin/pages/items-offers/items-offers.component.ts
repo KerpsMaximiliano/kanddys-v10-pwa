@@ -101,6 +101,7 @@ async getListItems(searchName = ""){
       offerExpiration: item.offerExpiration ? this.getTimeDifference(item.offerExpiration) : ""
     })
   })
+  this.listItems.sort(this.compareItems)
 }
 
   changeView = async (newView: 'LIST' | 'SEARCH') => {
@@ -177,6 +178,16 @@ async getListItems(searchName = ""){
     const currentDate = moment();
     const hoursDifference = targetDate.diff(currentDate, 'hours');
     return hoursDifference;
+  }
+
+  compareItems(prev: any, next: any) {
+    if (prev.activeOffer && !next.activeOffer) {
+      return -1;
+    }
+    if (!prev.activeOffer && next.activeOffer) {
+      return 1;
+    }
+    return 0;
   }
 
 }
