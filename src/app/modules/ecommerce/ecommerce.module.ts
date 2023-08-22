@@ -68,6 +68,7 @@ import { FormCreatorComponent } from 'src/app/shared/components/form-creator/for
 import { ItemsSlidesEditorComponent } from 'src/app/shared/components/items-slides-editor/items-slides-editor.component';
 import { ProviderItemsComponent } from './pages/provider-items/provider-items.component';
 import { ClubLandingComponent } from './pages/club-landing/club-landing.component';
+import { ConfirmClubRegistrationComponent } from './pages/confirm-club-registration/confirm-club-registration.component';
 
 const routes: Routes = [
   {
@@ -216,6 +217,10 @@ const routes: Routes = [
   {
     path: 'confirm-quotation',
     component: ConfirmQuotationComponent,
+  },
+  {
+    path: 'confirm-club-registration',
+    component: ConfirmClubRegistrationComponent
   },
   {
     path: 'confirm-quotation/:quotationId',
@@ -443,7 +448,8 @@ const routes: Routes = [
     ConfirmQuotationComponent,
     ItemCreationComponent,
     ProviderItemsComponent,
-    ClubLandingComponent
+    ClubLandingComponent,
+    ConfirmClubRegistrationComponent
   ],
   imports: [
     CommonModule,

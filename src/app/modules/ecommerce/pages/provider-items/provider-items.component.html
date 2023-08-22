@@ -11,6 +11,14 @@
       </button>
 
       <button
+        mat-icon-button
+        style="margin-right: 25px"
+        (click)="sendWhatsappToAppOwner()"
+      >
+        <mat-icon [ngStyle]="{ color: 'white' }">add</mat-icon>
+      </button>
+
+      <button
         style="
           color: #87cd9b;
           font-size: 17px;
@@ -19,7 +27,7 @@
         "
         (click)="drawerOpened = true"
       >
-        Artículos de Proveedores
+        Artículos & Ventas 💰
         <mat-icon style="color: #6fcf97; margin-left: 8px">menu</mat-icon>
       </button>
     </header>
@@ -36,35 +44,65 @@
         />
       </form>
 
-      <div class="filters-container">
-        <div
-          class="filter"
-          *ngFor="let filter of searchFilters; let filterIndex = index"
-          [ngClass]="{
-            selected: activatedSearchFilters[filter.key]
-          }"
-          (click)="activateOrDeactivateFilters(filter.key)"
-        >
-          {{ filter.label }}
+      <!--
+        <div class="filters-container">
+          <div
+            class="filter"
+            *ngFor="let filter of searchFilters; let filterIndex = index"
+            [ngClass]="{
+              selected: activatedSearchFilters[filter.key]
+            }"
+            (click)="activateOrDeactivateFilters(filter.key)"
+          >
+            {{ filter.label }}
+          </div>
         </div>
-      </div>
+      -->
     </div>
 
     <main>
+      <ng-container
+        *ngTemplateOutlet="
+          presentation;
+          context: {
+            presentationOpened: presentationOpened
+          }
+        "
+      ></ng-container>
+
+      <ng-container
+        *ngTemplateOutlet="
+          searchTutorial;
+          context: {
+            tutorialOpened: searchTutorialsOpened
+          }
+        "
+      ></ng-container>
+
+      <h6 class="intro-text" *ngIf="!searchOpened">
+        Esta plataforma te pone al frente de quienes necesitan exactamente lo
+        que ofreces.
+      </h6>
+
       <form
         class="search-bar-wrapper"
+        [ngClass]="{
+          tutorial: searchTutorialsOpened
+        }"
         style="margin-bottom: 21px"
         *ngIf="!searchOpened"
       >
         <input
           type="text"
-          (click)="showSearch()"
+          (click)="!searchTutorialsOpened ? showSearch() : null"
           name="item-search"
           class="input search-bar"
           placeholder="Buscar..."
           [formControl]="itemSearchbar"
         />
       </form>
+
+      <ng-container *ngTemplateOutlet="itemsTutorialOverlay"></ng-container>
 
       <section *ngIf="itemsISell.length > 0">
         <h3>ARTICULOS QUE ESTOY EXHIBIENDO A LOS MIEMBROS</h3>
@@ -80,7 +118,8 @@
                 context: {
                   item: item,
                   itemIndex: itemIndex,
-                  providedByMe: true
+                  providedByMe: true,
+                  firstItem: itemIndex === 0 && itemsISell.length > 0
                 }
               "
             ></ng-container>
@@ -102,7 +141,11 @@
                 context: {
                   item: item,
                   itemIndex: itemIndex,
-                  providedByMe: false
+                  providedByMe: false,
+                  firstItem:
+                    itemIndex === 0 &&
+                    itemsISell.length === 0 &&
+                    itemsIDontSell.length > 0
                 }
               "
             ></ng-container>
@@ -111,8 +154,8 @@
       </section>
     </main>
 
-    <footer *ngIf="!searchOpened">
-      Comparte y vende lo que estás exhibiéndo
+    <footer *ngIf="!searchOpened && itemsIDontSell.length > 0">
+      Adiciona el precio para empezar a vender
     </footer>
   </div>
 </app-navigation>
@@ -122,8 +165,14 @@
   let-item="item"
   let-itemIndex="itemIndex"
   let-providedByMe="providedByMe"
+  let-firstItem="firstItem"
 >
-  <div class="item-card">
+  <div
+    class="item-card"
+    [ngClass]="{
+      'tutorial-highlighted': firstItem && itemsTutorialOpened
+    }"
+  >
     <div class="left-column" (click)="(null)">
       <div
         class="product-image"
@@ -144,7 +193,7 @@
     <div class="middle-column fixedWidth" (click)="(null)">
       <div class="item-name">{{ item.name }}</div>
       <div class="item-description">{{ item.description }}</div>
-      <div class="item-price">
+      <div class="item-price" (click)="editPrice(item, itemIndex)">
         <ng-container *ngIf="item.pricing !== null && providedByMe">
           ${{ item.pricing | number : "1.2-2" }}
         </ng-container>
@@ -156,6 +205,13 @@
         (click)="addPrice(item)"
       >
         Mi precio
+
+        <img
+          class="price-tutorial-img"
+          *ngIf="firstItem && itemsTutorialOpened"
+          [src]="assetsFolder + '/card-arrow-up.svg'"
+          alt=""
+        />
       </div>
     </div>
 
@@ -179,7 +235,7 @@
           <ng-container *ngIf="!providedByMe">
             {{ unitsForItemsThatYouDontSell[item._id] > 1 ? "-" : "" }}
           </ng-container>
-          
+
           <mat-icon
             *ngIf="item.stock === 1"
             style="font-size: 19px; width: 23px"
@@ -205,17 +261,245 @@
         >
       </div>
     </div>
+  </div>
 
-    <!--
-      <div
-        class="right-column"
-        *ngIf="!providedByMe"
-        (click)="createItemBasedOnExistingSupplierItems(item)"
-      >
-        <div class="edit-btn">
-          <span>Exhibir</span>
-        </div>
-      </div>
-    -->
+  <ng-container *ngIf="firstItem && itemsTutorialOpened">
+    <ng-container *ngTemplateOutlet="itemsTutorialContent"></ng-container>
+  </ng-container>
+</ng-template>
+
+<ng-template #presentation let-presentationOpened="presentationOpened">
+  <div
+    class="tutorial-wrapper"
+    [ngClass]="{
+      opened: presentationOpened
+    }"
+  >
+    <div class="presentation-cards-wrapper" *ngIf="presentationOpened">
+      <ng-container
+        *ngTemplateOutlet="
+          helpCard;
+          context: {
+            containerStyles: {
+              width: '92.056%',
+              maxWidth: '394px'
+            },
+            topText: 'Bienvenido a www.floristerias.club',
+            topTextStyles: {
+              color: '#FFF',
+              textAlign: 'center',
+              fontFamily: 'InterSemiBold',
+              fontSize: '23px',
+              fontStyle: 'normal',
+              fontWeight: '600',
+              lineHeight: 'normal',
+              marginBottom: '44px'
+            },
+            middleText:
+              'Seguir desarrollando una plataforma de soluciones a los desafíos que enfrentan las floristerías y sus proveedores.',
+            middleTextStyles: {
+              color: '#FFF',
+              textAlign: 'center',
+              fontFamily: 'InterRegular',
+              fontSize: '20px',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              lineHeight: 'normal'
+            },
+            upperMiddleText: 'PROMESA A LOS MIEMBROS',
+            upperMiddleTextStyles: {
+              color: '#F6F6F6',
+              fontFamily: 'InterLight',
+              fontSize: '13px',
+              fontStyle: 'normal',
+              lineHeight: 'normal',
+              marginBottom: '15px'
+            },
+            bottomText: 'Ok',
+            bottomTextClickHandler: openTutorials
+          }
+        "
+      ></ng-container>
+      <ng-container
+        *ngTemplateOutlet="
+          helpCard;
+          context: {
+            containerStyles: {
+              width: '92.056%',
+              maxWidth: '394px'
+            },
+            topText: 'ARTICULOS DE PROVEEDORES',
+            topTextStyles: {
+              color: '#F6F6F6',
+              fontFamily: 'InterLight',
+              fontSize: '13px',
+              fontStyle: 'normal',
+              lineHeight: 'normal',
+              marginBottom: '15px'
+            },
+            middleText:
+              'Esta plataforma exhibe lo que ofreces a Floristerías y Floristas',
+            middleTextStyles: {
+              color: '#FFF',
+              textAlign: 'center',
+              fontFamily: 'InterRegular',
+              fontSize: '20px',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              lineHeight: 'normal',
+              marginBottom: '23px'
+            },
+            bottomText:
+              'Adiciona el precio a tus artículos para empezar a vender en el Club  (gratis)'
+          }
+        "
+      ></ng-container>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #searchTutorial let-tutorialOpened="tutorialOpened">
+  <div
+    class="tutorial-wrapper"
+    [ngClass]="{
+      opened: tutorialOpened
+    }"
+  >
+    <div class="cards-wrapper" *ngIf="tutorialOpened">
+      <ng-container
+        *ngTemplateOutlet="
+          helpCard;
+          context: {
+            topText: 'Buscar..',
+            middleText: 'Encuentra y filtra artículos',
+            bottomText: 'Ok',
+            bottomTextClickHandler: closeSearchTutorial,
+            openedStateObject: searchTutorialCardsOpened,
+            cardName: 'searchbar'
+          }
+        "
+      ></ng-container>
+      <ng-container
+        *ngTemplateOutlet="
+          helpCard;
+          context: {
+            topText: '⏰',
+            topTextStyles: {
+              fontSize: '49px',
+              fontWeight: 500
+            },
+            middleText: 'Controla lo que te ordenaron',
+            bottomText: 'Ok',
+            bottomTextClickHandler: closeSearchTutorial,
+            openedStateObject: searchTutorialCardsOpened,
+            cardName: 'orders'
+          }
+        "
+      ></ng-container>
+      <ng-container
+        *ngTemplateOutlet="
+          helpCard;
+          context: {
+            topText: '💰',
+            topTextStyles: {
+              fontSize: '49px',
+              fontWeight: 500
+            },
+            middleText: 'Mira lo que vendiste',
+            bottomText: 'Ok',
+            bottomTextClickHandler: closeSearchTutorial,
+            openedStateObject: searchTutorialCardsOpened,
+            cardName: 'sold'
+          }
+        "
+      ></ng-container>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #itemsTutorialContent>
+  <div class="items-tutorial-wrapper">
+    <ng-container
+      *ngTemplateOutlet="
+        helpCard;
+        context: {
+          containerStyles: {
+            width: '86.91%',
+            maxWidth: '372px'
+          },
+          middleText: 'Adiciona el precio de los artículos que vendes',
+          middleTextStyles: {
+            marginBottom: '16px',
+            fontFamily: 'InterSemiBold',
+            fontSize: '23px',
+            fontStyle: 'normal'
+          },
+          bottomText: 'Ok',
+          bottomTextClickHandler: closeItemsTutorial,
+          openedStateObject: itemsTutorialCardsOpened,
+          cardName: 'price'
+        }
+      "
+    ></ng-container>
+  </div>
+</ng-template>
+
+<ng-template #itemsTutorialOverlay>
+  <div
+    class="tutorial-wrapper"
+    [ngClass]="{
+      opened: itemsTutorialOpened
+    }"
+  ></div>
+</ng-template>
+
+<ng-template
+  #helpCard
+  let-containerStyles="containerStyles"
+  let-topText="topText"
+  let-topImage="topImage"
+  let-topImageStyles="topImageStyles"
+  let-topTextStyles="topTextStyles"
+  let-upperMiddleText="upperMiddleText"
+  let-upperMiddleTextStyles="upperMiddleTextStyles"
+  let-middleText="middleText"
+  let-middleTextStyles="middleTextStyles"
+  let-bottomText="bottomText"
+  let-bottomTextClickHandler="bottomTextClickHandler"
+  let-cardName="cardName"
+  let-openedStateObject="openedStateObject"
+>
+  <div
+    class="help-card-container"
+    [ngStyle]="containerStyles"
+    *ngIf="
+      !openedStateObject || (openedStateObject && openedStateObject[cardName])
+    "
+  >
+    <span class="topText" *ngIf="topText" [ngStyle]="topTextStyles">{{
+      topText
+    }}</span>
+    <img
+      src="topImage"
+      *ngIf="topImage"
+      [ngStyle]="topImageStyles"
+      [src]="topImage"
+    />
+
+    <span
+      class="middleText"
+      *ngIf="upperMiddleText"
+      [ngStyle]="upperMiddleTextStyles"
+      >{{ upperMiddleText }}</span
+    >
+
+    <span class="middleText" [ngStyle]="middleTextStyles">{{
+      middleText
+    }}</span>
+    <span
+      class="bottomText"
+      (click)="bottomTextClickHandler ? bottomTextClickHandler(cardName) : null"
+      >{{ bottomText }}</span
+    >
   </div>
 </ng-template>

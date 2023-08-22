@@ -93,9 +93,12 @@
     </button> -->
 
     <app-progress-slider
-      [title]="'Actualización del progreso'"
+      [title]=""
       [statusList]="statusList"
       [activeIndex]="activeStatusIndex"
+      [isAdmin]="isMerchant"
+      [orderId]="orderId"
+      (statusUpdated)="handleStatusUpdated($event)"
     ></app-progress-slider>
 
     <div style="position: fixed; max-width: 500px; width: 100%; bottom: 100px">
