@@ -62,7 +62,7 @@
           </div>
           <div class="right-side">
             <div class="quantity-title">VENDIENDO</div>
-            <div
+            <!-- <div
               class="item-quantity"
               
             >
@@ -76,7 +76,31 @@
                 <span style="position: relative; bottom: 2px"> 0 </span>
                 <span mat-button class="button icon">+</span>
               </div>
+            </div> -->
+
+            <div class="item-quantity">
+              <span
+                mat-button
+                class="button icon"
+              >
+
+                <mat-icon
+                  style="font-size: 19px; width: 23px"
+                  >delete</mat-icon
+                >
+              </span>
+      
+              <span>0</span>
+      
+              <span
+                mat-button
+                class="button icon"
+                >+</span
+              >
             </div>
+
+
+
           </div>
         </div>
         <div *ngIf="!item.activeOffer" class="card-footer" (click)="addPrice(item)">Incluir en Oferta Flash 24h</div>

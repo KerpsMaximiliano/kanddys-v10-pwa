@@ -25,7 +25,7 @@ export class ItemsOffersComponent implements OnInit {
   assetsURL: string = environment.assetsUrl;
   merchantId: string;
   saleFlowItemsId = [];
-  listItems = [];
+  listItems;
 
   constructor(private dialog: MatDialog,
               private merchantService: MerchantsService,
@@ -89,6 +89,7 @@ async getListItems(searchName = ""){
   const listItemsResponse = Object.keys(items).map(data =>{
     return items[data]
   })
+  this.listItems = [];
   listItemsResponse[0].forEach(item => {
     this.listItems.push({
       _id:item._id,
@@ -117,10 +118,7 @@ async getListItems(searchName = ""){
 
   async searchItems(event){
     setTimeout(async () => {
-      lockUI();
-      this.listItems = [];
       await this.getListItems(this.itemSearchbar.value);
-      unlockUI();
      }, 500);
   }
 
@@ -154,9 +152,17 @@ async getListItems(searchName = ""){
       const price = Number(result.value['price']);
       if (result.controls.price.valid && price > 0) {
         lockUI();
-        const itemsInput:ItemInput = {
-          offerPrice: price,
-          activeOffer: true
+        let itemsInput:ItemInput;
+        if(item.activeOffer){
+          itemsInput = {
+            pricing: price,
+            activeOffer: true
+          }
+        }else{
+          itemsInput = {
+            offerPrice: price,
+            activeOffer: true
+          }
         }
         const updatePrice = await this.itemService.updateItem(itemsInput, item._id);
         this.listItems = [];
