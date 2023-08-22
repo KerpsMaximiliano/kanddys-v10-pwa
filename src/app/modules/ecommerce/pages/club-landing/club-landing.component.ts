@@ -252,8 +252,11 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       }
     );
     lockUI()
+    setTimeout(() => {
+      unlockUI()
+    }, 5000);
     const me = await this.authService.me()
-    this.userID = me.name || me.email || me.phone;
+    this.userID = me?.name || me?.email || me?.phone;
     unlockUI()
   }
 
@@ -404,7 +407,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
                       )[1];
                   }
 
-                  lockUI();
+                  // lockUI();
 
                   await this.authService.generateMagicLink(
                     emailOrPhone,
