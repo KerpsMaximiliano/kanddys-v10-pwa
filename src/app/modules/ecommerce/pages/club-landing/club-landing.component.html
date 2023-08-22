@@ -29,15 +29,56 @@
           proporcionar soluciones a los desafíos que enfrentan las floristerías y
           sus proveedores.
         </div>
-    
-        <ul>
-          <li class="text-list" *ngFor="let listBullet of listOfFeatures">
-            <span class="title" *ngIf="listBullet.title">{{
-              listBullet.title + ":"
-            }}</span>
-            <span class="list-content">{{ listBullet.content }}</span>
-          </li>
-        </ul>
+
+        <ng-container>
+          <div class="tabs-container">
+            <!-- TABS -->
+            <div class="tabs">
+              <div
+                class="tab"
+                (click)="changeTab(i)"
+                *ngFor="let tab of tabs; index as i"
+                [ngClass]="{ active: tab.active }"
+              >
+                {{ tab.text }}
+              </div>
+            </div>
+  
+            <!-- SUBTABS -->
+            <div
+              class="subtabs"
+              *ngFor="let tab of tabs; index as i"
+              [ngClass]="{ active: tab.active }"
+            >
+              <ng-container *ngIf="tab.active">
+                <div
+                  class="subtab"
+                  *ngFor="let subtab of tab.subTabs; index as j"
+                  (click)="changeSubtab(i, j)"
+                  [ngClass]="{ active: subtab.active }"
+                >
+                  {{ subtab.text }}
+                </div>
+              </ng-container>
+            </div>
+            <!-- CONTENIDO DE SUBTABS -->
+            <ng-container *ngFor="let tab of tabs; index as i">
+              <ng-container *ngIf="tab.active">
+                <ng-container *ngFor="let subtab of tab.subTabs; index as j">
+                  <ng-container *ngIf="subtab.active">
+                    <div class="slide-content">
+                      <p
+                        *ngFor="let content of subtab.content"
+                      >
+                        {{ content }}
+                      </p>
+                    </div>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+          </div>
+        </ng-container>
     
         <div class="header-border"></div>
     

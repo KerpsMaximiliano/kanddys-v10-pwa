@@ -284,7 +284,7 @@ footer {
   left: 0px;
   right: 0px;
   max-width: 500px;
-  background: var(--el-verdecito, #87cd9b);
+  background: #fff;
   display: flex;
   justify-content: space-between;
   padding: 5px 15px;
@@ -349,5 +349,20 @@ footer {
     transform: rotate(180deg);
     width: 25.28px;
     height: 25.28px;
+  }
+}
+
+.providers-config-header-wrapper {
+  color: #2874ad;
+  text-align: center;
+  font-family: InterBold;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin-bottom: 34px;
+
+  span {
+    font-family: InterLight;
   }
 }

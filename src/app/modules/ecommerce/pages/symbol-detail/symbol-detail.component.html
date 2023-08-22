@@ -214,10 +214,11 @@
       <ng-container [ngSwitch]="entity">
         <div class="add-to-cart" *ngSwitchCase="'item'" (click)="saveProduct()">
           <ng-container *ngIf="entityPresentation !== 'DEMO' && !supplierViewer">
-            <ng-container *ngIf="!supplierItem">
+            <!-- <ng-container *ngIf="!supplierItem"> -->
+            <ng-container>
               {{
                 !isItemInCart
-                  ? itemData?.ctaText || defaultCtaText
+                  ? itemData?.ctaText || 'Agregar al carrito'
                   : defaultCtaRemoveText
               }}
             </ng-container>

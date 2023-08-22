@@ -7,6 +7,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
+import { filter } from 'rxjs/operators';
+import { AppService } from 'src/app/app.service';
 import { completeImageURL } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { CommunityCategory } from 'src/app/core/models/community-categories';
@@ -155,23 +157,43 @@ export class ItemCreationComponent implements OnInit {
     private matDialog: MatDialog,
     private translate: TranslateService,
     private tagsService: TagsService,
-    private communityCategoriesService: CommunityCategoriesService,
     private toastrService: ToastrService,
     private authService: AuthService,
-    private location: Location,
+    private appService: AppService,
     private route: ActivatedRoute,
     private gpt3Service: Gpt3Service,
     private _bottomSheet: MatBottomSheet
   ) {}
 
   ngOnInit(): void {
+    if (!this.headerService.user) {
+      let sub = this.appService.events
+        .pipe(filter((e) => e.type === 'auth'))
+        .subscribe((e) => {
+          this.executeInitProcesses();
+
+          sub.unsubscribe();
+        });
+    } else this.executeInitProcesses();
+  }
+
+  async executeInitProcesses() {
     this.route.params.subscribe(async ({ itemId }) => {
-      this.route.queryParams.subscribe(async ({ supplierItem }) => {
+      this.route.queryParams.subscribe(async ({ supplierItem, isAdminFlow }) => {
         this.isASupplierItem = JSON.parse(supplierItem || 'false');
 
-        if (this.headerService.user)
+        if (this.headerService.user) {
           this.isCurrentUserAMerchant =
             await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+
+          const isTheUserAnAdmin = this.headerService.user?.roles?.find(
+            (role) => role.code === 'ADMIN'
+          );
+
+          if (isTheUserAnAdmin) {
+            this.isTheUserAnAdmin = true;
+          }
+        }
 
         if (this.merchantsService.merchantData) {
           this.saleflowService.saleflowData =
@@ -232,11 +254,6 @@ export class ItemCreationComponent implements OnInit {
       if (!this.headerService.user) {
         this.headerService.user = await this.authService.me();
       }
-
-      const isTheUserAnAdmin = this.headerService.user?.roles?.find(
-        (role) => role.code === 'ADMIN'
-      );
-      if (isTheUserAnAdmin) this.isTheUserAnAdmin = true;
 
       this.item = await this.itemsService.item(itemId);
 
@@ -326,14 +343,14 @@ export class ItemCreationComponent implements OnInit {
         this.isASupplierItem &&
         this.itemFormData.controls['title'].value !== ''
       ) {
-        this.itemFormData.controls['title'].disable();
+        // this.itemFormData.controls['title'].disable();
       }
 
       if (
         this.isASupplierItem &&
         this.itemFormData.controls['description'].value !== ''
       ) {
-        this.itemFormData.controls['description'].disable();
+        // this.itemFormData.controls['description'].disable();
       }
 
       this.itemFormData.valueChanges.subscribe(() => {
@@ -1487,14 +1504,23 @@ export class ItemCreationComponent implements OnInit {
           else {
             this.toastrService.info('¡Item eliminado exitosamente!');
 
-            if (!this.isTheUserAnAdmin) {
-              this.saleflowService.saleflowData =
-                await this.saleflowService.saleflowDefault(
-                  this.merchantsService.merchantData._id
-                );
+            if (!this.isASupplierItem) {
+              if (this.isTheUserAnAdmin)
+                this.saleflowService.saleflowData =
+                  await this.saleflowService.saleflowDefault(
+                    this.merchantsService.merchantData._id
+                  );
               this.router.navigate(['/admin/dashboard']);
             } else {
-              this.router.navigate(['/admin/provider-items-management']);
+              if (this.isTheUserAnAdmin && this.headerService.flowRouteForEachPage['provider-items-management']) {
+                this.router.navigate(['/admin/provider-items-management']);
+                this.headerService.flowRouteForEachPage['provider-items-management'] = null;
+                return;
+              }
+              else
+                this.router.navigate(['/admin/supplier-dashboard'], {
+                  queryParams: { supplierMode: true },
+                });
             }
             //this.router.navigate(['/admin/dashboard']);
           }
@@ -1695,8 +1721,7 @@ export class ItemCreationComponent implements OnInit {
               props: {
                 icon: 'check-circle.svg',
                 showCloseButton: false,
-                message:
-                  'Se ha enviado un link mágico a tu teléfono o a tu correo electrónico',
+                message: 'Se ha enviado un link mágico a tu correo electrónico',
               },
               customClass: 'app-dialog',
               flags: ['no-header'],
@@ -1740,14 +1765,17 @@ export class ItemCreationComponent implements OnInit {
 
       this.itemsService.temporalItemInput = null;
       this.itemsService.temporalItem = null;
-  
-      if(this.headerService.flowRouteForEachPage['provider-items-management']) {
-        this.headerService.flowRoute = this.headerService.flowRouteForEachPage['provider-items-management'];
+
+      if (
+        this.headerService.flowRouteForEachPage['provider-items-management']
+      ) {
+        this.headerService.flowRoute =
+          this.headerService.flowRouteForEachPage['provider-items-management'];
         this.headerService.redirectFromQueryParams();
-      }else {
+      } else {
         this.router.navigate(['admin/dashboard']);
       }
-  
+
       unlockUI();
 
       this.snackbar.open('Item actualizado exitosamente', 'Cerrar', {
@@ -1875,7 +1903,23 @@ export class ItemCreationComponent implements OnInit {
     } else {
       this.itemsService.temporalItem = null;
 
-      if (this.item && this.isTheUserAnAdmin) {
+      if (
+        this.headerService.flowRouteForEachPage['provider-items-management']
+      ) {
+        this.headerService.flowRoute =
+          this.headerService.flowRouteForEachPage['provider-items-management'];
+        this.headerService.redirectFromQueryParams();
+        this.headerService.flowRouteForEachPage['provider-items-management'] = null;
+        return;
+      }
+
+      // TODO - eliminar este if porque es redundante, el de arriba ya hace lo mismo
+      if (
+        this.item && 
+        this.isTheUserAnAdmin &&
+        this.headerService.flowRouteForEachPage['provider-items-management']
+      ) {
+        this.headerService.flowRouteForEachPage['provider-items-management'] = null;
         return this.router.navigate(['/admin/provider-items-management']);
       }
 

@@ -26,14 +26,29 @@ interface Field {
     | 'file'
     | 'number'
     | 'currency'
-    | 'email-or-phone';
+    | 'email-or-phone'
+    | 'password';
   validators: Array<ValidatorFn>;
   name: string;
   placeholder?: string;
   label?: string;
   secondaryIcon?: boolean;
   styles?: Record<string, string>;
+  inputStyles?: Record<string, string>;
   secondaryIconCallback?: () => void;
+  bottomButton?: {
+    text: string;
+    callback: () => any;
+    containerStyles?: Record<string, string | number>;
+  };
+  submitButton?: {
+    text?: string;
+    styles?: Record<string, string>;
+  };
+  bottomTexts?: Array<{
+    text?: string;
+    styles?: Record<string, string>;
+  }>;
 }
 
 export interface FormData {
@@ -42,6 +57,8 @@ export interface FormData {
     text: string;
     styles?: Record<string, any>;
   };
+  containerStyles?: Record<string, string>;
+  hideBottomButtons?: boolean;
   buttonsTexts?: {
     cancel?: string;
     accept?: string;
@@ -107,6 +124,7 @@ export class FormComponent implements OnInit {
         case 'text':
         case 'currency':
         case 'phone':
+        case 'password':
         case 'number':
           if (
             !firstEditableFieldFound &&
@@ -141,8 +159,9 @@ export class FormComponent implements OnInit {
     this.close();
   }
 
-  close(): void {
-    this.dialogRef.close();
+  close(data?: any): void {
+    if (!data) this.dialogRef.close();
+    else this.dialogRef.close(data);
   }
 
   updateFieldValue(index: number, value: any) {
@@ -167,7 +186,7 @@ export class FormComponent implements OnInit {
     ) as HTMLElement;
     const dialog = document.querySelector(
       '#' + this.dialogRef.id
-      ) as HTMLElement;
+    ) as HTMLElement;
 
     if (
       container &&
@@ -181,7 +200,7 @@ export class FormComponent implements OnInit {
       const dialogHeight = dialog.clientHeight;
       const marginTop = (screenHeight - dialogHeight) / 2;
 
-      this.dialogRef.updatePosition({ top: marginTop + 'px' }); 
+      this.dialogRef.updatePosition({ top: marginTop + 'px' });
     }
   }
 

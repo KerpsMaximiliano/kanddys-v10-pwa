@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { Subscription } from 'rxjs';
 import { AppService } from 'src/app/app.service';
@@ -38,9 +38,11 @@ export class AllItemsComponent implements OnInit {
   reachedTheEndOfPagination = false;
 
   filterTrigger: {
-    triggerID: 'pricing' | 'tags' | 'search' | 'estimatedDelivery',
+    triggerID: 'pricing' | 'tags' | 'search' | 'estimatedDelivery' | 'supplier',
     data: any
   }
+
+  mode: 'standard' | 'supplier' = 'standard';
   
   private triggerSubscription: Subscription;
 
@@ -49,7 +51,8 @@ export class AllItemsComponent implements OnInit {
     private appService: AppService,
     private saleflowService: SaleFlowService,
     private ngNavigatorShareService: NgNavigatorShareService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.triggerSubscription = this.saleflowService.trigger.subscribe(async data => {
       // Reaccionar al trigger desde el Componente A
@@ -61,6 +64,10 @@ export class AllItemsComponent implements OnInit {
   }
 
   async ngOnInit() {
+    this.route.queryParams.subscribe(async (queryParams) => {
+      let { mode } = queryParams;
+      if (mode === 'supplier') this.mode = 'supplier';
+    });
     const saleflowItems = this.headerService.saleflow.items.map(
       (saleflowItem) => ({
         item: saleflowItem.item._id,
@@ -81,6 +88,7 @@ export class AllItemsComponent implements OnInit {
             status: 'featured',
           },
         ],
+        type: this.mode === 'supplier' ? 'supplier' : ['default', null]
       },
       options: {
         sortBy: 'createdAt:desc',
@@ -100,6 +108,7 @@ export class AllItemsComponent implements OnInit {
             status: 'featured',
           },
         ],
+        type: this.mode === 'supplier' ? 'supplier' : ['default', null]
       },
       options: {
         sortBy: 'createdAt:desc',
@@ -110,7 +119,7 @@ export class AllItemsComponent implements OnInit {
       ? this.headerService.order.products.map((subOrder) => subOrder.item)
       : [];
     this.items = items?.listItems
-      .filter((item) => (item.status === 'active' || item.status === 'featured') && item.type === 'default')
+      .filter((item) => (item.status === 'active' || item.status === 'featured') && (item.type === 'default' || item.type === 'supplier'))
       .map((item) => ({
         images: item.images.sort(({ index: a }, { index: b }) =>
           a > b ? 1 : -1
@@ -169,7 +178,11 @@ export class AllItemsComponent implements OnInit {
     }
   }
 
-  async getItems(restartPagination = false, filterCriteria?: 'pricing' | 'tags' | 'search' | 'estimatedDelivery', filterCriteriaData?: any) {
+  async getItems(
+    restartPagination = false, 
+    filterCriteria?: 'pricing' | 'tags' | 'search' | 'estimatedDelivery' | 'supplier',
+    filterCriteriaData?: any
+  ) {
     this.paginationState.status = 'loading';
 
     const saleflowItems = this.headerService.saleflow.items.map(
@@ -197,6 +210,10 @@ export class AllItemsComponent implements OnInit {
     let estimatedDeliveryTime = {};
       if (filterCriteria === 'estimatedDelivery')
         estimatedDeliveryTime = filterCriteriaData;
+    
+    let type = ['default', null] as any;
+      if (this.mode === 'supplier')
+        type = 'supplier';
 
     const pagination: PaginationInput = {
       filter,
@@ -206,6 +223,7 @@ export class AllItemsComponent implements OnInit {
         },
         tags,
         estimatedDeliveryTime,
+        type
       },
       options: {
         sortBy: 'createdAt:desc',
@@ -219,7 +237,8 @@ export class AllItemsComponent implements OnInit {
       .then((response) => {
         const items = response;
         const itemsQueryResult = items.listItems.filter((item) => {
-          return (item.status === 'active' || item.status === 'featured') && item.type === 'default';
+          // return (item.status === 'active' || item.status === 'featured') && item.type === 'default';
+          return (item.status === 'active' || item.status === 'featured') && (item.type === 'default' || item.type === 'supplier');
         });
 
         if (this.paginationState.page === 1) {

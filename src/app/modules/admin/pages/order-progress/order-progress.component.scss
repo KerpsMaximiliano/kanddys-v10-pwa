@@ -35,21 +35,23 @@
   }
 }
 
-.dates-container {
+.progress-container {
   width: 100%;
-  padding-top:20px;
+  padding-top: 20px;
   padding-bottom: 24px;
   background: #181d17;
   display: flex;
-  align-items: center;
-  justify-content: center;
   padding-left: 20px;
-  padding-right: 20px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  justify-items: self-end;
-  grid-row-gap: 13px;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  row-gap: 10px;
+}
 
+.progress-item {
+  flex-basis: calc(50% - 6.5px);
+  display: flex;
+  flex-direction: column;
 }
 
 .progress {
@@ -58,14 +60,15 @@
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: normal;
   padding-left: 13px;
   padding-right: 13px;
   padding-top: 3px;
   padding-bottom: 3px;
   border-radius: 29px;
-  justify-self: baseline;
   cursor: pointer;
+  white-space: nowrap; 
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .progress-selected {
