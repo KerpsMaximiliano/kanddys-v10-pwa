@@ -120,7 +120,7 @@ async getListItems(searchName = ""){
   async searchItems(event){
     setTimeout(async () => {
       await this.getListItems(this.itemSearchbar.value);
-     }, 500);
+     }, 300);
   }
 
   openAddButtonOptionsMenu() { }
