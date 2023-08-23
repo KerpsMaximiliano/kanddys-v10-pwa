@@ -24,7 +24,7 @@
             <span *ngIf="!isFlag" (click)="openDialog()">{{userID}}</span>
             <span *ngIf="isFlag" (click)="enterClub()">Ingresa al Club</span>
           </div>
-          <div class="close" *ngIf="headerService.user" style="cursor: pointer">
+          <div class="close" style="cursor: pointer">
             <span (click)="close()">
               <mat-icon>menu</mat-icon>
             </span>
@@ -37,12 +37,12 @@
           {{isFlag ? ".. se desarrollan herramientas para las los Miembros del Club." : ""}}
         </div>
 
-        <div class="tabs-container" *ngIf="userID">
+        <div class="tabs-container">
           <!-- TABS -->
           <div class="title" *ngIf="isFlag">
             HERRAMIENTAS SEGUN LA MEMBRESIA
           </div>
-          <div class="tabs" *ngIf="isVendor && isProvider">
+          <div class="tabs" *ngIf="isVendor == isProvider">
             <div
               class="tab"
               (click)="tabIndex=0"
@@ -58,10 +58,10 @@
               Proveedores
             </div>
           </div>
-          <div class="tab-question" *ngIf="isProvider || isVendor">
+          <div class="tab-question" >
             {{!tabIndex ?"Como Floristería ¿qué necesitas?":"Como Proveedor de Floristerías y Tiendas de Regalos ¿qué necesitas?"}}
           </div>
-          <div class="tab-content" *ngIf="isProvider || isVendor">
+          <div class="tab-content">
             <div class="tab-content-item" *ngFor="let item of filterData()">
               {{item}}
             </div>
@@ -128,6 +128,6 @@
 
       </main>
     
-      <footer (click)="share()">{{isFlag ? (tabIndex ? "Membresía Gratis a Proveedores" : "Membresía US$3,000 por un año") : "Afiliados ganan US$650 por invitado"}}</footer>
+      <footer (click)="share()" [ngClass]="{'no-green' : isVendor != isProvider}">{{isFlag ? (tabIndex ? "Membresía Gratis a Proveedores" : "Membresía US$3,000 por un año") : "Afiliados ganan US$650 por invitado"}}</footer>
     </div>
 </app-navigation>

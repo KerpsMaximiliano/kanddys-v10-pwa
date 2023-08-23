@@ -265,53 +265,54 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     }, 6000);
     const me = await this.authService.me()
     this.userID = me?.name || me?.email || me?.phone;
-    const merchant = await this.merchantsService.merchantDefault();
-    console.log(merchant)
-    if (merchant._id) {
-      const supplier_pagination: PaginationInput = {
-        findBy: {
-          type: "supplier",
-          merchant: merchant._id
-        },
-        options: {
-          sortBy: 'createdAt:desc',
-          limit: 1
-        },
-      };
-      let supplier: Array<any> = [];
-      supplier =(await this.itemsService.listItems(supplier_pagination))?.listItems;
-  
-      const vendor_pagination: PaginationInput = {
-        findBy: {
-          type: ["default", null],
-          merchant: merchant._id
-        },
-        options: {
-          sortBy: 'createdAt:desc',
-          limit: 1
-        },
-      };
-      let vendor: Array<any> = [];
-      vendor =(await this.itemsService.listItems(vendor_pagination))?.listItems;
-  
-      if (supplier.length) {
-        this.isProvider = true
-        this.tabIndex = 1
+    if (this.userID) {
+      const merchant = await this.merchantsService.merchantDefault();
+      console.log(merchant)
+      if (merchant?._id) {
+        const supplier_pagination: PaginationInput = {
+          findBy: {
+            type: "supplier",
+            merchant: merchant._id
+          },
+          options: {
+            sortBy: 'createdAt:desc',
+            limit: 1
+          },
+        };
+        let supplier: Array<any> = [];
+        supplier =(await this.itemsService.listItems(supplier_pagination))?.listItems;
+    
+        const vendor_pagination: PaginationInput = {
+          findBy: {
+            type: ["default", null],
+            merchant: merchant._id
+          },
+          options: {
+            sortBy: 'createdAt:desc',
+            limit: 1
+          },
+        };
+        let vendor: Array<any> = [];
+        vendor =(await this.itemsService.listItems(vendor_pagination))?.listItems;
+    
+        if (supplier.length) {
+          this.isProvider = true
+          this.tabIndex = 1
+        }
+        if (vendor.length) {
+          this.isVendor = true
+          this.tabIndex = 0
+        }
+        // console.log(supplier)
+        // console.log(vendor)
       }
-      if (vendor.length) {
-        this.isVendor = true
-        this.tabIndex = 0
-      }
-      // console.log(supplier)
-      // console.log(vendor)
     }
-
     unlockUI()
   }
 
   close() {
     // if (this.headerService.user) this.location.back();
-    if (this.headerService.user) this.openNavigation = true;
+    this.openNavigation = true;
   }
 
   openDialog() {
@@ -327,7 +328,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   filterData () {
-    if (this.isVendor && this.isProvider){
+    if (this.isVendor == this.isProvider){
       if (this.tabIndex) return this.tabContents.tab2;
       else return this.tabContents.tab1
     }
