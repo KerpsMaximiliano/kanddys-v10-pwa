@@ -9,10 +9,14 @@ import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/option
 import { ClubDialogComponent } from 'src/app/shared/dialogs/club-dialog/club-dialog.component';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { ItemsService } from 'src/app/core/services/items.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { PaginationInput } from 'src/app/core/models/saleflow';
+
 import {
   FormComponent,
   FormData,
@@ -57,6 +61,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   isFlag = false;
   tabIndex = 0;
   userID = ""
+  isVendor = false;
+  isProvider = false;
 
   tabContents = {
     tab1: [
@@ -234,6 +240,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     private ngNavigatorShareService: NgNavigatorShareService,
     private location: Location,
     private bottomSheet: MatBottomSheet,
+    private merchantsService: MerchantsService,
+    private itemsService: ItemsService,
     private dialogService: DialogService,
     private dialog: MatDialog,
     private authService: AuthService,
@@ -254,9 +262,50 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     lockUI()
     setTimeout(() => {
       unlockUI()
-    }, 5000);
+    }, 6000);
     const me = await this.authService.me()
     this.userID = me?.name || me?.email || me?.phone;
+    const merchant = await this.merchantsService.merchantDefault();
+    console.log(merchant)
+    if (merchant._id) {
+      const supplier_pagination: PaginationInput = {
+        findBy: {
+          type: "supplier",
+          merchant: merchant._id
+        },
+        options: {
+          sortBy: 'createdAt:desc',
+          limit: 1
+        },
+      };
+      let supplier: Array<any> = [];
+      supplier =(await this.itemsService.listItems(supplier_pagination))?.listItems;
+  
+      const vendor_pagination: PaginationInput = {
+        findBy: {
+          type: ["default", null],
+          merchant: merchant._id
+        },
+        options: {
+          sortBy: 'createdAt:desc',
+          limit: 1
+        },
+      };
+      let vendor: Array<any> = [];
+      vendor =(await this.itemsService.listItems(vendor_pagination))?.listItems;
+  
+      if (supplier.length) {
+        this.isProvider = true
+        this.tabIndex = 1
+      }
+      if (vendor.length) {
+        this.isVendor = true
+        this.tabIndex = 0
+      }
+      // console.log(supplier)
+      // console.log(vendor)
+    }
+
     unlockUI()
   }
 
@@ -278,14 +327,14 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   filterData () {
-    if (this.isFlag) {
-      if (this.tabIndex) return this.tabContents.tab2
+    if (this.isVendor && this.isProvider){
+      if (this.tabIndex) return this.tabContents.tab2;
       else return this.tabContents.tab1
     }
-    else {
-      if (this.tabIndex) return this.tabContents.tab4
-      else return this.tabContents.tab3
+    else if (this.isVendor && !this.isProvider) {
+      return this.tabContents.tab3
     }
+    else return this.tabContents.tab4
   }
 
   share() {

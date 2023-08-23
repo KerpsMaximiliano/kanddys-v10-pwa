@@ -20,12 +20,14 @@
             <div class="user-button" (click)="enterClub()" *ngIf="!headerService.user">Ingresa al club</div>
           </div> -->
     
-          <!-- <div class="close" *ngIf="headerService.user" style="cursor: pointer">
-            <span (click)="close()">X</span>
-          </div> -->
           <div class="close">
             <span *ngIf="!isFlag" (click)="openDialog()">{{userID}}</span>
             <span *ngIf="isFlag" (click)="enterClub()">Ingresa al Club</span>
+          </div>
+          <div class="close" *ngIf="headerService.user" style="cursor: pointer">
+            <span (click)="close()">
+              <mat-icon>menu</mat-icon>
+            </span>
           </div>
         </div>
       </div>
@@ -35,18 +37,18 @@
           {{isFlag ? ".. se desarrollan herramientas para las los Miembros del Club." : ""}}
         </div>
 
-        <div class="tabs-container">
+        <div class="tabs-container" *ngIf="userID">
           <!-- TABS -->
           <div class="title" *ngIf="isFlag">
             HERRAMIENTAS SEGUN LA MEMBRESIA
           </div>
-          <div class="tabs">
+          <div class="tabs" *ngIf="isVendor && isProvider">
             <div
               class="tab"
               (click)="tabIndex=0"
               [ngClass]="{ active: !tabIndex }"
             >
-              Floristerias
+              Floristerias & Tiendas de Regalos
             </div>
             <div
               class="tab"
@@ -56,17 +58,17 @@
               Proveedores
             </div>
           </div>
-          <div class="tab-question">
+          <div class="tab-question" *ngIf="isProvider || isVendor">
             {{!tabIndex ?"Como Floristería ¿qué necesitas?":"Como Proveedor de Floristerías y Tiendas de Regalos ¿qué necesitas?"}}
           </div>
-          <div class="tab-content">
+          <div class="tab-content" *ngIf="isProvider || isVendor">
             <div class="tab-content-item" *ngFor="let item of filterData()">
               {{item}}
             </div>
           </div>
         </div>
 
-        <div class="header-border"></div>
+        <div class="header-border" *ngIf="isProvider || isVendor"></div>
 
         <ng-container>
           <div class="tabs-container">
