@@ -416,6 +416,17 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
                           []
                         );
 
+                        this.dialogService.open(GeneralFormSubmissionDialogComponent, {
+                          type: 'centralized-fullscreen',
+                          props: {
+                            icon: 'check-circle.svg',
+                            showCloseButton: false,
+                            message: 'Se ha enviado un link mágico a tu correo electrónico',
+                          },
+                          customClass: 'app-dialog',
+                          flags: ['no-header'],
+                        });
+
                         unlockUI();
                       }
                     });
@@ -471,6 +482,17 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
                       },
                       []
                     );
+
+                    this.dialogService.open(GeneralFormSubmissionDialogComponent, {
+                      type: 'centralized-fullscreen',
+                      props: {
+                        icon: 'check-circle.svg',
+                        showCloseButton: false,
+                        message: 'Se ha enviado un link mágico a tu correo electrónico',
+                      },
+                      customClass: 'app-dialog',
+                      flags: ['no-header'],
+                    });
 
                     unlockUI();
                   } else if (
