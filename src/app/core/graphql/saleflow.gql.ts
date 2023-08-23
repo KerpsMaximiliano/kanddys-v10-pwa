@@ -319,3 +319,9 @@ export const updateSaleflow = gql`
     }
   }
 `;
+
+export const codeSearchKeywordByType = gql`
+  query codeSearchKeywordByType($pagination: PaginationInput) {
+    codeSearchKeywordByType(pagination: $pagination)
+  }
+`;

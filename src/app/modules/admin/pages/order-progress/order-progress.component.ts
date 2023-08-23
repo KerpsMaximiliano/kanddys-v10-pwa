@@ -95,7 +95,7 @@ export class OrderProgressComponent implements OnInit {
       },
       options: {
         limit: 25,
-        sortBy: 'createdAt:desc'
+        sortBy: 'updatedAt:desc'
       },
     };
     const orders = (

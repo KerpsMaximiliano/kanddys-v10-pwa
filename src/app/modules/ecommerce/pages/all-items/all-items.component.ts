@@ -4,7 +4,7 @@ import { NgNavigatorShareService } from 'ng-navigator-share';
 import { Subscription } from 'rxjs';
 import { AppService } from 'src/app/app.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { Item } from 'src/app/core/models/item';
+import { Item, ItemKeyword } from 'src/app/core/models/item';
 import { ItemSubOrderInput } from 'src/app/core/models/order';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -22,6 +22,7 @@ export class AllItemsComponent implements OnInit {
   status: 'idle' | 'loading' | 'complete' | 'error' = 'idle';
 
   items: Item[] = [];
+  itemsKeywords: ItemKeyword[] = []
   renderItemsPromise: Promise<{
     listItems: Item[];
   }>;
@@ -31,14 +32,14 @@ export class AllItemsComponent implements OnInit {
     page: number;
     status: 'loading' | 'complete';
   } = {
-    page: 1,
-    pageSize: 15,
-    status: 'loading',
-  };
+      page: 1,
+      pageSize: 15,
+      status: 'loading',
+    };
   reachedTheEndOfPagination = false;
 
   filterTrigger: {
-    triggerID: 'pricing' | 'tags' | 'search' | 'estimatedDelivery' | 'supplier',
+    triggerID: 'pricing' | 'tags' | 'search' | 'estimatedDelivery' | 'hashtag' | 'supplier',
     data: any
   }
 
@@ -54,13 +55,12 @@ export class AllItemsComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute
   ) {
-    this.triggerSubscription = this.saleflowService.trigger.subscribe(async data => {
-      // Reaccionar al trigger desde el Componente A
-      console.log('Componente B se enteró del trigger:', data);
-      
-      this.filterTrigger = data;
-      await this.getItems(true, data.triggerID, data.data);
-    });
+    this.triggerSubscription = this.saleflowService.trigger.subscribe(
+      async (data) => {
+        this.filterTrigger = data;
+        await this.getItems(true, data.triggerID, data.data);
+      }
+    );
   }
 
   async ngOnInit() {
@@ -164,8 +164,15 @@ export class AllItemsComponent implements OnInit {
         this.paginationState.status === 'complete' &&
         !this.reachedTheEndOfPagination
       ) {
-        if (this.filterTrigger) await this.getItems(false, this.filterTrigger.triggerID, this.filterTrigger.data);
-        else await this.getItems();
+        if (this.filterTrigger) {
+          await this.getItems(
+            false,
+            this.filterTrigger.triggerID,
+            this.filterTrigger.data
+          );
+        } else {
+          await this.getItems();
+        }
       }
     }
 
@@ -179,8 +186,14 @@ export class AllItemsComponent implements OnInit {
   }
 
   async getItems(
-    restartPagination = false, 
-    filterCriteria?: 'pricing' | 'tags' | 'search' | 'estimatedDelivery' | 'supplier',
+    restartPagination = false,
+    filterCriteria?:
+      | 'pricing'
+      | 'tags'
+      | 'search'
+      | 'estimatedDelivery'
+      | 'hashtag'
+      | 'supplier',
     filterCriteriaData?: any
   ) {
     this.paginationState.status = 'loading';
@@ -200,12 +213,10 @@ export class AllItemsComponent implements OnInit {
     }
 
     let filter = {};
-    if (filterCriteria === 'pricing')
-      filter = filterCriteriaData;
+    if (filterCriteria === 'pricing') filter = filterCriteriaData;
 
     let tags = [];
-    if (filterCriteria === 'tags')
-      tags = filterCriteriaData;
+    if (filterCriteria === 'tags') tags = filterCriteriaData;
 
     let estimatedDeliveryTime = {};
       if (filterCriteria === 'estimatedDelivery')
@@ -215,47 +226,71 @@ export class AllItemsComponent implements OnInit {
       if (this.mode === 'supplier')
         type = 'supplier';
 
-    const pagination: PaginationInput = {
-      filter,
-      findBy: {
-        _id: {
-          __in: ([] = saleflowItems.map((items) => items.item)),
+    if (filterCriteria == 'hashtag') {
+      const keyword = filterCriteriaData.slice(1)
+      const pagination: PaginationInput = {
+        findBy: {
+          keyword,
+          type: 'item',
+        }
+      };
+      this.saleflowService.codeSearchKeywordByType(pagination)
+        .then((items) => {
+          const itemsResult = items.results.map(item => item.reference)
+          const itemsQueryResult = Array.from(new Set(itemsResult))
+          this.items = this.paginationState.page === 1
+            ? itemsQueryResult
+            : this.items.concat(itemsQueryResult);
+          if (itemsQueryResult.length === 0) this.reachedTheEndOfPagination = true;
+          this.paginationState.status = 'complete';
+        })
+        .catch((err) => console.log(err));
+    } else {
+      const pagination: PaginationInput = {
+        filter,
+        findBy: {
+          _id: {
+            __in: ([] = saleflowItems.map((items) => items.item)),
+          },
+          tags,
+          estimatedDeliveryTime,
+          type
         },
-        tags,
-        estimatedDeliveryTime,
-        type
-      },
-      options: {
-        sortBy: 'createdAt:desc',
-        limit: this.paginationState.pageSize,
-        page: this.paginationState.page,
-      },
-    };
+        options: {
+          sortBy: 'createdAt:desc',
+          limit: this.paginationState.pageSize,
+          page: this.paginationState.page,
+        },
+      };
+      this.renderItemsPromise = this.saleflowService.listItems(
+        pagination,
+        true,
+        filterCriteria === 'search' ? filterCriteriaData : ''
+      );
+      this.renderItemsPromise
+        .then((response) => {
+          const items = response;
+          const itemsQueryResult = items.listItems.filter((item) => {
+            return (item.status === 'active' || item.status === 'featured') && (item.type === 'default' || item.type === 'supplier');
+          });
+          if (this.paginationState.page === 1) {
+            this.items = itemsQueryResult;
+          } else {
+            this.items = this.items.concat(itemsQueryResult);
+          }
 
-    this.renderItemsPromise = this.saleflowService.listItems(pagination, true, filterCriteria === 'search' ? filterCriteriaData : '');
-    this.renderItemsPromise
-      .then((response) => {
-        const items = response;
-        const itemsQueryResult = items.listItems.filter((item) => {
-          // return (item.status === 'active' || item.status === 'featured') && item.type === 'default';
-          return (item.status === 'active' || item.status === 'featured') && (item.type === 'default' || item.type === 'supplier');
+          if (itemsQueryResult.length === 0) {
+            this.reachedTheEndOfPagination = true;
+          }
+
+          this.paginationState.status = 'complete';
+        })
+        .catch((err) => {
+          console.log(err);
         });
+    }
 
-        if (this.paginationState.page === 1) {
-          this.items = itemsQueryResult;
-        } else {
-          this.items = this.items.concat(itemsQueryResult);
-        }
 
-        if (itemsQueryResult.length === 0) {
-          this.reachedTheEndOfPagination = true;
-        }
-
-        this.paginationState.status = 'complete';
-      })
-      .catch((err) => {
-        console.log(err);
-      });
   }
 
   toggleItemInCart(index: number) {

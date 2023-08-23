@@ -324,7 +324,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
         }
       }
 
-      if (this.itemData.type === 'supplier') {
+      if (this.itemData && this.itemData.type === 'supplier') {
         this.supplierItem = true;
         this.defaultCtaText = 'Agregar a la cotización';
         this.defaultCtaRemoveText = 'Quitar de la cotización';
