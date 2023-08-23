@@ -63,11 +63,15 @@
         >
         <input
           type="file"
+          style="display: none"
           [accept]="['.png', '.jpg', '.jpeg']"
           name="image"
           id="image"
           (change)="onFileUpload($event)"
         />
+        <label class="add-square" [style.background]="formatImage(image)" for="image">
+          <div class="add-circle"><span>+</span></div>
+        </label>
       </div>
     </section>
     <section class="form-group form-optional">

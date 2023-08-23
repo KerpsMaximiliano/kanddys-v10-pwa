@@ -3,6 +3,7 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { MerchantInput } from 'src/app/core/models/merchant';
 import { base64ToFile } from 'src/app/core/helpers/files.helpers';
+import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-merchant-editor',
@@ -21,6 +22,7 @@ export class MerchantEditorComponent implements OnInit {
   constructor(
     private merchantsService: MerchantsService,
     private authService: AuthService,
+    private _DomSanitizer: DomSanitizer,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -49,6 +51,7 @@ export class MerchantEditorComponent implements OnInit {
     const reader = new FileReader();
     reader.onload = (e) => {
       this.imageBase64 = e.target.result as string
+      this.image = reader.result as string;
     };
     reader.readAsDataURL(event.target.files[0] as File);
     this.imageName = event.target.files[0].name as string;
@@ -62,7 +65,7 @@ export class MerchantEditorComponent implements OnInit {
         console.log(error);
       }
     }
-    if (this.name || this.slug) {
+    if (this.name || this.slug || this.image) {
       try {
         let merchantInput = {};
         if(this.name) merchantInput['name'] = this.name;
@@ -77,5 +80,11 @@ export class MerchantEditorComponent implements OnInit {
         console.log(error);
       }
     }
+  }
+
+  formatImage(image: string): SafeStyle {
+    return this._DomSanitizer.bypassSecurityTrustStyle(`url(
+      ${image})
+      no-repeat center center / cover #fff`);
   }
 }
