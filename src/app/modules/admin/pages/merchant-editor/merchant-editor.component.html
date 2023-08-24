@@ -59,7 +59,7 @@
       </div>
       <div class="input-group" *ngIf="image || image === ''">
         <label for="image"
-          >Your logo image</label
+          >Imagen Comercial</label
         >
         <input
           type="file"
@@ -69,9 +69,7 @@
           id="image"
           (change)="onFileUpload($event)"
         />
-        <label class="add-square" [style.background]="formatImage(image)" for="image">
-          <div class="add-circle"><span>+</span></div>
-        </label>
+        <label class="square" [style.background]="image? formatImage(image) : '#936105'" for="image"></label>
       </div>
     </section>
     <section class="form-group form-optional">
