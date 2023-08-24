@@ -31,7 +31,7 @@
                   <p class="context">{{item.description}}</p>
               </div>
           </div>
-          <div *ngFor="let supplier of listItems[i].suppliers">
+          <div *ngFor="let supplier of listItems[i].suppliers; let last = last">
           <div class="flex-space-between">
             <div class="flex">
               <div
@@ -51,7 +51,7 @@
             <p class="item-incomes">${{supplier.pricing}}</p>
           </div>
           <li class="item-articles">{{supplier.stock}} disponibles</li>
-          <hr>
+          <hr *ngIf="!last">
           </div>
         </div>
       </div>
