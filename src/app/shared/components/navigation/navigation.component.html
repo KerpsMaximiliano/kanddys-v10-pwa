@@ -20,7 +20,7 @@
           -->
 
           <ng-container>
-            <div class="tabs">
+            <!-- <div class="tabs">
               <div
                 class="tab"
                 (click)="changeTab(i)"
@@ -29,15 +29,15 @@
               >
                 {{ tab.text }}
               </div>
-            </div>
+            </div> -->
           </ng-container>
         </div>
 
         <div class="right-part">
           <div class="member">
-            <div class="user-button" *ngIf="!headerService.user">
+            <!-- <div class="user-button" *ngIf="!headerService.user">
               (Invitado)
-            </div>
+            </div> -->
           </div>
 
           <div class="close" style="cursor: pointer">
@@ -46,10 +46,37 @@
         </div>
       </div>
 
+      <div class="tabs-container">
+        <div class="tabs">
+          <div
+            class="tab"
+            (click)="tabIndex=0"
+            [ngClass]="{ active: !tabIndex }"
+          >
+            Floristerias & Tiendas de Regalos
+          </div>
+          <div
+            class="tab"
+            (click)="tabIndex=1"
+            [ngClass]="{ active: tabIndex }"
+          >
+            Proveedores
+          </div>
+        </div>
+        <div class="tab-question" >
+          {{!tabIndex ?"Como Floristería ¿qué necesitas?":"Como Proveedor de Floristerías y Tiendas de Regalos ¿qué necesitas?"}}
+        </div>
+        <div class="tab-content">
+          <div class="tab-content-item" *ngFor="let item of filterData()">
+            {{item}}
+          </div>
+        </div>
+      </div>
+
       <section>
         <ng-container *ngFor="let tab of tabs; index as i">
           <ng-container *ngIf="tab.active">
-            <h2 class="logged-user-header">{{ tab.headerText }}</h2>
+            <!-- <h2 class="logged-user-header">{{ tab.headerText }}</h2> -->
             <div class="header-border"></div>
 
             <ul>

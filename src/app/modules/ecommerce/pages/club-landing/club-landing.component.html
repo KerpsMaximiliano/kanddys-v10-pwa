@@ -21,10 +21,10 @@
           </div> -->
     
           <div class="close">
-            <span *ngIf="!isFlag" (click)="openDialog()">{{userID}}</span>
-            <span *ngIf="isFlag" (click)="enterClub()">Ingresa al Club</span>
+            <span *ngIf="headerService.user" (click)="openDialog()">{{userID}}</span>
+            <span *ngIf="!headerService.user" (click)="enterClub()">Ingresa al Club</span>
           </div>
-          <div class="close" style="cursor: pointer">
+          <div class="close" style="cursor: pointer" *ngIf="headerService.user">
             <span (click)="close()">
               <mat-icon>menu</mat-icon>
             </span>
@@ -34,12 +34,12 @@
     
       <main>
         <div class="landing-title">
-          {{isFlag ? ".. se desarrollan herramientas para las los Miembros del Club." : ""}}
+          {{headerService.user ? ".. se desarrollan herramientas para las los Miembros del Club." : ""}}
         </div>
 
         <div class="tabs-container">
           <!-- TABS -->
-          <div class="title" *ngIf="isFlag">
+          <div class="title" *ngIf="!headerService.user">
             HERRAMIENTAS SEGUN LA MEMBRESIA
           </div>
           <div class="tabs" *ngIf="isVendor == isProvider">
@@ -107,7 +107,7 @@
                 <ng-container *ngFor="let subtab of tab.subTabs; index as j">
                   <ng-container *ngIf="subtab.active">
                     <div class="footer-swiper">
-                      <h3 class="footer-swiper-title">{{ isFlag ? "LO QUE MAS LE GUSTA A LAS FLORISTERIAS" : "LO QUE MAS LE GUSTA A LOS PROVEEDORES" }}</h3>
+                      <h3 class="footer-swiper-title">{{ !tabIndex ? "LO QUE MAS LE GUSTA A LAS FLORISTERIAS" : "LO QUE MAS LE GUSTA A LOS PROVEEDORES" }}</h3>
               
                       <div class="swiper-custom-container">
                         <swiper [config]="swiperConfig">
@@ -128,6 +128,6 @@
 
       </main>
     
-      <footer (click)="share()" [ngClass]="{'no-green' : isVendor != isProvider}">{{isFlag ? (tabIndex ? "Membresía Gratis a Proveedores" : "Membresía US$3,000 por un año") : "Afiliados ganan US$650 por invitado"}}</footer>
+      <footer (click)="share()" [ngClass]="{'no-green' : isVendor != isProvider}">{{!headerService.user ? (tabIndex ? "Membresía Gratis a Proveedores" : "Membresía US$3,000 por un año") : "Afiliados ganan US$650 por invitado"}}</footer>
     </div>
 </app-navigation>
