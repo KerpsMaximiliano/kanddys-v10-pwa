@@ -62,42 +62,32 @@
           </div>
           <div class="right-side">
             <div class="quantity-title">VENDIENDO</div>
-            <!-- <div
-              class="item-quantity"
-              
-            >
-              <div class="quantity">
-                <span mat-button class="button icon">
-                  <mat-icon style="font-size: 19px; width:18px"
-                    >delete</mat-icon
-                  >
-                </span>
-
-                <span style="position: relative; bottom: 2px"> 0 </span>
-                <span mat-button class="button icon">+</span>
-              </div>
-            </div> -->
-
+           
             <div class="item-quantity">
               <span
                 mat-button
                 class="button icon"
+                (click)="
+                  item.stock >= 1
+                  ? changeAmount(item, 'subtract', i)
+                  : null"
               >
-
-                <mat-icon
-                  style="font-size: 19px; width: 23px"
-                  >delete</mat-icon
-                >
+              <ng-container>
+                {{ item.stock > 0 ? "-" : "" }}
+              </ng-container>
               </span>
       
-              <span>0</span>
+              <span>{{item.stock}}</span>
       
               <span
                 mat-button
                 class="button icon"
+                (click)="changeAmount(item, 'add', i)"
                 >+</span
               >
             </div>
+
+       
 
 
 

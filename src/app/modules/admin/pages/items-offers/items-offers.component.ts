@@ -11,6 +11,8 @@ import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { FormComponent, FormData } from 'src/app/shared/dialogs/form/form.component';
 import { environment } from 'src/environments/environment';
 import * as moment from 'moment';
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-items-offers',
@@ -26,12 +28,22 @@ export class ItemsOffersComponent implements OnInit {
   merchantId: string;
   saleFlowItemsId = [];
   listItems;
+  unitsForItemsThatYouDontSell: Record<string, number> = {};
+  itemsISell: Array<Item> = [];
+  itemsIDontSell: Array<Item> = [];
+  stock:number;
+  private clickSubject = new Subject();
 
   constructor(private dialog: MatDialog,
               private merchantService: MerchantsService,
               private saleFlowService: SaleFlowService,
               private itemService: ItemsService
-  ) { }
+  ) { 
+    this.clickSubject.pipe(debounceTime(500)).subscribe((data) => {
+      this.executeDelayedProcess(data);
+    });
+  }
+
 
   async ngOnInit() {
     this.merchantId = await this.getMerchantId();
@@ -98,6 +110,7 @@ async getListItems(searchName = ""){
       description: item.description,
       pricing: item.pricing,
       activeOffer: item.activeOffer,
+      stock: item.stock,
       offerExpiration: item.offerExpiration ? this.getTimeDifference(item.offerExpiration) : ""
     })
   })
@@ -188,6 +201,39 @@ async getListItems(searchName = ""){
       return 1;
     }
     return 0;
+  }
+
+  async changeAmount(item, type: 'add' | 'subtract', itemIndex) {
+    try {      
+      let newAmount: number;
+      if (type === 'add') {
+        newAmount = item.stock >= 0 ? item.stock + 1 : 1;
+        this.listItems[itemIndex].stock = newAmount;
+      } else if (type === 'subtract') {
+        newAmount = item.stock >= 1 ? item.stock - 1 : 0;
+        this.listItems[itemIndex].stock = newAmount;
+      }
+
+      const data = {
+        _id: item._id,
+        stock: newAmount
+      }
+
+      this.clickSubject.next(data);
+
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+
+  executeDelayedProcess(data) {
+    this.itemService.updateItem(
+      {
+        stock: data.stock,
+      },
+      data._id
+    );
   }
 
 }
