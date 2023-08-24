@@ -71,16 +71,6 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
   layout: 'EXPANDED-SLIDE' | 'ZOOMED-OUT-INFO' = 'EXPANDED-SLIDE';
   renderQrContent: boolean = true;
   showIntroParagraph: boolean = true;
-  reminderToast: {
-    message: string;
-    warning?: boolean;
-    secondsTrigger: number;
-    timeoutId?: ReturnType<typeof setTimeout>;
-  } = {
-    message: 'Los campos que tienen (*) son obligatorios',
-    secondsTrigger: 30,
-    warning: false,
-  };
   queryParamsSubscription: Subscription = null;
   routerParamsSubscription: Subscription = null;
   existingItem: boolean = false;
@@ -746,17 +736,19 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
           const createdItem = (await this.itemsService.createItem(itemInput))
             ?.createItem;
 
-          itemInput.parentItem = createdItem._id;
+          if (!this.headerService.user.hasRoles('ADMIN')) {
+            itemInput.parentItem = createdItem._id;
 
-          const createdItem2 = (await this.itemsService.createItem(itemInput))
-            ?.createItem;
+            const createdItem2 = (await this.itemsService.createItem(itemInput))
+              ?.createItem;
 
-          await this.saleflowService.addItemToSaleFlow(
-            {
-              item: createdItem2._id,
-            },
-            saleflowDefault._id
-          );
+            await this.saleflowService.addItemToSaleFlow(
+              {
+                item: createdItem2._id,
+              },
+              saleflowDefault._id
+            );
+          }
 
           this.snackbar.open('Item creado exitosamente', 'Cerrar', {
             duration: 3000,
@@ -899,7 +891,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
                 icon: 'check-circle.svg',
                 showCloseButton: false,
                 message:
-                  'Se ha enviado un link mágico a tu teléfono o a tu correo electrónico',
+                  'Se ha enviado un link mágico a tu correo electrónico',
               },
               customClass: 'app-dialog',
               flags: ['no-header'],
@@ -1045,9 +1037,6 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.reminderToast.timeoutId)
-      clearTimeout(this.reminderToast.timeoutId);
-
     this.queryParamsSubscription.unsubscribe();
   }
 }

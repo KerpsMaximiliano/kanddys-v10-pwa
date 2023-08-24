@@ -1,0 +1,35 @@
+<div class="container">
+  <div class="close" (click)="back()">X</div>
+
+  <div class="inner-flex-container">
+    <div class="top-wrapper">
+      <h2>
+        Bienvenido al Club de las Floristerias
+        <ng-container *ngIf="merchantName">{{ merchantName }}</ng-container>
+      </h2>
+      <h2>
+        Pronto te llegará un correo con un par de enlaces que validarán tu
+        membresía.
+      </h2>
+    </div>
+
+    <div class="bottom-wrapper">
+      <div class="club-promise">
+        La promesa del Club es desarrollar funcionalidades que necesites, así
+        que cuando necesites algo no dudes en contactarme por WhatsApp (918)
+        815-6444, mi nombre es Daviel y quedo a tu orden.
+      </div>
+
+      <button mat-button class="main-cta" (click)="sendWhatsappToAppOwner()">
+        <div class="content">
+          Escribe a Daviel por WhatsApp
+          <img [src]="assetsFolder + '/whatsApp-img.webp'" alt="" />
+        </div>
+      </button>
+
+      <a class="bottom-link" [href]="'https://www.floristerias.club'"
+        >www.floristerias.club</a
+      >
+    </div>
+  </div>
+</div>

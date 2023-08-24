@@ -41,6 +41,7 @@
 }
 
 .field-wrapper {
+  position: relative;
   display: inline-flex;
   flex-direction: column;
   align-items: flex-start;
@@ -68,6 +69,17 @@
     &::placeholder {
       color: #7b7b7b;
     }
+  }
+
+  .field-button {
+    color: #c4c5c3;
+    font-family: InterLight;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    margin: 0px;
+    padding: 0px;
   }
 }
 

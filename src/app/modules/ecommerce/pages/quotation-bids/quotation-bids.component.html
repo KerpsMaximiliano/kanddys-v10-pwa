@@ -40,44 +40,55 @@
   <div class="content">
     <ng-container [ngSwitch]="currentView">
       <ng-container *ngSwitchCase="'SUPPLIERS_LIST'">
-        <p class="content-title">Precios de Suplidores Locales:</p>
-        <div class="content-cards-container">
-          <div
-            class="content-card"
-            *ngFor="let match of quotationMatches"
-            (click)="createOrder(match)"
-          >
-            <div class="content-card-top-container">
-              <div class="flex">
-                <div
-                  class="content-card-img"
-                  [ngStyle]="{
-                    backgroundImage: match.merchant.image
-                      ? 'url(' + match.merchant.image + ')'
-                      : 'url(/assets/images/noimage.png)',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'center',
-                    backgroundSize: 'cover'
-                  }"
-                ></div>
-                <p class="content-card-title">
-                  {{ match.merchant.name || match.merchant.slug }}
-                </p>
-              </div>
-              <p class="content-card-cotization">${{ match.total }}</p>
-            </div>
-            <ul class="content-card-list-container">
-              <li>
-                {{ match.items.length }} de {{ match.itemsMax }} artículos
-                disponibles
-              </li>
-            </ul>
-
-            <!--
-              <hr />
-            -->
-          </div>
+        <div class="providers-config-header-wrapper" (click)="changeView(true)">
+          Proveedores le cotizan y venden fácilmente en el Club de las
+          Floristerías..<span>mira como</span>
         </div>
+
+        <p class="content-title">Precios de Suplidores Locales:</p>
+        <ng-container *ngIf="quotationMatches.length > 0">
+          <div class="content-cards-container">
+            <div
+              class="content-card"
+              *ngFor="let match of quotationMatches"
+              (click)="createOrder(match)"
+            >
+              <div class="content-card-top-container">
+                <div class="flex">
+                  <div
+                    class="content-card-img"
+                    [ngStyle]="{
+                      backgroundImage: match.merchant.image
+                        ? 'url(' + match.merchant.image + ')'
+                        : 'url(/assets/images/noimage.png)',
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'center',
+                      backgroundSize: 'cover'
+                    }"
+                  ></div>
+                  <p class="content-card-title">
+                    {{ match.merchant.name || match.merchant.slug }}
+                  </p>
+                </div>
+                <p class="content-card-cotization">${{ match.total }}</p>
+              </div>
+              <ul class="content-card-list-container">
+                <li>
+                  {{ match.items.length }} de {{ match.itemsMax }} artículos
+                  disponibles
+                </li>
+              </ul>
+
+              <!--
+                <hr />
+              -->
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="quotationMatches.length === 0">
+          <p class="content-title">No hay suplidores para estos productos todavía...</p>
+        </ng-container>
       </ng-container>
 
       <ng-container *ngSwitchCase="'QUOTATION_CONFIG'">
@@ -110,26 +121,6 @@
             </h6>
           </div>
         </div>
-
-        <div class="optional-stuff">
-          <p class="content-title-light">FUNCIONALIDADES PARA PROVEEDORES:</p>
-
-          <div class="item-field empty" (click)="changeView(true)">
-            <div class="field-name">
-              {{
-                isTheCurrentUserTheQuotationMerchant
-                  ? "Ajustar los precios de esta cotización"
-                  : "Añadir mi precio a los artículos de esta cotización"
-              }}
-            </div>
-
-            <img
-              class="add-icon"
-              [src]="assetsFolder + '/add_button_circle.svg'"
-              alt="fill value"
-            />
-          </div>
-        </div>
       </ng-container>
     </ng-container>
   </div>
@@ -157,13 +148,7 @@
   ></qrcode>
 
   <footer *ngIf="currentView === 'SUPPLIERS_LIST'">
-    <button
-      class="share-btn"
-      *ngIf="typeOfQuotation === 'DATABASE_QUOTATION'"
-      (click)="shareQuotation()"
-    >
-      Comparte y monetiza
-    </button>
+    <button class="share-btn" (click)="shareQuotation()">Comparte</button>
 
     <span class="average-label" *ngIf="quotationMatches?.length > 0"
       >Promedio: ${{ providersPriceAverage | number : "1.2-2" }}</span

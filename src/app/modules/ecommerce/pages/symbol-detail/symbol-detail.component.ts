@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { formatNumber } from '@angular/common';
+import { formatNumber, Location } from '@angular/common';
 
 //Services
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -191,7 +191,8 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     private quotationsService: QuotationsService,
     private appService: AppService,
     private postsService: PostsService,
-    private elementRef: ElementRef
+    private elementRef: ElementRef,
+    private location: Location,
   ) {}
 
   async ngOnInit() {
@@ -323,7 +324,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
         }
       }
 
-      if (this.itemData.type === 'supplier') {
+      if (this.itemData && this.itemData.type === 'supplier') {
         this.supplierItem = true;
         this.defaultCtaText = 'Agregar a la cotización';
         this.defaultCtaRemoveText = 'Quitar de la cotización';
@@ -795,9 +796,10 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
 
     if (this.entityPresentation === 'PREVIEW') {
       this.itemsService.itemUrls = [];
-      return this.router.navigate([
-        `/ecommerce/item-management/${this.itemData._id}`,
-      ]);
+      // return this.router.navigate([
+      //   `/ecommerce/item-management/${this.itemData._id}`,
+      // ]);
+      return this.location.back();
     }
     if (this.mode === 'image-preview') {
       this.itemsService.itemUrls = [];
@@ -839,9 +841,13 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     this.itemsService.removeTemporalItem();
 
     if (this.headerService.saleflow) {
+      console.log("store 1")
       this.router.navigate([`../../../store`], {
         replaceUrl: this.headerService.checkoutRoute ? true : false,
         relativeTo: this.route,
+        queryParams: {
+          mode: this.itemData?.type === 'supplier' ? 'supplier' : 'standard',
+        }
       });
     } else {
       if (this.itemData) {
@@ -849,8 +855,13 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
           this.itemData.merchant._id
         );
 
-        if (itemSaleflow)
-          this.router.navigate(['ecommerce/store/' + itemSaleflow._id]);
+        console.log("store 2");
+        if (itemSaleflow) 
+          this.router.navigate(['ecommerce/store/' + itemSaleflow._id], {
+            queryParams: {
+              mode: this.itemData?.type === 'supplier' ? 'supplier' : 'standard',
+            }
+        });
       }
     }
   };
@@ -892,7 +903,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   }
 
   async saveProduct() {
-    if (this.itemData && this.itemData.type === 'supplier') {
+    if (this.itemData && this.itemData.type === 'supplier' && this.supplierViewer) {
       const foundItemIndex =
         this.quotationsService.selectedItemsForQuotation.findIndex(
           (itemId) => itemId === this.itemData._id

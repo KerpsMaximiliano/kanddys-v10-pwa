@@ -1,130 +1,329 @@
 <div class="container">
-  <header class="header quotation">
-    <div class="left-area">
+  <div class="search-opened">
+    <div class="header-top">
       <button class="close" (click)="goBack()">X</button>
-      <p class="title">{{ quotationName }}</p>
+
+      <span
+        class="save"
+        *ngIf="!logged"
+        [ngClass]="{
+          valid: atLeastOneHasPriceAdded
+        }"
+        (click)="openMagicLinkDialog()"
+        >Guardar</span
+      >
     </div>
-  </header>
+
+    <form class="search-bar-wrapper">
+      <input
+        type="text"
+        name="item-search"
+        id="search-from-results-view"
+        class="input search-bar"
+        [placeholder]="searchbarPlaceholder"
+        [formControl]="itemSearchbar"
+      />
+    </form>
+  </div>
+
+  <ng-container *ngTemplateOutlet="itemsTutorialOverlay"></ng-container>
 
   <div class="list-of-items">
     <div
       class="item-wrapper"
-      *ngFor="let item of quotationItems; let itemIndex = index"
+      *ngFor="let item of quotationItemsToShow; let itemIndex = index"
     >
-      <div class="item-card">
-        <div class="left-column">
-          <div
-            class="product-image"
-            [ngStyle]="{
-              backgroundColor: 'white',
-              backgroundImage: item.images?.length
-                ? 'url(' +
-                  item.images[0].value +
-                  '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
-                : 'url(/assets/images/noimage.png)',
-              backgroundPosition: 'center',
-              backgroundSize: 'cover',
-              backgroundRepeat: 'no-repeat'
-            }"
-          ></div>
-        </div>
+      <ng-container
+        *ngTemplateOutlet="
+          itemCard;
+          context: {
+            item: item,
+            itemIndex: itemIndex,
+            firstItem: itemIndex === 0
+          }
+        "
+      ></ng-container>
+    </div>
+  </div>
+</div>
 
-        <div class="middle-column">
-          <div class="item-name">{{ item.name }}</div>
-          <div class="item-description">{{ item.description }}</div>
-          <div class="item-price">
-            <ng-container *ngIf="item.pricing !== null">
-              ${{ item.pricing | number : "1.2-2" }}
-            </ng-container>
+<ng-template
+  #itemCard
+  let-item="item"
+  let-itemIndex="itemIndex"
+  let-firstItem="firstItem"
+>
+  <div
+    class="item-card"
+    [ngClass]="{
+      'tutorial-highlighted': firstItem && tutorialOpened
+    }"
+  >
+    <div class="left-column" (click)="(null)">
+      <div
+        class="product-image"
+        [ngStyle]="{
+          backgroundColor: 'white',
+          backgroundImage: item.images?.length
+            ? 'url(' +
+              item.images[0].value +
+              '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+            : 'url(/assets/images/noimage.png)',
+          backgroundPosition: 'center',
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat'
+        }"
+      ></div>
+    </div>
 
-            <ng-container *ngIf="item.pricing === null">
-              Adicione el precio
-            </ng-container>
-          </div>
-        </div>
+    <div class="middle-column fixedWidth" (click)="(null)">
+      <div class="item-name">{{ item.name }}</div>
+      <div class="item-description">{{ item.description }}</div>
 
-        <div
-          class="right-column"
-          (click)="redirectToItemEdition(item, itemIndex)"
-        >
-          <div class="edit-btn">Editar</div>
-        </div>
+      <div
+        class="item-price"
+        (click)="item.inSaleflow ? editPrice(item, itemIndex) : addPrice(item)"
+      >
+        <ng-container *ngIf="item.pricing !== null">
+          ${{ item.pricing | number : "1.2-2" }}
+        </ng-container>
+
+        <img
+          class="price-tutorial-img"
+          *ngIf="firstItem && tutorialOpened && item.pricing !== null"
+          [src]="assetsFolder + '/card-arrow-up.svg'"
+          alt=""
+        />
       </div>
 
-      <!--
-        <app-buyer-card
-          [index]="itemIndex"
-          [title]="item.name"
-          [description]="item.description"
-          [img]="
-            item.images?.length
-              ? completeImageURLWrapper(item.images[0].value)
-              : ''
+      <div
+        class="item-add-price"
+        *ngIf="item.pricing === null"
+        (click)="addPrice(item)"
+      >
+        Mi precio
+
+        <img
+          class="price-tutorial-img"
+          *ngIf="firstItem && tutorialOpened && itemsTutorialCardsOpened['price']"
+          [src]="assetsFolder + '/card-arrow-up.svg'"
+          alt=""
+        />
+      </div>
+    </div>
+
+    <div class="right-column">
+      <div class="quantity-title">VENDIENDO</div>
+
+      <div class="item-quantity">
+        <span
+          mat-button
+          class="button icon"
+          (click)="
+            item.stock >= 1
+              ? changeAmount(item, 'subtract', itemIndex, item.inSaleflow)
+              : null
           "
-          [leftAmount]="item.pricing"
-          [supplierProvidedData]="{
-            stock: item.stock
-          }"
-          [cta]="true"
-          [ctaActive]="item.isSelected"
-          [skipRedirection]="true"
-          (cardClicked)="redirectToItemEdition(item, itemIndex)"
-        ></app-buyer-card>
-      -->
+        >
+          <ng-container *ngIf="item.inSaleflow">
+            {{ item.stock > 1 ? "-" : "" }}
+          </ng-container>
+
+          <ng-container *ngIf="!item.inSaleflow">
+            {{ unitsForItemsThatYouDontSell[item._id] > 1 ? "-" : "" }}
+          </ng-container>
+
+          <mat-icon
+            *ngIf="item.stock === 1"
+            style="font-size: 19px; width: 23px"
+            >delete</mat-icon
+          >
+        </span>
+
+        <span>{{
+          !item.stock
+            ? 0
+            : !item.inSaleflow
+            ? unitsForItemsThatYouDontSell[item._id]
+              ? unitsForItemsThatYouDontSell[item._id]
+              : 0
+            : item.stock
+        }}</span>
+
+        <span
+          mat-button
+          class="button icon"
+          (click)="changeAmount(item, 'add', itemIndex, item.inSaleflow)"
+          >+</span
+        >
+      </div>
     </div>
   </div>
 
-  <footer *ngIf="!adjustmentsReady" class="adjustments-not-ready">
-    Edita lo que le puedes vender a floristerías
-  </footer>
+  <ng-container *ngIf="firstItem && tutorialOpened">
+    <ng-container *ngTemplateOutlet="itemsTutorialContent"></ng-container>
+  </ng-container>
+</ng-template>
 
-  <footer
-    *ngIf="
-      this.quotationsService.supplierItemsAdjustmentsConfig.typeOfProvider ===
-        'REGISTERED_SUPPLIER' &&
-      this.quotationsService.supplierItemsAdjustmentsConfig &&
-      authorized &&
-      adjustmentsReady
-    "
-  >
-    <button
-      style="color: #272727"
-      (click)="confirmChangesForRegisteredUser()"
-    >
-      Confirmar
-    </button>
-  </footer>
+<ng-template #itemsTutorialOverlay>
+  <div
+    class="tutorial-wrapper"
+    [ngClass]="{
+      opened: tutorialOpened
+    }"
+  ></div>
+</ng-template>
 
-  <footer
-    *ngIf="
-      this.quotationsService.supplierItemsAdjustmentsConfig.typeOfProvider ===
-        'NEW_SUPPLIER' && adjustmentsReady
-    "
-  >
-    <button
-      style="color: #272727"
-      (click)="confirmChangesForNewUser()"
-    >
-      Guardar y registrarme
-    </button>
-  </footer>
+<ng-template #itemsTutorialContent>
+  <div class="items-tutorial-wrapper">
+    <ng-container
+      *ngTemplateOutlet="
+        helpCard;
+        context: {
+          containerStyles: {
+            width: '92.52%',
+            maxWidth: '396px'
+          },
+          middleText: 'Adiciona el precio de los artículos que vendes',
+          middleTextStyles: {
+            marginBottom: '16px',
+            fontFamily: 'InterSemiBold',
+            fontSize: '23px',
+            fontStyle: 'normal'
+          },
+          bottomText: 'Ok',
+          bottomTextClickHandler: closeItemsTutorial,
+          openedStateObject: itemsTutorialCardsOpened,
+          cardName: 'price'
+        }
+      "
+    ></ng-container>
+    <ng-container
+      *ngTemplateOutlet="
+        helpCard;
+        context: {
+          containerStyles: {
+            width: '92.52%',
+            maxWidth: '396px',
+            padding: '32px 50px 39px 50px'
+          },
+          topText: 'Bienvenido a www.floristerias.club',
+          topTextStyles: {
+            color: '#FFF',
+            textAlign: 'center',
+            fontFamily: 'InterSemiBold',
+            fontSize: '23px',
+            fontStyle: 'normal',
+            fontWeight: '600',
+            lineHeight: 'normal',
+            marginBottom: '44px'
+          },
+          middleText:
+            'Seguir desarrollando una plataforma de soluciones a los desafíos que enfrentan las floristerías y sus proveedores.',
+          middleTextStyles: {
+            color: '#FFF',
+            textAlign: 'center',
+            fontFamily: 'InterRegular',
+            fontSize: '20px',
+            fontStyle: 'normal',
+            fontWeight: 400,
+            lineHeight: 'normal',
+            marginBottom: '24px'
+          },
+          upperMiddleText: 'PROMESA A TODOS LOS MIEMBROS',
+          upperMiddleTextStyles: {
+            color: '#F6F6F6',
+            fontFamily: 'InterLight',
+            fontSize: '13px',
+            fontStyle: 'normal',
+            lineHeight: 'normal',
+            marginBottom: '15px'
+          },
+          bottomText: 'Ok',
+          bottomTextClickHandler: closeItemsTutorial,
+          openedStateObject: itemsTutorialCardsOpened,
+          cardName: 'welcome'
+        }
+      "
+    ></ng-container>
+    <ng-container
+      *ngTemplateOutlet="
+        helpCard;
+        context: {
+          containerStyles: {
+            width: '92.52%',
+            maxWidth: '396px'
+          },
+          topText: 'MEMBRESÍA DE PROVEEDORES (GRATIS)',
+          topTextStyles: {
+            color: '#F6F6F6',
+            fontFamily: 'InterLight',
+            fontSize: '13px',
+            fontStyle: 'normal',
+            lineHeight: 'normal',
+            marginBottom: '17px'
+          },
+          middleText:
+            'Esta plataforma exhibe lo que ofreces a Floristerías y Floristas',
+          middleTextStyles: {
+            color: '#FFF',
+            textAlign: 'center',
+            fontFamily: 'InterRegular',
+            fontSize: '20px',
+            fontStyle: 'normal',
+            fontWeight: 400,
+            lineHeight: 'normal',
+            marginBottom: '23px'
+          },
+          bottomText: 'Ok',
+          bottomTextClickHandler: closeItemsTutorial,
+          openedStateObject: itemsTutorialCardsOpened,
+          cardName: 'membership'
+        }
+      "
+    ></ng-container>
+  </div>
+</ng-template>
 
-  <footer
-    *ngIf="
-      this.quotationsService.supplierItemsAdjustmentsConfig.typeOfProvider ===
-        'REGISTERED_SUPPLIER' &&
-      this.quotationsService.supplierItemsAdjustmentsConfig
-        .typeOfQuotationBeingEdited === 'DATABASE_QUOTATION' &&
-      onlyItemsThatAreOnTheSupplierSaleflow &&
-      authorized &&
-      adjustmentsReady
-    "
+<ng-template
+  #helpCard
+  let-containerStyles="containerStyles"
+  let-topText="topText"
+  let-topImage="topImage"
+  let-topTextStyles="topTextStyles"
+  let-upperMiddleText="upperMiddleText"
+  let-upperMiddleTextStyles="upperMiddleTextStyles"
+  let-middleText="middleText"
+  let-middleTextStyles="middleTextStyles"
+  let-bottomText="bottomText"
+  let-bottomTextClickHandler="bottomTextClickHandler"
+  let-cardName="cardName"
+>
+  <div
+    class="help-card-container"
+    [ngStyle]="containerStyles"
+    *ngIf="itemsTutorialCardsOpened[cardName]"
   >
-    <button
-      style="color: #272727"
-      (click)="confirmChangesForRegisteredUser()"
+    <span class="topText" *ngIf="topText" [ngStyle]="topTextStyles">{{
+      topText
+    }}</span>
+
+    <img src="topImage" *ngIf="topImage" [src]="topImage" />
+
+    <span
+      class="middleText"
+      *ngIf="upperMiddleText"
+      [ngStyle]="upperMiddleTextStyles"
+      >{{ upperMiddleText }}</span
     >
-      Ir a mi dashboard
-    </button>
-  </footer>
-</div>
+
+    <span class="middleText" [ngStyle]="middleTextStyles">{{
+      middleText
+    }}</span>
+    <span
+      class="bottomText"
+      (click)="bottomTextClickHandler ? bottomTextClickHandler(cardName) : null"
+      >{{ bottomText }}</span
+    >
+  </div>
+</ng-template>

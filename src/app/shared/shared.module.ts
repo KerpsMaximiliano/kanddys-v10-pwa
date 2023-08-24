@@ -231,6 +231,7 @@ import { InventoryComponent } from './components/inventory/inventory.component';
 import { SupplierRegistrationComponent } from './components/supplier-registration/supplier-registration.component';
 import { CardImageComponent } from './components/card-image/card-image.component';
 import { ConfirmationSimpleComponent } from './dialogs/confirmation-simple/confirmation-simple.component';
+import { OptionsDialogComponent } from './dialogs/options-dialog/options-dialog.component';
 
 const imports = [
   CommonModule,
@@ -473,7 +474,8 @@ const declarations = [
   InventoryComponent,
   SupplierRegistrationComponent,
   ProgressBarComponent,
-  CardImageComponent
+  CardImageComponent,
+  OptionsDialogComponent
 ];
 
 @NgModule({
