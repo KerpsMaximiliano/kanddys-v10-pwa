@@ -96,7 +96,7 @@ export class Item extends Model<Item> {
   index?: number;
   visitorCounter?: VisitorCounter;
   webForms: Array<ItemWebform>;
-  amountMerchantCoin:number;
+  amountMerchantCoin: number;
   active?: boolean;
   layout?: 'EXPANDED-SLIDE' | 'ZOOMED-OUT-INFO';
   ctaText?: string;
@@ -226,4 +226,20 @@ export class ItemCategoryInput {
   description?: string;
   image?: string;
   active?: boolean;
+}
+
+export interface SearchKeyword {
+  results: ItemKeyword[];
+  page: number;
+  limit: number;
+  totalPages: number;
+  totalResults: number;
+}
+
+export interface ItemKeyword extends Model<Item> {
+  keyword: string;
+  status: boolean;
+  type: string;
+  reference: Item;
+  user: string;
 }
