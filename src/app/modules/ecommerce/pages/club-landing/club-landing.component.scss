@@ -38,44 +38,6 @@
       brightness(102%) contrast(102%);
   }
 
-  .tabs {
-    margin-left: 11.72px;
-    display: flex;
-    justify-content: flex-end;
-    height: fit-content;
-
-    .tab {
-      padding: 4px 13px;
-      border-radius: 29px;
-      border: 1px solid rgba(146, 140, 139, 0.94);
-      color: #fff;
-      font-family: "InterRegular";
-      font-size: 16px;
-      font-style: normal;
-      line-height: normal;
-      margin-right: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      @media (max-width: 420px) {
-        font-size: 13px;
-      }
-
-      &.active {
-        background-color: #c4c5c3;
-        font-family: InterBold;
-        color: #181d17;
-      }
-
-      &:hover {
-        cursor: pointer;
-        background-color: #c4c5c3;
-        color: #181d17;
-      }
-    }
-  }
-
   .member {
     margin-right: 13px;
     display: flex;
@@ -99,16 +61,32 @@
     margin: 0;
     text-align: right;
     color: #c4c5c3;
-    padding: 0px;
+    padding-right: 10px;
 
     span {
-      font-size: 24px;
-      font-family: InterLight;
-      color: #c4c5c3;
+      font-size: 21px;
+      font-family: InterRegular;
+      color: #87CD9B;
+      display: flex;
 
       &::hover {
         cursor: pointer;
       }
+    }
+  }
+}
+
+.close-content {
+  height: 50px;
+  background-color: #7B7B7B;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  span {
+    color: #181D17;
+    font-size: 24px;
+    &::hover {
+      cursor: pointer;
     }
   }
 }
@@ -307,4 +285,98 @@ footer {
   line-height: normal;
   text-align: center;
   background-color: #87cd9b;
+}
+
+footer.no-green {
+  background-color: #935F00;
+  color: white;
+}
+
+.tabs-container {
+  margin-bottom: 32px;
+  .title {
+    color: #C4C5C3;
+    margin-top: 30px;
+    margin-left: 11.72px;
+    font-size: 16px;
+  }
+  .tab-question {
+    font-size: 19px;
+    color: white;
+    font-weight: 600;
+    font-family: InterRegular;
+    margin: 17px 14px;
+  }
+  .tab-content {
+    margin-left: 14px;
+  }
+  .tab-content-item {
+    font-size: 17px;
+    font-family: InterRegular;
+    padding-left: 12px;
+    padding-right: 12px;
+    line-height: normal;
+    color: white;
+    margin-bottom: 12px;
+    border-left: 2px solid #87CD9B;
+  }
+}
+
+.tabs {
+  margin-top: 1.5em;
+  margin-left: 11.72px;
+  display: flex;
+  justify-content: flex-start;
+  height: fit-content;
+
+  .tab {
+    padding: 4px 13px;
+    border-radius: 29px;
+    border: 1px solid rgba(146, 140, 139, 0.94);
+    color: #fff;
+    font-family: "InterRegular";
+    font-size: 16px;
+    font-style: normal;
+    line-height: normal;
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    @media (max-width: 420px) {
+      font-size: 13px;
+    }
+
+    &.active {
+      background-color: #c4c5c3;
+      font-family: InterBold;
+      color: #181d17;
+    }
+
+    &:hover {
+      cursor: pointer;
+      background-color: #c4c5c3;
+      color: #181d17;
+    }
+  }
+}
+
+.subtabs {
+  display: flex;
+  justify-content: flex-start;
+  &.active {
+    margin-bottom: 2em;
+  }
+  .subtab {
+    cursor: pointer;
+    margin-top: 1.5em;
+    margin-left: 12px;
+    color: #F6F6F6;
+    font-family: InterRegular;
+    font-size: 16px;
+    &.active {
+      padding-bottom: 3px;
+      border-bottom: 2px solid #6FCF97;
+    }
+  }
 }

@@ -1,0 +1,45 @@
+<mat-action-list
+  class="list"
+  [ngClass]="{
+    'full-screen': data.styles.fullScreen
+  }"
+>
+  <p class="close">
+    <button mat-icon-button (click)="openLink()">
+      <mat-icon *ngIf="!data[0]?.styles?.fullScreen">close</mat-icon>
+      <mat-icon *ngIf="data[0]?.styles?.fullScreen" style="color: #fff; transform: scale(0.8); margin-left: -18px;">
+        arrow_back_ios
+      </mat-icon>
+    </button>
+  </p>
+  <section style="margin-bottom: 16px" >
+    <div class="title">{{ data.title }}</div>
+    <div class="green">
+      Floristerias y Tiendas de Regalos
+    </div>
+    <div class="list-item">
+      Proveedores de Floristerías y Tiendas de Regalos
+    </div>
+    <div class="header-border"></div>
+    <div class="list">
+      <div class="list-item" *ngFor="let item of list">
+        {{item}}
+      </div>
+    </div>
+    <div class="header-border"></div>
+    <div class="user-info">
+      <div class="info">
+        Iniciar como Daviel
+      </div>
+      <div class="info">
+        Iniciar como Merchant Admin en la Arepera
+      </div>
+      <div class="info">
+        Iniciar como Comprador en la Arepera
+      </div>
+      <div class="info">
+        Sign out
+      </div>
+    </div>
+  </section>
+</mat-action-list>

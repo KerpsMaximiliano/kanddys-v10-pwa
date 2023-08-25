@@ -218,6 +218,8 @@ export const listItems = gql`
       description
       createdAt
       parentItem
+      activeOffer
+      offerExpiration
       images {
         _id
         value
@@ -317,5 +319,11 @@ export const updateSaleflow = gql`
     updateSaleflow(input: $input, id: $id) {
       _id
     }
+  }
+`;
+
+export const codeSearchKeywordByType = gql`
+  query codeSearchKeywordByType($pagination: PaginationInput) {
+    codeSearchKeywordByType(pagination: $pagination)
   }
 `;

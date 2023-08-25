@@ -1200,7 +1200,7 @@ export class LoginComponent implements OnInit {
   }
 
   back() {
-    this.location.back();
+    return this.router.navigate([`ecommerce/club-landing`]);
   }
 
   async getNumber() {

@@ -228,7 +228,7 @@ main {
       }
     }
     .item-info-container {
-      width: 50%;
+      width: 55.35%;
       margin-left: 8px;
       p {
         font-family: "InterRegular";
@@ -239,6 +239,16 @@ main {
         &.greyout-text {
           font-size: 13px;
           color: #7b7b7b;
+          line-height: 13.65px;
+          word-wrap: break-word;
+          padding-top: 5px;
+
+          -webkit-line-clamp: 3;
+          line-clamp: 3;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
         }
       }
     }
@@ -444,6 +454,13 @@ footer {
       margin-right: 20px;
     }
   }
+}
+
+.cta-title {
+  cursor: pointer;
+  font-family: InterBold;
+  color: #189AC1;
+  font-size: 17px;
 }
 
 .mat-checkbox ::ng-deep .mat-checkbox-frame {

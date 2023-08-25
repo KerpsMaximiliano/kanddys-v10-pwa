@@ -6,12 +6,17 @@ import { NgNavigatorShareService } from 'ng-navigator-share';
 import { Location } from '@angular/common';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
+import { ClubDialogComponent } from 'src/app/shared/dialogs/club-dialog/club-dialog.component';
 import { Subscription } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { ItemsService } from 'src/app/core/services/items.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { PaginationInput } from 'src/app/core/models/saleflow';
+
 import {
   FormComponent,
   FormData,
@@ -19,12 +24,26 @@ import {
 import { FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import {
+  OptionsDialogComponent,
+  OptionsDialogTemplate,
+} from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
 
 interface ReviewsSwiper {
   title: string;
   slides: Array<{
     content: string;
   }>;
+}
+
+interface Tabs {
+  text: string;
+  subTabs?: Array<{
+    text: string;
+    active: boolean;
+    content?: string[];
+  }>
+  active?: boolean;
 }
 
 @Component({
@@ -38,81 +57,140 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   openNavigation: boolean = false;
   queryParamsSubscription: Subscription = null;
   routerParamsSubscription: Subscription = null;
-  listOfFeatures: Array<{
-    title: string;
-    content: string;
-  }> = [
+
+  isFlag = false;
+  tabIndex = 0;
+  userID = ""
+  isVendor = false;
+  isProvider = false;
+
+  tabContents = {
+    tab1: [
+      "💰 Adicionar mi primer artículo para venderlo online y por WhatsApp",
+      "🛟 Cotizar fácilmente con los Proveedores",
+      "🧞 Saber de las “Ofertas Flash” de los Proveedores",
+      "📢 Más alcance pagándoles comisiones a quienes venden por mi",
+      "🎁 Más alcance premiando a quienes me mencionan en sus cuentas sociales ",
+      "✨ Recompensar a mis clientes según lo que facturaron",
+      "✋ Saber la opinión de mis clientes después que recibieron lo que compraron ",
+      "Preparar un 🛒 con algunas cosas que vendo para cotizar o facturar (NCF es opcional)",
+      "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
+      "Volver a ver la opiniones de los Miembros del Club"
+    ],
+    tab2: [
+      "💰 Empezar a cotizar online y vender automáticamante",
+      "🧞 Adicionar artículos que vendo en el boletín con de “Ofertas Flash” que reciben los miembros",
+      "📢 Más alcance pagándoles comisiones a quienes venden por mi",
+      "🎁 Más alcance premiando a quienes me mencionan en sus cuentas sociales ",
+      "✨ Recompensar a mis clientes según lo que facturaron",
+      "✋ Saber la opinión de mis clientes después que recibieron lo que compraron ",
+      "Preparar un 🛒 con algunas cosas que vendo para cotizar o facturar (NCF es opcional)",
+      "Déjanos saber lo que mas te gusta de las herramientas o lo que necesitas"
+    ],
+    tab3: [
+      " 💰 Gestionar lo que vendo, ver mis beneficios, compartir mi tienda",
+      "📦 Organización de lo vendido,  notificar a mis clientes del status de lo que facturaron ",
+      "🛟 Cotizaciones que comparan los precios de los Proveedores antes de comprarles ",
+      " 📢 Gestionar las comisiones de quienes venden por mi",
+      "✨ Gestionar los premios y las recompensas de mis clientes",
+      "📢 Gestionar los premios de quienes me mencionan en sus cuentas sociales",
+      "✋ Ver las opiniones de mis compradores ",
+      "Gestionar los  🛒 cpara mandar cotizaciones o facturas a mis clientes (NCF es opcional)",
+      "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
+      "Déjanos saber lo que mas te gusta de las herramientas o lo que necesitas"
+    ],
+    tab4: [
+      " 💰 Gestionar y compartir lo que vendo, ver mis beneficios",
+      "📦 Organización de lo vendido,  notificar a mis clientes del status de lo que facturaron ",
+      "🧞 Adicionar artículos que vendo en el boletín con de “Ofertas Flash” que reciben los miembros",
+      " 📢 Gestionar las comisiones de quienes venden por mi",
+      "✨ Gestionar los premios y las recompensas de mis clientes",
+      "📢 Gestionar los premios de quienes me mencionan en sus cuentas sociales",
+      "✋ Ver las opiniones de mis compradores ",
+      "Gestionar los  🛒 con cotizaciones que he hecho, crear facturas y mandar cotizaciones",
+      "Déjanos saber lo que mas te gusta de las herramientas o lo que necesitas"
+    ]
+  }
+
+  tabs: Array<Tabs> = [
     {
-      title: 'Gestión de las Ordenes',
-      content:
-        'Mantén el control de las ordenes desde tu celular. Mira las ordenes según su estado y notificale a tus clientes por WhatsApp o correo electrónico.',
+      text: "Control",
+      subTabs: [
+        {
+          text: "Ordenes",
+          active: true,
+          content: [
+            "“.. puedo ver el estado actualizado de cada orden desde mi celular”",
+            "“.. la función de notificar a los clientes por WhatsApp o correo electrónico es una verdadera maravilla!”",
+            "“¡Es como magia para mantener todo bajo control!”",
+            "“.. me permite estar al tanto de cada orden de una manera que nunca imaginé”",
+            "“.. puedo filtrar las facturas según su estado para priorizar lo que necesito atender primero”",
+            "“.. es como tener a tu asistente personal siempre contigo”",
+            "“.. puedo ver qué órdenes necesitan mi atención inmediata y cuáles están en camino”"
+          ]
+        },
+        {
+          text: "Entregas",
+          active: false,
+          content: [
+            "“.. puedo cobrar extra según la zona de entrega especificada por el comprador”",
+            "“..  maximizo lo que cobro y me permite entregar mas lejos”",
+            "“..  me muestra un enfoque estratégico de las entregas y eso me ayuda en la logística para entregar a tiempo”"
+          ]
+        },
+        {
+          text: "Clientes",
+          active: false,
+          content: [
+            "“.. los reportes que puedo exportar me ayudan a planificar y ejecutar campañas”",
+            "“..  puedo dirigir mis mensajes a grupos específicos con información precisa basado en sus preferencias”",
+            "“..  tener una visión clara de quiénes son mis compradores y qué quieren”"
+          ]
+        }
+      ],
+      active: false
     },
     {
-      title: 'Cotización Eficiente con Proveedores',
-      content:
-        'Accede a una amplia red de proveedores de flores y obtén cotizaciones para tus compras. Compara y elige la oferta más conveniente para ti, maximizando tus ganancias.',
-    },
-    {
-      title: 'Gestión Simplificada de Compras',
-      content:
-        'Convierte las cotizaciones de los proveedores en compras con un solo clic, manteniendo un seguimiento detallado para optimizar tus beneficios.',
-    },
-    {
-      title: 'Inteligencia Artificial',
-      content:
-        'una bot entrenada a tu floristería para ahorrarte tiempo a ti o a tu personal de servicio y ser consistentes en el mensaje que reciben tus clientes.',
-    },
-    {
-      title: 'Ventas con #hashtag',
-      content:
-        'asigna un #hashtag a tus artículos para que desde el Bio de tu Instagram tus compradores aterricen directo a comprar.',
-    },
-    {
-      title: 'Ventas por WhatsApp',
-      content:
-        'Sube tus productos fácilmente y vende directamente a través de WhatsApp. Conecta con tus clientes donde ya se encuentran.',
-    },
-    {
-      title: 'Experiencia Mejorada para tus Clientes',
-      content:
-        'Permite a tus clientes añadir videos a sus mensajes dedicatorios, añadiendo un toque personal único a sus regalos.',
-    },
-    {
-      title: 'Tarifas de Entrega Personalizadas',
-      content:
-        'Ajusta tus tarifas de entrega en función de la zona de entrega, maximizando tus ingresos.',
-    },
-    {
-      title: 'Marketing Segmentado',
-      content:
-        'Cuenta con una base de datos segmentada de tus compradores, facilitándote la planificación de tus futuras campañas de marketing.',
-    },
-    {
-      title: 'Compra Fácil para los Clientes',
-      content:
-        'Tus clientes pueden comprar tus productos sin necesidad de descargar ninguna aplicación, facilitándoles la experiencia de compra.',
-    },
-    {
-      title: 'Recompensas para tus Clientes',
-      content:
-        'Ofrece incentivos a tus clientes para fomentar la fidelidad y satisfacción.',
-    },
-    {
-      title: 'Venden por Ti',
-      content:
-        'Paga comisiones a influencers e instituciones que están recaudando fondos dependiendo de las ventas enlazadas.',
-    },
-    {
-      title: 'Comunicación Efectiva',
-      content:
-        'Informa a tus clientes sobre el estado de su pedido a través de WhatsApp, proporcionando un servicio transparente y eficiente.',
-    },
-    {
-      title: 'Giftcards de terceros',
-      content:
-        'Para que seas tu quien colabores y comisiones con spas, salones y restaurantes.',
-    },
+      text: "Más Ventas",
+      subTabs: [
+        {
+          text: "#hashtags",
+          active: false,
+          content: [
+            "“.. asigno un simple #hashtag y, voilà, los interesados pueden dirigirse directamente a la compra desde cualquier red social”",
+            "“.. es una manera genial de simplificar el proceso de compra desde las plataformas sociales”",
+            "“.. convierto a los seguidores en compradores de manera rápida y sencilla”"
+          ]
+        },
+        {
+          text: "Proveedores",
+          active: true,
+          content: [
+            "“.. puedo acceder a una red amplia de proveedores de flores en un abrir y cerrar de ojos.”",
+            "¡Esta función de Cotización Eficiente con Proveedores en la aplicación es como tener un equipo de compras personal a tu disposición!",
+            "“.. es como si los proveedores compitieran por ofrecerme las mejores ofertas, lo cual me siento confiado de donde comprar”",
+            "“.. me permite conectarme con un montón de proveedores y pedir cotizaciones en cuestión de minutos”",
+            "“.. significa que puedo tomar decisiones más inteligentes y aumentar mis ganancias”",
+            "“.. puedo pedir cotizaciones y luego simplemente comparar y elegir la opción más conveniente”",
+            "“.. no solo ahorro dinero, sino que también ahorro tiempo al evitar largas negociaciones, realmente es un ganar-ganar”"
+          ]
+        },
+        {
+          text: "Premios",
+          active: false,
+          content: [
+            "“.. brindo incentivos a mis clientes, lo que realmente fomenta la fidelidad y la satisfacción”",
+            "“.. el programa de recompensar su lealtad es simplemente brillante”",
+            "“..  los premios no solo los mantiene contentos, sino que también crea un vínculo más sólido con nosotros”"
+          ]
+        }
+      ],
+      active: true
+    }
   ];
+
+  activeTabIndex: number = 0;
+
   swipers: Array<ReviewsSwiper> = [
     {
       title: 'LO QUE MAS LE GUSTA A LAS FLORISTERIAS',
@@ -162,26 +240,102 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     private ngNavigatorShareService: NgNavigatorShareService,
     private location: Location,
     private bottomSheet: MatBottomSheet,
+    private merchantsService: MerchantsService,
+    private itemsService: ItemsService,
     private dialogService: DialogService,
     private dialog: MatDialog,
     private authService: AuthService,
     private snackbar: MatSnackBar,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.queryParamsSubscription = this.route.queryParams.subscribe(
       async ({ jsondata }) => {
         if (jsondata) {
           const { openNavigation } = JSON.parse(decodeURIComponent(jsondata));
-          this.openNavigation = JSON.parse(openNavigation || 'false');
+          this.openNavigation = JSON.parse(openNavigation || false);
         }
       }
     );
+    lockUI()
+    setTimeout(() => {
+      unlockUI()
+    }, 6000);
+    const me = await this.authService.me()
+    this.userID = me?.name || me?.email || me?.phone;
+    if (this.userID) {
+      const merchant = await this.merchantsService.merchantDefault();
+      console.log(merchant)
+      if (merchant?._id) {
+        const supplier_pagination: PaginationInput = {
+          findBy: {
+            type: "supplier",
+            merchant: merchant._id
+          },
+          options: {
+            sortBy: 'createdAt:desc',
+            limit: 1
+          },
+        };
+        let supplier: Array<any> = [];
+        supplier =(await this.itemsService.listItems(supplier_pagination))?.listItems;
+    
+        const vendor_pagination: PaginationInput = {
+          findBy: {
+            type: ["default", null],
+            merchant: merchant._id
+          },
+          options: {
+            sortBy: 'createdAt:desc',
+            limit: 1
+          },
+        };
+        let vendor: Array<any> = [];
+        vendor =(await this.itemsService.listItems(vendor_pagination))?.listItems;
+    
+        if (supplier.length) {
+          this.isProvider = true
+          this.tabIndex = 1
+        }
+        if (vendor.length) {
+          this.isVendor = true
+          this.tabIndex = 0
+        }
+        // console.log(supplier)
+        // console.log(vendor)
+      }
+    }
+    unlockUI()
   }
 
   close() {
-    if (this.headerService.user) this.location.back();
+    // if (this.headerService.user) this.location.back();
+    this.openNavigation = true;
+  }
+
+  openDialog() {
+    this.bottomSheet.open(ClubDialogComponent, {
+      data: {
+        title: "SELECCION DE HERRAMIENTAS",
+        styles: {
+          fullScreen: true,
+        },
+        tabIndex: this.tabIndex
+      },
+    });
+  }
+
+  filterData () {
+    if (this.isVendor == this.isProvider){
+      if (this.tabIndex) return this.tabContents.tab2;
+      else return this.tabContents.tab1
+    }
+    else if (this.isVendor && !this.isProvider) {
+      return this.tabContents.tab3
+    }
+    else return this.tabContents.tab4
   }
 
   share() {
@@ -220,7 +374,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   async openMagicLinkDialog() {
-    let fieldsToCreate: FormData = {
+    let fieldsToCreateInEmailDialog: FormData = {
       title: {
         text: 'Acceso al Club:',
       },
@@ -228,73 +382,223 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         accept: 'Recibir el enlace con acceso',
         cancel: 'Cancelar',
       },
+      containerStyles: {
+        padding: '35px 23px 38px 18px',
+      },
+      hideBottomButtons: true,
       fields: [
         {
           name: 'magicLinkEmailOrPhone',
-          type: 'email-or-phone',
-          placeholder: 'Escribe..',
-          validators: [Validators.pattern(/[\S]/)],
+          type: 'email',
+          placeholder: 'Escribe el correo electrónico..',
+          validators: [Validators.pattern(/[\S]/), Validators.required],
+          inputStyles: {
+            padding: '11px 1px',
+          },
+          submitButton: {
+            text: '>',
+            styles: {
+              borderRadius: '8px',
+              background: '#87CD9B',
+              padding: '6px 15px',
+              color: '#181D17',
+              textAlign: 'center',
+              fontFamily: 'InterBold',
+              fontSize: '17px',
+              fontStyle: 'normal',
+              fontWeight: '700',
+              lineHeight: 'normal',
+              position: 'absolute',
+              right: '1px',
+              top: '8px',
+            },
+          },
         },
       ],
     };
 
-    const dialogRef = this.dialog.open(FormComponent, {
-      data: fieldsToCreate,
+    const emailDialogRef = this.dialog.open(FormComponent, {
+      data: fieldsToCreateInEmailDialog,
       disableClose: true,
     });
 
-    dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
-      if (result.controls.magicLinkEmailOrPhone.valid) {
-        const validEmail = new RegExp(
-          /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gim
-        );
+    emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+      if (result?.controls?.magicLinkEmailOrPhone.valid) {
+        const emailOrPhone = result?.value['magicLinkEmailOrPhone'];
 
-        let emailOrPhone = null;
+        let optionsDialogTemplate: OptionsDialogTemplate = {
+          options: [
+            {
+              value: 'Accederé con la clave',
+              callback: async () => {
+                await addPassword(emailOrPhone);
+              },
+            },
+            {
+              value: 'Prefiero recibir el enlace de acceso en mi correo',
+              callback: async () => {
+                if (result?.controls?.magicLinkEmailOrPhone.valid) {
+                  const validEmail = new RegExp(
+                    /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gim
+                  );
 
-        if (
-          typeof result?.value['magicLinkEmailOrPhone'] === 'string' &&
-          validEmail.test(result?.value['magicLinkEmailOrPhone'])
-        ) {
-          emailOrPhone = result?.value['magicLinkEmailOrPhone'];
-        } else {
-          emailOrPhone =
-            result?.value['magicLinkEmailOrPhone'].e164Number.split('+')[1];
-        }
+                  let emailOrPhone = null;
 
-        lockUI();
+                  if (
+                    typeof result?.value['magicLinkEmailOrPhone'] ===
+                      'string' &&
+                    validEmail.test(result?.value['magicLinkEmailOrPhone'])
+                  ) {
+                    emailOrPhone = result?.value['magicLinkEmailOrPhone'];
+                  } else {
+                    emailOrPhone =
+                      result?.value['magicLinkEmailOrPhone'].e164Number.split(
+                        '+'
+                      )[1];
+                  }
 
-        await this.authService.generateMagicLink(
-          emailOrPhone,
-          '/ecommerce/club-landing',
-          null,
-          'MerchantAccess',
-          {
-            jsondata: JSON.stringify({
-              openNavigation: true,
-            }),
-          },
-          []
-        );
+                  // lockUI();
 
-        unlockUI();
+                  await this.authService.generateMagicLink(
+                    emailOrPhone,
+                    '/ecommerce/club-landing',
+                    null,
+                    'MerchantAccess',
+                    {
+                      jsondata: JSON.stringify({
+                        openNavigation: true,
+                      }),
+                    },
+                    []
+                  );
 
-        this.dialogService.open(GeneralFormSubmissionDialogComponent, {
-          type: 'centralized-fullscreen',
-          props: {
-            icon: 'check-circle.svg',
-            showCloseButton: false,
-            message:
-              'Se ha enviado un link mágico a tu teléfono o a tu correo electrónico',
-          },
-          customClass: 'app-dialog',
-          flags: ['no-header'],
+                  unlockUI();
+
+                  this.dialogService.open(
+                    GeneralFormSubmissionDialogComponent,
+                    {
+                      type: 'centralized-fullscreen',
+                      props: {
+                        icon: 'check-circle.svg',
+                        showCloseButton: false,
+                        message:
+                          'Se ha enviado un link mágico a tu correo electrónico',
+                      },
+                      customClass: 'app-dialog',
+                      flags: ['no-header'],
+                    }
+                  );
+                } else if (
+                  result?.controls?.magicLinkEmailOrPhone.valid === false
+                ) {
+                  unlockUI();
+                  this.snackbar.open('Datos invalidos', 'Cerrar', {
+                    duration: 3000,
+                  });
+                }
+              },
+            },
+          ],
+        };
+
+        this.dialog.open(OptionsDialogComponent, {
+          data: optionsDialogTemplate,
+          disableClose: true,
         });
-      } else {
+      } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
         unlockUI();
         this.snackbar.open('Datos invalidos', 'Cerrar', {
           duration: 3000,
         });
       }
+    });
+
+    const addPassword = async (emailOrPhone: string) => {
+      emailDialogRef.close();
+
+      let fieldsToCreate: FormData = {
+        title: {
+          text: 'Clave de Acceso:',
+        },
+        buttonsTexts: {
+          accept: 'Accesar al Club',
+          cancel: 'Cancelar',
+        },
+        fields: [
+          {
+            name: 'password',
+            type: 'password',
+            placeholder: 'Escribe la contraseña',
+            validators: [Validators.pattern(/[\S]/)],
+            bottomButton: {
+              text: 'Prefiero recibir el correo con el enlace de acceso',
+              callback: () => {
+                //Cerrar 2do dialog
+
+                return switchToMagicLinkDialog();
+              },
+            },
+          },
+        ],
+      };
+
+      const dialog2Ref = this.dialog.open(FormComponent, {
+        data: fieldsToCreate,
+        disableClose: true,
+      });
+
+      dialog2Ref.afterClosed().subscribe(async (result: FormGroup) => {
+        try {
+          if (result?.controls?.password.valid) {
+            let password = result?.value['password'];
+
+            lockUI();
+
+            const session = await this.authService.signin(
+              emailOrPhone,
+              password,
+              true
+            );
+
+            if (!session) throw new Error('invalid credentials');
+
+            if (session) this.openNavigation = true;
+
+            unlockUI();
+          } else if (result?.controls?.password.valid === false) {
+            unlockUI();
+            this.snackbar.open('Datos invalidos', 'Cerrar', {
+              duration: 3000,
+            });
+          }
+        } catch (error) {
+          unlockUI();
+          console.error(error);
+          this.headerService.showErrorToast();
+        }
+      });
+
+      const switchToMagicLinkDialog = () => {
+        dialog2Ref.close();
+        return this.openMagicLinkDialog();
+      };
+    };
+  }
+
+  changeTab(tabIndex: number) {
+    this.tabs[tabIndex].active = true;
+    this.activeTabIndex = tabIndex;
+
+    this.tabs.forEach((tab, index) => {
+      if (index !== tabIndex) tab.active = false;
+    });
+  }
+
+  changeSubtab(tabIndex: number, subTabIndex: number) {
+    this.tabs[tabIndex].subTabs[subTabIndex].active = true;
+
+    this.tabs[tabIndex].subTabs.forEach((subTab, index) => {
+      if (index !== subTabIndex) subTab.active = false;
     });
   }
 }

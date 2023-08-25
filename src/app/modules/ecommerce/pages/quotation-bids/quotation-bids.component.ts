@@ -62,6 +62,8 @@ export class QuotationBidsComponent implements OnInit {
   encodedJSONData: string;
   fetchedItemsFromMagicLink: Array<Item> = [];
 
+  fromProviderAdjustments: boolean = false;
+
   constructor(
     private quotationsService: QuotationsService,
     private merchantsService: MerchantsService,
@@ -95,225 +97,237 @@ export class QuotationBidsComponent implements OnInit {
 
   async executeInitProcesses() {
     this.route.params.subscribe(async ({ quotationId }) => {
-      this.route.queryParams.subscribe(async ({ requesterId, jsondata }) => {
-        this.requesterId = requesterId;
-        this.encodedJSONData = jsondata;
-
-        if (this.encodedJSONData) {
-          this.parseMagicLinkData();
-        }
-
-        if (quotationId) {
-          this.quotation = await this.quotationsService.quotationPublic(
-            quotationId
+      this.route.queryParams.subscribe(
+        async ({ requesterId, jsondata, fromProviderAdjustments }) => {
+          this.requesterId = requesterId;
+          this.encodedJSONData = jsondata;
+          this.fromProviderAdjustments = JSON.parse(
+            fromProviderAdjustments || 'false'
           );
-        }
 
-        if (this.headerService.user) {
-          await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
-
-          if (
-            this.quotation.merchant === this.merchantsService.merchantData._id
-          ) {
-            this.isTheCurrentUserTheQuotationMerchant = true;
+          if (this.encodedJSONData) {
+            this.parseMagicLinkData();
           }
-        }
 
-        if (quotationId && this.isTheCurrentUserTheQuotationMerchant) {
-          this.typeOfQuotation = 'DATABASE_QUOTATION';
-
-          this.quotationLink =
-            this.URI + '/ecommerce/quotation-bids/' + this.quotation._id;
-
-          if (this.requesterId)
-            this.quotationLink += '?requesterId=' + this.requesterId;
-
-          const quotationsItemsInput: PaginationInput = {
-            findBy: {
-              _id: {
-                __in: ([] = this.quotation.items),
-              },
-            },
-            options: {
-              sortBy: 'createdAt:desc',
-              limit: -1,
-              page: 1,
-            },
-          };
-
-          this.quotationGlobalItems = (
-            await this.itemsService.listItems(quotationsItemsInput)
-          )?.listItems;
-
-          const quotationMatches: Array<QuotationMatches> =
-            await this.quotationsService.quotationCoincidences(quotationId, {});
-          this.quotationMatches = quotationMatches;
-
-          if (this.quotationMatches.length === 0) {
-            this.matSnackBar.open('No hay coincidencias', 'Cerrar', {
-              duration: 5000,
-            });
-          } else {
-            let sumOfProvidersPrices = 0;
-
-            for (const provider of this.quotationMatches) {
-              sumOfProvidersPrices += provider.total;
-            }
-
-            this.providersPriceAverage =
-              sumOfProvidersPrices / this.quotationMatches.length;
-          }
-        } else if (quotationId) {
-          this.typeOfQuotation = 'DATABASE_QUOTATION';
-
-          this.quotationLink =
-            this.URI + '/ecommerce/quotation-bids/' + this.quotation._id;
-
-          if (this.requesterId)
-            this.quotationLink += '?requesterId=' + this.requesterId;
-
-          const quotationsItemsInput: PaginationInput = {
-            findBy: {
-              _id: {
-                __in: ([] = this.quotation.items),
-              },
-            },
-            options: {
-              sortBy: 'createdAt:desc',
-              limit: -1,
-              page: 1,
-            },
-          };
-
-          this.quotationGlobalItems = (
-            await this.itemsService.listItems(quotationsItemsInput)
-          )?.listItems;
-
-          const quotationMatches: Array<QuotationMatches> =
-            await this.quotationsService.quotationCoincidencesByItem(
-              {},
-              [],
-              this.quotation.items
+          if (quotationId) {
+            this.quotation = await this.quotationsService.quotationPublic(
+              quotationId
             );
-
-          this.quotationMatches = quotationMatches;
-
-          if (this.quotationMatches.length === 0) {
-            this.matSnackBar.open('No hay coincidencias', 'Cerrar', {
-              duration: 5000,
-            });
-          } else {
-            let sumOfProvidersPrices = 0;
-
-            for (const provider of this.quotationMatches) {
-              sumOfProvidersPrices += provider.total;
-            }
-
-            this.providersPriceAverage =
-              sumOfProvidersPrices / this.quotationMatches.length;
           }
-        } else if (!quotationId) {
-          this.typeOfQuotation = 'TEMPORAL_QUOTATION';
 
-          if (!this.quotationsService.selectedTemporalQuotation) {
-            let storedSelectedTemporalQuotation: any = localStorage.getItem(
-              'selectedTemporalQuotation'
-            );
+          if (this.headerService.user) {
+            await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
 
-            if (storedSelectedTemporalQuotation)
-              storedSelectedTemporalQuotation = JSON.parse(
-                storedSelectedTemporalQuotation
+            if (
+              this.quotation?.merchant ===
+              this.merchantsService.merchantData._id
+            ) {
+              this.isTheCurrentUserTheQuotationMerchant = true;
+            }
+          }
+
+          if (quotationId && this.isTheCurrentUserTheQuotationMerchant) {
+            this.typeOfQuotation = 'DATABASE_QUOTATION';
+
+            this.quotationLink =
+              this.URI + '/ecommerce/quotation-bids/' + this.quotation._id;
+
+            if (this.requesterId)
+              this.quotationLink += '?requesterId=' + this.requesterId;
+
+            const quotationsItemsInput: PaginationInput = {
+              findBy: {
+                _id: {
+                  __in: ([] = this.quotation.items),
+                },
+              },
+              options: {
+                sortBy: 'createdAt:desc',
+                limit: -1,
+                page: 1,
+              },
+            };
+
+            this.quotationGlobalItems = (
+              await this.itemsService.listItems(quotationsItemsInput)
+            )?.listItems;
+
+            const quotationMatches: Array<QuotationMatches> =
+              await this.quotationsService.quotationCoincidences(quotationId, {
+                limit: -1,
+              });
+            this.quotationMatches = quotationMatches;
+
+            if (this.quotationMatches.length === 0) {
+              this.matSnackBar.open('No hay coincidencias', 'Cerrar', {
+                duration: 5000,
+              });
+            } else {
+              let sumOfProvidersPrices = 0;
+
+              for (const provider of this.quotationMatches) {
+                sumOfProvidersPrices += provider.total;
+              }
+
+              this.providersPriceAverage =
+                sumOfProvidersPrices / this.quotationMatches.length;
+            }
+          } else if (quotationId) {
+            this.typeOfQuotation = 'DATABASE_QUOTATION';
+
+            this.quotationLink =
+              this.URI + '/ecommerce/quotation-bids/' + this.quotation._id;
+
+            if (this.requesterId)
+              this.quotationLink += '?requesterId=' + this.requesterId;
+
+            const quotationsItemsInput: PaginationInput = {
+              findBy: {
+                _id: {
+                  __in: ([] = this.quotation.items),
+                },
+              },
+              options: {
+                sortBy: 'createdAt:desc',
+                limit: -1,
+                page: 1,
+              },
+            };
+
+            this.quotationGlobalItems = (
+              await this.itemsService.listItems(quotationsItemsInput)
+            )?.listItems;
+
+            const quotationMatches: Array<QuotationMatches> =
+              await this.quotationsService.quotationCoincidencesByItem(
+                {
+                  limit: -1,
+                },
+                [],
+                this.quotation.items
               );
 
-            this.quotationsService.selectedTemporalQuotation =
-              storedSelectedTemporalQuotation;
-          }
+            this.quotationMatches = quotationMatches;
 
-          this.temporalQuotation = await this.quotationsService
-            .selectedTemporalQuotation;
+            if (this.quotationMatches.length === 0) {
+              this.matSnackBar.open('No hay coincidencias', 'Cerrar', {
+                duration: 5000,
+              });
+            } else {
+              let sumOfProvidersPrices = 0;
 
-          const quotationsItemsInput: PaginationInput = {
-            findBy: {
-              _id: {
-                __in: ([] = this.temporalQuotation.items),
-              },
-            },
-            options: {
-              sortBy: 'createdAt:desc',
-              limit: -1,
-              page: 1,
-            },
-          };
+              for (const provider of this.quotationMatches) {
+                sumOfProvidersPrices += provider.total;
+              }
 
-          this.quotationGlobalItems = (
-            await this.itemsService.listItems(quotationsItemsInput)
-          )?.listItems;
+              this.providersPriceAverage =
+                sumOfProvidersPrices / this.quotationMatches.length;
+            }
+          } else if (!quotationId) {
+            this.typeOfQuotation = 'TEMPORAL_QUOTATION';
 
-          this.quotationLink = this.URI + '/ecommerce/quotation-bids';
+            if (!this.quotationsService.selectedTemporalQuotation) {
+              let storedSelectedTemporalQuotation: any = localStorage.getItem(
+                'selectedTemporalQuotation'
+              );
 
-          if (this.requesterId)
-            this.quotationLink += '?requesterId=' + this.requesterId;
+              if (storedSelectedTemporalQuotation)
+                storedSelectedTemporalQuotation = JSON.parse(
+                  storedSelectedTemporalQuotation
+                );
 
-          const quotationMatches: Array<QuotationMatches> =
-            await this.quotationsService.quotationCoincidencesByItem(
-              {},
-              [],
-              this.temporalQuotation.items
-            );
-          this.quotationMatches = quotationMatches;
-
-          if (this.quotationMatches.length === 0) {
-            this.matSnackBar.open('No hay coincidencias', 'Cerrar', {
-              duration: 5000,
-            });
-          } else {
-            let sumOfProvidersPrices = 0;
-
-            for (const provider of this.quotationMatches) {
-              sumOfProvidersPrices += provider.total;
+              this.quotationsService.selectedTemporalQuotation =
+                storedSelectedTemporalQuotation;
             }
 
-            this.providersPriceAverage =
-              sumOfProvidersPrices / this.quotationMatches.length;
+            this.temporalQuotation = await this.quotationsService
+              .selectedTemporalQuotation;
+
+            const quotationsItemsInput: PaginationInput = {
+              findBy: {
+                _id: {
+                  __in: ([] = this.temporalQuotation.items),
+                },
+              },
+              options: {
+                sortBy: 'createdAt:desc',
+                limit: -1,
+                page: 1,
+              },
+            };
+
+            this.quotationGlobalItems = (
+              await this.itemsService.listItems(quotationsItemsInput)
+            )?.listItems;
+
+            this.quotationLink = this.URI + '/ecommerce/quotation-bids';
+
+            if (this.requesterId)
+              this.quotationLink += '?requesterId=' + this.requesterId;
+
+            const quotationMatches: Array<QuotationMatches> =
+              await this.quotationsService.quotationCoincidencesByItem(
+                {
+                  limit: -1,
+                },
+                [],
+                this.temporalQuotation.items
+              );
+            this.quotationMatches = quotationMatches;
+
+            if (this.quotationMatches.length === 0) {
+              this.matSnackBar.open('No hay coincidencias', 'Cerrar', {
+                duration: 5000,
+              });
+            } else {
+              let sumOfProvidersPrices = 0;
+
+              for (const provider of this.quotationMatches) {
+                sumOfProvidersPrices += provider.total;
+              }
+
+              this.providersPriceAverage =
+                sumOfProvidersPrices / this.quotationMatches.length;
+            }
+          }
+
+          if (this.headerService.user && this.merchantsService.merchantData) {
+            const listItemsPagination: PaginationInput = {
+              findBy: {
+                merchant: this.merchantsService.merchantData._id,
+                type: 'supplier',
+              },
+              options: {
+                sortBy: 'createdAt:desc',
+                limit: -1,
+                page: 1,
+              },
+            };
+
+            const items: Array<Item> = (
+              await this.itemsService.listItems(listItemsPagination)
+            )?.listItems;
+
+            if (items.length) {
+              //If the current user is a supplier, it redirects them to the screen where they may adjust the quotation items prices and stock
+              this.isCurrentUserASupplier = true;
+            }
+          }
+
+          if (
+            !this.requesterId &&
+            this.merchantsService.merchantData &&
+            this.typeOfQuotation === 'DATABASE_QUOTATION'
+          ) {
+            this.quotationLink +=
+              '?requesterId=' + this.merchantsService.merchantData._id;
+          } else if (this.typeOfQuotation === 'TEMPORAL_QUOTATION') {
+            this.quotationLink +=
+              '?itemsForTemporalQuotation=' +
+              this.temporalQuotation.items.join('-');
           }
         }
-
-        if (this.headerService.user && this.merchantsService.merchantData) {
-          const listItemsPagination: PaginationInput = {
-            findBy: {
-              merchant: this.merchantsService.merchantData._id,
-              type: 'supplier',
-            },
-            options: {
-              sortBy: 'createdAt:desc',
-              limit: -1,
-              page: 1,
-            },
-          };
-
-          const items: Array<Item> = (
-            await this.itemsService.listItems(listItemsPagination)
-          )?.listItems;
-
-          if (items.length) {
-            //If the current user is a supplier, it redirects them to the screen where they may adjust the quotation items prices and stock
-            this.isCurrentUserASupplier = true;
-          }
-        }
-
-        if (
-          !this.requesterId &&
-          this.merchantsService.merchantData &&
-          this.typeOfQuotation === 'DATABASE_QUOTATION'
-        ) {
-          this.quotationLink +=
-            '?requesterId=' + this.merchantsService.merchantData._id;
-        } else if (this.typeOfQuotation === 'TEMPORAL_QUOTATION') {
-          this.quotationLink +=
-            '?itemsForTemporalQuotation=' +
-            this.temporalQuotation.items.join('-');
-        }
-      });
+      );
     });
   }
 
@@ -325,10 +339,25 @@ export class QuotationBidsComponent implements OnInit {
         this.requesterId = parsedData.requesterId;
       }
 
+      if (parsedData.fromProviderAdjustments) {
+        this.fromProviderAdjustments = JSON.parse(
+          parsedData.fromProviderAdjustments || 'false'
+        );
+      }
+
       if (parsedData.itemsForTemporalQuotation) {
         await this.createQuotationFromMagicLink(
-          parsedData.itemsForTemporalQuotation.split('-')
+          parsedData.itemsForTemporalQuotation,
+          parsedData
         );
+      }
+
+      if (parsedData.itemsToUpdate) {
+        await this.updateItemsFromMagicLinkData(parsedData);
+      }
+
+      if (parsedData.quotationItems) {
+        await this.authenticateSupplierQuotationItems(parsedData);
       }
 
       const urlWithoutQueryParams = this.router.url.split('?')[0];
@@ -339,7 +368,10 @@ export class QuotationBidsComponent implements OnInit {
     }
   }
 
-  createQuotationFromMagicLink = async (itemIds: Array<string>) => {
+  createQuotationFromMagicLink = async (
+    itemIds: Array<string>,
+    parsedData: any
+  ) => {
     lockUI();
     let quotationInput: QuotationInput = {
       name: `${new Date().toLocaleString()}`,
@@ -380,7 +412,123 @@ export class QuotationBidsComponent implements OnInit {
       JSON.stringify(quotationInput)
     );
 
-    window.location.href = environment.uri + '/ecommerce/quotation-bids';
+    if (!parsedData.itemsToUpdate && !parsedData.quotationItems) {
+      window.location.href = environment.uri + '/ecommerce/quotation-bids';
+    }
+  };
+
+  updateItemsFromMagicLinkData = async (parsedData: Record<string, any>) => {
+    try {
+      lockUI();
+      await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+
+      await Promise.all(
+        Object.keys(parsedData.itemsToUpdate).map((itemId) =>
+          this.itemsService.updateItem(parsedData.itemsToUpdate[itemId], itemId)
+        )
+      );
+
+      if (!parsedData.quotationItems) {
+        unlockUI();
+
+        let link =
+          environment.uri +
+          '/ecommerce/quotation-bids/' +
+          (this.typeOfQuotation === 'DATABASE_QUOTATION'
+            ? this.quotation._id
+            : '');
+
+        if (this.fromProviderAdjustments)
+          link += '?fromProviderAdjustments=true';
+
+        window.location.href = link;
+      }
+    } catch (error) {
+      unlockUI();
+
+      console.error(error);
+    }
+  };
+
+  authenticateSupplierQuotationItems = async (
+    parsedData: Record<string, any>
+  ) => {
+    try {
+      lockUI();
+      await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+
+      const saleflow = await this.saleflowService.saleflowDefault(
+        this.merchantsService.merchantData?._id
+      );
+
+      const quotationItemsIDs = parsedData.quotationItems.split('-');
+
+      this.headerService.saleflow = saleflow;
+      this.headerService.storeSaleflow(saleflow);
+
+      const supplierSpecificItemsInput: PaginationInput = {
+        findBy: {
+          _id: {
+            __in: ([] = quotationItemsIDs),
+          },
+        },
+        options: {
+          sortBy: 'createdAt:desc',
+          limit: -1,
+          page: 1,
+        },
+      };
+
+      //Fetches supplier specfic items, meaning they already are on the saleflow
+      let quotationItems: Array<Item> = [];
+
+      quotationItems = (
+        await this.itemsService.listItems(supplierSpecificItemsInput)
+      )?.listItems;
+
+      if (quotationItems?.length) {
+        this.fetchedItemsFromMagicLink = quotationItems;
+
+        if (!this.fetchedItemsFromMagicLink[0].merchant) {
+          await Promise.all(
+            this.fetchedItemsFromMagicLink.map((item) =>
+              this.itemsService.authItem(
+                this.merchantsService.merchantData._id,
+                item._id
+              )
+            )
+          );
+
+          await Promise.all(
+            this.fetchedItemsFromMagicLink.map((item) =>
+              this.saleflowService.addItemToSaleFlow(
+                {
+                  item: item._id,
+                },
+                this.headerService.saleflow._id
+              )
+            )
+          );
+        }
+      }
+
+      unlockUI();
+
+      let link =
+        environment.uri +
+        '/ecommerce/quotation-bids/' +
+        (this.typeOfQuotation === 'DATABASE_QUOTATION'
+          ? this.quotation._id
+          : '');
+
+      if (this.fromProviderAdjustments) link += '?fromProviderAdjustments=true';
+
+      window.location.href = link;
+    } catch (error) {
+      unlockUI();
+
+      console.error(error);
+    }
   };
 
   async changeView(redirectToProviderRegistration?: boolean) {
@@ -393,11 +541,14 @@ export class QuotationBidsComponent implements OnInit {
 
         if (this.requesterId) {
           queryParams.requesterId = this.requesterId;
+          queryParams.supplierMerchantId = this.requesterId;
         } else if (
           this.merchantsService.merchantData?._id &&
           !this.requesterId
         ) {
           queryParams.requesterId = this.merchantsService.merchantData?._id;
+          queryParams.supplierMerchantId =
+            this.merchantsService.merchantData?._id;
         }
 
         //console.log('/ecommerce/supplier-register/' + this.quotation._id);
@@ -415,6 +566,13 @@ export class QuotationBidsComponent implements OnInit {
           quotationName: this.temporalQuotation.name,
           temporalQuotation: true,
         };
+
+        if (this.merchantsService.merchantData?._id && !this.requesterId) {
+          queryParams.requesterId = this.merchantsService.merchantData?._id;
+          queryParams.supplierMerchantId =
+            this.merchantsService.merchantData?._id;
+        }
+
         return this.router.navigate(['/ecommerce/supplier-register'], {
           queryParams: {
             jsondata: JSON.stringify(queryParams),
@@ -558,6 +716,9 @@ export class QuotationBidsComponent implements OnInit {
   }
 
   showQuotations() {
+    if (this.fromProviderAdjustments)
+      return this.router.navigate(['/ecommerce/provider-items']);
+
     this.router.navigate(['/ecommerce/quotations']);
   }
 
@@ -826,7 +987,7 @@ export class QuotationBidsComponent implements OnInit {
   }
 
   async shareQuotation() {
-    const queryParams: Record<string, string> = {};
+    const queryParams: Record<string, any> = {};
 
     if (this.typeOfQuotation === 'DATABASE_QUOTATION') {
       queryParams.requesterId =
@@ -835,9 +996,12 @@ export class QuotationBidsComponent implements OnInit {
           : this.requesterId
           ? this.requesterId
           : null;
+      queryParams.supplierMerchantId = this.merchantsService.merchantData
+        ? this.merchantsService.merchantData._id
+        : null;
     } else if (this.typeOfQuotation === 'TEMPORAL_QUOTATION') {
       queryParams.itemsForTemporalQuotation =
-        this.temporalQuotation.items.join('-');
+        this.temporalQuotation.items;
     }
 
     lockUI();

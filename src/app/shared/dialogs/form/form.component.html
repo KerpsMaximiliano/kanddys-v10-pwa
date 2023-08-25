@@ -1,4 +1,4 @@
-<div class="dialog-container" [formGroup]="formGroup">
+<div class="dialog-container" [ngStyle]="data.containerStyles" [formGroup]="formGroup">
   <div mat-dialog-content>
     <h2 class="title" *ngIf="data.title" [ngStyle]="data.title.styles">
       {{ data.title.text }}
@@ -20,9 +20,24 @@
             <input
               [type]="field.type || 'text'"
               [id]="field.name"
+              [ngStyle]="field.inputStyles"
               [formControlName]="field.name"
               [placeholder]="field.placeholder || 'Escribe..'"
             />
+
+            <ng-container *ngIf="field.submitButton">
+              <button
+                class="field-button"
+                (click)="close(formGroup)"
+                [ngStyle]="field.submitButton.styles"
+              >
+                {{ field.submitButton.text }}
+              </button>
+            </ng-container>
+
+            <ng-container *ngFor="let text of field.bottomTexts">
+              <p [ngStyle]="text.styles">{{text.text}}</p>
+            </ng-container>
 
             <ng-container *ngIf="field.bottomButton">
               <button
@@ -159,7 +174,7 @@
       </div>
     </ng-container>
   </div>
-  <div mat-dialog-actions class="buttons-flex">
+  <div mat-dialog-actions class="buttons-flex" *ngIf="!data.hideBottomButtons">
     <button class="cancel cancel-form-dialog" (click)="close()">
       <ng-container
         *ngIf="

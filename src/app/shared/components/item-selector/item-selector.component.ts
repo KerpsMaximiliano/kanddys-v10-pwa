@@ -418,7 +418,7 @@ export class ItemSelectorComponent implements OnInit {
       return;
     }
 
-    this.location.back();
+    return this.router.navigate(['/ecommerce/club-landing']);
   }
 
   async submit() {
@@ -661,5 +661,15 @@ export class ItemSelectorComponent implements OnInit {
       duration: 5000, // Adjust the duration of the snackbar as per your requirement
       panelClass: ['error-snackbar'], // CSS class for styling the snackbar
     });
+  }
+
+  sendWhatsappToAppOwner() {
+    let message = `Hola, quiero agregar un artículo como proveedor de www.floristerias.club`;
+
+    const whatsappLink = `https://api.whatsapp.com/send?phone=19188156444&text=${encodeURIComponent(
+      message
+    )}`;
+
+    window.location.href = whatsappLink;
   }
 }

@@ -1,18 +1,34 @@
+<div
+  class="top-flex"
+  style="
+    position: fixed;
+    max-width: 500px;
+    width: 100%;
+    z-index: 100;
+    background-color: #181d17;
+    padding: 20px;
+  "
+  *ngIf="currentView === 'ALL_ITEMS'"
+>
+  <div class="top-flex" style="cursor: pointer" (click)="back()">
+    <mat-icon class="back-icon"> arrow_back_ios </mat-icon>
+    <span class="back-text">www.floristerias.club</span>
+  </div>
+
+  <mat-icon [ngStyle]="{ color: 'white' }" (click)="sendWhatsappToAppOwner()">add</mat-icon>
+
+  <span
+    class="selected-items-label"
+    (click)="changeView()"
+    *ngIf="selectedItems.length"
+  >
+    {{ selectedItems.length }} seleccionados
+  </span>
+</div>
+
 <div class="container" [formGroup]="itemsForm">
   <ng-container [ngSwitch]="currentView">
     <ng-container *ngSwitchCase="'ALL_ITEMS'">
-      <div class="top-flex">
-        <mat-icon class="back-icon" (click)="back()"> arrow_back_ios </mat-icon>
-
-        <span
-          class="selected-items-label"
-          (click)="changeView()"
-          *ngIf="selectedItems.length"
-        >
-          {{ selectedItems.length }} seleccionados
-        </span>
-      </div>
-
       <ng-container *ngIf="items.length > 0 && supplierMode">
         <button
           class="add-button"
@@ -70,9 +86,7 @@
       *ngFor="let item of itemsToShow; let i = index"
       [formArrayName]="'checkboxes'"
       (click)="
-        !supplierMode
-          ? null
-          : createItemBasedOnExistingSupplierItems(item)
+        !supplierMode ? null : createItemBasedOnExistingSupplierItems(item)
       "
     >
       <ng-container
@@ -81,7 +95,9 @@
           else images
         "
       >
-        <div class="item-card" style="background-color: black"
+        <div
+          class="item-card"
+          style="background-color: black"
           (click)="!supplierMode && goToArticleDetail(item)"
         >
           <img

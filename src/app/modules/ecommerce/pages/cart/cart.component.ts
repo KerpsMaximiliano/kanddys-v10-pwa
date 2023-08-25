@@ -700,7 +700,11 @@ export class CartComponent implements OnInit {
 
     this.router.navigate([
       `/ecommerce/${this.headerService.saleflow.merchant.slug}/store`,
-    ]);
+    ], {
+      queryParams: {
+        mode: this.isSuppliersBuyerFlow(this.items) ? 'supplier' : 'standard',
+      }
+    });
   }
 
   selectOption = (
@@ -1167,6 +1171,17 @@ export class CartComponent implements OnInit {
         },
       }
     );
+  }
+
+  goToStore() {
+    return this.router.navigate([
+      `/ecommerce/${this.headerService.saleflow.merchant.slug}/store`,
+    ],
+    {
+      queryParams: {
+        mode: this.isSuppliersBuyerFlow(this.items) ? 'supplier' : 'standard',
+      }
+    });
   }
 
   toggleCheckbox(event: any) {

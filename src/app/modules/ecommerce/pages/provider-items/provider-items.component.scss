@@ -15,6 +15,10 @@
   position: relative;
 }
 
+main {
+  position: relative;
+}
+
 .header {
   padding: 0 16px;
   height: 47px;
@@ -125,7 +129,7 @@ section {
 
   .help-card-container {
     &:first-child {
-      margin-top: 11px;
+      margin-top: 29px;
     }
   }
 }
@@ -256,7 +260,7 @@ section {
   &.opened {
     margin: auto;
     max-width: 500px;
-    position: fixed;
+    position: absolute;
     top: 0px;
     left: 0px;
     bottom: 0px;
@@ -267,6 +271,14 @@ section {
     .cards-wrapper {
       position: relative;
       top: 189px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .presentation-cards-wrapper {
+      position: relative;
+      top: 15px;
       margin: auto;
       display: flex;
       flex-direction: column;
@@ -538,4 +550,10 @@ footer {
   line-height: normal;
   padding-top: 4px;
   margin-top: auto;
+  position: relative;
+
+  .price-tutorial-img {
+    position: absolute;
+    top: 6px;
+  }
 }

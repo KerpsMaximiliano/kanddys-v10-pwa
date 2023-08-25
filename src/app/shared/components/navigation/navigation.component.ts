@@ -114,7 +114,7 @@ export class NavigationComponent implements OnInit {
     active: false,
     links: [
       {
-        text: 'Mi KiosKo 💰',
+        text: 'Mi KiosKo',
         routerLink: ['/admin/supplier-dashboard'],
         queryParams: {
           supplierMode: true,
@@ -123,7 +123,7 @@ export class NavigationComponent implements OnInit {
         linkName: 'my-dashboard',
       },
       {
-        text: 'Artículos y ventas',
+        text: 'Artículos & Ventas 💰',
         routerLink: ['/ecommerce/provider-items'],
         linkName: 'provider-pov-link',
       },
@@ -147,11 +147,6 @@ export class NavigationComponent implements OnInit {
         linkName: 'my-dashboard',
       },
       {
-        text: 'Recompensa a compradores ✨',
-        routerLink: ['/admin/stars-landing'],
-        linkName: 'stars-landing',
-      },
-      {
         text: 'Carrito del Proveedor (yo compro)',
         routerLink: ['/ecommerce/supplier-items-selector'],
         possibleRedirection: ['/ecommerce/quotations'],
@@ -167,6 +162,55 @@ export class NavigationComponent implements OnInit {
 
   tabs: Array<NavigationTab> = [];
 
+  tabContents = {
+    tab1: [
+      "💰 Adicionar mi primer artículo para venderlo online y por WhatsApp",
+      "🛟 Cotizar fácilmente con los Proveedores",
+      "🧞 Saber de las “Ofertas Flash” de los Proveedores",
+      "📢 Más alcance pagándoles comisiones a quienes venden por mi",
+      "🎁 Más alcance premiando a quienes me mencionan en sus cuentas sociales ",
+      "✨ Recompensar a mis clientes según lo que facturaron",
+      "✋ Saber la opinión de mis clientes después que recibieron lo que compraron ",
+      "Preparar un 🛒 con algunas cosas que vendo para cotizar o facturar (NCF es opcional)",
+      "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
+      "Volver a ver la opiniones de los Miembros del Club"
+    ],
+    tab2: [
+      "💰 Empezar a cotizar online y vender automáticamante",
+      "🧞 Adicionar artículos que vendo en el boletín con de “Ofertas Flash” que reciben los miembros",
+      "📢 Más alcance pagándoles comisiones a quienes venden por mi",
+      "🎁 Más alcance premiando a quienes me mencionan en sus cuentas sociales ",
+      "✨ Recompensar a mis clientes según lo que facturaron",
+      "✋ Saber la opinión de mis clientes después que recibieron lo que compraron ",
+      "Preparar un 🛒 con algunas cosas que vendo para cotizar o facturar (NCF es opcional)",
+      "Déjanos saber lo que mas te gusta de las herramientas o lo que necesitas"
+    ],
+    tab3: [
+      " 💰 Gestionar lo que vendo, ver mis beneficios, compartir mi tienda",
+      "📦 Organización de lo vendido,  notificar a mis clientes del status de lo que facturaron ",
+      "🛟 Cotizaciones que comparan los precios de los Proveedores antes de comprarles ",
+      " 📢 Gestionar las comisiones de quienes venden por mi",
+      "✨ Gestionar los premios y las recompensas de mis clientes",
+      "📢 Gestionar los premios de quienes me mencionan en sus cuentas sociales",
+      "✋ Ver las opiniones de mis compradores ",
+      "Gestionar los  🛒 cpara mandar cotizaciones o facturas a mis clientes (NCF es opcional)",
+      "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
+      "Déjanos saber lo que mas te gusta de las herramientas o lo que necesitas"
+    ],
+    tab4: [
+      " 💰 Gestionar y compartir lo que vendo, ver mis beneficios",
+      "📦 Organización de lo vendido,  notificar a mis clientes del status de lo que facturaron ",
+      "🧞 Adicionar artículos que vendo en el boletín con de “Ofertas Flash” que reciben los miembros",
+      " 📢 Gestionar las comisiones de quienes venden por mi",
+      "✨ Gestionar los premios y las recompensas de mis clientes",
+      "📢 Gestionar los premios de quienes me mencionan en sus cuentas sociales",
+      "✋ Ver las opiniones de mis compradores ",
+      "Gestionar los  🛒 con cotizaciones que he hecho, crear facturas y mandar cotizaciones",
+      "Déjanos saber lo que mas te gusta de las herramientas o lo que necesitas"
+    ]
+  }
+  tabIndex = 0;
+
   footerSwiperConfig: SwiperOptions = {
     slidesPerView: 1,
     freeMode: false,
@@ -177,6 +221,11 @@ export class NavigationComponent implements OnInit {
       clickable: true,
     },
   };
+
+  filterData() {
+    if (this.tabIndex) return this.tabContents.tab2
+    return this.tabContents.tab1
+  }
 
   constructor(
     private authService: AuthService,
@@ -216,7 +265,7 @@ export class NavigationComponent implements OnInit {
 
     this.tabs.push(this.providerTab);
     this.tabs.push(this.sellerTab);
-    
+
     if (this.headerService.user && isUserAMerchant)
       await this.checkIfUserIsAProviderOrASeller();
 
@@ -241,13 +290,16 @@ export class NavigationComponent implements OnInit {
           this.tabs = [];
 
           if (quotations.length > 0) {
-            this.sellerTab.links[2].routerLink = ['/ecommerce/quotations'];
+            this.sellerTab.links[1].routerLink = ['/ecommerce/quotations'];
           }
 
           this.tabs.push(this.providerTab);
           this.tabs.push(this.sellerTab);
 
-          if(this.isCurrentUserAnAdmin) {
+          if (
+            this.isCurrentUserAnAdmin &&
+            !this.tabs.find((tab) => tab.text === this.tabName['ADMIN'])
+          ) {
             this.tabs.unshift(this.adminTab);
           }
         });
@@ -320,7 +372,11 @@ export class NavigationComponent implements OnInit {
       }
     });
 
-    if(this.isCurrentUserAnAdmin) {
+
+    if (
+      this.isCurrentUserAnAdmin &&
+      !this.tabs.find((tab) => tab.text === this.tabName['ADMIN'])
+    ) {
       this.tabs.unshift(this.adminTab);
     }
   }
