@@ -50,7 +50,7 @@ export class QrEditComponent implements OnInit {
   audioFiles: string[] = [];
   availableFiles: string;
   item: Item;
-  returnTo: 'checkout' | 'post-edition' | 'item-creation' = null;
+  returnTo: 'checkout' | 'post-edition' | 'item-creation' | 'symbol-editor' = null;
 
   flow: 'cart' | 'checkout' = 'cart';
 
@@ -337,6 +337,33 @@ export class QrEditComponent implements OnInit {
             this.gridArray.push({
               ...slide,
             });
+          } else if (!slide.media && slide.url) {
+            const fileParts = slide.url.split('.');
+            const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
+            let auxiliarImageFileExtension = 'image/' + fileExtension;
+            let auxiliarVideoFileExtension = 'video/' + fileExtension;
+
+            if (
+              slide.url &&
+              !slide.url.includes('http') &&
+              !slide.url.includes('https')
+            ) {
+              slide.url = 'https://' + slide.url;
+            }
+
+            if (this.imageFiles.includes(auxiliarImageFileExtension)) {
+              this.gridArray.push({
+                ...slide,
+                background: (slide as any).url,
+                _type: auxiliarImageFileExtension,
+              });
+            } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
+              this.gridArray.push({
+                ...slide,
+                background: (slide as any).url,
+                _type: auxiliarVideoFileExtension,
+              });
+            }
           }
         }
       }
@@ -656,6 +683,11 @@ export class QrEditComponent implements OnInit {
           '/post-edition',
       ]);
       return;
+    } else if (this.returnTo === 'symbol-editor') {
+      this._Router.navigate([
+        'admin/symbol-editor'
+      ]);
+      return;
     }
 
     this._Router.navigate(
@@ -760,7 +792,9 @@ export class QrEditComponent implements OnInit {
   }
 
   editSlide(index: number) {
-    const queryParams: any = {};
+    const queryParams: any = {
+      returnTo: this.returnTo
+    };
 
     if (this.redirectFromFlowRoute)
       queryParams.redirectFromFlowRoute = this.redirectFromFlowRoute;

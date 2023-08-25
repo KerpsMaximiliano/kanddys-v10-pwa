@@ -75,7 +75,7 @@ type ValidEntities = 'item' | 'post' | 'collection';
 export class SymbolDetailComponent implements OnInit, AfterViewInit {
   routeParamsSubscription: Subscription = null;
   queryParamsSubscription: Subscription = null;
-  mode: 'preview' | 'image-preview' | 'saleflow';
+  mode: 'preview' | 'image-preview' | 'saleflow' | 'symbol-editor-preview';
   slidesPath: Array<{
     type: 'IMAGE' | 'VIDEO' | 'TEXT';
     path?: string | SafeUrl;
@@ -790,6 +790,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   }
 
   back = async () => {
+    if(this.mode === 'symbol-editor-preview') return this.location.back();
     if (this.supplierPreview) {
       return this.headerService.redirectFromQueryParams();
     }
