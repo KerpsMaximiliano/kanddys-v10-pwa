@@ -91,6 +91,7 @@ export const merchantDefault = gql`
       owner {
         _id
         phone
+        email
       }
       social {
         name

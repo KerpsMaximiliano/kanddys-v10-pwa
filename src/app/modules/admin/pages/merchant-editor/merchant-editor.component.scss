@@ -84,6 +84,17 @@
     font-size: 17px;
     line-height: 20.57px;
   }
+
+  .square {
+    height: 25px;
+    width: 25px;
+    border-radius: 2px;
+    border: none;
+    display: inline-block;
+    cursor: pointer;
+    box-shadow: 0px 3px 6px rgba(#000000, 0.16);
+    background-color: #936105;
+  }
 }
 
 .card {

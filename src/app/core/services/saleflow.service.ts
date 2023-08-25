@@ -1,7 +1,7 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
-import { Item, ItemPackage } from '../models/item';
+import { Item, ItemPackage, SearchKeyword } from '../models/item';
 import {
   PaginationInput,
   SaleFlow,
@@ -12,6 +12,7 @@ import {
 import { AppService } from './../../app.service';
 import {
   addItemToSaleFlow,
+  codeSearchKeywordByType,
   createSaleflow,
   createSaleFlowModule,
   hotListItems,
@@ -35,7 +36,7 @@ export class SaleFlowService {
   private triggerSubject = new Subject<any>();
   trigger = this.triggerSubject.asObservable();
 
-  constructor(private graphql: GraphQLWrapper, private app: AppService) {}
+  constructor(private graphql: GraphQLWrapper, private app: AppService) { }
 
   async saleflow(id: string, isHot?: boolean): Promise<{ saleflow: SaleFlow }> {
     try {
@@ -101,6 +102,22 @@ export class SaleFlowService {
       }
     } catch (e) {
       console.log(e);
+    }
+  }
+
+  async codeSearchKeywordByType(
+    pagination: PaginationInput,
+  ): Promise<SearchKeyword> {
+    try {
+      const response = await this.graphql.query({
+        query: codeSearchKeywordByType,
+        variables: { pagination },
+        fetchPolicy: 'no-cache',
+      });
+      return response.codeSearchKeywordByType;
+    } catch (e) {
+      console.log(e.error);
+      return null;
     }
   }
 

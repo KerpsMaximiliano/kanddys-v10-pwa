@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
+import { log } from 'console';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { PaginationInput } from 'src/app/core/models/saleflow';
@@ -325,7 +326,7 @@ export class StoreComponent implements OnInit {
               this.saleflowService.notifyTrigger({
                 triggerID: 'estimatedDelivery',
                 data: {
-                  until: 2
+                  until: 2,
                 },
               });
             },
@@ -336,7 +337,7 @@ export class StoreComponent implements OnInit {
               this.saleflowService.notifyTrigger({
                 triggerID: 'estimatedDelivery',
                 data: {
-                  until: 8
+                  until: 8,
                 },
               });
             },
@@ -347,7 +348,7 @@ export class StoreComponent implements OnInit {
               this.saleflowService.notifyTrigger({
                 triggerID: 'estimatedDelivery',
                 data: {
-                  until: 30
+                  until: 30,
                 },
               });
             },
@@ -359,7 +360,7 @@ export class StoreComponent implements OnInit {
                 triggerID: 'estimatedDelivery',
                 data: {
                   from: 30,
-                  until: 48
+                  until: 48,
                 },
               });
             },
@@ -370,7 +371,7 @@ export class StoreComponent implements OnInit {
               this.saleflowService.notifyTrigger({
                 triggerID: 'estimatedDelivery',
                 data: {
-                  from: 48
+                  from: 48,
                 },
               });
             },
@@ -392,14 +393,19 @@ export class StoreComponent implements OnInit {
   }
 
   onKeywordSearch(event: any) {
-    console.log(event.target.value);
-    const value = event.target.value;
+    const value: string = event.target.value;
     setTimeout(() => {
-      console.log("Enviando keyword");
-      this.saleflowService.notifyTrigger({
-        triggerID: 'search',
-        data: value
-      });
+      if (value.startsWith("#")) {
+        this.saleflowService.notifyTrigger({
+          triggerID: 'hashtag',
+          data: value,
+        });
+      } else {
+        this.saleflowService.notifyTrigger({
+          triggerID: 'search',
+          data: value,
+        });
+      }
     }, 500);
   }
 

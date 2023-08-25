@@ -20,7 +20,7 @@
           pattern="^\(\d{3}\)\d{3}\d{4}$"
         />
       </div>
-      <div class="input-group">
+      <div class="input-group" *ngIf="email || email === ''">
         <label for="email"
           >Correo electrónico que recibe las facturas de la órdenes</label
         >
@@ -30,7 +30,46 @@
           id="email"
           placeholder="correo@mail.com"
           pattern="[\w\._]{5,30}\+?[\w]{0,10}@[\w\.\~]{3,}\.\w{2,5}"
+          [(ngModel)]="email"
         />
+      </div>
+      <div class="input-group" *ngIf="name || name === ''">
+        <label for="name"
+          >Nombre comercial</label
+        >
+        <input
+          type="text"
+          name="name"
+          id="name"
+          placeholder="Nombre"
+          [(ngModel)]="name"
+        />
+      </div>
+      <div class="input-group" *ngIf="slug || slug === ''">
+        <label for="slug"
+          >ID del comercio (Slug)</label
+        >
+        <input
+          type="text"
+          name="slug"
+          id="slug"
+          placeholder="ID"
+          [(ngModel)]="slug"
+        />
+      </div>
+      <div class="input-group" *ngIf="image || image === ''">
+        <label for="image"
+          >Imagen Comercial</label
+        >
+        <input
+          type="file"
+          style="display: none"
+          [accept]="['.png', '.jpg', '.jpeg']"
+          name="image"
+          id="image"
+          (change)="onFileUpload($event)"
+        />
+        <label class="square" [style.background]="image? formatImage(image) : '#936105'" for="image"></label>
       </div>
     </section>
     <section class="form-group form-optional">
@@ -38,21 +77,21 @@
         OPCIONAL- DATOS QUE LOS COMPRADORES CONSIDERAN IMPORTANTES
       </p>
       <div class="card-group">
-        <div class="card">
+        <div class="card" *ngIf="image === null">
           <p>Logo</p>
-          <button type="button">
+          <button type="button" (click)="addField('image')">
             <img src="../../../../../assets/icons/add-button.svg" alt="" />
           </button>
         </div>
-        <div class="card">
+        <div class="card" *ngIf="name === null">
           <p>Nombre comercial</p>
-          <button type="button">
+          <button type="button" (click)="addField('name')">
             <img src="../../../../../assets/icons/add-button.svg" alt="" />
           </button>
         </div>
-        <div class="card">
+        <div class="card" *ngIf="slug === null">
           <p>ID del comercio (Slug)</p>
-          <button type="button">
+          <button type="button" (click)="addField('slug')">
             <img src="../../../../../assets/icons/add-button.svg" alt="" />
           </button>
         </div>
@@ -99,6 +138,6 @@
     </section>
   </form>
   <footer class="page-footer">
-    <p>Empieza la Membresía del Club de Floristerías</p>
+    <a (click)="save()"><p>Empieza la Membresía del Club de Floristerías</p></a>
   </footer>
 </div>
