@@ -16,13 +16,13 @@ import {
   CodeSearchByKeyword,
   codeByKeyword,
   CodesByUserId,
+  getCodes,
 } from './../graphql/codes.gql';
-import { Community } from './../models/community';
-import { User } from './../models/user';
+import { PaginationInput } from '../models/saleflow';
 
 @Injectable({ providedIn: 'root' })
 export class CodesService {
-  constructor(private graphql: GraphQLWrapper, private app: AppService) {}
+  constructor(private graphql: GraphQLWrapper, private app: AppService) { }
 
   async generateCode(input: CodeInput): Promise<{ generateCodes: Code[] }> {
     console.log(input);
@@ -39,23 +39,55 @@ export class CodesService {
     return result;
   }
 
-  async createCode(input: CodeInput): Promise<Code[]> {
-    console.log(input);
-    const result = await this.graphql.mutate({
-      mutation: createCode,
-      variables: { input },
-      context: { useMultipart: true },
-    });
-
-    if (!result || result?.errors) return undefined;
-
-    this.app.events.emit({ type: 'reload' });
-    console.log(result);
-    return result;
+  /**
+   * Obtiene todos los datos del producto por una referencia
+   *
+   * @param input Es un findBy que debe contener el reference para buscar el producto
+   * @returns
+   */
+  async getCodes(paginate: PaginationInput): Promise<any> {
+    try {
+      const response = await this.graphql.query({
+        query: getCodes,
+        variables: { paginate },
+        fetchPolicy: 'no-cache',
+      });
+      this.app.events.emit({ type: 'reload' });
+      return response.codes;
+    } catch (e) {
+      console.error(e.error)
+      return null
+    }
   }
 
+  /**
+   *
+   * @param input
+   * @returns
+   */
+  async createCode(input: CodeInput): Promise<Code[]> {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: createCode,
+        variables: { input },
+        context: { useMultipart: true },
+      });
+      if (!result || result?.errors) return null;
+      this.app.events.emit({ type: 'reload' });
+      return result;
+    } catch (e) {
+      console.error(e.error)
+      return null
+    }
+  }
+
+  /**
+   *
+   * @param input
+   * @param id
+   * @returns
+   */
   async updateCode(input: any, id: string) {
-    console.log(input);
     const result = await this.graphql.mutate({
       mutation: updateCode,
       variables: { input, id },
@@ -65,7 +97,6 @@ export class CodesService {
     if (!result || result?.errors) return undefined;
 
     this.app.events.emit({ type: 'reload' });
-    console.log(result);
     return result;
   }
 
@@ -130,7 +161,7 @@ export class CodesService {
           fetchPolicy: 'no-cache',
         });
         return response;
-      } catch (e) {}
+      } catch (e) { }
     } else {
       try {
         const response = await this.graphql.query({
@@ -139,7 +170,7 @@ export class CodesService {
           fetchPolicy: 'no-cache',
         });
         return response;
-      } catch (e) {}
+      } catch (e) { }
     }
   }
 

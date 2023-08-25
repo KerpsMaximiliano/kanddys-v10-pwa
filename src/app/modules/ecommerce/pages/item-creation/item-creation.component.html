@@ -83,7 +83,10 @@
           El artículo está oculto
         </div>
 
-        <div class="disabled-item-container" *ngIf="isTheUserAnAdmin && !item?.approvedByAdmin">
+        <div
+          class="disabled-item-container"
+          *ngIf="isTheUserAnAdmin && !item?.approvedByAdmin"
+        >
           El artículo no se está exhibiendo por falta aprobación.
         </div>
 
@@ -240,8 +243,14 @@
               [mode]="'SMALL'"
               [editing]="false"
               [defaultText]="'Incluyes fotos, memes, videos o música.'"
-              (buttonClicked)="!isASupplierItem || isTheUserAnAdmin ? emitFileInputClick() : null"
-              (buttonClicked2)="!isASupplierItem || isTheUserAnAdmin ? goToReorderMedia() : null"
+              (buttonClicked)="
+                !isASupplierItem || isTheUserAnAdmin
+                  ? emitFileInputClick()
+                  : null
+              "
+              (buttonClicked2)="
+                !isASupplierItem || isTheUserAnAdmin ? goToReorderMedia() : null
+              "
             ></app-qr-content>
           </div>
 
@@ -420,6 +429,18 @@
               <label for="">Tags para búsquedas</label>
 
               <span>{{ tagsString }}</span>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="isHashtagExist && hashtagSelected?.keyword">
+            <div class="field-text">
+              <label for="">Hashtags para búsqueda directa</label>
+              <input
+                type="text"
+                [formControl]="itemHashtagInput"
+                [value]="itemHashtagInput.value"
+                (blur)="editHashtag($event)"
+              />
             </div>
           </ng-container>
         </section>
@@ -630,6 +651,21 @@
             </ng-container>
           </ng-container>
 
+          <ng-container *ngIf="!isHashtagExist || !hashtagSelected?.keyword">
+            <ng-container
+              *ngTemplateOutlet="
+                addField;
+                context: {
+                  fieldLabel: 'Hashtag para búsqueda directa',
+                  iconCallback: openFormForField,
+                  fieldNameForCallback: 'HASHTAG',
+                  notRequired: true
+                }
+              "
+            >
+            </ng-container>
+          </ng-container>
+
           <ng-container *ngIf="itemTagsIds.length === 0">
             <ng-container
               *ngTemplateOutlet="
@@ -673,10 +709,10 @@
         <!--
         <div class="optional-stuff">
           <h3>FUNCIONALIDADES PARA QUE VENDAN POR TI</h3>
-    
+
           <div class="row">
             <span>Inventario para que se auto-oculte</span>
-    
+
             <img
               (click)="(null)"
               src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
@@ -684,10 +720,10 @@
               class="upload-media"
             />
           </div>
-    
+
           <div class="row">
             <span>¿Qué es?</span>
-    
+
             <img
               (click)="(null)"
               src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"
@@ -695,10 +731,10 @@
               class="upload-media"
             />
           </div>
-    
+
           <div class="row">
             <span>% de comisión que pagarás a vendedor..</span>
-    
+
             <img
               (click)="(null)"
               src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/add_button_circle.svg"

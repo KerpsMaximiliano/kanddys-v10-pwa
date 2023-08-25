@@ -212,6 +212,7 @@ export class ItemInput {
   parentItem?: string;
   notificationStockPhoneOrEmail?: string;
   approvedByAdmin?: boolean;
+  hashtag?: any
 }
 
 export class ItemImageInput {
