@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
@@ -12,17 +13,7 @@ import { FormComponent, FormData } from 'src/app/shared/dialogs/form/form.compon
 import { InputDialogComponent } from 'src/app/shared/dialogs/input-dialog/input-dialog.component';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { TagFilteringComponent } from 'src/app/shared/dialogs/tag-filtering/tag-filtering.component';
-
-interface Post {
-  _id: string;
-  title: string;
-  message: string;
-  categories: {
-    _id: string;
-    name: string;
-  }[];
-  ctaText : string;
-}
+import { SlideInput } from 'src/app/core/models/post';
 
 @Component({
   selector: 'app-symbol-editor',
@@ -32,59 +23,145 @@ interface Post {
 export class SymbolEditorComponent implements OnInit {
   env: string = environment.assetsUrl;
   active: boolean = false;
-  post: Post = {
-    _id: '',
-    title: '',
-    message: '',
-    categories: [],
-    ctaText: ''
-  };
-  postImages: any[];
-  itemFormData: FormGroup;
-  categories: any[];
 
+  merchantSlug : string = '';
+  newPost : boolean = false;
+  layout: 'EXPANDED-SLIDE' | 'ZOOMED-OUT-INFO' = 'EXPANDED-SLIDE';
+  flow: 'cart' | 'checkout' = 'cart';
+  isPhoneInputFocused: boolean = false;
+  itemFormData: FormGroup;
+  availableCategories: {_id: string; name: string; }[];
+  selectedCategories: {_id: string; name: string; }[] = [];
+  postForm: FormGroup;
+  postId: string;
   categoryIds: string[] = [];
   title: string = "";
   message: string = "";
   ctaText : string = "";
+
+  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
+  videoFiles: string[] = [
+    'video/mp4',
+    'video/webm',
+    'video/m4v',
+    'video/mpg',
+    'video/mp4',
+    'video/mpeg',
+    'video/mpeg4',
+    'video/mov',
+    'video/3gp',
+    'video/mts',
+    'video/m2ts',
+    'video/mxf',
+  ];
+
   constructor(
     private MerchantsService: MerchantsService,
-    private PostsService: PostsService,
+    public PostsService: PostsService,
     private MatSlideToggleModule: MatSlideToggleModule,
     private MatDialog: MatDialog,
-    public dialog: MatDialog,
     private _bottomSheet: MatBottomSheet,
     private CommunitiesService: CommunitiesService,
-    private headerService: HeaderService,
-    private formBuilder: FormBuilder,
+    private HeaderService: HeaderService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private fb: FormBuilder,
   ) { }
 
   ngOnInit(): void {
     this.getMerchantFunctionality()
     this.CommunitiesService.communitycategoriesPaginate({findBy:{type:"solidary"}}).then((res) => {
       console.log(res);
-      this.categories = res.results;
-      this.categories.forEach((category) => {
+      this.availableCategories = res.results;
+      this.availableCategories.forEach((category) => {
         this.categoryIds.push(category._id);  
       })
     })
+    this.route.queryParams.subscribe(({ flow, type }) => {
+      if (flow) this.flow = flow as 'cart' | 'checkout';
+      if (!this.PostsService.post) {
+        this.PostsService.post = {
+          title: '',
+          message: '',
+          ctaText: '',
+          categories: [],
+          slides: [],
+        };
+        this.postForm = this.fb.group({
+          accessKey: [''],
+          title: [''],
+          message: [''],
+          envelopeText: [''],
+          defaultLayout: [this.PostsService.post.layout || this.layout],
+          ctaText: [''],
+          ctaLink: [''],
+        });
+      } else {
+        if (this.PostsService.postReceiverNumberObject)
+          this.isPhoneInputFocused = true;
+
+        this.postForm = this.fb.group({
+          accessKey: [this.PostsService.postReceiverNumberObject],
+          title: [this.PostsService.post.title],
+          message: [this.PostsService.post.message],
+          envelopeText: [this.PostsService.post.envelopeText],
+          defaultLayout: [this.PostsService.post.layout || this.layout],
+          ctaText: [this.PostsService.post.ctaText],
+          ctaLink: [this.PostsService.post.ctaLink],
+        });
+      }
+    });
   }
 
   async getMerchantFunctionality() {
     let merchantId: string;
     await this.MerchantsService.merchantDefault().then((res) => {
       merchantId = res._id;
+      this.merchantSlug = res.slug;
     });
     await this.MerchantsService.merchantFuncionality(merchantId).then((res) => {
-      this.post = res.postSolidary.post;
-      this.title = this.post.title;
-      this.message = this.post.message;
-      this.ctaText = this.post.ctaText
+      this.postId = res.postSolidary.post._id;
+      if(!res.postSolidary.post) {
+        this.newPost = true;
+      }
+      console.log(res.postSolidary.post)
+      this.selectedCategories = res.postSolidary.post.categories;
+      this.PostsService.post.title = res.postSolidary.post.title;
+      this.PostsService.post.message = res.postSolidary.post.message;
+      this.PostsService.post.ctaText = res.postSolidary.post.ctaText
       this.active = res.postSolidary.active;
     })
-    this.PostsService.slidesByPost(this.post._id).then((res) => {
-      this.postImages = res;
-    })
+    if(this.postId) {
+      this.PostsService.slidesByPost(this.postId).then((res) => {
+        let processedSlides = res.map((slide) => {
+          let processedSlide = {
+            _id: slide._id,
+            title: slide.title,
+            text: slide.text,
+            url: slide.media,
+            type: slide.type,
+            index: slide.index,
+            background: slide.media,
+          }
+          return processedSlide;
+        })
+        let full = [
+            ...this.PostsService.post.slides,
+            ...processedSlides
+        ]
+        console.log(this.PostsService.post.slides)
+        const set = new Set()
+        this.PostsService.post.slides = full.filter((slide) => {
+          if(!set.has(slide.background)) {
+            set.add(slide.background)
+            return true
+          } else {
+            return false
+          }
+        })
+        console.log(this.PostsService.post.slides)
+      })
+    }
   }
 
   openFormForField(field: 'title' | 'message' | 'ctaText') {
@@ -136,7 +213,7 @@ export class SymbolEditorComponent implements OnInit {
         break;
     }
 
-    const dialogRef = this.dialog.open(FormComponent, {
+    const dialogRef = this.MatDialog.open(FormComponent, {
       data: fieldsToCreate,
     });
 
@@ -144,22 +221,22 @@ export class SymbolEditorComponent implements OnInit {
       console.log('The dialog was closed');
 
       if (result && result.value['item-title']) {
-        this.title = result.value['item-title']
+        this.PostsService.post.title = result.value['item-title']
       }
 
       if (result && result.value['item-description']) {
-        this.message = result.value['item-description']
+        this.PostsService.post.message = result.value['item-description']
       }
 
       if(result && result.value['button-name']){
-        this.ctaText = result.value['button-name']
+        this.PostsService.post.ctaText = result.value['button-name']
       }
     });
   }
 
   openCategoriesDialog = () => {
     let postCategories = []
-    this.post.categories.forEach((category) => {
+    this.selectedCategories.forEach((category) => {
       postCategories.push(category._id)
     });
     const bottomSheetRef = this._bottomSheet.open(TagFilteringComponent, {
@@ -168,7 +245,7 @@ export class SymbolEditorComponent implements OnInit {
         titleIcon: {
           show: false,
         },
-        categories: this.categories.map((category) => ({
+        categories: this.availableCategories.map((category) => ({
           _id: category._id,
           name: category.name,
           selected: postCategories.includes(category._id),
@@ -179,18 +256,134 @@ export class SymbolEditorComponent implements OnInit {
     bottomSheetRef.instance.selectionOutput.subscribe(
       async (categoriesAdded: Array<string>) => {
         this.categoryIds = categoriesAdded;
-        this.post.categories = this.categories.filter((category) => categoriesAdded.includes(category._id));
+        this.selectedCategories = this.availableCategories.filter((category) => categoriesAdded.includes(category._id));
       }
     );
   };
 
   updatePost() {
+    console.log(this.PostsService.post.slides)
+    let processedSlides = this.PostsService.post.slides.filter((slide) => {
+      if(slide._id) {
+        return false;
+      }
+      return true;
+    }).map((slide) => {
+      let processedSlide = {
+        title: slide.title,
+        text: slide.text,
+        media: slide.media,
+        type: slide.type,
+        index: slide.index,
+      }
+      return processedSlide;
+    })
+    console.log(processedSlides)
+    if(this.newPost) {
+      this.PostsService.createPost(
+        {
+          title: this.PostsService.post.title,
+          message: this.PostsService.post.message,
+          categories: this.categoryIds,
+          ctaText: this.PostsService.post.ctaText,
+          slides: this.PostsService.post.slides,
+        }
+      )
+    }
     this.PostsService.updatePost(
       {
-        title: this.title, 
-        message: this.message, 
+        title: this.PostsService.post.title, 
+        message: this.PostsService.post.message, 
         categories: this.categoryIds,
-        ctaText: this.ctaText
-      }, this.post._id);
+        slides: processedSlides,
+        ctaText: this.PostsService.post.ctaText
+      }, this.postId).then((res) => {console.log(res)});
+  }
+
+  goToReorderMedia(editSlide: boolean = false) {
+    this.PostsService.post.title = this.postForm.controls['title'].value;
+    this.PostsService.post.message = this.postForm.controls['message'].value;
+    this.PostsService.post.layout =
+      this.postForm.controls['defaultLayout'].value;
+    this.PostsService.post.ctaText = this.postForm.controls['ctaText'].value;
+    this.PostsService.post.ctaLink = this.postForm.controls['ctaLink'].value;
+    this.PostsService.post.envelopeText =
+      this.postForm.controls['envelopeText'].value;
+
+    if (
+      this.postForm.controls['accessKey'].valid &&
+      this.postForm.controls['accessKey'].value
+    ) {
+      this.PostsService.postReceiverNumberObject =
+        this.postForm.controls['accessKey'].value;
+      this.PostsService.postReceiverNumber =
+        this.postForm.controls['accessKey'].value.e164Number.split('+')[1];
+    }
+    let redirectionRoute = !editSlide
+    ? 'ecommerce/' + this.merchantSlug + '/qr-edit'
+    : 'ecommerce/' +
+    this.merchantSlug +
+      '/post-slide-editor';
+    console.log(this.PostsService.post.slides)
+      this.router.navigate([redirectionRoute], {
+        queryParams: {
+          flow: this.flow,
+          returnTo: 'symbol-editor',
+        },
+      });
+  }
+
+  emitFileInputClick() {
+    (document.querySelector('#file') as HTMLElement).click();
+  }
+
+  async loadFile(event: Event) {
+    const fileList = (event.target as HTMLInputElement).files;
+    if (!fileList.length) return;
+    let index = this.PostsService.post.slides.length - 1;
+
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList.item(i);
+
+      if (
+        ![...this.imageFiles, ...this.videoFiles].includes(
+          file.type
+        )
+      )
+        return;
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = async (e) => {
+        let result = reader.result;
+        const content: SlideInput = {
+          text: 'test',
+          title: 'test',
+          media: file,
+          type: 'poster',
+          index: this.PostsService.post.slides.length || 0,
+        };
+        content['background'] = result;
+        content['_type'] = file.type;
+        console.log(content)
+        this.PostsService.post.slides.push(content);
+
+        this.PostsService.editingSlide =
+          this.PostsService.post.slides.length - 1;
+
+        if (i === fileList.length - 1 && fileList.length === 1) {
+          this.goToReorderMedia(true);
+        } else if(i === fileList.length - 1 && fileList.length > 1){
+          this.goToReorderMedia();
+        }
+      };
+    }
+  }
+
+  openPreview() {
+    this.router.navigate(["ecommerce/"+ this.merchantSlug +"/article-detail/post/" +this.postId], {
+      queryParams: {
+        mode : 'symbol-editor-preview'
+      },
+    });
   }
 }
