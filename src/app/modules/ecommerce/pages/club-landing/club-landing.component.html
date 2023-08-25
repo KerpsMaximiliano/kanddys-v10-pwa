@@ -128,6 +128,6 @@
 
       </main>
     
-      <footer (click)="share()" [ngClass]="{'no-green' : isVendor != isProvider}">{{!headerService.user ? (tabIndex ? "Membresía Gratis a Proveedores" : "Membresía US$3,000 por un año") : "Afiliados ganan US$650 por invitado"}}</footer>
+      <footer (click)="share()" class="footer" [ngClass]="{'no-green' : isVendor != isProvider}">{{!headerService.user ? (tabIndex ? "Membresía Gratis a Proveedores" : "Membresía US$3,000 por un año") : "Afiliados ganan US$650 por invitado"}}</footer>
     </div>
 </app-navigation>
