@@ -14,6 +14,7 @@ import { InputDialogComponent } from 'src/app/shared/dialogs/input-dialog/input-
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { TagFilteringComponent } from 'src/app/shared/dialogs/tag-filtering/tag-filtering.component';
 import { SlideInput } from 'src/app/core/models/post';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-symbol-editor',
@@ -24,6 +25,7 @@ export class SymbolEditorComponent implements OnInit {
   env: string = environment.assetsUrl;
   active: boolean = false;
 
+  merchantId : string = '';
   merchantSlug : string = '';
   newPost : boolean = false;
   layout: 'EXPANDED-SLIDE' | 'ZOOMED-OUT-INFO' = 'EXPANDED-SLIDE';
@@ -35,9 +37,12 @@ export class SymbolEditorComponent implements OnInit {
   postForm: FormGroup;
   postId: string;
   categoryIds: string[] = [];
-  title: string = "";
-  message: string = "";
-  ctaText : string = "";
+
+  originalTitle: string = "";
+  originalMessage: string = "";
+  originalCtaText : string = "";
+  originalCategories: any[] = [];
+  originalSlides: any[] = [];
 
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
   videoFiles: string[] = [
@@ -66,6 +71,7 @@ export class SymbolEditorComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private fb: FormBuilder,
+    public dom: DomSanitizer
   ) { }
 
   ngOnInit(): void {
@@ -114,42 +120,69 @@ export class SymbolEditorComponent implements OnInit {
   }
 
   async getMerchantFunctionality() {
-    let merchantId: string;
     await this.MerchantsService.merchantDefault().then((res) => {
-      merchantId = res._id;
+      this.merchantId = res._id;
       this.merchantSlug = res.slug;
     });
-    await this.MerchantsService.merchantFuncionality(merchantId).then((res) => {
-      this.postId = res.postSolidary.post._id;
+    await this.MerchantsService.merchantFuncionality(this.merchantId).then((res) => {
+      console.log(res)
       if(!res.postSolidary.post) {
+        console.log('no existing post')
         this.newPost = true;
+        return;
       }
+      this.postId = res.postSolidary.post._id;
       console.log(res.postSolidary.post)
       this.selectedCategories = res.postSolidary.post.categories;
       this.PostsService.post.title = res.postSolidary.post.title;
       this.PostsService.post.message = res.postSolidary.post.message;
       this.PostsService.post.ctaText = res.postSolidary.post.ctaText
       this.active = res.postSolidary.active;
+      this.originalTitle = res.postSolidary.post.title;
+      this.originalMessage = res.postSolidary.post.message;
+      this.originalCtaText = res.postSolidary.post.ctaText;
+      this.originalCategories = res.postSolidary.post.categories;
     })
     if(this.postId) {
       this.PostsService.slidesByPost(this.postId).then((res) => {
-        let processedSlides = res.map((slide) => {
+        let processedSlides : any[] = res.map((slide) => {
           let processedSlide = {
             _id: slide._id,
             title: slide.title,
             text: slide.text,
-            url: slide.media,
+            media: File,
             type: slide.type,
             index: slide.index,
-            background: slide.media,
           }
           return processedSlide;
         })
-        let full = [
-            ...this.PostsService.post.slides,
-            ...processedSlides
-        ]
+        let reader = new FileReader()
+        res.forEach((slide, index) => {
+          let result = fetch(slide.media).then((res) => {
+            console.log(res)
+            return res.blob()
+          })
+          result.then((blob) => {
+            processedSlides[index].media = blob
+            reader.readAsDataURL(blob);
+            reader.onload = async (e) => {
+              processedSlides[index].background = this.dom.bypassSecurityTrustUrl(reader.result as string);
+            }
+          })
+        })
+        console.log(processedSlides)
         console.log(this.PostsService.post.slides)
+        this.originalSlides = processedSlides;
+        if(this.PostsService.post.slides.length === 0 || !this.PostsService.post.slides) {
+          this.PostsService.post.slides = processedSlides
+        } else {
+          this.PostsService.post.slides.forEach((slide) => {
+            if(slide.media.type.includes('octet-stream')) {
+              slide.background = this.dom.bypassSecurityTrustUrl(slide.background)
+            }
+          })
+        }
+        /*console.log(full)
         const set = new Set()
         this.PostsService.post.slides = full.filter((slide) => {
           if(!set.has(slide.background)) {
@@ -158,7 +191,7 @@ export class SymbolEditorComponent implements OnInit {
           } else {
             return false
           }
-        })
+        })*/
         console.log(this.PostsService.post.slides)
       })
     }
@@ -262,42 +295,88 @@ export class SymbolEditorComponent implements OnInit {
   };
 
   updatePost() {
-    console.log(this.PostsService.post.slides)
-    let processedSlides = this.PostsService.post.slides.filter((slide) => {
-      if(slide._id) {
-        return false;
-      }
-      return true;
-    }).map((slide) => {
-      let processedSlide = {
-        title: slide.title,
-        text: slide.text,
-        media: slide.media,
-        type: slide.type,
-        index: slide.index,
-      }
-      return processedSlide;
-    })
-    console.log(processedSlides)
-    if(this.newPost) {
-      this.PostsService.createPost(
-        {
-          title: this.PostsService.post.title,
-          message: this.PostsService.post.message,
-          categories: this.categoryIds,
-          ctaText: this.PostsService.post.ctaText,
-          slides: this.PostsService.post.slides,
-        }
-      )
+    let sameTitle = this.originalTitle === this.PostsService.post.title;
+    let sameMessage = this.originalMessage === this.PostsService.post.message;
+    let sameCtaText = this.originalCtaText === this.PostsService.post.ctaText;
+    let sameCategories = JSON.stringify(this.originalCategories) === JSON.stringify(this.selectedCategories);
+    let sameSlides = JSON.stringify(this.originalSlides) === JSON.stringify(this.PostsService.post.slides);
+
+    if(sameTitle && sameMessage && sameCtaText && sameCategories && sameSlides) {
+        console.log('nothing happens')
+        return;
+    } else if (sameTitle && sameMessage && sameCtaText && sameCategories && !sameSlides) {
+        let newSlides = this.PostsService.post.slides.map((slide) => {
+          let newSlide = {
+            title: slide.title,
+            text: slide.text,
+            media: slide.media,
+            type: slide.type,
+            index: slide.index,
+            post: this.postId
+          }
+          return newSlide;
+        }).filter((slide) => !slide.media.type.includes('octet-stream'));
+        newSlides.forEach((slide) => {
+          console.log(slide)
+          this.PostsService.createSlide(slide).then((res) => {
+            console.log(res)
+          })
+        })
+        console.log('submit new slides')
+        return;
     }
-    this.PostsService.updatePost(
-      {
-        title: this.PostsService.post.title, 
-        message: this.PostsService.post.message, 
-        categories: this.categoryIds,
-        slides: processedSlides,
-        ctaText: this.PostsService.post.ctaText
-      }, this.postId).then((res) => {console.log(res)});
+    if(!this.newPost) {
+      if (!sameTitle || !sameMessage || !sameCtaText || !sameCategories) {
+        this.PostsService.updatePost(
+          {
+            title: this.PostsService.post.title, 
+            message: this.PostsService.post.message, 
+            categories: this.categoryIds,
+            ctaText: this.PostsService.post.ctaText
+          }, this.postId).then((res) => {console.log(res)});
+      }
+    } else {
+      if(this.PostsService.post.title === '' &&
+        this.PostsService.post.message === '' &&
+        JSON.stringify(this.categoryIds) === '[]' &&
+        this.PostsService.post.ctaText === '' &&
+        JSON.stringify(this.PostsService.post.slides) === '[]') {
+          console.log('empty post is not created')
+          return;
+      } else {
+        console.log('creating new post')
+        this.PostsService.createPost(
+          {
+            author: this.merchantId,
+            title: this.PostsService.post.title,
+            message: this.PostsService.post.message,
+            categories: this.categoryIds,
+            ctaText: this.PostsService.post.ctaText,
+            slides: this.PostsService.post.slides,
+          }
+        ).then((res) =>{
+          console.log(res)
+          let newSlides = this.PostsService.post.slides.map((slide) => {
+            let newSlide = {
+              title: slide.title,
+              text: slide.text,
+              media: slide.media,
+              type: slide.type,
+              index: slide.index,
+              post: res.createPost._id
+            }
+            return newSlide;
+          }).filter((slide) => !slide.media.type.includes('octet-stream'));
+          newSlides.forEach((slide) => {
+            console.log(slide)
+            this.PostsService.createSlide(slide).then((res) => {
+              console.log(res)
+            })
+            console.log('submit new slides')
+          })
+        })
+      }
+    } 
   }
 
   goToReorderMedia(editSlide: boolean = false) {

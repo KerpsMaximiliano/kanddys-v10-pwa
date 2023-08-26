@@ -67,7 +67,7 @@
             alt="imagen"
             *ngFor="let image of PostsService.post.slides; index as i"
             class="image"
-            src="{{ image.background }}"
+            [src]="image.background"
           />
         </div>
         <img
