@@ -1080,15 +1080,6 @@ export class NavigationComponent implements OnInit {
     });
 
     this.headerService.navigationTabState = this.underTabs;
-
-    this.tabs[tabIndex].active = true;
-    this.activeTabIndex = tabIndex;
-
-    this.tabs.forEach((tab, index) => {
-      if (index !== tabIndex) tab.active = false;
-    });
-
-    this.headerService.navigationTabState = this.tabs;
   }
 
   login() {

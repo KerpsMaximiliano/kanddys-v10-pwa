@@ -76,8 +76,8 @@
             <ng-container *ngFor="let link of filterData(); let i = index">
               <li routerLinkActive="active" class="tab-content-item">
                 <a
-                  [routerLink]="routerLinks[i%3].routerLink"
-                  (click)="redirectToLink(calcLink(link, routerLinks[i%3]))"
+                  [routerLink]="link.routerLink"
+                  (click)="redirectToLink(link)"
                   style="padding: 0px"
                 >
                   {{ link.text }}
@@ -144,30 +144,6 @@
           </div>
         </ng-container>
 
-      <section>
-        <ng-container *ngFor="let tab of tabs; index as i">
-          <ng-container *ngIf="tab.active">
-            <!-- <h2 class="logged-user-header">{{ tab.headerText }}</h2> -->
-            <div class="header-border"></div>
-
-            <ul>
-              <ng-container *ngFor="let link of tab.links">
-                <li routerLinkActive="active">
-                  <a
-                    mat-button
-                    [routerLink]="link.routerLink"
-                    (click)="redirectToLink(link)"
-                    [queryParams]="link.queryParams ? link.queryParams : null"
-                    style="padding: 0px"
-                  >
-                    {{ link.text }}
-                  </a>
-                </li>
-              </ng-container>
-            </ul>
-          </ng-container>
-        </ng-container>
-      </section>
       <footer [ngClass]="{'no-green' : isVendor != isProvider}">{{!headerService.user ? (tabIndex ? "Membresía Gratis a Proveedores" : "Membresía US$3,000 por un año") : "Afiliados ganan US$650 por invitado"}}</footer>
     </div>
   </mat-sidenav>
