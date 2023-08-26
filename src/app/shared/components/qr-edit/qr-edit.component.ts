@@ -32,7 +32,7 @@ import { isImage, isVideo } from 'src/app/core/helpers/strings.helpers';
 export class QrEditComponent implements OnInit {
   environment: string = environment.assetsUrl;
   spinnerGif: string = `${environment.assetsUrl}/spinner2.gif`;
-  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
+  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp', 'application/octet-stream'];
   videoFiles: string[] = [
     'video/mp4',
     'video/webm',
@@ -315,9 +315,12 @@ export class QrEditComponent implements OnInit {
       };
 
       if (this._PostsService.post.slides.length) {
+        console.log(this._PostsService.post.slides)
         for await (const slide of this._PostsService.post.slides) {
-          if (slide.media && slide.media.type.includes('image')) {
+          if (slide.media && slide.media.type.includes('image') || 
+          slide.media && slide.media.type.includes('octet-stream')) {
             await fileToBase64(slide.media).then((result) => {
+              console.log(result)
               this.gridArray.push({
                 ...slide,
                 background: result,
