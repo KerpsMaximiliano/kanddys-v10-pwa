@@ -25,6 +25,7 @@ export class SymbolEditorComponent implements OnInit {
   env: string = environment.assetsUrl;
   active: boolean = false;
 
+  authorId : string = '';
   merchantId : string = '';
   merchantSlug : string = '';
   newPost : boolean = false;
@@ -122,6 +123,7 @@ export class SymbolEditorComponent implements OnInit {
   async getMerchantFunctionality() {
     await this.MerchantsService.merchantDefault().then((res) => {
       this.merchantId = res._id;
+      this.authorId = res.owner._id
       this.merchantSlug = res.slug;
     });
     await this.MerchantsService.merchantFuncionality(this.merchantId).then((res) => {
@@ -294,7 +296,7 @@ export class SymbolEditorComponent implements OnInit {
     );
   };
 
-  updatePost() {
+  async updatePost() {
     let sameTitle = this.originalTitle === this.PostsService.post.title;
     let sameMessage = this.originalMessage === this.PostsService.post.message;
     let sameCtaText = this.originalCtaText === this.PostsService.post.ctaText;
@@ -327,53 +329,57 @@ export class SymbolEditorComponent implements OnInit {
     }
     if(!this.newPost) {
       if (!sameTitle || !sameMessage || !sameCtaText || !sameCategories) {
-        this.PostsService.updatePost(
+        let selectedCategoryIds = this.selectedCategories.map((category) => category._id);
+        await this.PostsService.updatePost(
           {
             title: this.PostsService.post.title, 
             message: this.PostsService.post.message, 
-            categories: this.categoryIds,
+            categories: selectedCategoryIds,
             ctaText: this.PostsService.post.ctaText
           }, this.postId).then((res) => {console.log(res)});
       }
     } else {
       if(this.PostsService.post.title === '' &&
         this.PostsService.post.message === '' &&
-        JSON.stringify(this.categoryIds) === '[]' &&
+        JSON.stringify(this.selectedCategories) === '[]' &&
         this.PostsService.post.ctaText === '' &&
         JSON.stringify(this.PostsService.post.slides) === '[]') {
           console.log('empty post is not created')
           return;
       } else {
         console.log('creating new post')
-        this.PostsService.createPost(
+        let newSlides : SlideInput[] = this.PostsService.post.slides.map((slide) => {
+          let newSlide : SlideInput = {
+            text: slide.text,
+            index: slide.index,
+            media: slide.media,
+            type: 'poster',
+          }
+          return newSlide;
+        })
+        let selectedCategoryIds = this.selectedCategories.map((category) => category._id);
+        await this.PostsService.createPost(
           {
-            author: this.merchantId,
+            author: this.authorId,
             title: this.PostsService.post.title,
             message: this.PostsService.post.message,
-            categories: this.categoryIds,
+            categories: selectedCategoryIds,
             ctaText: this.PostsService.post.ctaText,
-            slides: this.PostsService.post.slides,
+            slides: newSlides,
+            type: 'solidary',
           }
         ).then((res) =>{
           console.log(res)
-          let newSlides = this.PostsService.post.slides.map((slide) => {
-            let newSlide = {
-              title: slide.title,
-              text: slide.text,
-              media: slide.media,
-              type: slide.type,
-              index: slide.index,
-              post: res.createPost._id
-            }
-            return newSlide;
-          }).filter((slide) => !slide.media.type.includes('octet-stream'));
-          newSlides.forEach((slide) => {
-            console.log(slide)
-            this.PostsService.createSlide(slide).then((res) => {
+          this.MerchantsService.updateMerchantFuncionality(
+            {
+              postSolidary: 
+              {
+                post: res.createPost._id, 
+                active: this.active
+              }
+            }, this.merchantId).then((res) => {
               console.log(res)
             })
-            console.log('submit new slides')
-          })
         })
       }
     } 

@@ -103,6 +103,7 @@ export class PostInput {
   envelopeText?: string;
   virtualMessage?: boolean;
   categories?: string[];
+  active?: boolean;
 }
 
 export class Slide extends Model<Slide> {
