@@ -416,6 +416,9 @@ export class QrEditComponent implements OnInit {
 
   async loadFile(event: Event) {
     const fileList = (event.target as HTMLInputElement).files;
+    const queryParams : any = {
+      returnTo: this.returnTo
+    }
     if (!fileList.length) return;
     let index = this.gridArray.length - 1;
     for (let i = 0; i < fileList.length; i++) {
@@ -621,7 +624,7 @@ export class QrEditComponent implements OnInit {
               'ecommerce/' +
                 this.headerService.saleflow?.merchant.slug +
                 '/post-slide-editor',
-            ]);
+            ], {queryParams});
           };
         }
       }

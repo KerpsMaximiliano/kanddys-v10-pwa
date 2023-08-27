@@ -465,7 +465,14 @@ export class SymbolEditorComponent implements OnInit {
   }
 
   openPreview() {
-    this.router.navigate(["ecommerce/"+ this.merchantSlug +"/article-detail/post/" +this.postId], {
+    if(this.postId) {
+      this.router.navigate(["ecommerce/"+ this.merchantSlug +"/article-detail/post"], {
+        queryParams: {
+          mode : 'PREVIEW'
+        },
+      });
+    }
+    this.router.navigate(["ecommerce/"+ this.merchantSlug +"/article-detail/post/" + this.postId], {
       queryParams: {
         mode : 'symbol-editor-preview'
       },
