@@ -420,10 +420,10 @@ export class SymbolEditorComponent implements OnInit {
         };
         content['background'] = result;
         content['_type'] = file.type;
+        this.PostsService.post.slides.push(content);
 
         this.PostsService.editingSlide =
           this.PostsService.post.slides.length - 1;
-
         if (i === fileList.length - 1 && fileList.length === 1) {
           this.goToReorderMedia(true);
         } else if(i === fileList.length - 1 && fileList.length > 1){
