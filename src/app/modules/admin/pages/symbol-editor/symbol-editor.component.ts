@@ -78,7 +78,6 @@ export class SymbolEditorComponent implements OnInit {
   ngOnInit(): void {
     this.getMerchantFunctionality()
     this.CommunitiesService.communitycategoriesPaginate({findBy:{type:"solidary"}}).then((res) => {
-      console.log(res);
       this.availableCategories = res.results;
       this.availableCategories.forEach((category) => {
         this.categoryIds.push(category._id);  
@@ -127,14 +126,11 @@ export class SymbolEditorComponent implements OnInit {
       this.merchantSlug = res.slug;
     });
     await this.MerchantsService.merchantFuncionality(this.merchantId).then((res) => {
-      console.log(res)
       if(!res.postSolidary.post) {
-        console.log('no existing post')
         this.newPost = true;
         return;
       }
       this.postId = res.postSolidary.post._id;
-      console.log(res.postSolidary.post)
       this.selectedCategories = res.postSolidary.post.categories;
       this.PostsService.post.title = res.postSolidary.post.title;
       this.PostsService.post.message = res.postSolidary.post.message;
@@ -161,7 +157,6 @@ export class SymbolEditorComponent implements OnInit {
         let reader = new FileReader()
         res.forEach((slide, index) => {
           let result = fetch(slide.media).then((res) => {
-            console.log(res)
             return res.blob()
           })
           result.then((blob) => {
@@ -172,8 +167,6 @@ export class SymbolEditorComponent implements OnInit {
             }
           })
         })
-        console.log(processedSlides)
-        console.log(this.PostsService.post.slides)
         this.originalSlides = processedSlides;
         if(this.PostsService.post.slides.length === 0 || !this.PostsService.post.slides) {
           this.PostsService.post.slides = processedSlides
@@ -184,17 +177,6 @@ export class SymbolEditorComponent implements OnInit {
             }
           })
         }
-        /*console.log(full)
-        const set = new Set()
-        this.PostsService.post.slides = full.filter((slide) => {
-          if(!set.has(slide.background)) {
-            set.add(slide.background)
-            return true
-          } else {
-            return false
-          }
-        })*/
-        console.log(this.PostsService.post.slides)
       })
     }
   }
@@ -253,7 +235,6 @@ export class SymbolEditorComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result: FormGroup) => {
-      console.log('The dialog was closed');
 
       if (result && result.value['item-title']) {
         this.PostsService.post.title = result.value['item-title']
@@ -304,7 +285,6 @@ export class SymbolEditorComponent implements OnInit {
     let sameSlides = JSON.stringify(this.originalSlides) === JSON.stringify(this.PostsService.post.slides);
 
     if(sameTitle && sameMessage && sameCtaText && sameCategories && sameSlides) {
-        console.log('nothing happens')
         return;
     } else if (sameTitle && sameMessage && sameCtaText && sameCategories && !sameSlides) {
         let newSlides = this.PostsService.post.slides.map((slide) => {
@@ -319,12 +299,9 @@ export class SymbolEditorComponent implements OnInit {
           return newSlide;
         }).filter((slide) => !slide.media.type.includes('octet-stream'));
         newSlides.forEach((slide) => {
-          console.log(slide)
           this.PostsService.createSlide(slide).then((res) => {
-            console.log(res)
           })
         })
-        console.log('submit new slides')
         return;
     }
     if(!this.newPost) {
@@ -336,7 +313,7 @@ export class SymbolEditorComponent implements OnInit {
             message: this.PostsService.post.message, 
             categories: selectedCategoryIds,
             ctaText: this.PostsService.post.ctaText
-          }, this.postId).then((res) => {console.log(res)});
+          }, this.postId)
       }
     } else {
       if(this.PostsService.post.title === '' &&
@@ -344,10 +321,8 @@ export class SymbolEditorComponent implements OnInit {
         JSON.stringify(this.selectedCategories) === '[]' &&
         this.PostsService.post.ctaText === '' &&
         JSON.stringify(this.PostsService.post.slides) === '[]') {
-          console.log('empty post is not created')
           return;
       } else {
-        console.log('creating new post')
         let newSlides : SlideInput[] = this.PostsService.post.slides.map((slide) => {
           let newSlide : SlideInput = {
             text: slide.text,
@@ -369,7 +344,6 @@ export class SymbolEditorComponent implements OnInit {
             type: 'solidary',
           }
         ).then((res) =>{
-          console.log(res)
           this.MerchantsService.updateMerchantFuncionality(
             {
               postSolidary: 
@@ -377,9 +351,7 @@ export class SymbolEditorComponent implements OnInit {
                 post: res.createPost._id, 
                 active: this.active
               }
-            }, this.merchantId).then((res) => {
-              console.log(res)
-            })
+            }, this.merchantId)
         })
       }
     } 
@@ -409,7 +381,6 @@ export class SymbolEditorComponent implements OnInit {
     : 'ecommerce/' +
     this.merchantSlug +
       '/post-slide-editor';
-    console.log(this.PostsService.post.slides)
       this.router.navigate([redirectionRoute], {
         queryParams: {
           flow: this.flow,
@@ -449,8 +420,6 @@ export class SymbolEditorComponent implements OnInit {
         };
         content['background'] = result;
         content['_type'] = file.type;
-        console.log(content)
-        this.PostsService.post.slides.push(content);
 
         this.PostsService.editingSlide =
           this.PostsService.post.slides.length - 1;
@@ -466,8 +435,6 @@ export class SymbolEditorComponent implements OnInit {
 
   openPreview() {
     if(!this.postId) {
-      console.log(this.postId)
-      console.log('fire post')
       this.router.navigate(["ecommerce/"+ this.merchantSlug +"/article-detail/post"], {
         queryParams: {
           mode : 'PREVIEW',
