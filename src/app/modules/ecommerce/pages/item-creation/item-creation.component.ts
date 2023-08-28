@@ -142,6 +142,7 @@ export class ItemCreationComponent implements OnInit {
   itemHashtagInput: FormControl = new FormControl('');
   hashtagSelected: any = null;
   isHashtagExist: boolean = false
+  isHashtagUpdated: boolean = false
 
   //Categories to create
   allCategories: Array<ItemCategory> = [];
@@ -767,13 +768,22 @@ export class ItemCreationComponent implements OnInit {
       this.isHashtagExist = false
     } else {
       this.hashtagSelected.keyword = keyword
-    this.itemHashtagInput.setValue(keyword)
+      this.itemHashtagInput.setValue(keyword)
     }
     this.isFormUpdated = true
   }
 
   updateHashtag(keyword: string, id: string) {
-    this.codesService.updateCode({ keyword }, id)
+    this.codesService
+      .updateCode({ keyword }, id)
+      .then((data) => {
+        this.hashtagSelected.keyword = data.updateCode.keyword;
+        this.itemHashtagInput.setValue(data.updateCode.keyword)
+      })
+      .catch((error) => {
+        console.error(error);
+        this.headerService.showErrorToast("El hashtag ya existe. Intente con otro");
+      })
   }
 
   emitFileInputClick() {
@@ -964,8 +974,6 @@ export class ItemCreationComponent implements OnInit {
                   this.headerService.showErrorToast(errorMessage);
                 })
             } else {
-              this.hashtagSelected.keyword = keyword;
-              this.itemHashtagInput.setValue(keyword)
               this.updateHashtag(keyword, this.hashtagSelected._id)
             }
             this.isHashtagExist = true
@@ -1672,8 +1680,6 @@ export class ItemCreationComponent implements OnInit {
       ctaBehavior: 'ADD_TO_CART',
     };
     this.itemsService.itemPrice = null;
-
-    this.updateHashtag(this.hashtagSelected.keyword, this.hashtagSelected._id)
 
     if (!this.item && this.itemsService.createUserAlongWithItem) {
       let fieldsToCreate: FormData = {
