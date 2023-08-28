@@ -439,7 +439,7 @@
                 type="text"
                 [formControl]="itemHashtagInput"
                 [value]="itemHashtagInput.value"
-                (blur)="editHashtag($event)"
+                (keyup)="editHashtag($event)"
               />
             </div>
           </ng-container>
@@ -820,7 +820,7 @@
     <button
       class="right"
       *ngIf="
-        itemFormData?.valid && itemSlides.length > 0 && isFormUpdated && item
+        itemHashtagInput.valid && itemSlides.length > 0 && isFormUpdated && item
       "
       (click)="saveItem()"
     >
