@@ -761,14 +761,15 @@ export class ItemCreationComponent implements OnInit {
   }
 
   editHashtag(event: any) {
-    const keyword = event.target.value;
-    this.hashtagSelected.keyword = keyword
-    this.itemHashtagInput.setValue(keyword)
-    this.isFormUpdated = true
-    if (!this.hashtagSelected.keyword) {
+    const keyword = event.target.value
+    if(!keyword) {
       this.hashtagSelected.keyword = ''
       this.isHashtagExist = false
+    } else {
+      this.hashtagSelected.keyword = keyword
+    this.itemHashtagInput.setValue(keyword)
     }
+    this.isFormUpdated = true
   }
 
   updateHashtag(keyword: string, id: string) {
@@ -907,7 +908,7 @@ export class ItemCreationComponent implements OnInit {
       case 'HASHTAG':
         fieldsToCreateForFormDialog.fields = [
           {
-            label: 'Nuevo ID',
+            label: 'Hashtag para búsqueda directa',
             name: 'item-hashtag',
             type: 'text',
             validators: [Validators.pattern(/[\S]/)],
@@ -949,23 +950,25 @@ export class ItemCreationComponent implements OnInit {
                 .createCode({
                   keyword,
                   type: "item",
-                  reference: "64e3d5c6c113f216fb23a8ca"
+                  reference: this.itemId
                 })
                 .then((data) => {
                   const hashtag: any = data
-                  const keyword: string = hashtag.createCode.keyword
-                  this.hashtagSelected.keyword = keyword
-                  this.itemHashtagInput.setValue(keyword)
-                  this.getHashtags(hashtag.createCode.reference)
-                  this.isHashtagExist = true
+                  this.hashtagSelected = hashtag.createCode
+                  this.itemHashtagInput.setValue(hashtag.createCode.keyword)
+                  this.getHashtags(hashtag.createCode._id)
+                })
+                .catch((error) => {
+                  const errorMessage = "El hashtag ya existe. Intente con otro"
+                  console.error(error)
+                  this.headerService.showErrorToast(errorMessage);
                 })
             } else {
               this.hashtagSelected.keyword = keyword;
               this.itemHashtagInput.setValue(keyword)
               this.updateHashtag(keyword, this.hashtagSelected._id)
-              this.isHashtagExist = true
             }
-
+            this.isHashtagExist = true
           }
         } catch (error) {
           console.error(error);
