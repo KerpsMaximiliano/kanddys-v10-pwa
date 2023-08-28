@@ -465,17 +465,21 @@ export class SymbolEditorComponent implements OnInit {
   }
 
   openPreview() {
-    if(this.postId) {
+    if(!this.postId) {
+      console.log(this.postId)
+      console.log('fire post')
       this.router.navigate(["ecommerce/"+ this.merchantSlug +"/article-detail/post"], {
         queryParams: {
-          mode : 'PREVIEW'
+          mode : 'PREVIEW',
+          redirectTo : 'symbol-editor'
+        },
+      });
+    } else {
+      this.router.navigate(["ecommerce/"+ this.merchantSlug +"/article-detail/post/"+ this.postId], {
+        queryParams: {
+          redirectTo : 'symbol-editor'
         },
       });
     }
-    this.router.navigate(["ecommerce/"+ this.merchantSlug +"/article-detail/post/" + this.postId], {
-      queryParams: {
-        mode : 'symbol-editor-preview'
-      },
-    });
   }
 }

@@ -790,7 +790,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   }
 
   back = async () => {
-    if(this.mode === 'symbol-editor-preview') return this.location.back();
+    if(this.redirectTo === 'symbol-editor') return this.location.back();
     if (this.supplierPreview) {
       return this.headerService.redirectFromQueryParams();
     }

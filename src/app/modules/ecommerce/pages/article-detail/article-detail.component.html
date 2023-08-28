@@ -6,14 +6,14 @@
     <div class="title">
       <a
         mat-icon-button
-        *ngIf="redirectTo || (mode !== 'preview' && mode !== 'image-preview' && mode !== 'symbol-editor-preview')"
+        *ngIf="redirectTo || (mode !== 'preview' && mode !== 'image-preview')"
         [routerLink]="['../../../store']"
       >
         <i class="fas fa-chevron-left"></i>
       </a>
       <button
         mat-icon-button
-        *ngIf="redirectTo || mode === 'preview' || mode === 'image-preview' || mode === 'symbol-editor-preview'"
+        *ngIf="redirectTo || mode === 'preview' || mode === 'image-preview'"
         (click)="goBack()"
       >
         <i class="fas fa-chevron-left"></i>

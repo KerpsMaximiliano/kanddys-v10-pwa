@@ -95,7 +95,7 @@ export class ArticleDetailComponent implements OnInit {
   // };
   isItemInCart: boolean = false;
   itemsAmount: string;
-  mode: 'preview' | 'image-preview' | 'saleflow' | 'symbol-editor-preview';
+  mode: 'preview' | 'image-preview' | 'saleflow';
   redirectTo: string;
   flow: 'cart' | 'checkout' = 'cart';
   // signup: 'true' | 'false';
@@ -201,8 +201,7 @@ export class ArticleDetailComponent implements OnInit {
     this.mode = this.route.snapshot.queryParamMap.get('mode') as
       | 'preview'
       | 'image-preview'
-      | 'saleflow'
-      | 'symbol-editor-preview';
+      | 'saleflow';
 
     this.route.params.subscribe(async (routeParams) => {
       this.route.queryParams.subscribe(async (queryParams) => {
@@ -397,7 +396,6 @@ export class ArticleDetailComponent implements OnInit {
   }
 
   goBack() {
-    if(this.mode === 'symbol-editor-preview') this.router.navigate([`admin/symbol-editor`]);
     if (this.mode === 'preview') {
       return this.headerService.redirectFromQueryParams();
     }
