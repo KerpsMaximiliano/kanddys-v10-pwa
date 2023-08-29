@@ -13,9 +13,11 @@ import {
   hotCommunity,
   hotCommunities,
   communitycategories,
+  communitycategoriesPaginate,
 } from './../graphql/communities.gql';
 import { Community } from './../models/community';
 import { User } from './../models/user';
+import { PaginationInput } from '../models/saleflow';
 
 @Injectable({ providedIn: 'root' })
 export class CommunitiesService {
@@ -123,5 +125,16 @@ export class CommunitiesService {
     if (!result) return undefined;
     console.log(result);
     return result;
+  }
+
+  async communitycategoriesPaginate(paginate : PaginationInput) {
+    const result = await this.graphql.query({
+      query: communitycategoriesPaginate,
+      variables: { paginate },
+      fetchPolicy: 'no-cache',
+    });
+    if (!result) return undefined;
+    console.log(result);
+    return result.communitycategoriesPaginate;
   }
 }

@@ -270,7 +270,6 @@ export class NewSymbolComponent implements OnInit {
         });
 
         dialogRef.afterClosed().subscribe((result: FormGroup) => {
-          console.log(result.value);
 
           if (result.value['short-text']) {
             this.postForm.patchValue({
