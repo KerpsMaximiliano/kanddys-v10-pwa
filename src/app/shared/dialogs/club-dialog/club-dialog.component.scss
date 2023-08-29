@@ -53,7 +53,7 @@ section.club-dialog {
     font-weight: 700;
     line-height: normal;
     font-style: normal;
-    color: #181D17;
+    color: #181D17 !important;
     border-radius: 29px;
     background: #6FCF97;
     padding: 10px 13px;
@@ -71,6 +71,7 @@ section.club-dialog {
     color: #F6F6F6;
     margin-bottom: 10px;
     border-left: 2px solid #87CD9B;
+    cursor: pointer;
     a {
       color: #F6F6F6;
     }

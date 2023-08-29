@@ -29,6 +29,7 @@ export interface DialogTemplate {
   title: string;
   styles?: Record<string, Record<string, boolean>>;
   tabIndex: number;
+  callback: (e: number) => void;
 }
 
 @Component({
@@ -41,6 +42,8 @@ export class ClubDialogComponent implements OnInit {
   list = [
     "💰 Tiendas WeLike para guardar lo que te gusta en tu 💚 y recaudar fondos cuando lo compartes"
   ]
+
+  tabIndex = 0
 
   constructor(
     @Inject(MAT_BOTTOM_SHEET_DATA) public data: DialogTemplate,
@@ -65,6 +68,7 @@ export class ClubDialogComponent implements OnInit {
         "🛒 Artículos que estoy a punto de comprar"
       ]
     }
+    this.tabIndex = this.data.tabIndex
   }
 
   openLink(event?: MouseEvent): void {
@@ -72,7 +76,9 @@ export class ClubDialogComponent implements OnInit {
     if (event) event.preventDefault();
   }
 
-  onClick(index: number, optionIndex: number, second?: boolean) {
+  onClick(index: number) {
+    this.data.callback(index)
+    this.tabIndex = index
     this._bottomSheetRef.dismiss();
   }
 

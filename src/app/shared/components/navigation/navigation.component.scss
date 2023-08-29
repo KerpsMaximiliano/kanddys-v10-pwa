@@ -4,6 +4,17 @@
   height: 100%;
 }
 
+.close-btn {
+  cursor: pointer;
+  color: #181D17;
+  background-color: #7B7B7B;
+  text-align: center;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
 .header-wrapper {
   display: flex;
   padding: 15px 16px;

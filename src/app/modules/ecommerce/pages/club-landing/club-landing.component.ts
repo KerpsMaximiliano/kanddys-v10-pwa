@@ -484,22 +484,25 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         styles: {
           fullScreen: true,
         },
-        tabIndex: this.isProvider || this.isVendor
+        tabIndex: this.tabIndex,
+        callback: (e: number) => {
+          this.tabIndex = e;
+        }
       },
     });
   }
 
   filterData () {
     if (this.headerService.user) {
-      if (this.isProvider) return this.tabContents.tab4
-      if (this.isVendor) return this.tabContents.tab2
+      if (this.tabIndex==1) return this.tabContents.tab4
+      if (this.tabIndex==0) return this.tabContents.tab2
     }
     else {
-      if (this.isProvider) return this.tabContents.tab3
-      if (this.isVendor) return this.tabContents.tab1
+      if (this.tabIndex==1) return this.tabContents.tab3
+      if (this.tabIndex==0) return this.tabContents.tab1
     }
-    if (this.isProvider) this.mainTitle = "HERRAMIENTAS GRATIS  PARA PROVEEDORES"
-    if (this.isVendor) this.mainTitle = "HERRAMIENTAS GRATIS FACILES DE USAR"
+    if (this.tabIndex==1) this.mainTitle = "HERRAMIENTAS GRATIS  PARA PROVEEDORES"
+    if (this.tabIndex==0) this.mainTitle = "HERRAMIENTAS GRATIS FACILES DE USAR"
     return this.tabContents.tab3
   }
 

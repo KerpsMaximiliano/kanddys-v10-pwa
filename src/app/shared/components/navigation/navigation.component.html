@@ -8,6 +8,9 @@
     disableClose
   >
     <div class="navigation-main-container">
+      <div class="close-btn" style="cursor: pointer;" (click)="close()">
+        <span>X</span>
+      </div>
       <div class="header-wrapper">
         <div class="left-part">
           
@@ -35,13 +38,18 @@
             <span *ngIf="headerService.user" (click)="openDialog()">{{userID}}</span>
             <span *ngIf="!headerService.user" (click)="enterClub()">Ingresa al Club</span>
           </div>
-          <div class="close" style="cursor: pointer;">
+          <!-- <div class="close" style="cursor: pointer;">
             <span (click)="close()">X</span>
-          </div>
+          </div> -->
         </div>
       </div>
-
-      <div class="tabs-container" *ngIf="isProvider">
+      <div class="landing-title">
+        Desarrollamos herramientas que se usan desde el celular para los Miembros del Club
+      </div>
+      <div class="sub-title" *ngIf="headerService.user">
+        (Soy {{tabIndex ? "proveedor" : "tienda"}})
+      </div>
+      <div class="tabs-container" *ngIf="tabIndex==1 && headerService.user">
         <!-- TABS -->
         <div class="tab-question" >
           Gestión de Proveedor:
@@ -53,7 +61,7 @@
         </div>
       </div>
 
-      <div class="tabs-container" *ngIf="!isProvider && isVendor">
+      <div class="tabs-container" *ngIf="tabIndex==0 && headerService.user">
         <!-- TABS -->
         <div class="tab-question" >
           Gestión de mi Tienda:
@@ -85,7 +93,7 @@
         </div>
       </div>
 
-      <div class="tabs-container" *ngIf="!isProvider && !isVendor">
+      <div class="tabs-container" *ngIf="!headerService.user">
         <!-- TABS -->
         <div class="title">
           HERRAMIENTAS CS* DE PAGOS (CON CLOUD SERVICE)
