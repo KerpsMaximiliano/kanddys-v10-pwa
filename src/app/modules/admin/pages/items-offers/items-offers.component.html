@@ -1,0 +1,105 @@
+<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
+  <div class="container">
+    <header class="header">
+      <button
+        style="
+          color: #87cd9b;
+          font-size: 17px;
+          font-family: InterBold;
+          margin-left: auto;
+        "
+        (click)="drawerOpened = true"
+      >
+        Artículos de Oferta “Flash”
+        <mat-icon style="color: #6fcf97; margin-left: 8px">menu</mat-icon>
+      </button>
+    </header>
+
+    <div class="content">
+      <ng-container>
+        <div class="items-opinion">
+          Tus artículos estarán en oferta “Flash” hasta lo primero en ocurrir
+          entre agotar tu disponibilidad ó 24h.
+        </div>
+
+        <form class="search-bar-wrapper">
+          <input
+            type="text"
+            name="item-search"
+            (click)="changeView('SEARCH')"
+            class="input search-bar"
+            placeholder="Buscar..."
+            [formControl]="itemSearchbar"
+            (input)="searchItems($event)"
+          />
+
+          <div class="filters">
+            <div class="option"></div>
+          </div>
+        </form>
+      </ng-container>
+
+      <div *ngFor="let item of listItems; let i = index">
+      <mat-card class="card">
+        <div class="card-header flex">
+          <div class="left-side flex">
+            <div
+              class="featured-image"
+              [ngStyle]="{
+                backgroundImage: item?.images?.length
+                  ? 'url(' +
+                    item.images[0].value +
+                    '), url(https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/spinner2.gif)'
+                  : 'url(/assets/images/noimage.png)'
+              }"
+            ></div>
+
+            <div class="item-info-container">
+              <p class="main-text">{{item.name}}</p>
+              <p class="greyout-text">{{item.description}}</p>
+              <p class="main-text" style="margin-top: 3px">$ {{item.pricing}}</p>
+            </div>
+          </div>
+          <div class="right-side">
+            <div class="quantity-title">VENDIENDO</div>
+           
+            <div class="item-quantity">
+              <span
+                mat-button
+                class="button icon"
+                (click)="
+                  item.stock >= 1
+                  ? changeAmount(item, 'subtract', i)
+                  : null"
+              >
+              <ng-container>
+                {{ item.stock > 0 ? "-" : "" }}
+              </ng-container>
+              </span>
+      
+              <span>{{item.stock}}</span>
+      
+              <span
+                mat-button
+                class="button icon"
+                (click)="changeAmount(item, 'add', i)"
+                >+</span
+              >
+            </div>
+
+       
+
+
+
+          </div>
+        </div>
+        <div *ngIf="!item.activeOffer" class="card-footer" (click)="addPrice(item)">Incluir en Oferta Flash 24h</div>
+        <div *ngIf="item.activeOffer" class="card-footer-offer" (click)="addPrice(item)">Por {{item.offerExpiration}} horas en {{item.pricing}}</div>
+      </mat-card>
+    </div>
+    </div>
+  </div>
+  <footer>
+    <button class="left" (click)="goToStore()">Preview</button>
+  </footer>
+</app-navigation>

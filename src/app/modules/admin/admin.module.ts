@@ -102,6 +102,7 @@ import { MonetizationsComponent } from './pages/monetizations/monetizations.comp
 import { CurrencyFormatPipe } from 'src/app/core/pipes/currency-format.pipe';
 import { MerchantOffersComponent } from './pages/merchant-offers/merchant-offers.component';
 import { AdminCartsComponent } from './pages/admin-carts/admin-carts.component';
+import { ItemsOffersComponent } from './pages/items-offers/items-offers.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -160,6 +161,10 @@ const routes: Routes = [
       {
         path: 'merchant-offers',
         component: MerchantOffersComponent,
+      },
+      {
+        path: 'items-offers',
+        component: ItemsOffersComponent,
       },
       {
         path: 'orders',
@@ -697,6 +702,7 @@ const routes: Routes = [
     MonetizationsComponent,
     MerchantOffersComponent,
     AdminCartsComponent,
+    ItemsOffersComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [
