@@ -745,3 +745,8 @@ export const itemsByMerchantNosale = gql`
     }
   }
 `;
+export const itemsSuppliersPaginate = gql`
+  query itemsSuppliersPaginate($paginate: PaginationInput) {
+    itemsSuppliersPaginate(paginate: $paginate)
+  }
+`;
