@@ -33,16 +33,43 @@
       </div>
     
       <main>
-        <div class="landing-title">
-          {{headerService.user ? ".. se desarrollan herramientas para las los Miembros del Club." : ""}}
+        <div class="landing-title" *ngIf="!headerService.user">
+          Desarrollamos herramientas que se usan desde el celular para los Miembros del Club
+        </div>
+        <div class="sub-title" *ngIf="(isVendor != isProvider) && !headerService.user">
+          (Soy {{isProvider ? "proveedor" : "tienda"}})
+        </div>
+
+        <div class="tabs-container" *ngIf="isProvider">
+          <!-- TABS -->
+          <div class="tab-question" >
+            Gestión de Proveedor:
+          </div>
+          <div class="tab-content">
+            <div class="tab-content-item" *ngFor="let item of tabProvider">
+              {{ item }}
+            </div>
+          </div>
+        </div>
+
+        <div class="tabs-container" *ngIf="!isProvider && isVendor">
+          <!-- TABS -->
+          <div class="tab-question" >
+            Gestión de mi Tienda:
+          </div>
+          <div class="tab-content">
+            <div class="tab-content-item" *ngFor="let item of tabVendor">
+              {{ item }}
+            </div>
+          </div>
         </div>
 
         <div class="tabs-container">
           <!-- TABS -->
-          <div class="title" *ngIf="!headerService.user">
-            HERRAMIENTAS SEGUN LA MEMBRESIA
+          <div class="title">
+            {{mainTitle}}
           </div>
-          <div class="tabs" *ngIf="isVendor == isProvider">
+          <!-- <div class="tabs" *ngIf="isVendor == isProvider">
             <div
               class="tab"
               (click)="tabIndex=0"
@@ -60,15 +87,28 @@
           </div>
           <div class="tab-question" >
             {{!tabIndex ?"Como Floristería ¿qué necesitas?":"Como Proveedor de Floristerías y Tiendas de Regalos ¿qué necesitas?"}}
-          </div>
+          </div> -->
           <div class="tab-content">
             <div class="tab-content-item" *ngFor="let item of filterData()">
-              {{item}}
+              <span class="text">{{item.text}}</span><br>
+              <span class="subText">{{item.subText}}</span>
             </div>
           </div>
         </div>
 
-        <div class="header-border" *ngIf="isProvider || isVendor"></div>
+        <div class="tabs-container" *ngIf="!isProvider && !isVendor">
+          <!-- TABS -->
+          <div class="title">
+            HERRAMIENTAS CS* DE PAGOS (CON CLOUD SERVICE)
+          </div>
+          <div class="tab-content">
+            <div class="tab-content-item" *ngFor="let item of tabServices">
+              {{ item }}
+            </div>
+          </div>
+        </div>
+
+        <div class="header-border"></div>
 
         <ng-container>
           <div class="tabs-container">
@@ -128,6 +168,6 @@
 
       </main>
     
-      <footer (click)="share()" class="footer" [ngClass]="{'no-green' : isVendor != isProvider}">{{!headerService.user ? (tabIndex ? "Membresía Gratis a Proveedores" : "Membresía US$3,000 por un año") : "Afiliados ganan US$650 por invitado"}}</footer>
+      <footer (click)="share()" class="footer" [ngClass]="{'no-green' : headerService.user}">{{headerService.user ? "Embajadores ganan hasta US$750 💚": "CS* $0.30 por factura hasta US$250"}}</footer>
     </div>
 </app-navigation>

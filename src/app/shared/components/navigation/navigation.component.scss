@@ -138,6 +138,26 @@
   }
 }
 
+.landing-title {
+  color: #fff;
+  text-align: center;
+  font-family: InterBold;
+  font-size: 21px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  width: 393px;
+  margin: 20px auto 0px;
+}
+
+.sub-title {
+  font-size: 17px;
+  font-family: 'InterRegular';
+  color: #C4C5C3;
+  margin: 10px auto;
+  width: fit-content;
+}
+
 .tabs-container {
   margin-bottom: 32px;
   margin-top: 35px;
@@ -146,7 +166,9 @@
     color: #C4C5C3;
     margin-top: 30px;
     margin-left: 11.72px;
-    font-size: 16px;
+    font-size: 14px;
+    margin: 46px auto 10px auto;
+    padding-left: 12px;
   }
   .tab-question {
     font-size: 19px;
@@ -167,6 +189,14 @@
     color: white;
     margin-bottom: 12px;
     border-left: 2px solid #87CD9B;
+  }
+
+  .tab-content-item span.text {
+    padding-left: 15px;
+  }
+
+  .tab-content-item span.subText {
+    font-size: 15px;
   }
 }
 

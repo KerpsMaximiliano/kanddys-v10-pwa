@@ -12,33 +12,46 @@
       </mat-icon>
     </button>
   </p>
-  <section style="margin-bottom: 16px" >
-    <div class="title">{{ data.title }}</div>
-    <div class="green">
-      Floristerias y Tiendas de Regalos
-    </div>
-    <div class="list-item">
-      Proveedores de Floristerías y Tiendas de Regalos
-    </div>
-    <div class="header-border"></div>
+  <section style="margin-bottom: 16px" class="club-dialog">
     <div class="list">
       <div class="list-item" *ngFor="let item of list">
         {{item}}
       </div>
     </div>
-    <div class="header-border"></div>
-    <div class="user-info">
-      <div class="info">
-        Iniciar como Daviel
+    <div>
+      <div class="title">{{ data.title }}</div>
+      <!-- <div class="green">
+        Floristerias y Tiendas de Regalos
       </div>
-      <div class="info">
-        Iniciar como Merchant Admin en la Arepera
+      <div class="list-item">
+        Proveedores de Floristerías y Tiendas de Regalos
       </div>
-      <div class="info">
-        Iniciar como Comprador en la Arepera
+      <div class="list-item">
+        Súper Admin
+      </div> -->
+      <div class="list-item" routerLink="/ecommerce/club-landing" routerLinkActive="active">
+        <a routerLink="/ecommerce/club-landing">Floristerias y Tiendas de Regalos</a>
       </div>
-      <div class="info">
-        Sign out
+      <div class="list-item" routerLink="/admin/provider-items-management" routerLinkActive="active">
+        <a routerLink="/admin/povider-items-management">Proveedores de Floristerías y Tiendas de Regalos</a>
+      </div>
+      <div class="list-item" routerLink="/admin/dashboard" routerLinkActive="active">
+        <a routerLink="/admin/dashboard">Súper Admin</a>
+      </div>
+      <div class="header-border"></div>
+      <div class="user-info">
+        <div class="info">
+          Iniciar como Daviel
+        </div>
+        <div class="info">
+          Iniciar como Merchant Admin en la Arepera
+        </div>
+        <div class="info">
+          Iniciar como Comprador en la Arepera
+        </div>
+        <div class="info">
+          Sign out
+        </div>
       </div>
     </div>
   </section>

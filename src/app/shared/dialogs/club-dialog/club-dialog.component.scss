@@ -7,6 +7,13 @@
   max-width: 500px !important;
 }
 
+section.club-dialog {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 90vh;
+}
+
 .list {
   color: #ffffff;
 
@@ -64,6 +71,25 @@
     color: #F6F6F6;
     margin-bottom: 10px;
     border-left: 2px solid #87CD9B;
+    a {
+      color: #F6F6F6;
+    }
+  }
+
+  .list-item.active {
+    font-size: 16px;
+    font-family: InterRegular;
+    font-weight: 700;
+    line-height: normal;
+    font-style: normal;
+    border-radius: 29px;
+    background: #6FCF97;
+    padding: 10px 13px;
+    width: fit-content;
+    margin-bottom: 13px;
+    a {
+      color: #181D17;
+    }
   }
 
   .user-info {

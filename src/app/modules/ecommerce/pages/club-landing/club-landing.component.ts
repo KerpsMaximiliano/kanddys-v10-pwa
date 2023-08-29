@@ -63,54 +63,216 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   userID = ""
   isVendor = false;
   isProvider = false;
+  mainTitle = "HERRAMIENTAS GRATIS  PARA PROVEEDORES"
 
   tabContents = {
     tab1: [
-      "💰 Adicionar mi primer artículo para venderlo online y por WhatsApp",
-      "🛟 Cotizar fácilmente con los Proveedores",
-      "🧞 Saber de las “Ofertas Flash” de los Proveedores",
-      "📢 Más alcance pagándoles comisiones a quienes venden por mi",
-      "🎁 Más alcance premiando a quienes me mencionan en sus cuentas sociales ",
-      "✨ Recompensar a mis clientes según lo que facturaron",
-      "✋ Saber la opinión de mis clientes después que recibieron lo que compraron ",
-      "Preparar un 🛒 con algunas cosas que vendo para cotizar o facturar (NCF es opcional)",
-      "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
-      "Volver a ver la opiniones de los Miembros del Club"
+      {
+        text: "🛟 “Cotiza Flash” con Proveedores",
+        subText: "Seleccionas, comparas y decides"
+      },
+      {
+        text: "🧞 “3 Ofertas Flash” de los Proveedores",
+        subText: "Compra flores ideales para eventos cortos e inmediatos"
+      },
+      {
+        text: "📦 “Control Flash” de los pedidos",
+        subText: "Sube la foto de la factura y ve cambiando el status según el progreso"
+      },
+      {
+        text: "🧾 “Factura Flash” a tus compradores",
+        subText: "Escribe fácilmente lo que te compraron para que lleves el control desde tu celular"
+      },
+      {
+        text: "📝 “Cotiza Flash” a tus compradores",
+        subText: "Escribe fácilmente lo que potencialmente te compraran y potencialmente conviértela en factura."
+      },
+      {
+        text: "🎁 “Premios Flash” para tus seguidores",
+        subText: "Incentiva a quienes te mencionan en sus redes sociales"
+      },
+      {
+        text: "✨ “Recompensas Flash” para compradores",
+        subText: "Fideliza a tus compradores con la foto de la factura que le emites"
+      },
+      {
+        text: "🙌 “Afiliación Flash” de membresía al Club",
+        subText: "Comparte tu código ALGOID para ganar hasta $125 cada mes por cada invitado"
+      },
+      {
+        text: "🔗 “QR Flash” para guiarlos a donde necesites ",
+        subText: "Pegas el enlace y descargas el QR"
+      },
+      {
+        text: "✋ “Opinión de Compradores”",
+        subText: "Compradores reciben una encuesta que después que recibieron lo que compraron"
+      },
+      {
+        text: "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
+        subText: ""
+      }
     ],
     tab2: [
-      "💰 Empezar a cotizar online y vender automáticamante",
-      "🧞 Adicionar artículos que vendo en el boletín con de “Ofertas Flash” que reciben los miembros",
-      "📢 Más alcance pagándoles comisiones a quienes venden por mi",
-      "🎁 Más alcance premiando a quienes me mencionan en sus cuentas sociales ",
-      "✨ Recompensar a mis clientes según lo que facturaron",
-      "✋ Saber la opinión de mis clientes después que recibieron lo que compraron ",
-      "Preparar un 🛒 con algunas cosas que vendo para cotizar o facturar (NCF es opcional)",
-      "Déjanos saber lo que mas te gusta de las herramientas o lo que necesitas"
+      {
+        text: "🛟 “144 Cotizaciones Flash” con Proveedores",
+        subText: "Seleccionas, comparas y decides"
+      },
+      {
+        text: "🧞 “41 Ofertas Flash” de los Proveedores",
+        subText: "Compra flores ideales para eventos cortos e inmediatos"
+      },
+      {
+        text: "📦 “144 pedidos en Control Flash”",
+        subText: "Sube la foto de la factura y ve cambiando el status según el progreso"
+      },
+      {
+        text: "🛒 “144 Factura Flash” a tus compradores",
+        subText: "Escribes fácilmente lo que te compraron para que lleves el control desde tu celular"
+      },
+      {
+        text: "🎁 “144 seguidores en Premios Flash”",
+        subText: "Incentiva a quienes te mencionan en sus redes sociales"
+      },
+      {
+        text: "✨ “144 compradores en Recompensas Flash”",
+        subText: "Fideliza a tus compradores con la foto de la factura que le emites"
+      },
+      {
+        text: "🙌 “144  códigos activos de Afiliación Flash”",
+        subText: "Tu código ALGOID, ganas hasta $125 cada mes por cada invitado. Haz ganado $14,547."
+      },
+      {
+        text: "🔗 “144 enlaces QR Flash”",
+        subText: "Pegas el enlace y descargas el QR"
+      },
+      {
+        text: "✋ “144 opiniones de Compradores”",
+        subText: "Encuesta que reciben después que recibieron lo que compraron"
+      },
+      {
+        text: "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
+        subText: ""
+      },
     ],
     tab3: [
-      " 💰 Gestionar lo que vendo, ver mis beneficios, compartir mi tienda",
-      "📦 Organización de lo vendido,  notificar a mis clientes del status de lo que facturaron ",
-      "🛟 Cotizaciones que comparan los precios de los Proveedores antes de comprarles ",
-      " 📢 Gestionar las comisiones de quienes venden por mi",
-      "✨ Gestionar los premios y las recompensas de mis clientes",
-      "📢 Gestionar los premios de quienes me mencionan en sus cuentas sociales",
-      "✋ Ver las opiniones de mis compradores ",
-      "Gestionar los  🛒 cpara mandar cotizaciones o facturas a mis clientes (NCF es opcional)",
-      "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
-      "Déjanos saber lo que mas te gusta de las herramientas o lo que necesitas"
+      {
+        text: "🛟 “Cotiza Flash” con Proveedores",
+        subText: "Seleccionas, comparas y decides"
+      },
+      {
+        text: "🧞 “Ofertas Flash” para Miembros",
+        subText: "Vende las flores ideales para eventos cortos e inmediatos"
+      },
+      {
+        text: "📦 “Control Flash” de los pedidos",
+        subText: "Sube la foto de la factura y ve cambiando el status según el progreso"
+      },
+      {
+        text: "🧾 “Factura Flash” a tus compradores",
+        subText: "Selecciona lo que te compraron para que lleves el control desde tu celular"
+      },
+      {
+        text: "📝 “Cotiza Flash” a tus compradores",
+        subText: "Selecciona lo que potencialmente te compraran y potencialmente conviértela en factura."
+      },
+      {
+        text: "🎁 “Premios Flash” para tus seguidores",
+        subText: "Incentiva a quienes te mencionan en sus redes sociales"
+      },
+      {
+        text: "✨ “Recompensas Flash” para compradores",
+        subText: "Fideliza a tus compradores con la foto de la factura que le emites"
+      },
+      {
+        text: "🙌 “Afiliación Flash” de membresía al Club",
+        subText: "Comparte tu código ALGOID para ganar hasta $125 cada mes por cada invitado"
+      },
+      {
+        text: "🔗 “QR Flash” para guiarlos a donde necesites ",
+        subText: "Pegas el enlace y descargas el QR"
+      },
+      {
+        text: "✋ “Opinión de Compradores”",
+        subText: "Compradores reciben una encuesta que después que recibieron lo que compraron"
+      },
+      {
+        text: "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
+        subText: ""
+      }
     ],
     tab4: [
-      " 💰 Gestionar y compartir lo que vendo, ver mis beneficios",
-      "📦 Organización de lo vendido,  notificar a mis clientes del status de lo que facturaron ",
-      "🧞 Adicionar artículos que vendo en el boletín con de “Ofertas Flash” que reciben los miembros",
-      " 📢 Gestionar las comisiones de quienes venden por mi",
-      "✨ Gestionar los premios y las recompensas de mis clientes",
-      "📢 Gestionar los premios de quienes me mencionan en sus cuentas sociales",
-      "✋ Ver las opiniones de mis compradores ",
-      "Gestionar los  🛒 con cotizaciones que he hecho, crear facturas y mandar cotizaciones",
-      "Déjanos saber lo que mas te gusta de las herramientas o lo que necesitas"
+      {
+        text: "🛟 “Cotiza Flash” con Proveedores",
+        subText: "Seleccionas, comparas y decides"
+      },
+      {
+        text: "🧞 “Ofertas Flash” para Miembros",
+        subText: "Vende las flores ideales para eventos cortos e inmediatos"
+      },
+      {
+        text: "📦 “Control Flash” de los pedidos",
+        subText: "Sube la foto de la factura y ve cambiando el status según el progreso"
+      },
+      {
+        text: "🧾 “Factura Flash” a tus compradores",
+        subText: "Selecciona lo que te compraron para que lleves el control desde tu celular"
+      },
+      {
+        text: "📝 “Cotiza Flash” a tus compradores",
+        subText: "Selecciona lo que potencialmente te compraran y potencialmente conviértela en factura."
+      },
+      {
+        text: "🎁 “Premios Flash” para tus seguidores",
+        subText: "Incentiva a quienes te mencionan en sus redes sociales"
+      },
+      {
+        text: "✨ “Recompensas Flash” para compradores",
+        subText: "Fideliza a tus compradores con la foto de la factura que le emites"
+      },
+      {
+        text: "🙌 “Afiliación Flash” de membresía al Club",
+        subText: "Comparte tu código ALGOID para ganar hasta $125 cada mes por cada invitado"
+      },
+      {
+        text: "🔗 “QR Flash” para guiarlos a donde necesites ",
+        subText: "Pegas el enlace y descargas el QR"
+      },
+      {
+        text: "✋ “Opinión de Compradores”",
+        subText: "Compradores reciben una encuesta que después que recibieron lo que compraron"
+      },
+      {
+        text: "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
+        subText: ""
+      }
     ]
   }
+
+  tabServices = [
+    "💰 Adicionar mi primer artículo para venderlo online y por WhatsApp (CS*)",
+    "📢 Más alcance pagándoles comisiones a quienes venden por mi (CS*)",
+    "🎁 Incentivar con premios a quienes me mencionan en sus cuentas sociales (CS*)",
+    "✨ Recompensar a mis clientes según lo que facturaron (CS*)",
+    "Preparar un 🛒 con algunas cosas que vendo para cotizar o facturar (CS*)"
+  ]
+
+  tabVendor = [
+    "🌼 Lo que vendo",
+    "📦 Control Flash",
+    "💰 Mis beneficios",
+    "🧾 Facturas Flash",
+    "📝  Cotizaciones Flash",
+    "📢 Comisiones de quienes venden por mi"
+  ]
+
+  tabProvider = [
+    "🌼 Lo que vendo",
+    "📦 Control Flash",
+    "💰 Mis beneficios",
+    "🧾 Facturas Flash",
+    "📝  Cotizaciones Flash",
+    "📢 Comisiones de quienes venden por mi"
+  ]
 
   tabs: Array<Tabs> = [
     {
@@ -322,20 +484,23 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         styles: {
           fullScreen: true,
         },
-        tabIndex: this.tabIndex
+        tabIndex: this.isProvider || this.isVendor
       },
     });
   }
 
   filterData () {
-    if (this.isVendor == this.isProvider){
-      if (this.tabIndex) return this.tabContents.tab2;
-      else return this.tabContents.tab1
+    if (this.headerService.user) {
+      if (this.isProvider) return this.tabContents.tab4
+      if (this.isVendor) return this.tabContents.tab2
     }
-    else if (this.isVendor && !this.isProvider) {
-      return this.tabContents.tab3
+    else {
+      if (this.isProvider) return this.tabContents.tab3
+      if (this.isVendor) return this.tabContents.tab1
     }
-    else return this.tabContents.tab4
+    if (this.isProvider) this.mainTitle = "HERRAMIENTAS GRATIS  PARA PROVEEDORES"
+    if (this.isVendor) this.mainTitle = "HERRAMIENTAS GRATIS FACILES DE USAR"
+    return this.tabContents.tab3
   }
 
   share() {
