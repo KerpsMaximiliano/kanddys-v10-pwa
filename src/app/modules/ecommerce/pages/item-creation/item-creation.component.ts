@@ -1,16 +1,15 @@
-import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { filter } from 'rxjs/operators';
 import { AppService } from 'src/app/app.service';
 import { completeImageURL } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { Code } from 'src/app/core/models/codes';
 import { CommunityCategory } from 'src/app/core/models/community-categories';
 import {
   Item,
@@ -20,6 +19,7 @@ import {
 } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
 import { SlideInput } from 'src/app/core/models/post';
+import { PaginationInput } from 'src/app/core/models/saleflow';
 import { Tag, TagInput } from 'src/app/core/models/tags';
 import {
   Answer,
@@ -29,6 +29,7 @@ import {
   WebformInput,
 } from 'src/app/core/models/webform';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { CodesService } from 'src/app/core/services/codes.service';
 import { CommunityCategoriesService } from 'src/app/core/services/community-categories.service';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -124,6 +125,7 @@ export class ItemCreationComponent implements OnInit {
   isCurrentUserAMerchant: boolean = false;
   salesPositionInStore: number = 0;
   buyersInStore: number = 0;
+  itemId: string | null = null;
 
   //Tags variables
   allTags: Array<Tag> = [];
@@ -133,12 +135,21 @@ export class ItemCreationComponent implements OnInit {
   tagsString: string = null;
   tagsToCreate: Array<Tag> = [];
 
+  /**
+   * Hashtags variables
+   */
+  allHashtags: Code[] = [];
+  itemHashtagInput: FormControl = new FormControl('');
+  hashtagSelected: any = null;
+  isHashtagExist: boolean = false
+  isHashtagUpdated: boolean = false
+
   //Categories to create
   allCategories: Array<ItemCategory> = [];
   categoriesInItem: Record<string, boolean> = {};
   categoryById: Record<string, CommunityCategory> = {};
   itemCategoriesIds: Array<string> = [];
-  categoriesString: string = null;
+  categoriesString: string = '';
   categoriesToCreate: Array<ItemCategory> = [];
 
   isTheUserAnAdmin: boolean = false;
@@ -155,7 +166,7 @@ export class ItemCreationComponent implements OnInit {
     public merchantsService: MerchantsService,
     public headerService: HeaderService,
     private matDialog: MatDialog,
-    private translate: TranslateService,
+    private codesService: CodesService,
     private tagsService: TagsService,
     private toastrService: ToastrService,
     private authService: AuthService,
@@ -163,7 +174,7 @@ export class ItemCreationComponent implements OnInit {
     private route: ActivatedRoute,
     private gpt3Service: Gpt3Service,
     private _bottomSheet: MatBottomSheet
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     if (!this.headerService.user) {
@@ -202,9 +213,11 @@ export class ItemCreationComponent implements OnInit {
             );
         }
 
+        this.itemId = itemId
         await this.getItemData(itemId ? itemId : null);
         await this.getTags();
         await this.getCategories();
+        await this.getHashtags(itemId);
       });
     });
   }
@@ -231,7 +244,7 @@ export class ItemCreationComponent implements OnInit {
         ],
         notificationStockPhoneOrEmail: [
           this.itemsService.temporalItemInput?.notificationStockPhoneOrEmail ||
-            '',
+          '',
           [],
         ],
         categories: [this.itemsService.temporalItemInput?.categories || ''],
@@ -420,6 +433,29 @@ export class ItemCreationComponent implements OnInit {
     else this.tagsString = null;
   }
 
+  /**
+   * Obtiene todos los hashtags relacionado al producto
+   *
+   * @param itemId id del producto actual
+   */
+  async getHashtags(itemId: string) {
+    const paginationInput: PaginationInput = {
+      findBy: {
+        reference: itemId
+      }
+    }
+    this.codesService
+      .getCodes(paginationInput)
+      .then((data) => {
+        this.allHashtags = !data ? [] : data.results
+        if (this.allHashtags.length) {
+          this.hashtagSelected = this.allHashtags[0]
+          this.itemHashtagInput.setValue(this.hashtagSelected.keyword)
+          this.isHashtagExist = true;
+        }
+      })
+  }
+
   async getCategories() {
     this.categoriesString = '';
     this.itemCategoriesIds = [];
@@ -500,8 +536,8 @@ export class ItemCreationComponent implements OnInit {
             question.answerLimit > 1;
           const isMedia = Boolean(
             question.answerDefault &&
-              question.answerDefault.length &&
-              question.answerDefault.some((option) => option.isMedia)
+            question.answerDefault.length &&
+            question.answerDefault.some((option) => option.isMedia)
           );
 
           if (isMedia) {
@@ -725,6 +761,31 @@ export class ItemCreationComponent implements OnInit {
     });
   }
 
+  editHashtag(event: any) {
+    const keyword = event.target.value
+    if(!keyword) {
+      this.hashtagSelected.keyword = ''
+      this.isHashtagExist = false
+    } else {
+      this.hashtagSelected.keyword = keyword
+      this.itemHashtagInput.setValue(keyword)
+    }
+    this.isFormUpdated = true
+  }
+
+  updateHashtag(keyword: string, id: string) {
+    this.codesService
+      .updateCode({ keyword }, id)
+      .then((data) => {
+        this.hashtagSelected.keyword = data.updateCode.keyword;
+        this.itemHashtagInput.setValue(data.updateCode.keyword)
+      })
+      .catch((error) => {
+        console.error(error);
+        this.headerService.showErrorToast("El hashtag ya existe. Intente con otro");
+      })
+  }
+
   emitFileInputClick() {
     (document.querySelector('#file') as HTMLElement).click();
   }
@@ -742,7 +803,7 @@ export class ItemCreationComponent implements OnInit {
   };
 
   openFormForField = (
-    field: 'TITLE' | 'DESCRIPTION' | 'WEBFORM-QUESTIONS' | 'PRICE' | 'STOCK'
+    field: 'TITLE' | 'DESCRIPTION' | 'WEBFORM-QUESTIONS' | 'PRICE' | 'STOCK' | 'HASHTAG'
   ) => {
     let fieldsToCreateForFormDialog: FormData = {
       fields: [],
@@ -853,6 +914,22 @@ export class ItemCreationComponent implements OnInit {
           fieldTextDescription: 'Recipiente de la notificación',
         });
         break;
+
+      case 'HASHTAG':
+        fieldsToCreateForFormDialog.fields = [
+          {
+            label: 'Hashtag para búsqueda directa',
+            name: 'item-hashtag',
+            type: 'text',
+            validators: [Validators.pattern(/[\S]/)],
+          },
+        ];
+        fieldsArrayForFieldValidation.push({
+          fieldName: 'hashtag',
+          fieldKey: 'item-hashtag',
+          fieldTextDescription: 'Hashtags para búsqueda directa',
+        });
+        break;
     }
 
     const dialogRef = this.dialog.open(FormComponent, {
@@ -874,6 +951,33 @@ export class ItemCreationComponent implements OnInit {
           } else {
             this.headerService.showErrorToast(error);
           }
+
+          if (field.fieldName === 'hashtag' && result) {
+            const keyword = result.value['item-hashtag']
+
+            if (!this.allHashtags.length) {
+              this.codesService
+                .createCode({
+                  keyword,
+                  type: "item",
+                  reference: this.itemId
+                })
+                .then((data) => {
+                  const hashtag: any = data
+                  this.hashtagSelected = hashtag.createCode
+                  this.itemHashtagInput.setValue(hashtag.createCode.keyword)
+                  this.getHashtags(hashtag.createCode._id)
+                })
+                .catch((error) => {
+                  const errorMessage = "El hashtag ya existe. Intente con otro"
+                  console.error(error)
+                  this.headerService.showErrorToast(errorMessage);
+                })
+            } else {
+              this.updateHashtag(keyword, this.hashtagSelected._id)
+            }
+            this.isHashtagExist = true
+          }
         } catch (error) {
           console.error(error);
           this.headerService.showErrorToast(error);
@@ -893,15 +997,15 @@ export class ItemCreationComponent implements OnInit {
         },
         categories: this.headerService.user
           ? this.allTags.map((tag) => ({
-              _id: tag._id,
-              name: tag.name,
-              selected: this.itemTagsIds.includes(tag._id),
-            }))
+            _id: tag._id,
+            name: tag.name,
+            selected: this.itemTagsIds.includes(tag._id),
+          }))
           : this.tagsToCreate.map((tag) => ({
-              _id: tag._id,
-              name: tag.name,
-              selected: this.itemTagsIds.includes(tag._id),
-            })),
+            _id: tag._id,
+            name: tag.name,
+            selected: this.itemTagsIds.includes(tag._id),
+          })),
         rightIcon: {
           iconName: 'add',
           callback: (data) => {
@@ -1014,6 +1118,7 @@ export class ItemCreationComponent implements OnInit {
     );
   };
 
+
   openCategoriesDialog = () => {
     const bottomSheetRef = this._bottomSheet.open(TagFilteringComponent, {
       data: {
@@ -1023,15 +1128,15 @@ export class ItemCreationComponent implements OnInit {
         },
         categories: this.headerService.user
           ? this.allCategories.map((category) => ({
-              _id: category._id,
-              name: category.name,
-              selected: this.itemCategoriesIds.includes(category._id),
-            }))
+            _id: category._id,
+            name: category.name,
+            selected: this.itemCategoriesIds.includes(category._id),
+          }))
           : this.categoriesToCreate.map((category) => ({
-              _id: category._id,
-              name: category.name,
-              selected: this.itemCategoriesIds.includes(category._id),
-            })),
+            _id: category._id,
+            name: category.name,
+            selected: this.itemCategoriesIds.includes(category._id),
+          })),
         rightIcon: {
           iconName: 'add',
           callback: (data) => {
@@ -1188,13 +1293,13 @@ export class ItemCreationComponent implements OnInit {
               try {
                 const results = !preItem
                   ? await this.webformsService.webformAddQuestion(
-                      [question],
-                      createdWebform._id
-                    )
+                    [question],
+                    createdWebform._id
+                  )
                   : await this.webformsService.webformAddQuestionWithoutUser(
-                      [question],
-                      createdWebform._id
-                    );
+                    [question],
+                    createdWebform._id
+                  );
 
                 if (results && partsInAnswerDefault.length > 1) {
                   for (let i = 1; i < partsInAnswerDefault.length; i++) {
@@ -1203,15 +1308,15 @@ export class ItemCreationComponent implements OnInit {
                     const answerDefault = partsInAnswerDefault[i];
                     const result = !preItem
                       ? await this.webformsService.questionAddAnswerDefault(
-                          answerDefault,
-                          questionId,
-                          results._id
-                        )
+                        answerDefault,
+                        questionId,
+                        results._id
+                      )
                       : await this.webformsService.questionAddAnswerDefaultWithoutUser(
-                          answerDefault,
-                          questionId,
-                          results._id
-                        );
+                        answerDefault,
+                        questionId,
+                        results._id
+                      );
                   }
                 }
               } catch (error) {
@@ -1486,10 +1591,10 @@ export class ItemCreationComponent implements OnInit {
           const itemSaleflow = !this.isTheUserAnAdmin
             ? this.saleflowService.saleflowData._id
             : (
-                await this.saleflowService.saleflowDefault(
-                  this.item.merchant._id
-                )
-              )._id;
+              await this.saleflowService.saleflowDefault(
+                this.item.merchant._id
+              )
+            )._id;
 
           const removeItemFromSaleFlow =
             await this.saleflowService.removeItemFromSaleFlow(
@@ -1557,8 +1662,8 @@ export class ItemCreationComponent implements OnInit {
         'notificationStockPhoneOrEmail'
       ].e164Number
         ? this.itemFormData.value[
-            'notificationStockPhoneOrEmail'
-          ].e164Number.split('+')[1]
+          'notificationStockPhoneOrEmail'
+        ].e164Number.split('+')[1]
         : this.itemFormData.value['notificationStockPhoneOrEmail'],
       images,
       merchant: this.merchantsService.merchantData?._id,
@@ -1869,8 +1974,8 @@ export class ItemCreationComponent implements OnInit {
       this.router.navigate(
         [
           'ecommerce/' +
-            this.merchantsService.merchantData.slug +
-            '/article-detail/item',
+          this.merchantsService.merchantData.slug +
+          '/article-detail/item',
         ],
         {
           queryParams: {
@@ -1915,7 +2020,7 @@ export class ItemCreationComponent implements OnInit {
 
       // TODO - eliminar este if porque es redundante, el de arriba ya hace lo mismo
       if (
-        this.item && 
+        this.item &&
         this.isTheUserAnAdmin &&
         this.headerService.flowRouteForEachPage['provider-items-management']
       ) {
