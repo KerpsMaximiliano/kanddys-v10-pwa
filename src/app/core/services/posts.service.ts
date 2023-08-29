@@ -12,6 +12,7 @@ import {
   updateSlide,
   getSimplePost,
   postAddUser,
+  createSlide
 } from '../graphql/posts.gql';
 import { Post, PostInput, Slide, SlideInput } from '../models/post';
 import { EmbeddedComponentWithId } from '../types/multistep-form';
@@ -173,6 +174,16 @@ export class PostsService {
     });
 
     // console.log(value);
+    return value;
+  }
+
+  async createSlide(input: SlideInput) {
+    let value = await this.graphql.mutate({
+      mutation: createSlide,
+      variables: { input },
+      fetchPolicy: 'no-cache',
+      context: { useMultipart: true },
+    });
     return value;
   }
 }

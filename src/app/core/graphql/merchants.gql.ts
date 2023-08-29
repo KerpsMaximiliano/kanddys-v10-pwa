@@ -91,6 +91,7 @@ export const merchantDefault = gql`
       owner {
         _id
         phone
+        email
       }
       social {
         name
@@ -524,6 +525,19 @@ export const merchantFuncionality = gql`
       payPlataformFee
       questionDeliveryZone{
         value
+      }
+      postSolidary {
+        post {
+          _id
+          message
+          title
+          categories {
+            _id
+            name
+          }
+          ctaText
+        }
+        active
       }
     }
   }

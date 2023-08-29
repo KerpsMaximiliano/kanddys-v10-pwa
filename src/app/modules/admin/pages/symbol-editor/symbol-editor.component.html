@@ -1,83 +1,226 @@
 <div class="main-container">
   <nav>
     <div class="subnav">
-      <a class="exit">X</a>
+      <a class="exit" (click)="updatePost()"> X </a>
       <p class="title">🎗️ Causa de la recaudación</p>
     </div>
     <div class="subnav">
       <mat-slide-toggle
         class="toggle"
-        [checked] = "toggleSwitch"
-        (change) = "toggleSwitch = !toggleSwitch"
+        [checked]="active"
+        (change)="active = !active"
       >
       </mat-slide-toggle>
-      <img class="icon" title="icon" src="{{env}}/info-icon.svg" />
+      <img class="icon" title="icon" src="{{ env }}/info-icon.svg" />
     </div>
   </nav>
-  <div *ngIf="!toggleSwitch" class="symbol-warning">
-    <p>El simbolo de su causa está oculto por falta de información</p>
+  <div>
+    <div *ngIf="!active" class="symbol-warning">
+      <p
+        *ngIf="
+            PostsService.post.slides.length === 0 ||
+            selectedCategories.length === 0 ||
+            PostsService.post.title.length === 0 ||
+            PostsService.post.message.length === 0 ||
+            PostsService.post.ctaText.length === 0;
+          else fullWarning
+        "
+      >
+        El simbolo de su causa está oculto por falta de información
+      </p>
+      <ng-template #fullWarning>
+        <p>El simbolo de su causa está oculto</p>
+      </ng-template>
+    </div>
   </div>
-  <!--In the case that data has already been input, these should render-->
+  <input
+    title="file"
+    type="file"
+    id="file"
+    [style.display]="'none'"
+    (change)="loadFile($event)"
+    multiple
+    [accept]="[
+      '.png',
+      '.jpg',
+      '.jpeg',
+      '.webp',
+      '.webm',
+      '.mp4',
+      '.m4v',
+      '.mpg',
+      '.mpeg',
+      '.mpeg4',
+      '.mov',
+      '.3gp',
+      '.mts',
+      '.m2ts',
+      '.mxf'
+    ]"
+  />
   <div class="container">
-    <div class="info-card">
+    <div *ngIf="PostsService.post.slides.length > 0" class="info-card">
       <p class="card-title">Slides Visuales</p>
-      <div class="placeholder-container">
-        <div class="placeholder"></div>
-        <div class="placeholder"></div>
-        <div class="placeholder"></div>
-        <div class="placeholder"></div>
+      <div class="slides-container">
+        <div class="image-container">
+          <img
+            alt="imagen"
+            *ngFor="let image of PostsService.post.slides; index as i"
+            class="image"
+            [src]="image.background"
+          />
+        </div>
+        <img
+          class="add-media"
+          src="../../../../../assets/icons/add-button.svg"
+          alt="add item"
+          (click)="emitFileInputClick()"
+        />
+        <img
+          class="reorder-media"
+          src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/reorder.svg"
+          alt="add item"
+          (click)="goToReorderMedia()"
+        />
       </div>
     </div>
-    <div class="info-card">
+    <div
+      *ngIf="selectedCategories?.length > 0"
+      class="info-card"
+      (click)="openCategoriesDialog()"
+    >
       <p class="card-title">Categorias donde se exhibe</p>
-      <p class="display-text">CategoryID. CategoryID.</p>
+      <div class="flex">
+        <p *ngFor="let category of selectedCategories" class="display-text">
+          {{ category.name }}
+        </p>
+      </div>
     </div>
-    <div class="info-card">
+    <div *ngIf="PostsService.post.title?.length > 0" class="info-card">
       <p class="card-title">Texto principal y centralizado</p>
-      <p class="display-text">Comunidad de Ciegos</p>
+      <input
+        aria-label="titulo"
+        [(ngModel)]="PostsService.post.title"
+        type="text"
+        class="display-text"
+      />
     </div>
-    <div class="info-card">
+    <div *ngIf="PostsService.post.message?.length > 0" class="info-card">
       <p class="card-title">Texto más largo</p>
-      <p class="display-text">Texto mas largo iria aquí</p>
+      <input
+        aria-label="descripcion"
+        [(ngModel)]="PostsService.post.message"
+        type="text"
+        class="display-text"
+      />
+    </div>
+    <div *ngIf="PostsService.post.ctaText?.length > 0" class="info-card">
+      <p class="card-title">Nombre del botón</p>
+      <input
+        aria-label="nombre-boton"
+        [(ngModel)]="PostsService.post.ctaText"
+        type="text"
+        class="display-text"
+      />
     </div>
   </div>
   <!--In the case that data is yet to be added -->
-  <p class="explanatory">Exhibe tu causa comunitaria para que los compradores te apoyen.</p>
-  <span class="long-span"></span>
+  <p
+    *ngIf="
+      PostsService.post.slides.length === 0 ||
+      PostsService.post.categories.length === 0 ||
+      PostsService.post.title.length === 0 ||
+      PostsService.post.message.length === 0 ||
+      PostsService.post.ctaText?.length === 0
+    "
+    class="explanatory"
+  >
+    Exhibe tu causa comunitaria para que los compradores te apoyen.
+  </p>
+  <span
+    *ngIf="
+      PostsService.post.slides.length === 0 ||
+      selectedCategories.length === 0 ||
+      PostsService.post.title.length === 0 ||
+      PostsService.post.message.length === 0 ||
+      PostsService.post.ctaText?.length === 0
+    "
+    class="long-span"
+  >
+  </span>
   <div class="container">
-    <p class="data-title">DATOS POR LLENAR</p>
-    <div class="input-card">
+    <p
+      *ngIf="
+        PostsService.post.slides.length === 0 ||
+        selectedCategories.length === 0 ||
+        PostsService.post.title.length === 0 ||
+        PostsService.post.message.length === 0 ||
+        PostsService.post.ctaText.length === 0
+      "
+      class="data-title"
+    >
+      DATOS POR LLENAR
+    </p>
+    <div *ngIf="PostsService.post.slides.length === 0 || !PostsService.post.slides" class="input-card">
       <p class="input-text">Imagen</p>
       <button class="input-button">
-        <img src="../../../../../assets/icons/add-button.svg" alt="add item" />
+        <img
+          src="../../../../../assets/icons/add-button.svg"
+          alt="add item"
+          (click)="emitFileInputClick()"
+        />
       </button>
     </div>
-    <div class="input-card">
+    <div
+      *ngIf="selectedCategories.length === 0 || !selectedCategories"
+      class="input-card"
+    >
       <p class="input-text">Categorias donde se exhibe</p>
       <button class="input-button">
-        <img src="../../../../../assets/icons/add-button.svg" alt="add item" />
+        <img
+          src="../../../../../assets/icons/add-button.svg"
+          alt="add item"
+          (click)="openCategoriesDialog()"
+        />
       </button>
     </div>
-    <div class="input-card">
+    <div *ngIf="PostsService.post.title.length === 0 || !PostsService.post.title" class="input-card">
       <p class="input-text">Texto principal y centralizado</p>
       <button class="input-button">
-        <img src="../../../../../assets/icons/add-button.svg" alt="add item" />
+        <img
+          src="../../../../../assets/icons/add-button.svg"
+          alt="add item"
+          (click)="openFormForField('title')"
+        />
       </button>
     </div>
-    <div class="input-card">
+    <div *ngIf="PostsService.post.message.length === 0 || !PostsService.post.message" class="input-card">
       <p class="input-text">Texto más largo</p>
       <button class="input-button">
-        <img src="../../../../../assets/icons/add-button.svg" alt="add item" />
+        <img
+          src="../../../../../assets/icons/add-button.svg"
+          alt="add item"
+          (click)="openFormForField('message')"
+        />
       </button>
     </div>
-    <div class="input-card">
+    <div *ngIf="PostsService.post.ctaText?.length === 0 || !PostsService.post.ctaText" class="input-card">
       <p class="input-text">Nombre del botón</p>
       <button class="input-button">
-        <img src="../../../../../assets/icons/add-button.svg" alt="add item" />
+        <img
+          src="../../../../../assets/icons/add-button.svg"
+          alt="add item"
+          (click)="openFormForField('ctaText')"
+        />
       </button>
     </div>
   </div>
   <div class="preview">
-    <a>Preview</a>
+    <p
+      (click)="openPreview()"
+      
+    >
+      Preview
+    </p>
   </div>
 </div>

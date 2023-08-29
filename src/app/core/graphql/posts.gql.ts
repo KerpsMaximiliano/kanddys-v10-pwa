@@ -159,3 +159,11 @@ export const postAddUser = gql`
     }
   }
 `;
+
+export const createSlide = gql`
+  mutation createSlide($input: SlideInput!) {
+    createSlide(input: $input) {
+      _id
+    }
+  }
+`;
