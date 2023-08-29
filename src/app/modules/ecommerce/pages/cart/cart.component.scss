@@ -456,6 +456,13 @@ footer {
   }
 }
 
+.cta-title {
+  cursor: pointer;
+  font-family: InterBold;
+  color: #189AC1;
+  font-size: 17px;
+}
+
 .mat-checkbox ::ng-deep .mat-checkbox-frame {
   background-color: white;
   border-color: #707070;
