@@ -22,7 +22,7 @@ import {
   FormData,
 } from 'src/app/shared/dialogs/form/form.component';
 import { FormGroup, Validators } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   OptionsDialogComponent,
@@ -397,6 +397,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     },
   };
 
+  emailDialogRef: MatDialogRef<FormComponent, any> = null;
+
   constructor(
     public headerService: HeaderService,
     private ngNavigatorShareService: NgNavigatorShareService,
@@ -585,94 +587,25 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       ],
     };
 
-    const emailDialogRef = this.dialog.open(FormComponent, {
+    this.emailDialogRef = this.dialog.open(FormComponent, {
       data: fieldsToCreateInEmailDialog,
       disableClose: true,
     });
 
-    emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+    this.emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
       if (result?.controls?.magicLinkEmailOrPhone.valid) {
-        const emailOrPhone = result?.value['magicLinkEmailOrPhone'];
-
-        let optionsDialogTemplate: OptionsDialogTemplate = {
-          options: [
-            {
-              value: 'Accederé con la clave',
-              callback: async () => {
-                await addPassword(emailOrPhone);
-              },
-            },
-            {
-              value: 'Prefiero recibir el enlace de acceso en mi correo',
-              callback: async () => {
-                if (result?.controls?.magicLinkEmailOrPhone.valid) {
-                  const validEmail = new RegExp(
-                    /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gim
-                  );
-
-                  let emailOrPhone = null;
-
-                  if (
-                    typeof result?.value['magicLinkEmailOrPhone'] ===
-                      'string' &&
-                    validEmail.test(result?.value['magicLinkEmailOrPhone'])
-                  ) {
-                    emailOrPhone = result?.value['magicLinkEmailOrPhone'];
-                  } else {
-                    emailOrPhone =
-                      result?.value['magicLinkEmailOrPhone'].e164Number.split(
-                        '+'
-                      )[1];
-                  }
-
-                  // lockUI();
-
-                  await this.authService.generateMagicLink(
-                    emailOrPhone,
-                    '/ecommerce/club-landing',
-                    null,
-                    'MerchantAccess',
-                    {
-                      jsondata: JSON.stringify({
-                        openNavigation: true,
-                      }),
-                    },
-                    []
-                  );
-
-                  unlockUI();
-
-                  this.dialogService.open(
-                    GeneralFormSubmissionDialogComponent,
-                    {
-                      type: 'centralized-fullscreen',
-                      props: {
-                        icon: 'check-circle.svg',
-                        showCloseButton: false,
-                        message:
-                          'Se ha enviado un link mágico a tu correo electrónico',
-                      },
-                      customClass: 'app-dialog',
-                      flags: ['no-header'],
-                    }
-                  );
-                } else if (
-                  result?.controls?.magicLinkEmailOrPhone.valid === false
-                ) {
-                  unlockUI();
-                  this.snackbar.open('Datos invalidos', 'Cerrar', {
-                    duration: 3000,
-                  });
-                }
-              },
-            },
-          ],
-        };
-
-        this.dialog.open(OptionsDialogComponent, {
-          data: optionsDialogTemplate,
-          disableClose: true,
-        });
+        const exists = await this.checkIfUserExists(result?.controls?.magicLinkEmailOrPhone.value);
+        if (exists) {
+          await this.existingUserLoginFlow(
+            result?.controls?.magicLinkEmailOrPhone.value,
+            result?.controls?.magicLinkEmailOrPhone.valid
+          );
+        } else {
+          await this.nonExistingUserLoginFlow(
+            result?.controls?.magicLinkEmailOrPhone.value,
+            result?.controls?.magicLinkEmailOrPhone.valid
+          );
+        }
       } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
         unlockUI();
         this.snackbar.open('Datos invalidos', 'Cerrar', {
@@ -680,9 +613,23 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         });
       }
     });
+  }
 
-    const addPassword = async (emailOrPhone: string) => {
-      emailDialogRef.close();
+  private async checkIfUserExists(emailOrPhone: string) {
+    try {
+      lockUI();
+      const exists = await this.authService.checkUser(emailOrPhone);
+      unlockUI();
+      return exists;
+    } catch (error) {
+      console.log(error);
+      unlockUI();
+    }
+  }
+
+  private async addPassword (emailOrPhone: string) {
+      this.emailDialogRef.close();
+
 
       let fieldsToCreate: FormData = {
         title: {
@@ -750,7 +697,196 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         dialog2Ref.close();
         return this.openMagicLinkDialog();
       };
+  };
+
+  private async existingUserLoginFlow(credentials: any, isFormValid: boolean) {
+    const emailOrPhone = credentials;
+
+    let optionsDialogTemplate: OptionsDialogTemplate = {
+      // TODO - Validar si es correo o telefono (actualmente se da por entendido que es solo correo)
+      title: `Bienvenido de vuelta ${credentials}, prefieres:`,
+      options: [
+        {
+          value: 'Prefiero acceder con la clave',
+          callback: async () => {
+            await this.addPassword(emailOrPhone);
+          },
+        },
+        {
+          value: 'Prefiero recibir el enlace de acceso en mi correo',
+          callback: async () => {
+            if (isFormValid) {
+              const validEmail = new RegExp(
+                /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gim
+              );
+
+              let emailOrPhone = null;
+
+              if (
+                typeof credentials ===
+                  'string' &&
+                validEmail.test(credentials)
+              ) {
+                emailOrPhone = credentials;
+              } else {
+                emailOrPhone =
+                  credentials.e164Number.split(
+                    '+'
+                  )[1];
+              }
+
+              // lockUI();
+
+              await this.authService.generateMagicLink(
+                emailOrPhone,
+                '/ecommerce/club-landing',
+                null,
+                'MerchantAccess',
+                {
+                  jsondata: JSON.stringify({
+                    openNavigation: true,
+                  }),
+                },
+                []
+              );
+
+              unlockUI();
+
+              this.dialogService.open(
+                GeneralFormSubmissionDialogComponent,
+                {
+                  type: 'centralized-fullscreen',
+                  props: {
+                    icon: 'check-circle.svg',
+                    showCloseButton: false,
+                    message:
+                      'Se ha enviado un link mágico a tu correo electrónico',
+                  },
+                  customClass: 'app-dialog',
+                  flags: ['no-header'],
+                }
+              );
+            } else if (
+              isFormValid === false
+            ) {
+              unlockUI();
+              this.snackbar.open('Datos invalidos', 'Cerrar', {
+                duration: 3000,
+              });
+            }
+          },
+        },
+        {
+          value: 'Algo anda mal porque es la primera vez que trato de acceder con este correo',
+          callback: () => {
+            // TODO
+            console.log("CHARMY > MARILU, CHANGE MY MIND");
+          }
+        }
+      ],
     };
+
+    this.dialog.open(OptionsDialogComponent, {
+      data: optionsDialogTemplate,
+      disableClose: true,
+    });
+  }
+
+  private async nonExistingUserLoginFlow(credentials: any, isFormValid: boolean) {
+    const emailOrPhone = credentials;
+
+    let optionsDialogTemplate: OptionsDialogTemplate = {
+      title: `Notamos que es la primera vez que intentas acceder con este correo, prefieres:`,
+      options: [
+        {
+          value: 'Empezar mi Membresía al Club con este correo electrónico',
+          callback: async () => {
+            await this.registeringUserFlow(credentials);
+          },
+        },
+        {
+          value: 'Intentar con otro correo electrónico.',
+          callback: async () => {
+            // TODO - Mostrar form de correo de nuevo
+          },
+        },
+        {
+          value: 'Algo anda mal porque no es la primera vez que trato de acceder con este correo',
+          callback: () => {
+            // TODO - Hacer este flow
+          }
+        }
+      ],
+    };
+
+    this.dialog.open(OptionsDialogComponent, {
+      data: optionsDialogTemplate,
+      disableClose: true,
+    });
+  }
+
+  private async registeringUserFlow(credentials: any) {
+    let fieldsToCreateInEmailDialog: FormData = {
+      // title: {
+      //   text: 'Acceso al Club:',
+      // },
+      buttonsTexts: {
+        accept: 'Guardar mis datos comerciales',
+        cancel: 'Cancelar',
+      },
+      containerStyles: {
+        padding: '35px 23px 38px 18px',
+      },
+      fields: [
+        {
+          label: 'Nombre Comercial:',
+          name: 'name',
+          type: 'text',
+          placeholder: 'Escribe el nombre comercial..',
+          validators: [Validators.pattern(/[\S]/), Validators.required],
+          inputStyles: {
+            padding: '11px 1px',
+          },
+        },
+        {
+          label: 'WhatsApp donde tus compradores te contactan:',
+          name: 'phone',
+          type: 'phone',
+          placeholder: 'Escribe el teléfono..',
+          validators: [Validators.pattern(/[\S]/), Validators.required],
+          inputStyles: {
+            padding: '11px 1px',
+          },
+        },
+        {
+          label: 'País y ciudades donde tus compradores reciben lo que te compran:',
+          name: 'country',
+          type: 'text',
+          placeholder: 'Escribe el teléfono..',
+          validators: [Validators.pattern(/[\S]/), Validators.required],
+          inputStyles: {
+            padding: '11px 1px',
+          },
+        },
+        {
+          label: 'Industria de tu comercio:',
+          name: 'industry',
+          type: 'text',
+          placeholder: 'Escribe el teléfono..',
+          validators: [Validators.pattern(/[\S]/), Validators.required],
+          inputStyles: {
+            padding: '11px 1px',
+          },
+        },
+      ],
+    };
+
+    this.emailDialogRef = this.dialog.open(FormComponent, {
+      data: fieldsToCreateInEmailDialog,
+      disableClose: true,
+    });
+
+    // TODO - Capturar el evento de cerrar el dialogo y hacer el flujo de registro
   }
 
   changeTab(tabIndex: number) {
