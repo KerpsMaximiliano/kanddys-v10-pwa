@@ -25,7 +25,7 @@
     <div class="dates-container">
       <div class="progress-camera">
         <p class="selection-text">PROGRESS</p>
-        <mat-icon class="camera-icon material-icons-outlined">photo_camera</mat-icon>
+        <img alt="camara" class="camera-icon" src="{{env}}/green-camera.png" />
       </div>
       <div class="progress-container">
           <ng-container *ngFor="let i of progress">
@@ -38,13 +38,13 @@
           </ng-container>
       </div>
       <div class="location-container">
-        <mat-icon 
-          class="material-icons-outlined location-icon"
+        <img 
+          alt="lugar"
+          class="location-icon"
+          src="{{env}}/location-3.png"
           (click)="showLocations = !showLocations"
           [style.color]="showLocations ? '#F6F6F6' : '#87CD9B'"
-        >
-          location_on
-        </mat-icon>
+        />
         <p class="selection-text" *ngIf="showLocations">
           LUGAR DE ENTREGAS
         </p>

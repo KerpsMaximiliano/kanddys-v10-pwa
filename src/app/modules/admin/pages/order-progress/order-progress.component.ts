@@ -6,6 +6,7 @@ import { PaginationInput } from 'src/app/core/models/saleflow';
 import { shortFormatID } from 'src/app/core/helpers/strings.helpers'
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-order-progress',
@@ -24,9 +25,10 @@ export class OrderProgressComponent implements OnInit {
   constructor(
     private merchantsService: MerchantsService,
     private orderService: OrderService,
-    private router: Router
+    private router: Router,
   ) {}
   
+  env : string = environment.assetsUrl
   tutorialEnabled : boolean = true;
   showLocations : boolean = false;
   orders = []
