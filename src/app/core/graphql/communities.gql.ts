@@ -222,3 +222,15 @@ export const communitycategories = gql`
     }
   }
 `;
+
+export const communitycategoriesPaginate = gql`
+  query communitycategoriesPaginate($paginate: PaginationInput!) {
+    communitycategoriesPaginate(paginate: $paginate) {
+      results {
+        _id
+        name
+        type
+      }
+    }
+  }
+`;

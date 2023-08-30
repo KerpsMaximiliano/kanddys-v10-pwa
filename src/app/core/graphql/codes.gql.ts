@@ -23,6 +23,12 @@ export const generateCodes = gql`
   }
 `;
 
+export const getCodes = gql`
+  query codes($paginate: PaginationInput!) {
+    codes(paginate: $paginate)
+  }
+`;
+
 export const createCode = gql`
   mutation createCode($input: CodeInput!) {
     createCode(input: $input) {
