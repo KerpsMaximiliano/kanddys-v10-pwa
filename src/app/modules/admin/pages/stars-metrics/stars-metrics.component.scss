@@ -14,6 +14,7 @@
 
 .flex {
   display: flex;
+  align-items: center;
 }
 
 .header-top-container {
@@ -21,10 +22,16 @@
   align-items: center;
   justify-content: space-between;
 
-  mat-icon {
+  .menu {
     color: #87cd9b;
     font-size: 30px;
     margin-top: -4px;
+  }
+  .add{
+    font-size: 30px;
+    color:#FFFFFF;
+    font-weight: bold;
+    margin-top:-6px;
   }
 }
 
@@ -45,11 +52,48 @@
   padding-bottom: 85px;
 }
 
-.content-title {
-  color: #181d17;
-  font-family: InterBold;
+.input-container {
+  display: flex;
+  width: 100%;
+  align-items: center;
+
+  img {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+input {
+  height: 39px;
+  width: 90%;
+  border: 0;
+  border-radius: 10px;
+  background: #d9d9d9;
+  color: #7b7b7b;
+  font-family: InterMedium;
   font-size: 17px;
+  font-style: normal;
   font-weight: 700;
+  line-height: normal;
+  padding-left: 20px;
+  margin-right: 13px;
+}
+
+.input-overlay {
+  display: flex;
+  width: 60%;
+  justify-content: flex-end;
+  margin-top: -26px;
+  margin-bottom: 26px;
+}
+
+.content-title {
+  color: #000;
+  font-family: InterLight;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 300;
+  line-height: normal;
   margin: 0;
 }
 
@@ -59,7 +103,7 @@
 
 .content-card {
   padding-top: 16px;
-  padding-bottom: 12px;
+  padding-bottom: 17px;
   padding-right: 10px;
   padding-left: 10px;
   background: #ffffff;
@@ -130,4 +174,32 @@
   line-height: normal;
   margin: 0;
   margin-left: 10px;
+}
+
+.bottom-text {
+  color: #181d17;
+  text-align: center;
+  font-family: InterMedium;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  margin-top: 40px;
+}
+
+.footer {
+  color: #181d17;
+  text-align: center;
+  font-family: InterMedium;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin-top: -28px;
+  height: 28px;
+  background: #87cd9b;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

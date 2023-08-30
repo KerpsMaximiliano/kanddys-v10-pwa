@@ -6,12 +6,17 @@ import { NgNavigatorShareService } from 'ng-navigator-share';
 import { Location } from '@angular/common';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
+import { ClubDialogComponent } from 'src/app/shared/dialogs/club-dialog/club-dialog.component';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { ItemsService } from 'src/app/core/services/items.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { PaginationInput } from 'src/app/core/models/saleflow';
+
 import {
   FormComponent,
   FormData,
@@ -52,6 +57,222 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   openNavigation: boolean = false;
   queryParamsSubscription: Subscription = null;
   routerParamsSubscription: Subscription = null;
+
+  isFlag = false;
+  tabIndex = 0;
+  userID = ""
+  isVendor = false;
+  isProvider = false;
+  mainTitle = "HERRAMIENTAS GRATIS  PARA PROVEEDORES"
+
+  tabContents = {
+    tab1: [
+      {
+        text: "🛟 “Cotiza Flash” con Proveedores",
+        subText: "Seleccionas, comparas y decides"
+      },
+      {
+        text: "🧞 “3 Ofertas Flash” de los Proveedores",
+        subText: "Compra flores ideales para eventos cortos e inmediatos"
+      },
+      {
+        text: "📦 “Control Flash” de los pedidos",
+        subText: "Sube la foto de la factura y ve cambiando el status según el progreso"
+      },
+      {
+        text: "🧾 “Factura Flash” a tus compradores",
+        subText: "Escribe fácilmente lo que te compraron para que lleves el control desde tu celular"
+      },
+      {
+        text: "📝 “Cotiza Flash” a tus compradores",
+        subText: "Escribe fácilmente lo que potencialmente te compraran y potencialmente conviértela en factura."
+      },
+      {
+        text: "🎁 “Premios Flash” para tus seguidores",
+        subText: "Incentiva a quienes te mencionan en sus redes sociales"
+      },
+      {
+        text: "✨ “Recompensas Flash” para compradores",
+        subText: "Fideliza a tus compradores con la foto de la factura que le emites"
+      },
+      {
+        text: "🙌 “Afiliación Flash” de membresía al Club",
+        subText: "Comparte tu código ALGOID para ganar hasta $125 cada mes por cada invitado"
+      },
+      {
+        text: "🔗 “QR Flash” para guiarlos a donde necesites ",
+        subText: "Pegas el enlace y descargas el QR"
+      },
+      {
+        text: "✋ “Opinión de Compradores”",
+        subText: "Compradores reciben una encuesta que después que recibieron lo que compraron"
+      },
+      {
+        text: "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
+        subText: ""
+      }
+    ],
+    tab2: [
+      {
+        text: "🛟 “144 Cotizaciones Flash” con Proveedores",
+        subText: "Seleccionas, comparas y decides"
+      },
+      {
+        text: "🧞 “41 Ofertas Flash” de los Proveedores",
+        subText: "Compra flores ideales para eventos cortos e inmediatos"
+      },
+      {
+        text: "📦 “144 pedidos en Control Flash”",
+        subText: "Sube la foto de la factura y ve cambiando el status según el progreso"
+      },
+      {
+        text: "🛒 “144 Factura Flash” a tus compradores",
+        subText: "Escribes fácilmente lo que te compraron para que lleves el control desde tu celular"
+      },
+      {
+        text: "🎁 “144 seguidores en Premios Flash”",
+        subText: "Incentiva a quienes te mencionan en sus redes sociales"
+      },
+      {
+        text: "✨ “144 compradores en Recompensas Flash”",
+        subText: "Fideliza a tus compradores con la foto de la factura que le emites"
+      },
+      {
+        text: "🙌 “144  códigos activos de Afiliación Flash”",
+        subText: "Tu código ALGOID, ganas hasta $125 cada mes por cada invitado. Haz ganado $14,547."
+      },
+      {
+        text: "🔗 “144 enlaces QR Flash”",
+        subText: "Pegas el enlace y descargas el QR"
+      },
+      {
+        text: "✋ “144 opiniones de Compradores”",
+        subText: "Encuesta que reciben después que recibieron lo que compraron"
+      },
+      {
+        text: "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
+        subText: ""
+      },
+    ],
+    tab3: [
+      {
+        text: "🛟 “Cotiza Flash” con Proveedores",
+        subText: "Seleccionas, comparas y decides"
+      },
+      {
+        text: "🧞 “Ofertas Flash” para Miembros",
+        subText: "Vende las flores ideales para eventos cortos e inmediatos"
+      },
+      {
+        text: "📦 “Control Flash” de los pedidos",
+        subText: "Sube la foto de la factura y ve cambiando el status según el progreso"
+      },
+      {
+        text: "🧾 “Factura Flash” a tus compradores",
+        subText: "Selecciona lo que te compraron para que lleves el control desde tu celular"
+      },
+      {
+        text: "📝 “Cotiza Flash” a tus compradores",
+        subText: "Selecciona lo que potencialmente te compraran y potencialmente conviértela en factura."
+      },
+      {
+        text: "🎁 “Premios Flash” para tus seguidores",
+        subText: "Incentiva a quienes te mencionan en sus redes sociales"
+      },
+      {
+        text: "✨ “Recompensas Flash” para compradores",
+        subText: "Fideliza a tus compradores con la foto de la factura que le emites"
+      },
+      {
+        text: "🙌 “Afiliación Flash” de membresía al Club",
+        subText: "Comparte tu código ALGOID para ganar hasta $125 cada mes por cada invitado"
+      },
+      {
+        text: "🔗 “QR Flash” para guiarlos a donde necesites ",
+        subText: "Pegas el enlace y descargas el QR"
+      },
+      {
+        text: "✋ “Opinión de Compradores”",
+        subText: "Compradores reciben una encuesta que después que recibieron lo que compraron"
+      },
+      {
+        text: "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
+        subText: ""
+      }
+    ],
+    tab4: [
+      {
+        text: "🛟 “Cotiza Flash” con Proveedores",
+        subText: "Seleccionas, comparas y decides"
+      },
+      {
+        text: "🧞 “Ofertas Flash” para Miembros",
+        subText: "Vende las flores ideales para eventos cortos e inmediatos"
+      },
+      {
+        text: "📦 “Control Flash” de los pedidos",
+        subText: "Sube la foto de la factura y ve cambiando el status según el progreso"
+      },
+      {
+        text: "🧾 “Factura Flash” a tus compradores",
+        subText: "Selecciona lo que te compraron para que lleves el control desde tu celular"
+      },
+      {
+        text: "📝 “Cotiza Flash” a tus compradores",
+        subText: "Selecciona lo que potencialmente te compraran y potencialmente conviértela en factura."
+      },
+      {
+        text: "🎁 “Premios Flash” para tus seguidores",
+        subText: "Incentiva a quienes te mencionan en sus redes sociales"
+      },
+      {
+        text: "✨ “Recompensas Flash” para compradores",
+        subText: "Fideliza a tus compradores con la foto de la factura que le emites"
+      },
+      {
+        text: "🙌 “Afiliación Flash” de membresía al Club",
+        subText: "Comparte tu código ALGOID para ganar hasta $125 cada mes por cada invitado"
+      },
+      {
+        text: "🔗 “QR Flash” para guiarlos a donde necesites ",
+        subText: "Pegas el enlace y descargas el QR"
+      },
+      {
+        text: "✋ “Opinión de Compradores”",
+        subText: "Compradores reciben una encuesta que después que recibieron lo que compraron"
+      },
+      {
+        text: "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
+        subText: ""
+      }
+    ]
+  }
+
+  tabServices = [
+    "💰 Adicionar mi primer artículo para venderlo online y por WhatsApp (CS*)",
+    "📢 Más alcance pagándoles comisiones a quienes venden por mi (CS*)",
+    "🎁 Incentivar con premios a quienes me mencionan en sus cuentas sociales (CS*)",
+    "✨ Recompensar a mis clientes según lo que facturaron (CS*)",
+    "Preparar un 🛒 con algunas cosas que vendo para cotizar o facturar (CS*)"
+  ]
+
+  tabVendor = [
+    "🌼 Lo que vendo",
+    "📦 Control Flash",
+    "💰 Mis beneficios",
+    "🧾 Facturas Flash",
+    "📝  Cotizaciones Flash",
+    "📢 Comisiones de quienes venden por mi"
+  ]
+
+  tabProvider = [
+    "🌼 Lo que vendo",
+    "📦 Control Flash",
+    "💰 Mis beneficios",
+    "🧾 Facturas Flash",
+    "📝  Cotizaciones Flash",
+    "📢 Comisiones de quienes venden por mi"
+  ]
 
   tabs: Array<Tabs> = [
     {
@@ -181,6 +402,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     private ngNavigatorShareService: NgNavigatorShareService,
     private location: Location,
     private bottomSheet: MatBottomSheet,
+    private merchantsService: MerchantsService,
+    private itemsService: ItemsService,
     private dialogService: DialogService,
     private dialog: MatDialog,
     private authService: AuthService,
@@ -189,20 +412,98 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     private router: Router
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.queryParamsSubscription = this.route.queryParams.subscribe(
       async ({ jsondata }) => {
         if (jsondata) {
           const { openNavigation } = JSON.parse(decodeURIComponent(jsondata));
-          this.openNavigation = JSON.parse(openNavigation || 'false');
+          this.openNavigation = JSON.parse(openNavigation || false);
         }
       }
     );
+    lockUI()
+    setTimeout(() => {
+      unlockUI()
+    }, 6000);
+    const me = await this.authService.me()
+    this.userID = me?.name || me?.email || me?.phone;
+    if (this.userID) {
+      const merchant = await this.merchantsService.merchantDefault();
+      console.log(merchant)
+      if (merchant?._id) {
+        const supplier_pagination: PaginationInput = {
+          findBy: {
+            type: "supplier",
+            merchant: merchant._id
+          },
+          options: {
+            sortBy: 'createdAt:desc',
+            limit: 1
+          },
+        };
+        let supplier: Array<any> = [];
+        supplier =(await this.itemsService.listItems(supplier_pagination))?.listItems;
+    
+        const vendor_pagination: PaginationInput = {
+          findBy: {
+            type: ["default", null],
+            merchant: merchant._id
+          },
+          options: {
+            sortBy: 'createdAt:desc',
+            limit: 1
+          },
+        };
+        let vendor: Array<any> = [];
+        vendor =(await this.itemsService.listItems(vendor_pagination))?.listItems;
+    
+        if (supplier.length) {
+          this.isProvider = true
+          this.tabIndex = 1
+        }
+        if (vendor.length) {
+          this.isVendor = true
+          this.tabIndex = 0
+        }
+        // console.log(supplier)
+        // console.log(vendor)
+      }
+    }
+    unlockUI()
   }
 
   close() {
     // if (this.headerService.user) this.location.back();
-    if (this.headerService.user) this.openNavigation = true;
+    this.openNavigation = true;
+  }
+
+  openDialog() {
+    this.bottomSheet.open(ClubDialogComponent, {
+      data: {
+        title: "SELECCION DE HERRAMIENTAS",
+        styles: {
+          fullScreen: true,
+        },
+        tabIndex: this.tabIndex,
+        callback: (e: number) => {
+          this.tabIndex = e;
+        }
+      },
+    });
+  }
+
+  filterData () {
+    if (this.headerService.user) {
+      if (this.tabIndex==1) return this.tabContents.tab4
+      if (this.tabIndex==0) return this.tabContents.tab2
+    }
+    else {
+      if (this.tabIndex==1) return this.tabContents.tab3
+      if (this.tabIndex==0) return this.tabContents.tab1
+    }
+    if (this.tabIndex==1) this.mainTitle = "HERRAMIENTAS GRATIS  PARA PROVEEDORES"
+    if (this.tabIndex==0) this.mainTitle = "HERRAMIENTAS GRATIS FACILES DE USAR"
+    return this.tabContents.tab3
   }
 
   share() {
@@ -324,7 +625,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
                       )[1];
                   }
 
-                  lockUI();
+                  // lockUI();
 
                   await this.authService.generateMagicLink(
                     emailOrPhone,
