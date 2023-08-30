@@ -26,7 +26,9 @@ export class OrderProgressComponent implements OnInit {
     private orderService: OrderService,
     private router: Router
   ) {}
-
+  
+  tutorialEnabled : boolean = true;
+  showLocations : boolean = false;
   orders = []
   shortFormatID = shortFormatID
   default_image = 'https://cdn-icons-png.flaticon.com/512/149/149071.png'
@@ -35,6 +37,7 @@ export class OrderProgressComponent implements OnInit {
   }
   ngOnInit(): void {
     this.generate()
+    this.toggleTutorial()
   }
 
   select(id) {
@@ -127,4 +130,49 @@ export class OrderProgressComponent implements OnInit {
     return this.router.navigate(['/admin/dashboard']);
   }
 
+  dateHandler(datestring: string) {
+    datestring = datestring.slice(0, -5)
+    let date = new Date(datestring)
+    let time = Math.ceil((new Date().getTime() - date.getTime())/(1000*60));
+    if(time < 60) {
+      return time + ' minutos';
+    }
+    if(time < 120) {
+      return '1 hora';
+    }
+    if(time < 1440) {
+      return Math.ceil(time/60) + ' horas';
+    }
+    if(time < 2880) {
+      return '1 día';
+    }
+    if(time < 43800) {
+      return Math.ceil(time/1440) + ' dias';
+    }
+    if(time < 87600) {
+      return '1 mes';
+    }
+    if(time < 525600) {
+      return Math.ceil(time/43800) + ' meses';
+    }
+    if(time < 1051200) {
+      return '1 año';
+    }
+    return Math.ceil(time/525600) + ' años';
+  }
+
+  toggleTutorial(disable = false) {
+    if(disable) {
+      window.localStorage.setItem('tutorialDisable', 'true')
+      this.tutorialEnabled = false
+    } else {
+      let tutorialStatus = window.localStorage.getItem('tutorialDisable')
+      if(!tutorialStatus) {
+        this.tutorialEnabled = true;
+      } else {
+        this.tutorialEnabled = false;
+      }
+    }
+    return;
+  }
 }
