@@ -1,67 +1,49 @@
 <app-navigation [opened]="openNavigation" (closed)="openNavigation = false">
-<div class="container">
-  <div class="header">
-    <div class="header-top-container">
-      <img src="../../../../../assets/icons/triangle.svg" />
-      <div class="flex" (click)="openNavigation = !openNavigation">
-        <p class="header-top-text">Programa de ✨ para 🚀</p>
-        <mat-icon>menu</mat-icon>
+  <div class="container">
+    <div class="header">
+      <div class="header-top-container">
+        <div class="flex" (click)="openNavigation = !openNavigation">
+          <p class="header-top-text">Premia a tus Clientes ✨</p>
+          <mat-icon>menu</mat-icon>
+        </div>
       </div>
     </div>
-    <p class="header-text">Haz sentir queridos a tus compradores</p>
-    <p class="header-secondary-text">“A quién no le gustan las recompensas?”</p>
+    <div class="content">
+      <p class="content-text">
+        Esta plataforma te permite premiar a tus clientes para incentivarlos a
+        que vuelvan a comprarte.
+      </p>
+      <p class="configuration-text">CONFIGURACIÓN</p>
+      <p class="configuration-item-title">
+        Tus clientes ganan “Estrellas” según sus compras
+      </p>
+      <p class="configuration-item" (click)="openForm()">
+        Configura cuantas ganan según su pago
+      </p>
+
+      <p class="configuration-item-title">
+        Las “Estrellas” la van acumulando hasta alcanzar la suma de compras que
+        decidas.
+      </p>
+      <p class="configuration-item" (click)="openForm()">
+        Configura el monto total que tienen que comprarte para que entregues el
+        premio
+      </p>
+
+      <p class="configuration-item-title">
+        Los incentivas con el premio que entregas
+      </p>
+      <p class="configuration-item" (click)="openForm()">
+        Configura el premio (descuento, artículo o algo)
+      </p>
+
+      <p class="configuration-item-title">
+        Si haces facturas con otra plataforma, tus clientes pueden subir la foto
+        de tu factura para mantenerlos motivados a seguir comprándote.
+      </p>
+      <p class="configuration-item" (click)="openForm()">
+        Sube fotos de tu factura para reconocerla
+      </p>
+    </div>
   </div>
-  <div class="content">
-    <p class="content-text" *ngIf="active">Configuración de la recompensa:</p>
-    <p class="content-text" *ngIf="!active">Responde para empezar:</p>
-    <div class="content-box content-first-box" *ngIf="!active" (click)="openForm()">
-      ¿% del monto facturado que ganará el comprador? 
-    <p>0%</p>
-    </div>
-    <div class="content-box content-first-box" *ngIf="active" (click)="openForm()">
-      El comprador gana el {{merchantFunctionality.reward.rewardPercentage*100 + '%'}} de lo que facture.
-    </div>
-    <div class="content-box " *ngIf="!active" (click)="openForm()">
-     ¿Descuento de la recompensa? 
-    <p>$0.00</p>
-    </div>
-    <div class="content-box" *ngIf="active" (click)="openForm()">
-      Recompensas al comprador con {{merchantFunctionality.reward.amountBuyer | currency}}
-    </div>
-    <p class="desc-text" *ngIf="!active" >
-      El comprador irá acomulando ✨ para eventualmente canjearlas por el
-      descuento.
-    </p>
-    <p class="desc-text" *ngIf="active">
-      Tus compradores ganan 50 ✨ por cada $1.00 que facturen y alcanzarán la
-      suma de 1,000 ✨ para poder canjearlas.
-    </p>
-<div>
-  <p class="content-items-title"> Tienda</p>
-  <div class="content-item" (click)="copyClipboard()">
-      Copia el link
-    </div>
-    <div class="content-item" (click)="downloadQr()">
-      Descarga el QR
-    </div>
-    <div class="content-item" (click)="share()">
-     Compártela
-    </div>
-    <div class="content-item" (click)="navigate()">
-      Mirala como la ven los compradores
-    </div>
-    <qrcode style="display: none;"
-    #qrcodeTemplate
-    [qrdata]="getUrl()"
-    [elementType]="'img'"
-    [width]="500"
-    [style.margin-top.px]="-25"
-    [errorCorrectionLevel]="'M'"
-    [allowEmptyString]="true"
-    colorDark="#000000"
-    (click)="downloadQr()"
-    ></qrcode>
-  </div>
-  </div>
-</div>
 </app-navigation>

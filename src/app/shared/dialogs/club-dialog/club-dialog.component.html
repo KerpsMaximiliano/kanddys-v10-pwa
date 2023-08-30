@@ -1,0 +1,58 @@
+<mat-action-list
+  class="list"
+  [ngClass]="{
+    'full-screen': data.styles.fullScreen
+  }"
+>
+  <p class="close">
+    <button mat-icon-button (click)="openLink()">
+      <mat-icon *ngIf="!data[0]?.styles?.fullScreen">close</mat-icon>
+      <mat-icon *ngIf="data[0]?.styles?.fullScreen" style="color: #fff; transform: scale(0.8); margin-left: -18px;">
+        arrow_back_ios
+      </mat-icon>
+    </button>
+  </p>
+  <section style="margin-bottom: 16px" class="club-dialog">
+    <div class="list">
+      <div class="list-item" *ngFor="let item of list">
+        {{item}}
+      </div>
+    </div>
+    <div>
+      <div class="title">{{ data.title }}</div>
+      <div class="list-item" [ngClass]="{'green': tabIndex == 0}" (click)="onClick(0)">
+        Floristerias y Tiendas de Regalos
+      </div>
+      <div class="list-item"  [ngClass]="{'green': tabIndex == 1}" (click)="onClick(1)">
+        Proveedores de Floristerías y Tiendas de Regalos
+      </div>
+      <div class="list-item"  [ngClass]="{'green': tabIndex == 2}">
+        Súper Admin
+      </div>
+      <!-- <div class="list-item" routerLink="/ecommerce/club-landing" routerLinkActive="active">
+        <a routerLink="/ecommerce/club-landing">Floristerias y Tiendas de Regalos</a>
+      </div>
+      <div class="list-item" routerLink="/admin/provider-items-management" routerLinkActive="active">
+        <a routerLink="/admin/povider-items-management">Proveedores de Floristerías y Tiendas de Regalos</a>
+      </div>
+      <div class="list-item" routerLink="/admin/dashboard" routerLinkActive="active">
+        <a routerLink="/admin/dashboard">Súper Admin</a>
+      </div> -->
+      <div class="header-border"></div>
+      <div class="user-info">
+        <div class="info">
+          Iniciar como Daviel
+        </div>
+        <div class="info">
+          Iniciar como Merchant Admin en la Arepera
+        </div>
+        <div class="info">
+          Iniciar como Comprador en la Arepera
+        </div>
+        <div class="info">
+          Sign out
+        </div>
+      </div>
+    </div>
+  </section>
+</mat-action-list>

@@ -29,7 +29,16 @@ import { FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { environment } from 'src/environments/environment';
-
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { ClubDialogComponent } from 'src/app/shared/dialogs/club-dialog/club-dialog.component';
+import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import {
+  OptionsDialogComponent,
+  OptionsDialogTemplate,
+} from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
+import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 interface NavigationTab {
   headerText: string;
   text: string;
@@ -59,6 +68,16 @@ interface NavigationTab {
       }>;
     };
   };
+}
+
+interface underTab {
+  text: string;
+  subTabs?: Array<{
+    text: string;
+    active: boolean;
+    content?: string[];
+  }>
+  active?: boolean;
 }
 
 @Component({
@@ -162,6 +181,427 @@ export class NavigationComponent implements OnInit {
 
   tabs: Array<NavigationTab> = [];
 
+  tabContents = {
+    tab1: [
+      {
+        text: "🛟 “Cotiza Flash” con Proveedores",
+        subText: "Seleccionas, comparas y decides",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "🧞 “3 Ofertas Flash” de los Proveedores",
+        subText: "Compra flores ideales para eventos cortos e inmediatos",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "📦 “Control Flash” de los pedidos",
+        subText: "Sube la foto de la factura y ve cambiando el status según el progreso",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "🧾 “Factura Flash” a tus compradores",
+        subText: "Escribe fácilmente lo que te compraron para que lleves el control desde tu celular",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "📝 “Cotiza Flash” a tus compradores",
+        subText: "Escribe fácilmente lo que potencialmente te compraran y potencialmente conviértela en factura.",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "🎁 “Premios Flash” para tus seguidores",
+        subText: "Incentiva a quienes te mencionan en sus redes sociales",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "✨ “Recompensas Flash” para compradores",
+        subText: "Fideliza a tus compradores con la foto de la factura que le emites",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "🙌 “Afiliación Flash” de membresía al Club",
+        subText: "Comparte tu código ALGOID para ganar hasta $125 cada mes por cada invitado",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "🔗 “QR Flash” para guiarlos a donde necesites ",
+        subText: "Pegas el enlace y descargas el QR",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "✋ “Opinión de Compradores”",
+        subText: "Compradores reciben una encuesta que después que recibieron lo que compraron",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
+        subText: "",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      }
+    ],
+    tab2: [
+      {
+        text: "🛟 “144 Cotizaciones Flash” con Proveedores",
+        subText: "Seleccionas, comparas y decides",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "🧞 “41 Ofertas Flash” de los Proveedores",
+        subText: "Compra flores ideales para eventos cortos e inmediatos",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "📦 “144 pedidos en Control Flash”",
+        subText: "Sube la foto de la factura y ve cambiando el status según el progreso",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "🛒 “144 Factura Flash” a tus compradores",
+        subText: "Escribes fácilmente lo que te compraron para que lleves el control desde tu celular",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "🎁 “144 seguidores en Premios Flash”",
+        subText: "Incentiva a quienes te mencionan en sus redes sociales",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "✨ “144 compradores en Recompensas Flash”",
+        subText: "Fideliza a tus compradores con la foto de la factura que le emites",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "🙌 “144  códigos activos de Afiliación Flash”",
+        subText: "Tu código ALGOID, ganas hasta $125 cada mes por cada invitado. Haz ganado $14,547.",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "🔗 “144 enlaces QR Flash”",
+        subText: "Pegas el enlace y descargas el QR",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "✋ “144 opiniones de Compradores”",
+        subText: "Encuesta que reciben después que recibieron lo que compraron",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
+        subText: "",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+    ],
+    tab3: [
+      {
+        text: "🛟 “Cotiza Flash” con Proveedores",
+        subText: "Seleccionas, comparas y decides",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "🧞 “Ofertas Flash” para Miembros",
+        subText: "Vende las flores ideales para eventos cortos e inmediatos",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "📦 “Control Flash” de los pedidos",
+        subText: "Sube la foto de la factura y ve cambiando el status según el progreso",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "🧾 “Factura Flash” a tus compradores",
+        subText: "Selecciona lo que te compraron para que lleves el control desde tu celular",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "📝 “Cotiza Flash” a tus compradores",
+        subText: "Selecciona lo que potencialmente te compraran y potencialmente conviértela en factura.",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "🎁 “Premios Flash” para tus seguidores",
+        subText: "Incentiva a quienes te mencionan en sus redes sociales",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "✨ “Recompensas Flash” para compradores",
+        subText: "Fideliza a tus compradores con la foto de la factura que le emites",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "🙌 “Afiliación Flash” de membresía al Club",
+        subText: "Comparte tu código ALGOID para ganar hasta $125 cada mes por cada invitado",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "🔗 “QR Flash” para guiarlos a donde necesites ",
+        subText: "Pegas el enlace y descargas el QR",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "✋ “Opinión de Compradores”",
+        subText: "Compradores reciben una encuesta que después que recibieron lo que compraron",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
+        subText: "",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      }
+    ],
+    tab4: [
+      {
+        text: "🛟 “Cotiza Flash” con Proveedores",
+        subText: "Seleccionas, comparas y decides",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "🧞 “Ofertas Flash” para Miembros",
+        subText: "Vende las flores ideales para eventos cortos e inmediatos",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "📦 “Control Flash” de los pedidos",
+        subText: "Sube la foto de la factura y ve cambiando el status según el progreso",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "🧾 “Factura Flash” a tus compradores",
+        subText: "Selecciona lo que te compraron para que lleves el control desde tu celular",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "📝 “Cotiza Flash” a tus compradores",
+        subText: "Selecciona lo que potencialmente te compraran y potencialmente conviértela en factura.",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "🎁 “Premios Flash” para tus seguidores",
+        subText: "Incentiva a quienes te mencionan en sus redes sociales",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "✨ “Recompensas Flash” para compradores",
+        subText: "Fideliza a tus compradores con la foto de la factura que le emites",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "🙌 “Afiliación Flash” de membresía al Club",
+        subText: "Comparte tu código ALGOID para ganar hasta $125 cada mes por cada invitado",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "🔗 “QR Flash” para guiarlos a donde necesites ",
+        subText: "Pegas el enlace y descargas el QR",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "✋ “Opinión de Compradores”",
+        subText: "Compradores reciben una encuesta que después que recibieron lo que compraron",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      },
+      {
+        text: "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
+        subText: "",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {}
+      }
+    ]
+  }
+
+  tabServices = [
+    "💰 Adicionar mi primer artículo para venderlo online y por WhatsApp (CS*)",
+    "📢 Más alcance pagándoles comisiones a quienes venden por mi (CS*)",
+    "🎁 Incentivar con premios a quienes me mencionan en sus cuentas sociales (CS*)",
+    "✨ Recompensar a mis clientes según lo que facturaron (CS*)",
+    "Preparar un 🛒 con algunas cosas que vendo para cotizar o facturar (CS*)"
+  ]
+
+  tabVendor = [
+    "🌼 Lo que vendo",
+    "📦 Control Flash",
+    "💰 Mis beneficios",
+    "🧾 Facturas Flash",
+    "📝  Cotizaciones Flash",
+    "📢 Comisiones de quienes venden por mi"
+  ]
+
+  tabProvider = [
+    "🌼 Lo que vendo",
+    "📦 Control Flash",
+    "💰 Mis beneficios",
+    "🧾 Facturas Flash",
+    "📝  Cotizaciones Flash",
+    "📢 Comisiones de quienes venden por mi"
+  ]
+
+  underTabs: Array<underTab> = [
+    {
+      text: "Control",
+      subTabs: [
+        {
+          text: "Ordenes",
+          active: true,
+          content: [
+            "“.. puedo ver el estado actualizado de cada orden desde mi celular”",
+            "“.. la función de notificar a los clientes por WhatsApp o correo electrónico es una verdadera maravilla!”",
+            "“¡Es como magia para mantener todo bajo control!”",
+            "“.. me permite estar al tanto de cada orden de una manera que nunca imaginé”",
+            "“.. puedo filtrar las facturas según su estado para priorizar lo que necesito atender primero”",
+            "“.. es como tener a tu asistente personal siempre contigo”",
+            "“.. puedo ver qué órdenes necesitan mi atención inmediata y cuáles están en camino”"
+          ]
+        },
+        {
+          text: "Entregas",
+          active: false,
+          content: [
+            "“.. puedo cobrar extra según la zona de entrega especificada por el comprador”",
+            "“..  maximizo lo que cobro y me permite entregar mas lejos”",
+            "“..  me muestra un enfoque estratégico de las entregas y eso me ayuda en la logística para entregar a tiempo”"
+          ]
+        },
+        {
+          text: "Clientes",
+          active: false,
+          content: [
+            "“.. los reportes que puedo exportar me ayudan a planificar y ejecutar campañas”",
+            "“..  puedo dirigir mis mensajes a grupos específicos con información precisa basado en sus preferencias”",
+            "“..  tener una visión clara de quiénes son mis compradores y qué quieren”"
+          ]
+        }
+      ],
+      active: false
+    },
+    {
+      text: "Más Ventas",
+      subTabs: [
+        {
+          text: "#hashtags",
+          active: false,
+          content: [
+            "“.. asigno un simple #hashtag y, voilà, los interesados pueden dirigirse directamente a la compra desde cualquier red social”",
+            "“.. es una manera genial de simplificar el proceso de compra desde las plataformas sociales”",
+            "“.. convierto a los seguidores en compradores de manera rápida y sencilla”"
+          ]
+        },
+        {
+          text: "Proveedores",
+          active: true,
+          content: [
+            "“.. puedo acceder a una red amplia de proveedores de flores en un abrir y cerrar de ojos.”",
+            "¡Esta función de Cotización Eficiente con Proveedores en la aplicación es como tener un equipo de compras personal a tu disposición!",
+            "“.. es como si los proveedores compitieran por ofrecerme las mejores ofertas, lo cual me siento confiado de donde comprar”",
+            "“.. me permite conectarme con un montón de proveedores y pedir cotizaciones en cuestión de minutos”",
+            "“.. significa que puedo tomar decisiones más inteligentes y aumentar mis ganancias”",
+            "“.. puedo pedir cotizaciones y luego simplemente comparar y elegir la opción más conveniente”",
+            "“.. no solo ahorro dinero, sino que también ahorro tiempo al evitar largas negociaciones, realmente es un ganar-ganar”"
+          ]
+        },
+        {
+          text: "Premios",
+          active: false,
+          content: [
+            "“.. brindo incentivos a mis clientes, lo que realmente fomenta la fidelidad y la satisfacción”",
+            "“.. el programa de recompensar su lealtad es simplemente brillante”",
+            "“..  los premios no solo los mantiene contentos, sino que también crea un vínculo más sólido con nosotros”"
+          ]
+        }
+      ],
+      active: true
+    }
+  ];
+
+  tabIndex = 0;
+  userID = ""
+  isVendor = false;
+  isProvider = false;
+  mainTitle = "HERRAMIENTAS GRATIS  PARA PROVEEDORES"
+
   footerSwiperConfig: SwiperOptions = {
     slidesPerView: 1,
     freeMode: false,
@@ -173,6 +613,7 @@ export class NavigationComponent implements OnInit {
     },
   };
 
+
   constructor(
     private authService: AuthService,
     public merchantsService: MerchantsService,
@@ -183,24 +624,343 @@ export class NavigationComponent implements OnInit {
     private router: Router,
     private matDialog: MatDialog,
     private translate: TranslateService,
-    private matSnackBar: MatSnackBar
-  ) {
+    private matSnackBar: MatSnackBar,
+    private bottomSheet: MatBottomSheet,
+    private dialogService: DialogService,
+    ) {
     translate.setDefaultLang('en');
     translate.use('en');
   }
 
   async ngOnInit() {
-    if (localStorage.getItem('session-token')) {
-      if (!this.headerService.user) {
-        let sub = this.appService.events
-          .pipe(filter((e) => e.type === 'auth'))
-          .subscribe((e) => {
-            this.executeInitProcesses();
+    // if (localStorage.getItem('session-token')) {
+    //   if (!this.headerService.user) {
+    //     let sub = this.appService.events
+    //       .pipe(filter((e) => e.type === 'auth'))
+    //       .subscribe((e) => {
+    //         this.executeInitProcesses();
 
-            sub.unsubscribe();
-          });
-      } else this.executeInitProcesses();
-    } else this.executeInitProcesses();
+    //         sub.unsubscribe();
+    //       });
+    //   } else this.executeInitProcesses();
+    // } else this.executeInitProcesses();
+    const me = await this.authService.me()
+    this.userID = me?.name || me?.email || me?.phone;
+    if (this.userID) {
+      const merchant = await this.merchantsService.merchantDefault();
+      // console.log(merchant)
+      if (merchant?._id) {
+        const supplier_pagination: PaginationInput = {
+          findBy: {
+            type: "supplier",
+            merchant: merchant._id
+          },
+          options: {
+            sortBy: 'createdAt:desc',
+            limit: 1
+          },
+        };
+        let supplier: Array<any> = [];
+        supplier =(await this.itemsService.listItems(supplier_pagination))?.listItems;
+    
+        const vendor_pagination: PaginationInput = {
+          findBy: {
+            type: ["default", null],
+            merchant: merchant._id
+          },
+          options: {
+            sortBy: 'createdAt:desc',
+            limit: 1
+          },
+        };
+        let vendor: Array<any> = [];
+        vendor =(await this.itemsService.listItems(vendor_pagination))?.listItems;
+    
+        if (supplier.length) {
+          this.isProvider = true
+          this.tabIndex = 1
+        }
+        if (vendor.length) {
+          this.isVendor = true
+          this.tabIndex = 0
+        }
+        // console.log(supplier)
+        // console.log(vendor)
+      }
+    }
+  }
+
+  openDialog() {
+    this.bottomSheet.open(ClubDialogComponent, {
+      data: {
+        title: "SELECCION DE HERRAMIENTAS",
+        styles: {
+          fullScreen: true,
+        },
+        tabIndex: this.tabIndex,
+        callback: (e: number) => {
+          this.tabIndex = e;
+        }
+      },
+    });
+  }
+
+  filterData () {
+    if (this.headerService.user) {
+      if (this.tabIndex==1) return this.tabContents.tab4
+      if (this.tabIndex==0) return this.tabContents.tab2
+    }
+    else {
+      if (this.tabIndex==1) return this.tabContents.tab3
+      if (this.tabIndex==0) return this.tabContents.tab1
+    }
+    if (this.tabIndex==1) this.mainTitle = "HERRAMIENTAS GRATIS  PARA PROVEEDORES"
+    if (this.tabIndex==0) this.mainTitle = "HERRAMIENTAS GRATIS FACILES DE USAR"
+    return this.tabContents.tab3
+  }
+
+  enterClub() {
+    this.bottomSheet.open(OptionsMenuComponent, {
+      data: {
+        options: [
+          {
+            value: `Soy miembro`,
+            callback: async () => {
+              await this.openMagicLinkDialog();
+            },
+          },
+          {
+            value: `Quiero entrar como invitado`,
+            callback: () => {
+              // this.openNavigation = true;
+            },
+          },
+        ],
+        styles: {
+          fullScreen: true,
+        },
+      },
+    });
+  }
+
+  async openMagicLinkDialog() {
+    let fieldsToCreateInEmailDialog: FormData = {
+      title: {
+        text: 'Acceso al Club:',
+      },
+      buttonsTexts: {
+        accept: 'Recibir el enlace con acceso',
+        cancel: 'Cancelar',
+      },
+      containerStyles: {
+        padding: '35px 23px 38px 18px',
+      },
+      hideBottomButtons: true,
+      fields: [
+        {
+          name: 'magicLinkEmailOrPhone',
+          type: 'email',
+          placeholder: 'Escribe el correo electrónico..',
+          validators: [Validators.pattern(/[\S]/), Validators.required],
+          inputStyles: {
+            padding: '11px 1px',
+          },
+          submitButton: {
+            text: '>',
+            styles: {
+              borderRadius: '8px',
+              background: '#87CD9B',
+              padding: '6px 15px',
+              color: '#181D17',
+              textAlign: 'center',
+              fontFamily: 'InterBold',
+              fontSize: '17px',
+              fontStyle: 'normal',
+              fontWeight: '700',
+              lineHeight: 'normal',
+              position: 'absolute',
+              right: '1px',
+              top: '8px',
+            },
+          },
+        },
+      ],
+    };
+
+    const emailDialogRef = this.matDialog.open(FormComponent, {
+      data: fieldsToCreateInEmailDialog,
+      disableClose: true,
+    });
+
+    emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+      if (result?.controls?.magicLinkEmailOrPhone.valid) {
+        const emailOrPhone = result?.value['magicLinkEmailOrPhone'];
+
+        let optionsDialogTemplate: OptionsDialogTemplate = {
+          options: [
+            {
+              value: 'Accederé con la clave',
+              callback: async () => {
+                await addPassword(emailOrPhone);
+              },
+            },
+            {
+              value: 'Prefiero recibir el enlace de acceso en mi correo',
+              callback: async () => {
+                if (result?.controls?.magicLinkEmailOrPhone.valid) {
+                  const validEmail = new RegExp(
+                    /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gim
+                  );
+
+                  let emailOrPhone = null;
+
+                  if (
+                    typeof result?.value['magicLinkEmailOrPhone'] ===
+                      'string' &&
+                    validEmail.test(result?.value['magicLinkEmailOrPhone'])
+                  ) {
+                    emailOrPhone = result?.value['magicLinkEmailOrPhone'];
+                  } else {
+                    emailOrPhone =
+                      result?.value['magicLinkEmailOrPhone'].e164Number.split(
+                        '+'
+                      )[1];
+                  }
+
+                  // lockUI();
+
+                  await this.authService.generateMagicLink(
+                    emailOrPhone,
+                    '/ecommerce/club-landing',
+                    null,
+                    'MerchantAccess',
+                    {
+                      jsondata: JSON.stringify({
+                        openNavigation: true,
+                      }),
+                    },
+                    []
+                  );
+
+                  unlockUI();
+
+                  this.dialogService.open(
+                    GeneralFormSubmissionDialogComponent,
+                    {
+                      type: 'centralized-fullscreen',
+                      props: {
+                        icon: 'check-circle.svg',
+                        showCloseButton: false,
+                        message:
+                          'Se ha enviado un link mágico a tu correo electrónico',
+                      },
+                      customClass: 'app-dialog',
+                      flags: ['no-header'],
+                    }
+                  );
+                } else if (
+                  result?.controls?.magicLinkEmailOrPhone.valid === false
+                ) {
+                  unlockUI();
+                  this.matSnackBar.open('Datos invalidos', 'Cerrar', {
+                    duration: 3000,
+                  });
+                }
+              },
+            },
+          ],
+        };
+
+        this.matDialog.open(OptionsDialogComponent, {
+          data: optionsDialogTemplate,
+          disableClose: true,
+        });
+      } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
+        unlockUI();
+        this.matSnackBar.open('Datos invalidos', 'Cerrar', {
+          duration: 3000,
+        });
+      }
+    });
+
+    const addPassword = async (emailOrPhone: string) => {
+      emailDialogRef.close();
+
+      let fieldsToCreate: FormData = {
+        title: {
+          text: 'Clave de Acceso:',
+        },
+        buttonsTexts: {
+          accept: 'Accesar al Club',
+          cancel: 'Cancelar',
+        },
+        fields: [
+          {
+            name: 'password',
+            type: 'password',
+            placeholder: 'Escribe la contraseña',
+            validators: [Validators.pattern(/[\S]/)],
+            bottomButton: {
+              text: 'Prefiero recibir el correo con el enlace de acceso',
+              callback: () => {
+                //Cerrar 2do dialog
+
+                return switchToMagicLinkDialog();
+              },
+            },
+          },
+        ],
+      };
+
+      const dialog2Ref = this.matDialog.open(FormComponent, {
+        data: fieldsToCreate,
+        disableClose: true,
+      });
+
+      dialog2Ref.afterClosed().subscribe(async (result: FormGroup) => {
+        try {
+          if (result?.controls?.password.valid) {
+            let password = result?.value['password'];
+
+            lockUI();
+
+            const session = await this.authService.signin(
+              emailOrPhone,
+              password,
+              true
+            );
+
+            if (!session) throw new Error('invalid credentials');
+
+            // if (session) this.openNavigation = true;
+
+            unlockUI();
+          } else if (result?.controls?.password.valid === false) {
+            unlockUI();
+            this.matSnackBar.open('Datos invalidos', 'Cerrar', {
+              duration: 3000,
+            });
+          }
+        } catch (error) {
+          unlockUI();
+          console.error(error);
+          this.headerService.showErrorToast();
+        }
+      });
+
+      const switchToMagicLinkDialog = () => {
+        dialog2Ref.close();
+        return this.openMagicLinkDialog();
+      };
+    };
+  }
+
+  changeSubtab(tabIndex: number, subTabIndex: number) {
+    this.underTabs[tabIndex].subTabs[subTabIndex].active = true;
+
+    this.underTabs[tabIndex].subTabs.forEach((subTab, index) => {
+      if (index !== subTabIndex) subTab.active = false;
+    });
   }
 
   async executeInitProcesses() {
@@ -442,14 +1202,14 @@ export class NavigationComponent implements OnInit {
   }
 
   changeTab(tabIndex: number) {
-    this.tabs[tabIndex].active = true;
+    this.underTabs[tabIndex].active = true;
     this.activeTabIndex = tabIndex;
 
-    this.tabs.forEach((tab, index) => {
+    this.underTabs.forEach((tab, index) => {
       if (index !== tabIndex) tab.active = false;
     });
 
-    this.headerService.navigationTabState = this.tabs;
+    this.headerService.navigationTabState = this.underTabs;
   }
 
   login() {
