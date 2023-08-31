@@ -561,3 +561,16 @@ footer {
 ::ng-deep .merchant-registration .mat-dialog-content {
   overflow: visible;
 }
+
+.infinite-units {
+  margin: auto;
+
+  &.small {
+    width: 18.1813px;
+    margin: 0px;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}

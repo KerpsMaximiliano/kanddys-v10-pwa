@@ -280,7 +280,7 @@ export class ProviderItemsComponent implements OnInit {
         await this.itemsService.listItems(supplierSpecificItemsPagination)
       )?.listItems;
 
-      this.itemsISell = supplierSpecificItems;
+      if (supplierSpecificItems) this.itemsISell = supplierSpecificItems;
     }
   }
 
@@ -456,43 +456,66 @@ export class ProviderItemsComponent implements OnInit {
 
   async changeAmount(
     item: Item,
-    type: 'add' | 'subtract',
+    type: 'add' | 'subtract' | 'infinite',
     itemIndex: number,
     providedByMe: boolean
   ) {
+    console.log("providedByMe", providedByMe);
     try {
       let newAmount: number;
       if (type === 'add' && providedByMe) {
         newAmount = item.stock >= 0 ? item.stock + 1 : 1;
+        item.useStock = true;
       } else if (type === 'subtract' && providedByMe) {
         newAmount = item.stock >= 1 ? item.stock - 1 : 0;
+        item.useStock = true;
       }
 
       if (type === 'add' && !providedByMe) {
         newAmount = !this.unitsForItemsThatYouDontSell[item._id]
           ? 1
           : this.unitsForItemsThatYouDontSell[item._id] + 1;
+        item.useStock = true;
       } else if (type === 'subtract' && !providedByMe) {
         newAmount =
           this.unitsForItemsThatYouDontSell[item._id] >= 1
             ? this.unitsForItemsThatYouDontSell[item._id] - 1
             : 0;
+        item.useStock = true;
+      }
+
+      if (type === 'infinite' && providedByMe) {
+        this.itemsService.updateItem(
+          {
+            useStock: false,
+          },
+          item._id
+        );
+        this.itemsISell[itemIndex].useStock = false;
+        return;
+      } else if (type === 'infinite' && !providedByMe) {
+        this.itemsIDontSell[itemIndex].useStock = false;
+        return;
       }
 
       if (providedByMe) {
         this.itemsService.updateItem(
           {
             stock: newAmount,
+            useStock: true,
           },
           item._id
         );
 
         this.itemsISell[itemIndex].stock = newAmount;
+        this.itemsISell[itemIndex].useStock = true;
       } else {
         this.itemsIDontSell[itemIndex].stock = newAmount;
+        this.itemsIDontSell[itemIndex].useStock = true;
         this.unitsForItemsThatYouDontSell[item._id] = newAmount;
       }
     } catch (error) {
+      console.error(error);
       this.headerService.showErrorToast();
     }
   }
@@ -877,7 +900,7 @@ export class ProviderItemsComponent implements OnInit {
           : 0,
       notificationStock: true,
       notificationStockLimit: item.notificationStockLimit,
-      useStock: true,
+      useStock: item.useStock,
       type: 'supplier',
     };
 

@@ -368,8 +368,6 @@ export class QuotationBidsComponent implements OnInit {
         this.requesterId = parsedData.requesterId;
       }
 
-      console.log(parsedData);
-
       if (
         parsedData.temporalQuotationsToBeSaved &&
         parsedData.quotationSelectedIndex >= 0
@@ -407,10 +405,10 @@ export class QuotationBidsComponent implements OnInit {
   }
 
   authQuotations = async (parsedData: Record<string, any>) => {
+    lockUI();
     const temporalQuotations: Array<QuotationInput> =
       parsedData.temporalQuotationsToBeSaved;
 
-    console.log('AUTENTICANDO COTIZACIONES', temporalQuotations);
 
     await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
 
@@ -430,6 +428,8 @@ export class QuotationBidsComponent implements OnInit {
         quotation.name ===
         temporalQuotations[Number(parsedData.quotationSelectedIndex)].name
     );
+
+    unlockUI();
 
     window.location.href =
       window.location.href.split('?')[0] + '/' + quotation._id;
@@ -1133,7 +1133,7 @@ export class QuotationBidsComponent implements OnInit {
               const listOfItemNames = this.quotationGlobalItems
                 .map((item) => `-${item.name || 'Producto sin nombre'}\n`)
                 .join('');
-              let bodyMessage = `Hola, pudieras confirmame la disponibilidad y precios de estos artículos 🙏? ${listOfItemNames} en este enlace te los muestro y lo puedes ajustar bien fácil 👉${encodeURIComponent(
+              let bodyMessage = `Hola, pudieras confirmame la disponibilidad y precios de estos artículos 🙏? \n${listOfItemNames} en este enlace te los muestro y lo puedes ajustar bien fácil 👉${encodeURIComponent(
                 link
               )}`;
               let whatsappLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(
