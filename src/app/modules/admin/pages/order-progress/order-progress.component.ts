@@ -25,6 +25,7 @@ export class OrderProgressComponent implements OnInit {
 
   deliveryStatus : any[] | null = null;
   deliveryZones : any[] | null = null;
+  deliveryZoneQuantities : any[] | null = null;
 
   constructor(
     private merchantsService: MerchantsService,
@@ -139,7 +140,11 @@ export class OrderProgressComponent implements OnInit {
       this.deliveryStatus = res
     })
 
-    this.deliveryZonesService.deliveryZones().then((res) => {
+    this.deliveryZonesService.deliveryZones(
+      {
+        findBy:{merchant: this.merchantId},
+        options: {sortBy: "createdAt:desc", limit: -1}
+      }).then((res) => {
       this.deliveryZones = res
     })
 
