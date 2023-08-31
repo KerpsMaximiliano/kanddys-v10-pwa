@@ -39,6 +39,8 @@ import {
   OptionsDialogComponent,
   OptionsDialogTemplate,
 } from '../../dialogs/options-dialog/options-dialog.component';
+import { AppService } from 'src/app/app.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-supplier-registration',
@@ -48,7 +50,6 @@ import {
 export class SupplierRegistrationComponent implements OnInit, OnDestroy {
   queryParamsSubscription: Subscription;
   routeParamsSubscription: Subscription;
-  supplierMerchantId: string = null;
   quotation: Quotation;
   requester: Merchant = null;
   quotationItems: Array<QuotationItem> = [];
@@ -69,14 +70,21 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
   tutorialOpened: boolean = false;
   itemsTutorialCardsOpened: Record<string, boolean> = {
     price: true,
+    stock: true,
     welcome: true,
-    membership: true,
   };
   searchbarPlaceholder: string = 'Buscar...';
   assetsFolder: string = environment.assetsUrl;
   atLeastOneHasPriceAdded: boolean = false;
   logged: boolean = false;
   notASingleItemOnMerchantSaleflow: boolean = false;
+
+  //New variables
+  typeOfRequester: 'UNSPECIFIED_USER' | 'REGISTERED_USER' = 'UNSPECIFIED_USER';
+  globalSupplieritemIdsInQuotation: Array<string> = [];
+  typeOfQuotation: 'DATABASE_QUOTATION' | 'TEMPORAL_QUOTATION' =
+    'DATABASE_QUOTATION';
+  showAllProviderItems: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -88,125 +96,129 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private dialogService: DialogService,
     private router: Router,
+    private appService: AppService,
     public matDialog: MatDialog,
     private snackbar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
+    if (localStorage.getItem('session-token')) {
+      if (!this.headerService.user) {
+        let sub = this.appService.events
+          .pipe(filter((e) => e.type === 'auth'))
+          .subscribe((e) => {
+            this.executeInitProcesses();
+
+            sub.unsubscribe();
+          });
+      } else this.executeInitProcesses();
+    } else this.executeInitProcesses();
+  }
+
+  async executeInitProcesses() {
     this.routeParamsSubscription = this.route.params.subscribe(
       async ({ quotationId }) => {
         this.queryParamsSubscription = this.route.queryParams.subscribe(
           async (queryParams) => {
-            let { jsondata, overwriteSupplier, overwriteItems } = queryParams;
+            let { jsondata, rambo, overwriteItems } = queryParams;
             let parsedData = jsondata
               ? JSON.parse(decodeURIComponent(jsondata))
               : null;
-            let supplierMerchantId;
             let requesterId;
             let quotationName;
             let temporalQuotation = false;
             let items;
             this.quotationId = quotationId;
+            this.showAllProviderItems = JSON.parse(rambo || 'false');
 
             if (!parsedData) {
               const lastCurrentQuotationRequest: {
-                supplierMerchantId?: string;
                 requesterId: string;
                 items: string;
                 temporalQuotation?: boolean;
                 quotationName?: string;
+                rambo?: boolean;
               } = JSON.parse(
                 localStorage.getItem('lastCurrentQuotationRequest')
               );
 
-              supplierMerchantId =
-                lastCurrentQuotationRequest.supplierMerchantId;
-              requesterId = lastCurrentQuotationRequest.requesterId;
-              items = lastCurrentQuotationRequest.items;
-              temporalQuotation = lastCurrentQuotationRequest.temporalQuotation;
-              quotationName = lastCurrentQuotationRequest.quotationName;
+              requesterId = lastCurrentQuotationRequest?.requesterId;
+              items = lastCurrentQuotationRequest?.items;
+              temporalQuotation =
+                lastCurrentQuotationRequest?.temporalQuotation;
+              quotationName = lastCurrentQuotationRequest?.quotationName;
 
               this.queryParams = {
-                supplierMerchantId,
                 requesterId,
                 items,
                 temporalQuotation,
                 quotationName,
+                rambo: this.showAllProviderItems,
               };
 
-              //Handles the case when you come back from the quotation confirm screen after registering a new user
-              if (overwriteSupplier && !supplierMerchantId) {
-                supplierMerchantId = overwriteSupplier;
-                this.queryParams.supplierMerchantId = supplierMerchantId;
-                lastCurrentQuotationRequest.supplierMerchantId =
-                  supplierMerchantId;
-
+              if (this.showAllProviderItems) {
                 this.storeQueryParams(this.queryParams as any);
+              } else {
+                this.showAllProviderItems = lastCurrentQuotationRequest?.rambo;
               }
 
               if (overwriteItems) {
                 items = overwriteItems;
                 this.queryParams.items = items;
-
                 this.storeQueryParams(this.queryParams as any);
               }
             } else {
-              supplierMerchantId = parsedData.supplierMerchantId;
               requesterId = parsedData.requesterId;
               items = parsedData.items;
               temporalQuotation = parsedData.temporalQuotation;
               quotationName = parsedData.quotationName;
+              parsedData.rambo = this.showAllProviderItems;
 
               this.storeQueryParams(parsedData as any);
             }
 
             this.quotationName = quotationName;
 
-            if (!items && !temporalQuotation && !requesterId)
-              return this.router.navigate(['others/error-screen']);
-
-            if (!items && temporalQuotation && requesterId)
-              return this.router.navigate(['others/error-screen']);
-
-            if (!this.quotationsService.supplierItemsAdjustmentsConfig) {
-              this.quotationsService.supplierItemsAdjustmentsConfig = {
-                typeOfProvider: !supplierMerchantId
-                  ? 'NEW_SUPPLIER'
-                  : 'REGISTERED_SUPPLIER',
-                typeOfRequester: !requesterId
-                  ? 'UNSPECIFIED_USER'
-                  : 'REGISTERED_USER',
-                globalSupplieritemIdsInQuotation: items.split('-'),
-                supplierSpecificOtemIdsInQuotation: [],
-                requesterId: requesterId,
-                supplierMerchantId: supplierMerchantId,
-                quotationItems: [],
-                itemsThatArentInSupplierSaleflow: [],
-                typeOfQuotationBeingEdited: temporalQuotation
-                  ? 'TEMPORAL_QUOTATION'
-                  : 'DATABASE_QUOTATION',
-                quotationId: this.quotationId ? quotationId : null,
-              };
-            }
-
-            this.supplierMerchantId = supplierMerchantId;
-
             if (
-              this.quotationsService.supplierItemsAdjustmentsConfig
-                .typeOfProvider === 'REGISTERED_SUPPLIER'
-            )
-              await this.checkUser();
-
-            if (
-              this.quotationsService.supplierItemsAdjustmentsConfig
-                .typeOfQuotationBeingEdited === 'DATABASE_QUOTATION'
+              !items &&
+              !temporalQuotation &&
+              !requesterId &&
+              !this.showAllProviderItems
             ) {
-              this.requester = await this.merchantsService.merchant(
-                requesterId
-              );
+              console.log('ERROR A');
+              return this.router.navigate(['others/error-screen']);
             }
 
-            await this.executeInitProcesses2();
+            if (
+              !items &&
+              temporalQuotation &&
+              requesterId &&
+              !this.showAllProviderItems
+            ) {
+              console.log('ERROR B');
+              return this.router.navigate(['others/error-screen']);
+            }
+
+            this.typeOfRequester = !requesterId
+              ? 'UNSPECIFIED_USER'
+              : 'REGISTERED_USER';
+            this.globalSupplieritemIdsInQuotation = items
+              ? items.split('-')
+              : [];
+            this.requester = requesterId
+              ? await this.merchantsService.merchant(requesterId)
+              : null;
+            if (this.requester)
+              this.searchbarPlaceholder =
+                'Artículos que necesita ' + this.requester.name;
+            this.typeOfQuotation = temporalQuotation
+              ? 'TEMPORAL_QUOTATION'
+              : 'DATABASE_QUOTATION';
+
+            const isAMerchant =
+              await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+
+            await this.fetchItems();
 
             let adjustmentsReady = true;
             let onlyItemsThatAreOnTheSupplierSaleflow = true;
@@ -224,19 +236,6 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
             );
 
             this.checkIfTutorialsWereSeenAlready();
-            await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
-
-            if (this.queryParams.requesterId) {
-              lockUI();
-              const merchant = await this.merchantsService.merchant(
-                this.queryParams.requesterId,
-                true
-              );
-              unlockUI();
-
-              this.searchbarPlaceholder =
-                'Artículos que necesita ' + merchant.name;
-            }
 
             this.logged = this.headerService.user ? true : false;
             this.tutorialOpened =
@@ -261,36 +260,31 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
   }
 
   storeQueryParams(queryParams: {
-    supplierMerchantId?: string;
     requesterId: string;
     items: string;
     temporalQuotation?: boolean;
     quotationName?: string;
+    rambo?: boolean;
   }) {
-    const {
-      supplierMerchantId,
-      requesterId,
-      items,
-      temporalQuotation,
-      quotationName,
-    } = queryParams;
+    const { requesterId, items, temporalQuotation, quotationName, rambo } =
+      queryParams;
 
     this.queryParams = {
-      supplierMerchantId,
       requesterId,
       items,
       temporalQuotation,
       quotationName,
+      rambo,
     };
 
     localStorage.setItem(
       'lastCurrentQuotationRequest',
       JSON.stringify({
-        supplierMerchantId,
         requesterId,
         items,
         temporalQuotation,
         quotationName,
+        rambo,
       })
     );
   }
@@ -309,114 +303,22 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     }
   };
 
-  async checkUser() {
-    const { typeOfProvider } =
-      this.quotationsService.supplierItemsAdjustmentsConfig;
-
-    const myUser = await this.authService.me();
-    this.currentUser = myUser;
-    if (myUser && myUser?._id && typeOfProvider === 'REGISTERED_SUPPLIER') {
-      if (await this.checkIfUserIsTheMerchantOwner(myUser))
-        this.authorized = true;
-      else {
-        this.router.navigate(['others/error-screen']);
-      }
-    } else this.authorized = false;
-  }
-
-  async checkIfUserIsTheMerchantOwner(user: User): Promise<boolean> {
-    try {
-      const merchant = await this.merchantsService.merchantDefault(user._id);
-      if (merchant && merchant._id === this.supplierMerchantId) return true;
-      else return false;
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
-  }
-
-  async executeAuthRequest() {
-    const { typeOfProvider } =
-      this.quotationsService.supplierItemsAdjustmentsConfig;
-
-    const afterLoginCallback = async (value) => {
-      if (!value) return;
-      if (value.user?._id || value.session.user._id) {
-        this.quotation = await this.quotationsService.quotation(
-          this.quotationId
-        );
-        this.quotationsService.quotationBeingEdited = this.quotation;
-        await this.executeInitProcesses2();
-      }
-    };
-
-    const myUser = await this.authService.me();
-
-    if (myUser && myUser?._id) {
-      if (await this.checkIfUserIsTheMerchantOwner(myUser))
-        this.authorized = true;
-      else this.authorized = false;
-    } else this.authorized = false;
-
-    if (!this.authorized) {
-      if (this.currentUser) {
-        this.snackbar.open(
-          'El usuario con el que estás logueado no es el suplidor de esta cotización',
-          'Ok',
-          {
-            duration: 10000,
-          }
-        );
-      } else {
-        this.snackbar.open(
-          'Antes de poder ajustar el precio y disponibilidad, debemos validar tu identidad',
-          'Ok',
-          {
-            duration: 10000,
-          }
-        );
-      }
-
-      const matDialogRef = this.matDialog.open(LoginDialogComponent, {
-        data: {
-          magicLinkData: {
-            redirectionRoute:
-              '/ecommerce/supplier-register/' +
-              (this.quotationId ? this.quotationId : ''),
-            entity: 'MerchantAccess',
-            redirectionRouteQueryParams: JSON.stringify({
-              ...this.queryParams,
-            }),
-            overWriteDefaultEntity: true,
-          },
-        } as LoginDialogData,
-        panelClass: 'login-dialog-container',
-      });
-
-      return matDialogRef.afterClosed().subscribe(afterLoginCallback);
-    } else {
-      this.quotation = await this.quotationsService.quotation(this.quotationId);
-      this.quotationsService.quotationBeingEdited = this.quotation;
-      await this.executeInitProcesses2();
-    }
-  }
-
-  async executeInitProcesses2() {
+  async fetchItems() {
     lockUI();
     let itemIdsOnTheSaleflow: Record<string, boolean> = {}; //Keeps thrack of which itemIds are already being sold on suppliers saleflow
     const itemIdsArentOnTheSaleflowArray: Array<string> = []; //Keeps thrack of which itemIds arent being sold on suppliers saleflow
 
-    const { globalSupplieritemIdsInQuotation, supplierMerchantId } =
-      this.quotationsService.supplierItemsAdjustmentsConfig;
+    const globalSupplieritemIdsInQuotation =
+      this.globalSupplieritemIdsInQuotation;
 
-    if (this.supplierMerchantId) {
+    if (this.merchantsService.merchantData) {
       //Fetches all items that are specific to merchant's saleflow
       const supplierSpecificItemsInput: PaginationInput = {
         findBy: {
           parentItem: {
             $in: ([] = globalSupplieritemIdsInQuotation),
           },
-          merchant: this.supplierMerchantId,
+          merchant: this.merchantsService.merchantData._id,
         },
         options: {
           sortBy: 'createdAt:desc',
@@ -424,6 +326,15 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
           page: 1,
         },
       };
+
+      if (this.showAllProviderItems) {
+        supplierSpecificItemsInput.findBy = {
+          merchant: this.merchantsService.merchantData._id,
+          parentItem: {
+            $ne: null,
+          },
+        };
+      }
 
       //Fetches supplier specfic items, meaning they already are on the saleflow
       let supplierSpecificItems: Array<QuotationItem> = [];
@@ -440,6 +351,10 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
         item.inSaleflow = true;
         itemIdsOnTheSaleflow[item.parentItem] = true;
         if (item.pricing > 0 && item.stock >= 0) item.valid = true;
+
+        if (item.pricing >= 0) {
+          this.atLeastOneHasPriceAdded = true;
+        }
       });
 
       this.notASingleItemOnMerchantSaleflow =
@@ -454,7 +369,10 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
       //Fetches all items that arent on merchant's saleflow
       let itemsThatArentOnTheSaleflowArray: Array<QuotationItem> = [];
 
-      if (itemIdsArentOnTheSaleflowArray.length > 0) {
+      if (
+        itemIdsArentOnTheSaleflowArray.length > 0 ||
+        this.showAllProviderItems
+      ) {
         const itemsThatArentInSuppliersSaleflowQueryPagination: PaginationInput =
           {
             findBy: {
@@ -469,6 +387,16 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
             },
           };
 
+        if (this.showAllProviderItems) {
+          itemsThatArentInSuppliersSaleflowQueryPagination.findBy = {
+            _id: {
+              $nin: supplierSpecificItems.map((item) => item.parentItem),
+            },
+            type: 'supplier',
+            parentItem: null,
+          };
+        }
+
         const itemsThatArentOnTheSaleflow = (
           await this.itemsService.listItems(
             itemsThatArentInSuppliersSaleflowQueryPagination
@@ -481,6 +409,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
           item.pricing = null;
           item.merchant = null;
           item.stock = null;
+          item.useStock = false;
           item.inSaleflow = false;
           item.notificationStockLimit = null;
           item.notificationStockPhoneOrEmail = null;
@@ -497,7 +426,6 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
           _id: {
             __in: ([] = globalSupplieritemIdsInQuotation),
           },
-          merchant: this.supplierMerchantId,
         },
         options: {
           sortBy: 'createdAt:desc',
@@ -505,6 +433,13 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
           page: 1,
         },
       };
+
+      if (this.showAllProviderItems) {
+        globalItemsInputPagination.findBy = {
+          type: 'supplier',
+          parentItem: null,
+        };
+      }
 
       //Fetches supplier specfic items, meaning they already are on the saleflow
       let globalItems: Array<QuotationItem> = [];
@@ -520,6 +455,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
         item.inSaleflow = false;
         item.notificationStockLimit = null;
         item.notificationStockPhoneOrEmail = null;
+        item.useStock = false;
       });
 
       this.quotationItems = globalItems;
@@ -528,53 +464,49 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     unlockUI();
   }
 
-  convertItemIntoItemInput = async (
-    items: Array<Item>
-  ): Promise<ItemInput[]> => {
-    return await Promise.all(
-      items.map(async (item, itemIndex) => {
-        const itemSlides: Array<any> = item.images
-          .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
-          .map(({ index, ...image }) => {
-            return {
-              url: completeImageURL(image.value),
-              index,
-              type: 'poster',
-              text: '',
-              _id: image._id,
-            };
-          });
+  async notifyAdjustments() {
+    const queryParams: Record<string, any> = {
+      quotationItems: !this.showAllProviderItems
+        ? this.quotationItems.map((item) => item._id).join('-')
+        : this.quotationItems
+            .filter((item) => item.pricing !== null && item.pricing >= 0)
+            .map((item) => item._id)
+            .join('-'),
+      rambo: this.showAllProviderItems,
+    };
 
-        let images: ItemImageInput[] = await Promise.all(
-          itemSlides.map(async (slide: SlideInput, index: number) => {
-            return {
-              file: await urltoFile(slide.url, 'file' + index, null, true),
-              index,
-              active: true,
-            };
-          })
-        );
+    if (!this.showAllProviderItems) {
+      queryParams.fullQuotationItems =
+        this.globalSupplieritemIdsInQuotation.join('-');
+    }
 
-        const itemInput: ItemInput = {
-          name: item.name,
-          description: item.description,
-          pricing: item.pricing,
-          stock: item.stock,
-          useStock: true,
-          notificationStock: true,
-          notificationStockLimit: Number(item.notificationStockLimit),
-          notificationStockPhoneOrEmail: item.notificationStockPhoneOrEmail,
-          images,
-          layout: 'EXPANDED-SLIDE',
-        };
+    if (this.requester) {
+      queryParams.requesterPhone = this.requester.owner.phone;
+      queryParams.requesterEmail = this.requester.owner.email;
+    }
 
-        return itemInput;
-      })
-    );
-  };
+    if (
+      this.typeOfQuotation === 'DATABASE_QUOTATION' &&
+      !this.showAllProviderItems
+    ) {
+      this.router.navigate(
+        ['ecommerce/confirm-quotation/' + this.quotationId],
+        {
+          queryParams: {
+            jsondata: JSON.stringify(queryParams),
+          },
+        }
+      );
+    } else {
+      this.router.navigate(['ecommerce/confirm-quotation'], {
+        queryParams: {
+          jsondata: JSON.stringify(queryParams),
+        },
+      });
+    }
+  }
 
   goBack() {
-    this.quotationsService.supplierItemsAdjustmentsConfig = null;
     if (this.quotationId) {
       return this.router.navigate([
         '/ecommerce/quotation-bids/' + this.quotationId,
@@ -604,18 +536,23 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
   ) {
     const magicLinkParams: any = {
       quotationItems: idsOfCreatedItems.join('-'),
-      fromProviderAdjustments: true,
     };
 
     if (itemsToUpdate) {
       magicLinkParams.itemsToUpdate = itemsToUpdate;
     }
 
-    if (!this.quotationId) {
-      magicLinkParams.itemsForTemporalQuotation = this.quotationItems.map(
-        (item) => item._id
-      );
-    } 
+    if (!this.showAllProviderItems) {
+      magicLinkParams.fullQuotationItems =
+        this.globalSupplieritemIdsInQuotation.join('-');
+    }
+
+    magicLinkParams.rambo = this.showAllProviderItems;
+
+    if (this.requester) {
+      magicLinkParams.requesterPhone = this.requester.owner.phone;
+      magicLinkParams.requesterEmail = this.requester.owner.email;
+    }
 
     if (merchantInput) magicLinkParams.merchantInput = merchantInput;
 
@@ -623,7 +560,8 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
 
     await this.authService.generateMagicLink(
       emailOrPhone,
-      `ecommerce/quotation-bids/` + (this.quotationId ? this.quotationId : ''),
+      `ecommerce/confirm-quotation/` +
+        (this.quotationId ? this.quotationId : ''),
       null,
       'MerchantAccess',
       {
@@ -733,12 +671,12 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
           description: item.description,
           pricing: item.pricing !== null ? item.pricing : 0,
           stock: item.stock !== null ? item.stock : 0,
-          useStock: true,
+          useStock: item.useStock,
           notificationStock: true,
           notificationStockLimit: item.notificationStockLimit,
           notificationStockPhoneOrEmail: item.notificationStockPhoneOrEmail,
           images: images,
-          merchant: this.supplierMerchantId,
+          merchant: merchantDefault._id,
           content: [],
           currencies: [],
           hasExtraPrice: false,
@@ -797,7 +735,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
 
   async changeAmount(
     item: Item,
-    type: 'add' | 'subtract',
+    type: 'add' | 'subtract' | 'infinite',
     itemIndex: number,
     providedByMe: boolean
   ) {
@@ -810,46 +748,59 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
         let newAmount: number;
         if (type === 'add' && providedByMe) {
           newAmount = item.stock >= 0 ? item.stock + 1 : 1;
+          item.useStock = true;
         } else if (type === 'subtract' && providedByMe) {
           newAmount = item.stock >= 1 ? item.stock - 1 : 0;
+          item.useStock = true;
         }
 
         if (type === 'add' && !providedByMe) {
           newAmount = !this.unitsForItemsThatYouDontSell[item._id]
             ? 1
             : this.unitsForItemsThatYouDontSell[item._id] + 1;
+          item.useStock = true;
         } else if (type === 'subtract' && !providedByMe) {
           newAmount =
             this.unitsForItemsThatYouDontSell[item._id] >= 1
               ? this.unitsForItemsThatYouDontSell[item._id] - 1
               : 0;
+          item.useStock = true;
+        }
+
+        if (type === 'infinite' && providedByMe) {
+          this.itemsService.updateItem(
+            {
+              useStock: false,
+            },
+            item._id
+          );
+          this.quotationItems[itemIndexInFullList].useStock = false;
+          this.setQuotationItemsToShow();
+          return;
+        } else if (type === 'infinite' && !providedByMe) {
+          this.quotationItems[itemIndexInFullList].useStock = false;
+          this.setQuotationItemsToShow();
+          return;
         }
 
         if (providedByMe) {
           this.itemsService.updateItem(
             {
               stock: newAmount,
+              useStock: true,
             },
             item._id
           );
 
           this.quotationItems[itemIndexInFullList].stock = newAmount;
+          this.quotationItems[itemIndexInFullList].useStock = true;
         } else {
           this.quotationItems[itemIndexInFullList].stock = newAmount;
+          this.quotationItems[itemIndexInFullList].useStock = true;
           this.unitsForItemsThatYouDontSell[item._id] = newAmount;
         }
 
-        this.quotationItemsToShow = JSON.parse(
-          JSON.stringify(this.quotationItems)
-        ).filter(
-          (item) =>
-            item.name
-              ?.toLowerCase()
-              .includes(this.itemSearchbar.value.toLowerCase()) ||
-            item.description
-              ?.toLowerCase()
-              .includes(this.itemSearchbar.value.toLowerCase())
-        );
+        this.setQuotationItemsToShow();
       } catch (error) {
         this.headerService.showErrorToast();
       }
@@ -857,6 +808,20 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
       console.error('Item not in quotation items');
     }
   }
+
+  setQuotationItemsToShow = () => {
+    this.quotationItemsToShow = JSON.parse(
+      JSON.stringify(this.quotationItems)
+    ).filter(
+      (item) =>
+        item.name
+          ?.toLowerCase()
+          .includes(this.itemSearchbar.value.toLowerCase()) ||
+        item.description
+          ?.toLowerCase()
+          .includes(this.itemSearchbar.value.toLowerCase())
+    );
+  };
 
   async addPrice(item: QuotationItem) {
     let fieldsToCreate: FormData = {
@@ -1006,7 +971,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
           : 0,
       notificationStock: true,
       notificationStockLimit: item.notificationStockLimit,
-      useStock: true,
+      useStock: item.useStock,
       type: 'supplier',
     };
 
@@ -1188,6 +1153,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     const emailDialogRef = this.matDialog.open(FormComponent, {
       data: fieldsToCreateInEmailDialog,
       disableClose: true,
+      panelClass: 'login',
     });
 
     emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
@@ -1253,6 +1219,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
                     {
                       data: fieldsToCreateInMerchantRegistrationDialog,
                       disableClose: true,
+                      panelClass: ['login', 'merchant-registration'],
                     }
                   );
 
@@ -1314,13 +1281,12 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
                             description: item.description,
                             pricing: item.pricing,
                             stock: item.stock,
-                            useStock: true,
+                            useStock: item.useStock,
                             notificationStock: true,
                             notificationStockLimit: item.notificationStockLimit,
                             notificationStockPhoneOrEmail:
                               item.notificationStockPhoneOrEmail,
                             images: images,
-                            merchant: this.supplierMerchantId,
                             content: [],
                             currencies: [],
                             hasExtraPrice: false,
@@ -1343,17 +1309,39 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
                           idsOfCreatedItems.push(createdItem._id);
                         }
 
-                        await this.generateMagicLinkFor(
-                          emailOrPhone,
-                          idsOfCreatedItems,
-                          null,
-                          true,
+                        const queryParams: Record<string, any> = {
+                          quotationItems: idsOfCreatedItems.join('-'),
+                          expectingMagicLink: true,
                           merchantInput,
-                          '/ecommerce/confirm-club-registration',
+                          rambo: this.showAllProviderItems,
+                        };
+
+                        if (this.requester) {
+                          queryParams.requesterPhone =
+                            this.requester.owner.phone;
+                          queryParams.requesterEmail =
+                            this.requester.owner.email;
+                        }
+
+                        if (!this.showAllProviderItems) {
+                          queryParams.fullQuotationItems =
+                            this.globalSupplieritemIdsInQuotation.join('-');
+                        }
+
+                        await this.authService.generateMagicLink(
+                          emailOrPhone,
+                          this.typeOfQuotation === 'DATABASE_QUOTATION' &&
+                            !this.showAllProviderItems
+                            ? '/ecommerce/confirm-quotation/' + this.quotationId
+                            : '/ecommerce/confirm-quotation/',
+                          null,
+                          'MerchantAccess',
                           {
-                            merchantName: merchantInput.name,
+                            jsondata: JSON.stringify(queryParams),
                           }
                         );
+
+                        this.router.navigate(['ecommerce/magic-link-sent']);
                         unlockUI();
                       }
                     });
@@ -1448,13 +1436,13 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
                           description: item.description,
                           pricing: item.pricing,
                           stock: item.stock,
-                          useStock: true,
+                          useStock: item.useStock,
                           notificationStock: true,
                           notificationStockLimit: item.notificationStockLimit,
                           notificationStockPhoneOrEmail:
                             item.notificationStockPhoneOrEmail,
                           images: images,
-                          merchant: this.supplierMerchantId,
+                          merchant: this.merchantsService.merchantData._id,
                           content: [],
                           currencies: [],
                           hasExtraPrice: false,
@@ -1495,8 +1483,11 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
                         emailOrPhone,
                         createdItems,
                         itemsToUpdate,
-                        true
+                        false
                       );
+
+                      this.router.navigate(['ecommerce/magic-link-sent']);
+
                       unlockUI();
                     }
                   } else if (
@@ -1523,6 +1514,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
         this.matDialog.open(OptionsDialogComponent, {
           data: optionsDialogTemplate,
           disableClose: true,
+          panelClass: 'login',
         });
       } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
         unlockUI();
@@ -1564,6 +1556,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
       const dialog2Ref = this.matDialog.open(FormComponent, {
         data: fieldsToCreate,
         disableClose: true,
+        panelClass: 'login',
       });
 
       dialog2Ref.afterClosed().subscribe(async (result: FormGroup) => {
@@ -1588,22 +1581,60 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
               (item) => !item.inSaleflow && item.pricing !== null
             );
 
-            const { itemsToUpdate } =
+            const { createdItems, itemsToUpdate } =
               await this.determineWhichItemsNeedToBeUpdatedAndWhichNeedToBeCreated(
                 merchantDefault,
                 itemsThatArentOnSupplierSaleflow,
                 true
               );
 
-            if (itemsToUpdate && Object.keys(itemsToUpdate).length > 0) {
+            const itemIdsToUpdate = Object.keys(itemsToUpdate);
+
+            if (itemsToUpdate && itemIdsToUpdate.length > 0) {
               await Promise.all(
-                Object.keys(itemsToUpdate).map((itemId) =>
+                itemIdsToUpdate.map((itemId) =>
                   this.itemsService.updateItem(itemsToUpdate[itemId], itemId)
                 )
               );
             }
 
-            this.router.navigate(['/ecommerce/provider-items']);
+            const queryParams: Record<string, any> = {
+              quotationItems:
+                itemIdsToUpdate.length > 0
+                  ? createdItems.concat(itemIdsToUpdate).join('-')
+                  : createdItems.join('-'),
+            };
+
+            if (this.requester) {
+              queryParams.requesterPhone = this.requester.owner.phone;
+              queryParams.requesterEmail = this.requester.owner.email;
+              queryParams.rambo = this.showAllProviderItems;
+            }
+
+            if (!this.showAllProviderItems) {
+              queryParams.fullQuotationItems =
+                this.globalSupplieritemIdsInQuotation.join('-');
+            }
+
+            if (
+              this.typeOfQuotation === 'DATABASE_QUOTATION' &&
+              !this.showAllProviderItems
+            ) {
+              this.router.navigate(
+                ['ecommerce/confirm-quotation/' + this.quotationId],
+                {
+                  queryParams: {
+                    jsondata: JSON.stringify(queryParams),
+                  },
+                }
+              );
+            } else {
+              this.router.navigate(['ecommerce/confirm-quotation'], {
+                queryParams: {
+                  jsondata: JSON.stringify(queryParams),
+                },
+              });
+            }
 
             unlockUI();
           } else if (result?.controls?.password.valid === false) {
@@ -1701,11 +1732,14 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
   closeItemsTutorial = (cardName: string) => {
     this.itemsTutorialCardsOpened[cardName] = false;
 
-    if (
-      !this.itemsTutorialCardsOpened['price'] &&
-      !this.itemsTutorialCardsOpened['welcome'] &&
-      !this.itemsTutorialCardsOpened['membership']
-    ) {
+    const shouldTheTutorialBeClosed = !this.showAllProviderItems
+      ? !this.itemsTutorialCardsOpened['price'] &&
+        !this.itemsTutorialCardsOpened['stock']
+      : !this.itemsTutorialCardsOpened['price'] &&
+        !this.itemsTutorialCardsOpened['stock'] &&
+        !this.itemsTutorialCardsOpened['welcome'];
+
+    if (shouldTheTutorialBeClosed) {
       this.tutorialOpened = false;
 
       let tutorialsConfig = JSON.parse(

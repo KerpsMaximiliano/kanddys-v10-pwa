@@ -557,3 +557,7 @@ footer {
     top: 6px;
   }
 }
+
+::ng-deep .merchant-registration .mat-dialog-content {
+  overflow: visible;
+}

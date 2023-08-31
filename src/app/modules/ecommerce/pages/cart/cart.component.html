@@ -46,6 +46,13 @@
         }} -->
       </p>
     </div>
+
+    <div class="right-area">
+      <div class="share-btn" (click)="shareQuotation()">
+        <span>Compara precios</span>
+        <img [src]="env + '/share-icon2.svg'" alt="Icono de una persona" />
+      </div>
+    </div>
   </header>
 
   <main
@@ -72,9 +79,7 @@
       "
     ></ng-container>
 
-    <h5 class="cta-title" (click)="goToStore()">
-      Adiciona otros artículos
-    </h5>
+    <h5 class="cta-title" (click)="goToStore()">Adiciona otros artículos</h5>
 
     <!-- TODO: acomodar esto por estilos de verdad -->
     <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
@@ -104,6 +109,18 @@
     <span class="total-label">Total: ${{ totalPrice | number : "1.2-2" }}</span>
   </footer>
 </div>
+
+<qrcode
+  *ngIf="quotationLink"
+  style="display: none"
+  #quotationQrCode
+  [qrdata]="quotationLink"
+  [elementType]="'img'"
+  [width]="500"
+  [errorCorrectionLevel]="'M'"
+  [allowEmptyString]="true"
+  colorDark="#000000"
+></qrcode>
 
 <ng-template
   #itemCard
@@ -364,7 +381,10 @@
       </div>
     </div>
 
-    <div class="card-footer" *ngIf="itemObjects[item._id]?.amount > item.stock || !item.stock">
+    <div
+      class="card-footer"
+      *ngIf="itemObjects[item._id]?.amount > item.stock || !item.stock"
+    >
       * Probablemente no tengan esta cantidad
     </div>
   </mat-card>

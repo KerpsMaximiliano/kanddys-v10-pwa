@@ -26,74 +26,35 @@
       margin: 0px;
     }
 
-    .notify-buttons {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 37px;
+    .whatsapp-club {
+      color: #7b7b7b;
+      font-family: InterMedium;
+      font-size: 17px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: normal;
+      margin-top: 36px;
+      text-align: left;
+    }
 
-      .whatsapp-button {
-        ::ng-deep .mat-button-wrapper {
-          width: 100%;
-        }
-        width: 100%;
-        height: fit-content;
-        border-radius: 23px;
-        background: #87cd9b;
-        display: flex;
-        color: #181d17;
-        text-align: center;
-        font-family: Inter;
+    .promise {
+      margin-top: auto;
+      color: #7b7b7b;
+      font-family: InterBold;
+      font-size: 17px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
+      margin-bottom: 33px;
+
+      .whatsapp-link {
+        color: #2874ad;
+        font-family: InterBold;
         font-size: 17px;
         font-style: normal;
         font-weight: 700;
         line-height: normal;
-        padding: 10px 0px;
-        margin-top: 13px;
-
-        .content {
-          width: 100%;
-          display: flex;
-          justify-content: center;
-
-          span {
-            position: relative;
-
-            img {
-              position: absolute;
-              width: 22.206px;
-              height: 22.301px;
-              flex-shrink: 0;
-              right: -13.31vw;
-            }
-          }
-        }
       }
-
-      .mail-button {
-        padding: 0px;
-        margin: 0px;
-        background-color: transparent;
-        color: #7b7b7b;
-        text-align: center;
-        font-family: InterMedium;
-        font-size: 17px;
-        font-style: normal;
-        line-height: normal;
-      }
-    }
-
-    p {
-      color: #181d17;
-      text-align: center;
-      font-family: Inter;
-      font-size: 16px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: normal;
-      margin: 0px;
-      margin-top: 33px;
-      text-align: center;
     }
   }
 
@@ -102,8 +63,6 @@
     border-top: 1px solid black;
     padding: 0px 18px;
     padding-top: 16px;
-    max-height: 160px;
-    overflow-y: scroll;
 
     .quotation-link {
       background-color: transparent;

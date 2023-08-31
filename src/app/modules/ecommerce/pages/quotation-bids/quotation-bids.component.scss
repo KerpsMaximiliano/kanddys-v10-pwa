@@ -14,7 +14,7 @@
 
 .header {
   background: #fff;
-  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.06));
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.06);
   height: 46px;
   padding-left: 14px;
   padding-right: 18px;
@@ -278,6 +278,87 @@ hr {
   }
 }
 
+.help-card-share {
+  position: fixed;
+  border-radius: 15.591px;
+  background: var(--el-mas-oscuro, #181d17);
+  padding: 39px 12px 29px 24px;
+  bottom: 43px;
+  left: 0px;
+  right: 0px;
+  width: calc(100% - 31px);
+  max-width: calc(500px - 31px);
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    cursor: default;
+  }
+  .card-title {
+    color: var(--blanco, #fff);
+    text-align: center;
+    font-family: InterSemiBold;
+    font-size: 23px;
+    font-style: normal;
+    line-height: normal;
+    margin: 0px;
+    padding: 0px;
+  }
+
+  .share-quotation-btn {
+    border: none;
+    border-radius: 8px;
+    background: #87cd9b;
+    padding: 6px 48px 6px 23px;
+    color: #181d17;
+    text-align: center;
+    font-family: InterBold;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    width: fit-content;
+    margin-left: auto;
+    margin-top: 33px;
+    margin-right: 14px;
+    position: relative;
+    display: flex;
+
+    &:hover {
+      cursor: default;
+    }
+
+    .share {
+      width: 12.857px;
+      height: 16.714px;
+      flex-shrink: 0;
+      margin-right: 6px;
+    }
+  }
+
+  .share {
+    color: #181d17;
+    text-align: center;
+    font-family: InterBold;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    border-radius: 8px;
+    background: #87cd9b;
+    width: 100%;
+    padding: 8px 0px;
+    display: flex;
+    justify-content: center;
+    border: none;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+
 footer {
   position: fixed;
   bottom: 0px;
@@ -287,21 +368,41 @@ footer {
   background: #fff;
   display: flex;
   justify-content: space-between;
-  padding: 5px 15px;
+  padding: 5px 18px;
   margin: auto;
 
   .share-btn {
     cursor: pointer;
     border: none;
     color: #181d17;
-    font-family: InterBold;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
     background-color: transparent;
     padding: 0px;
     margin: 0px;
+    display: flex;
+    align-items: flex-end;
+    color: #181d17;
+    font-family: InterLight;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    position: relative;
+
+    img {
+      margin-left: 5.65px;
+    }
+
+    .arrow-tutorial-2 {
+      position: absolute;
+      right: 34px;
+      width: 39.87vw;
+      max-width: 170.66px;
+      height: 50px;
+      margin-left: 0px;
+      top: -66px;
+      left: 6px;
+      z-index: 9999;
+    }
 
     &:hover {
       cursor: pointer;
@@ -365,4 +466,154 @@ footer {
   span {
     font-family: InterLight;
   }
+}
+
+.tutorial-wrapper {
+  &.opened {
+    margin: auto;
+    max-width: 500px;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    right: 0px;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+  }
+}
+
+.save-btn {
+  position: relative;
+  border: none;
+  padding: 10px 20px 9px 20px;
+  padding-bottom: 6px;
+  border-radius: 9px;
+  background: var(--el-verdecito, #87cd9b);
+  color: #181d17;
+  text-align: right;
+  font-family: InterBold;
+  font-size: 17px;
+  font-style: normal;
+
+  /*
+  &.tutorialOpened {
+    z-index: 1100;
+  }*/
+
+  .arrow-tutorial {
+    position: absolute;
+    left: -45px;
+    z-index: 1200;
+  }
+
+  .help-card {
+    position: absolute;
+    border-radius: 15.591px;
+    background: var(--el-mas-oscuro, #181d17);
+    padding: 64px 12px 29px 24px;
+    top: 65px;
+    left: -194px;
+    width: 298px;
+    height: 243px;
+    z-index: 1150;
+
+    &:hover {
+      cursor: default;
+    }
+    .card-title {
+      color: var(--blanco, #fff);
+      text-align: center;
+      font-family: InterSemiBold;
+      font-size: 23px;
+      font-style: normal;
+      line-height: normal;
+      margin: 0px;
+      padding: 0px;
+    }
+
+    .buttons {
+      margin: auto;
+      margin-top: 28px;
+      width: 59.06%;
+      max-width: 176px;
+
+      .cancel {
+        color: #c4c5c3;
+        font-family: InterLight;
+        font-size: 17px;
+        font-style: normal;
+        font-weight: 300;
+        line-height: normal;
+        border: none;
+        background-color: none;
+        margin: 0px auto;
+        padding: 0px;
+        background-color: transparent;
+        margin-bottom: 17px;
+
+        &:hover {
+          cursor: pointer;
+        }
+      }
+
+      .accept {
+        color: #181d17;
+        text-align: center;
+        font-family: InterBold;
+        font-size: 17px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        border-radius: 8px;
+        background: #87cd9b;
+        width: 100%;
+        padding: 8px 0px;
+        display: flex;
+        justify-content: center;
+        border: none;
+
+        &:hover {
+          cursor: pointer;
+        }
+      }
+    }
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+::ng-deep .cdk-overlay-pane.login {
+  width: 100%;
+  max-width: 500px !important;
+
+  .mat-dialog-container {
+    width: 100% !important;
+  }
+}
+
+::ng-deep .merchant-registration .mat-dialog-content {
+  overflow: visible;
+}
+
+.accept-wrapper {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.accept {
+  color: var(--el-verdecito, #87cd9b);
+  font-family: InterSemiBold;
+  font-size: 17px;
+  font-style: normal;
+  line-height: normal;
+  background-color: transparent;
+  padding: 0px;
+  margin-top: 8px;
+  border: none;
+  position: relative;
+
+  
 }
