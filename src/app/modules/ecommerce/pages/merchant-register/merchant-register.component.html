@@ -2,13 +2,13 @@
     <div class="input-area">
         <div class="label">Nombre Comercial:</div>
         <div class="input">
-            <input type="text" formControlName="name">
+            <input type="text" placeholder="Ingrese el nombre..." formControlName="name">
         </div>
     </div>
     <div class="input-area">
         <div class="label">WhatsApp donde tus compradores te contactan:</div>
         <div class="input">
-            <input type="text" formControlName="phone">
+            <input type="text" placeholder="Ingrese el teléfono..." formControlName="phone">
         </div>
     </div>
     <div class="input-area">
@@ -35,7 +35,7 @@
     <div class="input-area">
         <div class="label">Industria de tu comercio:</div>
         <div class="input">
-            <input type="text" formControlName="industry">
+            <input type="text" placeholder="Ingrese una industria" formControlName="industry" readonly (click)="openCategoriesDialog()">
         </div>
     </div>
     <button mat-button class="cancel">Omitir</button>
