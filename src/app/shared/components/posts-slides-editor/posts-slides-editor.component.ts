@@ -3,7 +3,7 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { PostsService } from 'src/app/core/services/posts.service';
 import { CroppResult } from '../image-editor/image-editor.component';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -12,12 +12,14 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./posts-slides-editor.component.scss'],
 })
 export class PostsSlidesEditorComponent implements OnInit {
+  returnTo: string;
   constructor(
     public postsService: PostsService,
     private ngZone: NgZone,
     private router: Router,
     private headerService: HeaderService,
-    private toastsService: ToastrService
+    private toastsService: ToastrService,
+    private _Route : ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
@@ -31,6 +33,7 @@ export class PostsSlidesEditorComponent implements OnInit {
         `/ecommerce/${this.headerService.saleflow.merchant.slug}/cart`,
       ]);
     }
+    this.returnTo = this._Route.snapshot.queryParamMap.get('returnTo');
   }
 
   async onEditSubmit(result: CroppResult) {
@@ -58,7 +61,11 @@ export class PostsSlidesEditorComponent implements OnInit {
         this.ngZone.run(() => {
           this.router.navigate([
             `/ecommerce/${this.headerService.saleflow.merchant.slug}/qr-edit`,
-          ]);
+          ], {
+            queryParams: {
+              returnTo: this.returnTo
+            }
+          });
         });
       };
       unlockUI();

@@ -1,5 +1,8 @@
 <app-navigation [opened]="openNavigation" (closed)="openNavigation = false">
     <div class="container">
+      <!-- <div class="close-content" *ngIf="!isFlag">
+        <span (click)="isFlag=true">X</span>
+      </div> -->
       <div class="header-wrapper">
         <div class="left-part">
           <img
@@ -13,22 +16,99 @@
         </div>
     
         <div class="right-part">
-          <div class="member">
+          <!-- <div class="member">
             <div class="user-button" (click)="enterClub()" *ngIf="!headerService.user">Ingresa al club</div>
-          </div>
+          </div> -->
     
-          <div class="close" *ngIf="headerService.user" style="cursor: pointer">
-            <span (click)="close()">X</span>
+          <div class="close">
+            <span *ngIf="headerService.user" (click)="openDialog()">{{userID}}</span>
+            <span *ngIf="!headerService.user" (click)="enterClub()">Ingresa al Club</span>
+          </div>
+          <div class="close" style="cursor: pointer" *ngIf="headerService.user">
+            <span (click)="close()">
+              <mat-icon>menu</mat-icon>
+            </span>
           </div>
         </div>
       </div>
     
       <main>
         <div class="landing-title">
-          Es un ecosistema digital en constante desarrollo, diseñado para
-          proporcionar soluciones a los desafíos que enfrentan las floristerías y
-          sus proveedores.
+          Desarrollamos herramientas que se usan desde el celular para los Miembros del Club
         </div>
+        <div class="sub-title" *ngIf="headerService.user">
+          (Soy {{tabIndex ? "proveedor" : "tienda"}})
+        </div>
+
+        <div class="tabs-container" *ngIf="tabIndex==1 && headerService.user">
+          <!-- TABS -->
+          <div class="tab-question" >
+            Gestión de Proveedor:
+          </div>
+          <div class="tab-content">
+            <div class="tab-content-item" *ngFor="let item of tabProvider">
+              {{ item }}
+            </div>
+          </div>
+        </div>
+
+        <div class="tabs-container" *ngIf="tabIndex==0 && headerService.user">
+          <!-- TABS -->
+          <div class="tab-question" >
+            Gestión de mi Tienda:
+          </div>
+          <div class="tab-content">
+            <div class="tab-content-item" *ngFor="let item of tabVendor">
+              {{ item }}
+            </div>
+          </div>
+        </div>
+
+        <div class="tabs-container">
+          <!-- TABS -->
+          <div class="title">
+            {{mainTitle}}
+          </div>
+          <!-- <div class="tabs" *ngIf="isVendor == isProvider">
+            <div
+              class="tab"
+              (click)="tabIndex=0"
+              [ngClass]="{ active: !tabIndex }"
+            >
+              Floristerias & Tiendas de Regalos
+            </div>
+            <div
+              class="tab"
+              (click)="tabIndex=1"
+              [ngClass]="{ active: tabIndex }"
+            >
+              Proveedores
+            </div>
+          </div>
+          <div class="tab-question" >
+            {{!tabIndex ?"Como Floristería ¿qué necesitas?":"Como Proveedor de Floristerías y Tiendas de Regalos ¿qué necesitas?"}}
+          </div> -->
+          <div class="tab-content">
+            <div class="tab-content-item" *ngFor="let item of filterData()">
+              <span class="text">{{item.text}}</span><br>
+              <span class="subText">{{item.subText}}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tabs-container" *ngIf="!headerService.user">
+          <!-- TABS -->
+          <div class="title">
+            HERRAMIENTAS CS* DE PAGOS (CON CLOUD SERVICE)
+          </div>
+          <div class="tab-content">
+            <div class="tab-content-item" *ngFor="let item of tabServices">
+              {{ item }}
+            </div>
+          </div>
+        </div>
+
+        <div class="header-border"></div>
 
         <ng-container>
           <div class="tabs-container">
@@ -66,12 +146,18 @@
               <ng-container *ngIf="tab.active">
                 <ng-container *ngFor="let subtab of tab.subTabs; index as j">
                   <ng-container *ngIf="subtab.active">
-                    <div class="slide-content">
-                      <p
-                        *ngFor="let content of subtab.content"
-                      >
-                        {{ content }}
-                      </p>
+                    <div class="footer-swiper">
+                      <h3 class="footer-swiper-title">{{ !tabIndex ? "LO QUE MAS LE GUSTA A LAS FLORISTERIAS" : "LO QUE MAS LE GUSTA A LOS PROVEEDORES" }}</h3>
+              
+                      <div class="swiper-custom-container">
+                        <swiper [config]="swiperConfig">
+                          <div *ngFor="let content of subtab.content">
+                            <div class="slide-content">{{ content }}</div>
+              
+                            <div class="blank-space"></div>
+                          </div>
+                        </swiper>
+                      </div>
                     </div>
                   </ng-container>
                 </ng-container>
@@ -79,32 +165,9 @@
             </ng-container>
           </div>
         </ng-container>
-    
-        <div class="header-border"></div>
-    
-        <ng-container *ngFor="let swiper of swipers; let swiperIndex = index">
-          <div class="footer-swiper">
-            <h3 class="footer-swiper-title">{{ swiper.title }}</h3>
-    
-            <div class="swiper-custom-container">
-              <swiper [config]="swiperConfig">
-                <div *ngFor="let slide of swiper.slides; let i = index">
-                  <div class="slide-content">{{ slide.content }}</div>
-    
-                  <div class="blank-space"></div>
-                </div>
-              </swiper>
-            </div>
-          </div>
-    
-          <div
-            class="header-border"
-            *ngIf="swiperIndex !== swipers.length - 1"
-            style="margin-top: 42px"
-          ></div>
-        </ng-container>
+
       </main>
     
-      <footer (click)="share()">Comparte</footer>
+      <footer (click)="share()" class="footer" [ngClass]="{'no-green' : headerService.user}">{{headerService.user ? "Embajadores ganan hasta US$750 💚": "CS* $0.30 por factura hasta US$250"}}</footer>
     </div>
 </app-navigation>

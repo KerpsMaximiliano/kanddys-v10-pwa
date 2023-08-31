@@ -44,6 +44,7 @@ import {
   providersItemMetrics,
   itemsQuantitySold,
   itemsQuantitySoldTotal,
+  itemsSuppliersPaginate,
 } from '../graphql/items.gql';
 import {
   Item,
@@ -646,4 +647,14 @@ export class ItemsService {
       console.log(e);
     }
   };
+
+  async itemsSuppliersPaginate(paginate: PaginationInput) {
+    const result = await this.graphql.query({
+      query: itemsSuppliersPaginate,
+      variables: { paginate },
+      fetchPolicy: 'no-cache',
+    });
+    if (!result) return;
+    return result;
+  }
 }

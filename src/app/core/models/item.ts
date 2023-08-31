@@ -213,6 +213,8 @@ export class ItemInput {
   parentItem?: string;
   notificationStockPhoneOrEmail?: string;
   approvedByAdmin?: boolean;
+  offerPrice?:number;
+  activeOffer?:boolean;
 }
 
 export class ItemImageInput {

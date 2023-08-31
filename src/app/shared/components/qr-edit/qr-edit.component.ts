@@ -32,7 +32,7 @@ import { isImage, isVideo } from 'src/app/core/helpers/strings.helpers';
 export class QrEditComponent implements OnInit {
   environment: string = environment.assetsUrl;
   spinnerGif: string = `${environment.assetsUrl}/spinner2.gif`;
-  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
+  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp', 'application/octet-stream'];
   videoFiles: string[] = [
     'video/mp4',
     'video/webm',
@@ -50,7 +50,7 @@ export class QrEditComponent implements OnInit {
   audioFiles: string[] = [];
   availableFiles: string;
   item: Item;
-  returnTo: 'checkout' | 'post-edition' | 'item-creation' = null;
+  returnTo: 'checkout' | 'post-edition' | 'item-creation' | 'symbol-editor' = null;
 
   flow: 'cart' | 'checkout' = 'cart';
 
@@ -315,9 +315,12 @@ export class QrEditComponent implements OnInit {
       };
 
       if (this._PostsService.post.slides.length) {
+        console.log(this._PostsService.post.slides)
         for await (const slide of this._PostsService.post.slides) {
-          if (slide.media && slide.media.type.includes('image')) {
+          if (slide.media && slide.media.type.includes('image') || 
+          slide.media && slide.media.type.includes('octet-stream')) {
             await fileToBase64(slide.media).then((result) => {
+              console.log(result)
               this.gridArray.push({
                 ...slide,
                 background: result,
@@ -337,6 +340,33 @@ export class QrEditComponent implements OnInit {
             this.gridArray.push({
               ...slide,
             });
+          } else if (!slide.media && slide.url) {
+            const fileParts = slide.url.split('.');
+            const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
+            let auxiliarImageFileExtension = 'image/' + fileExtension;
+            let auxiliarVideoFileExtension = 'video/' + fileExtension;
+
+            if (
+              slide.url &&
+              !slide.url.includes('http') &&
+              !slide.url.includes('https')
+            ) {
+              slide.url = 'https://' + slide.url;
+            }
+
+            if (this.imageFiles.includes(auxiliarImageFileExtension)) {
+              this.gridArray.push({
+                ...slide,
+                background: (slide as any).url,
+                _type: auxiliarImageFileExtension,
+              });
+            } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
+              this.gridArray.push({
+                ...slide,
+                background: (slide as any).url,
+                _type: auxiliarVideoFileExtension,
+              });
+            }
           }
         }
       }
@@ -386,6 +416,9 @@ export class QrEditComponent implements OnInit {
 
   async loadFile(event: Event) {
     const fileList = (event.target as HTMLInputElement).files;
+    const queryParams : any = {
+      returnTo: this.returnTo
+    }
     if (!fileList.length) return;
     let index = this.gridArray.length - 1;
     for (let i = 0; i < fileList.length; i++) {
@@ -591,7 +624,7 @@ export class QrEditComponent implements OnInit {
               'ecommerce/' +
                 this.headerService.saleflow?.merchant.slug +
                 '/post-slide-editor',
-            ]);
+            ], {queryParams});
           };
         }
       }
@@ -654,6 +687,11 @@ export class QrEditComponent implements OnInit {
         'ecommerce/' +
           this.headerService.saleflow?.merchant.slug +
           '/post-edition',
+      ]);
+      return;
+    } else if (this.returnTo === 'symbol-editor') {
+      this._Router.navigate([
+        'admin/symbol-editor'
       ]);
       return;
     }
@@ -760,7 +798,9 @@ export class QrEditComponent implements OnInit {
   }
 
   editSlide(index: number) {
-    const queryParams: any = {};
+    const queryParams: any = {
+      returnTo: this.returnTo
+    };
 
     if (this.redirectFromFlowRoute)
       queryParams.redirectFromFlowRoute = this.redirectFromFlowRoute;
