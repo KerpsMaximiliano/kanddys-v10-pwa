@@ -48,6 +48,8 @@ import {
   orderByDateId,
   expendituresTotalByTypeConstant,
   ordersIncomeMerchantByUser,
+  createOrderExternal,
+  orderQuantityOfFiltersStatusDelivery,
 } from '../graphql/order.gql';
 import {
   ItemOrder,
@@ -64,6 +66,7 @@ import {
   OrderBenefits,
   DeliveryDataInput,
   ExpenditureActiveDateRangeInput,
+  ItemOrderExternalInput,
 } from '../models/order';
 
 import { PaginationInput, PaginationRangeInput } from '../models/saleflow';
@@ -644,5 +647,23 @@ export class OrderService {
       variables: { userId, merchantId },
     });
     return result?.ordersIncomeMerchantByUser;
+  }
+
+  async createOrderExternal(input : ItemOrderExternalInput) {
+    const result = await this.graphql.mutate({
+      mutation: createOrderExternal,
+      variables: { input },
+      fetchPolicy: 'no-cache',
+    });
+    return result?.createOrderExternal;
+  }
+
+  async orderQuantityOfFiltersStatusDelivery(pagination: PaginationInput) {
+    const result = await this.graphql.query({
+      query: orderQuantityOfFiltersStatusDelivery,
+      variables: { pagination },
+      fetchPolicy: 'no-cache',
+    });
+    return result?.orderQuantityOfFiltersStatusDelivery;
   }
 }

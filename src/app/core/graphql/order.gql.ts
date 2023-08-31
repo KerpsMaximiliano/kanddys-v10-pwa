@@ -829,11 +829,22 @@ export const incomeTotalByType = gql`
   }
 `;
 
-
-
 export const ordersIncomeMerchantByUser = gql`
   query ordersIncomeMerchantByUser($userId: [ObjectID!]!,$merchantId:ObjectID!) {
     ordersIncomeMerchantByUser(userId:$userId,merchantId:$merchantId)
    }
 `;
 
+export const createOrderExternal = gql`
+  mutation createOrderExternal($input: ItemOrderExternalInput!) {
+    createOrderExternal(input: $input) {
+      _id
+    }
+  }
+`;
+
+export const orderQuantityOfFiltersStatusDelivery = gql`
+  query orderQuantityOfFiltersStatusDelivery($pagination: PaginationInput) {
+    orderQuantityOfFiltersStatusDelivery(pagination: $pagination)
+  }
+`;
