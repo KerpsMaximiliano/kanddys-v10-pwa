@@ -4,12 +4,8 @@
     'mat-elevation-z0': !shadow,
     'mat-elevation-z2': shadow
   }"
-  [ngStyle]="{
-    borderTopLeftRadius: showIcon ? '17px' : '0',
-    paddingLeft: showIcon ? '32px' : '0'
-  }"
 >
-  <button
+  <!-- <button
     *ngIf="showIcon"
     class="delete-btn mat-elevation-z0"
     mat-mini-fab
@@ -18,13 +14,21 @@
     (click)="onDelete.emit()"
   >
     <mat-icon>delete_outline</mat-icon>
-  </button>
+  </button> -->
   <mat-card-header>
     <mat-card-title class="title">{{ title }}</mat-card-title>
-    <mat-card-subtitle class="subtitle">{{ subtitle }}</mat-card-subtitle>
+    <mat-card-subtitle class="subtitle">
+      <span *ngIf="true">Icono</span>
+      {{ subtitle }}
+    </mat-card-subtitle>
     <div style="flex: 1"></div>
-    <div class="pricing">
-      <span>${{ pricing | number }}</span>
+    <div class="description-extra">
+      <div class="pricing">
+        <span>${{ pricing | number }}</span>
+      </div>
+      <div class="quantity-items">
+        <span>{{ "4" }} artículos</span>
+      </div>
     </div>
   </mat-card-header>
 </mat-card>

@@ -6,23 +6,37 @@
       [routerLink]="['../../order-slides']"
       queryParamsHandling="merge"
     >
-      <img [src]="env + '/arrow-double-up-black.svg'" alt="back" />
+      <img
+        src="../../../../../assets/icons/close-button.svg"
+        alt="back"
+        role="doc-backlink"
+      />
     </a>
     <button
       mat-icon-button
       *ngIf="order && adding"
       (click)="createExpenditure()"
     >
-      <img [src]="env + '/arrow-double-up-black.svg'" alt="back" />
+      <img
+        src="../../../../../assets/icons/close-button.svg"
+        alt="back"
+        role="doc-backlink"
+      />
     </button>
-    <button mat-button *ngIf="!adding" (click)="adding = !adding">
-      <p>Adiciona un egreso</p>
-    </button>
+
+    <p>💰 Control & Beneficios de {{ "N784" }}</p>
   </header>
   <main>
     <ng-container *ngIf="!adding">
       <section>
-        <div class="expenses-list" *ngIf="orderExpenditures.length">
+        <div class="expenses-list">
+          <!--TODO: hacer el precio dinamico-->
+          <app-named-expense
+            [title]="'Monto de la factura'"
+            [subtitle]="'N479, ' + daysAgo(expenditures[0]?.createdAt)"
+            [pricing]="expenditures[0].amount"
+            (onDelete)="onDelete(expenditures[0])"
+          ></app-named-expense>
           <app-named-expense
             *ngFor="let expenditure of orderExpenditures"
             [title]="expenditure?.name ? expenditure.name : 'Sin nombre'"
@@ -30,10 +44,8 @@
             [pricing]="expenditure.amount"
             (onDelete)="onDelete(expenditure)"
           ></app-named-expense>
+          <button type="button" class="add-expenses">Adiciona un egreso</button>
         </div>
-        <h4 class="no-expends" *ngIf="!orderExpenditures.length">
-          Esta orden aún no tiene egresos
-        </h4>
       </section>
       <!-- Esto fue comentado según el nuevo diseño, pero esta forma es mucho más clara -->
       <!-- <section style="padding: 12px">
@@ -51,18 +63,11 @@
         </div>
       </section> -->
       <div class="spacer"></div>
-      <div class="bottom-footer">
-        {{
-          benefits
-            ? "$" +
-              (benefits.benefits | number) +
-              " ingresos - $" +
-              (benefits.less | number) +
-              " egresos = " +
-              (benefits.benefits - benefits.less | number)
-            : ""
-        }}
-      </div>
+      <footer class="bottom-footer">
+        <p>
+          Beneficio: {{ benefits.benefits - benefits.less | number }}
+        </p>
+      </footer>
     </ng-container>
     <ng-container *ngIf="adding">
       <div>

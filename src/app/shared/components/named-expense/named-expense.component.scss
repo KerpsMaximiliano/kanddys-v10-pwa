@@ -1,25 +1,46 @@
 .card {
   padding: 12px;
+  border-radius: 6px;
 }
+.description,
+.description-extra {
+  display: flex;
+  flex-direction: column;
+}
+
 .title {
-  font-size: 1rem;
+  color: #272727;
+  font-family: Inter;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
 }
 .subtitle {
   margin-bottom: 0;
-  font-size: 0.75;
+  text-align: left;
+  color: #7b7b7b;
+  text-align: left;
+  font-family: Inter;
+  font-weight: 400;
+  line-height: normal;
 }
 .pricing {
-  color: #272727;
-  font-size: 1rem;
-  font-family: SfProMedium;
+  font-size: 17px;
+  font-style: normal;
 }
-.delete-btn {
-  transform: scale(0.85);
-  position: absolute;
-  left: -3px;
-  top: -3px;
-  border: 2px solid #f6f6f6;
-  background-color: #fff;
+.quantity-items,
+.subtitle {
+  font-size: 15px;
+  font-style: italic;
+}
+.pricing,
+.quantity-items {
+  color: #7b7b7b;
+  text-align: right;
+  font-family: Inter;
+  font-weight: 400;
+  line-height: normal;
 }
 ::ng-deep .mat-button-wrapper {
   padding: 0 !important;
