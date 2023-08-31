@@ -809,8 +809,9 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         {
           value: 'Algo anda mal porque es la primera vez que trato de acceder con este correo',
           callback: () => {
-            // TODO
-            console.log("CHARMY > MARILU, CHANGE MY MIND");
+            const phone = '19188156444';
+            const message = 'Algo anda mal porque es la primera vez que trato de acceder con este correo';
+            window.location.href = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
           }
         }
       ],
@@ -831,21 +832,66 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         {
           value: 'Empezar mi Membresía al Club con este correo electrónico',
           callback: async () => {
-            await this.registeringUserFlow(credentials);
+            this.typeOfMerchantFlow(credentials);
           },
         },
         {
           value: 'Intentar con otro correo electrónico.',
           callback: async () => {
-            // TODO - Mostrar form de correo de nuevo
+            await this.openMagicLinkDialog();
           },
         },
         {
           value: 'Algo anda mal porque no es la primera vez que trato de acceder con este correo',
           callback: () => {
-            // TODO - Hacer este flow
+            const phone = '19188156444';
+            const message = 'Algo anda mal porque no es la primera vez que trato de acceder con este correo';
+            window.location.href = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
           }
         }
+      ],
+    };
+
+    this.dialog.open(OptionsDialogComponent, {
+      data: optionsDialogTemplate,
+      disableClose: true,
+    });
+  }
+
+  private typeOfMerchantFlow(credentials: any) {
+    let optionsDialogTemplate: OptionsDialogTemplate = {
+      title: `¿Qué tipo de comercio tienes?`,
+      options: [
+        {
+          value: 'Soy tienda, vendo al consumidor final',
+          callback: async () => {
+            return this.router.navigate(
+              ['/ecommerce/merchant-register'],
+              {
+                queryParams: {
+                  credentials: credentials,
+                  type: 'vendor',
+                }
+              }
+            );
+            // await this.registeringUserFlow(credentials);
+          },
+        },
+        {
+          value: 'Soy proveedor, le vendo a tiendas',
+          callback: async () => {
+            return this.router.navigate(
+              ['/ecommerce/merchant-register'],
+              {
+                queryParams: {
+                  credentials: credentials,
+                  type: 'supplier',
+                }
+              }
+            );
+            // await this.registeringUserFlow(credentials);
+          },
+        },
       ],
     };
 

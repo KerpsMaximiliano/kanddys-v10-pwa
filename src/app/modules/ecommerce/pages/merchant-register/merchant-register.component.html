@@ -1,0 +1,43 @@
+<div class="container" [formGroup]="merchantForm">
+    <div class="input-area">
+        <div class="label">Nombre Comercial:</div>
+        <div class="input">
+            <input type="text" formControlName="name">
+        </div>
+    </div>
+    <div class="input-area">
+        <div class="label">WhatsApp donde tus compradores te contactan:</div>
+        <div class="input">
+            <input type="text" formControlName="phone">
+        </div>
+    </div>
+    <div class="input-area">
+        <div class="label">País y ciudades donde tus compradores reciben lo que te compran:</div>
+        <div class="input">
+            <mat-form-field>
+                <mat-label>País</mat-label>
+                <mat-select formControlName="country">
+                    <mat-option *ngFor="let country of countries" [value]="country.value">
+                        {{country.viewValue}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Ciudad</mat-label>
+                <mat-select formControlName="city">
+                    <mat-option *ngFor="let city of cities" [value]="city.value">
+                        {{city.viewValue}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </div>
+    <div class="input-area">
+        <div class="label">Industria de tu comercio:</div>
+        <div class="input">
+            <input type="text" formControlName="industry">
+        </div>
+    </div>
+    <button mat-button class="cancel">Omitir</button>
+    <button mat-button class="submit" (click)="saveData()">Guardar mis datos comerciales</button>
+</div>
