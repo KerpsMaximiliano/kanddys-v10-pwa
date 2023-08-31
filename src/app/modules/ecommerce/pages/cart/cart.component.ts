@@ -1296,7 +1296,7 @@ export class CartComponent implements OnInit {
                 .concat(this.quotationItemsNotAvailableOrNotInSaleflow)
                 .map((item) => `-${item.name || 'Producto sin nombre'}\n`)
                 .join('');
-              let bodyMessage = `Hola, pudieras confirmame la disponibilidad y precios de estos artículos 🙏? ${listOfItemNames} en este enlace te los muestro y lo puedes ajustar bien fácil 👉${encodeURIComponent(
+              let bodyMessage = `Hola, pudieras confirmame la disponibilidad y precios de estos artículos 🙏? \n${listOfItemNames} en este enlace te los muestro y lo puedes ajustar bien fácil 👉${encodeURIComponent(
                 link
               )}`;
 

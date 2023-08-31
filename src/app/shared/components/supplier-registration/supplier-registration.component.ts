@@ -1159,10 +1159,13 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
     emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
       if (result?.controls?.magicLinkEmailOrPhone.valid) {
         const emailOrPhone = result?.value['magicLinkEmailOrPhone'];
+        lockUI();
         const myUser = await this.authService.checkUser(emailOrPhone);
         const myMerchant = !myUser
           ? null
           : await this.merchantsService.merchantDefault(myUser._id);
+
+        unlockUI();
 
         let optionsDialogTemplate: OptionsDialogTemplate = null;
 
@@ -1588,7 +1591,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
                 true
               );
 
-            const itemIdsToUpdate = Object.keys(itemsToUpdate);
+            const itemIdsToUpdate =  itemsToUpdate ? Object.keys(itemsToUpdate) : [];
 
             if (itemsToUpdate && itemIdsToUpdate.length > 0) {
               await Promise.all(

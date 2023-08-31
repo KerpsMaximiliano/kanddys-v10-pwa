@@ -219,46 +219,65 @@
       <div class="quantity-title">VENDIENDO</div>
 
       <div class="item-quantity">
-        <span
-          mat-button
-          class="button icon"
-          (click)="
-            item.stock >= 1
-              ? changeAmount(item, 'subtract', itemIndex, providedByMe)
-              : null
-          "
-        >
-          <ng-container *ngIf="providedByMe">
-            {{ item.stock > 1 ? "-" : "" }}
+        <ng-container *ngIf="item.useStock">
+          <ng-container *ngIf="item.stock === 0">
+            <img
+              class="infinite-units small"
+              (click)="
+                changeAmount(item, 'infinite', itemIndex, providedByMe)
+              "
+              [src]="assetsFolder + '/infinity2.png'"
+              alt="infinite stock"
+            />
           </ng-container>
 
-          <ng-container *ngIf="!providedByMe">
-            {{ unitsForItemsThatYouDontSell[item._id] > 1 ? "-" : "" }}
-          </ng-container>
-
-          <mat-icon
-            *ngIf="item.stock === 1"
-            style="font-size: 19px; width: 23px"
-            >delete</mat-icon
+          <span
+            mat-button
+            class="button icon"
+            *ngIf="item.stock >= 1"
+            (click)="changeAmount(item, 'subtract', itemIndex, providedByMe)"
           >
-        </span>
+            <ng-container *ngIf="providedByMe">
+              {{ item.stock > 1 ? "-" : "" }}
+            </ng-container>
 
-        <span>{{
-          !item.stock
-            ? 0
-            : !providedByMe
-            ? unitsForItemsThatYouDontSell[item._id]
+            <ng-container *ngIf="!providedByMe">
+              {{ unitsForItemsThatYouDontSell[item._id] > 1 ? "-" : "" }}
+            </ng-container>
+
+            <mat-icon
+              *ngIf="item.stock === 1"
+              style="font-size: 19px; width: 23px"
+              >delete</mat-icon
+            >
+          </span>
+
+          <span>{{
+            !item.stock
+              ? 0
+              : !providedByMe
               ? unitsForItemsThatYouDontSell[item._id]
-              : 0
-            : item.stock
-        }}</span>
+                ? unitsForItemsThatYouDontSell[item._id]
+                : 0
+              : item.stock
+          }}</span>
 
-        <span
-          mat-button
-          class="button icon"
-          (click)="changeAmount(item, 'add', itemIndex, providedByMe)"
-          >+</span
-        >
+          <span
+            mat-button
+            class="button icon"
+            (click)="changeAmount(item, 'add', itemIndex, providedByMe)"
+            >+</span
+          >
+        </ng-container>
+
+        <ng-container *ngIf="!item.useStock">
+          <img
+            class="infinite-units"
+            (click)="changeAmount(item, 'add', itemIndex, providedByMe)"
+            [src]="assetsFolder + '/infinity2.png'"
+            alt="infinite stock"
+          />
+        </ng-container>
       </div>
     </div>
   </div>
