@@ -84,9 +84,13 @@ export class CartComponent implements OnInit {
   truncateString = truncateString;
   wait: boolean = false;
   redirectFromFlowRoute: boolean = false;
+  offers: boolean = false;
   playVideoOnFullscreen = playVideoOnFullscreen;
   isOrderFromAQuotation: boolean = false;
-
+  showQuotationOrder: boolean = false;
+  showOffersTitle: boolean = false;
+  offersItems: boolean = false;
+  offerTitle:string= "";
   progress: 'checkout' | 'other';
 
   constructor(
@@ -103,15 +107,15 @@ export class CartComponent implements OnInit {
     public postsService: PostsService,
     private authService: AuthService,
     private _bottomSheet: MatBottomSheet
-  ) {}
+  ) { }
 
   async ngOnInit() {
     console.log(this.headerService.saleflow);
     this.queryParamsSubscription = this.route.queryParams.subscribe(
-      async ({ item, wait, redirectFromFlowRoute, progress }) => {
+      async ({ item, wait, redirectFromFlowRoute, progress, offers }) => {
         this.wait = wait;
         this.redirectFromFlowRoute = Boolean(redirectFromFlowRoute);
-
+        offers || localStorage.getItem("offersFlow") === "true" ? this.offers = offers : this.offers = false;
         if (!this.headerService.redirectFromFlowRoute)
           this.headerService.redirectFromFlowRoute = this.redirectFromFlowRoute;
         else {
@@ -291,6 +295,22 @@ export class CartComponent implements OnInit {
       if (product.amount) this.itemObjects[product.item] = product;
       else this.headerService.removeOrderProduct(product.item);
     });
+
+
+    if(this.offers){
+      this.showQuotationOrder = true;
+      this.showOffersTitle = true;
+      this.offersItems = true;
+      this.offerTitle = "Oferta \"flash\" de" + this.headerService.saleflow?.merchant?.name;
+    }
+    else if(this.isOrderFromAQuotation){
+      localStorage.getItem("offersFlow") ? localStorage.removeItem("offersFlow"): null;
+      this.showQuotationOrder = true;
+    }else{
+      this.showQuotationOrder = false;
+      localStorage.getItem("offersFlow") ? localStorage.removeItem("offersFlow"): null;
+    }
+
   }
 
   filterOutItemsThatArentInSaleflowButAreInCart = () => {
@@ -385,8 +405,8 @@ export class CartComponent implements OnInit {
               question.answerLimit > 1;
             const isMedia = Boolean(
               question.answerDefault &&
-                question.answerDefault.length &&
-                question.answerDefault.some((option) => option.isMedia)
+              question.answerDefault.length &&
+              question.answerDefault.some((option) => option.isMedia)
             );
 
             if (isMedia) {
@@ -573,9 +593,9 @@ export class CartComponent implements OnInit {
     this.router.navigate(
       [
         '/ecommerce/' +
-          this.headerService.saleflow.merchant.slug +
-          '/webform/' +
-          itemId,
+        this.headerService.saleflow.merchant.slug +
+        '/webform/' +
+        itemId,
       ],
       {
         queryParams: {
@@ -599,7 +619,7 @@ export class CartComponent implements OnInit {
       });
       product =
         this.headerService.order.products[
-          this.headerService.order.products.length - 1
+        this.headerService.order.products.length - 1
         ];
 
       const itemIndexInItemsThatDontBelongToThisSaleflowArray =
@@ -610,7 +630,7 @@ export class CartComponent implements OnInit {
       if (itemIndexInItemsThatDontBelongToThisSaleflowArray >= 0) {
         this.items.push(
           this.quotationItemsNotAvailableOrNotInSaleflow[
-            itemIndexInItemsThatDontBelongToThisSaleflowArray
+          itemIndexInItemsThatDontBelongToThisSaleflowArray
           ]
         );
 
@@ -667,10 +687,18 @@ export class CartComponent implements OnInit {
 
     this.areItemsQuestionsAnswered();
 
-    if (this.items.length === 0)
-      this.router.navigate([
-        '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/store',
-      ]);
+    if (this.items.length === 0){
+
+      if(this.offers){
+        this.router.navigate([
+          `/admin/merchant-offers`,
+        ])
+      }else{
+        this.router.navigate([
+          '/ecommerce/' + this.headerService.saleflow.merchant.slug + '/store',
+        ]);
+      }
+    }
   };
 
   openImageModal(imageSourceURL: string | ArrayBuffer) {
@@ -685,6 +713,7 @@ export class CartComponent implements OnInit {
   }
 
   goBack() {
+
     if (this.quotationsService.selectedTemporalQuotation) {
       this.headerService.flowRoute = '/ecommerce/quotation-bids/';
     }
@@ -698,13 +727,20 @@ export class CartComponent implements OnInit {
     if (this.redirectFromFlowRoute)
       return this.headerService.redirectFromQueryParams();
 
-    this.router.navigate([
-      `/ecommerce/${this.headerService.saleflow.merchant.slug}/store`,
-    ], {
-      queryParams: {
-        mode: this.isSuppliersBuyerFlow(this.items) ? 'supplier' : 'standard',
-      }
-    });
+    if (this.offers) {
+      this.router.navigate([
+        `/admin/merchant-offers`,
+      ])
+    } else {
+      this.router.navigate([
+        `/ecommerce/${this.headerService.saleflow.merchant.slug}/store`,
+      ], {
+        queryParams: {
+          mode: this.isSuppliersBuyerFlow(this.items) ? 'supplier' : 'standard',
+        }
+      });
+    }
+
   }
 
   selectOption = (
@@ -847,7 +883,7 @@ export class CartComponent implements OnInit {
           this._WebformsService.clientResponsesByItem[question._id].valid =
             question.required
               ? this.answersByQuestion[question._id].multipleResponses.length >
-                0
+              0
               : true;
 
           this._WebformsService.clientResponsesByItem[question._id] =
@@ -857,7 +893,7 @@ export class CartComponent implements OnInit {
           this._WebformsService.clientResponsesByItem[question._id].valid =
             question.required
               ? this.answersByQuestion[question._id].multipleResponses.length >
-                0
+              0
               : true;
         }
       }
@@ -907,7 +943,7 @@ export class CartComponent implements OnInit {
 
         if (
           itemRequiredQuestions[item._id].requiredQuestions ===
-            requiredQuestionsAnsweredCounter ||
+          requiredQuestionsAnsweredCounter ||
           itemRequiredQuestions[item._id].requiredQuestions === 0
         ) {
           this.webformsByItem[item._id].valid = true;
@@ -1177,11 +1213,11 @@ export class CartComponent implements OnInit {
     return this.router.navigate([
       `/ecommerce/${this.headerService.saleflow.merchant.slug}/store`,
     ],
-    {
-      queryParams: {
-        mode: this.isSuppliersBuyerFlow(this.items) ? 'supplier' : 'standard',
-      }
-    });
+      {
+        queryParams: {
+          mode: this.isSuppliersBuyerFlow(this.items) ? 'supplier' : 'standard',
+        }
+      });
   }
 
   toggleCheckbox(event: any) {

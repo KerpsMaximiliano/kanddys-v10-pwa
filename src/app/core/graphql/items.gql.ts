@@ -320,6 +320,7 @@ export const listItems = gql`
       notificationStockLimit
       notificationStockPhoneOrEmail
       parentItem
+      priceOriginal
     }
   }
 `;
