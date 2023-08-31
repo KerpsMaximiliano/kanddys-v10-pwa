@@ -69,8 +69,23 @@ import { ItemsSlidesEditorComponent } from 'src/app/shared/components/items-slid
 import { ProviderItemsComponent } from './pages/provider-items/provider-items.component';
 import { ClubLandingComponent } from './pages/club-landing/club-landing.component';
 import { ConfirmClubRegistrationComponent } from './pages/confirm-club-registration/confirm-club-registration.component';
+import { MerchantRegisterComponent } from './pages/merchant-register/merchant-register.component';
+import { LoginLandingComponent } from './pages/login-landing/login-landing.component';
+import { NotificationAccessScreenComponent } from './pages/notification-access-screen/notification-access-screen.component';
 
 const routes: Routes = [
+  {
+    path: 'merchant-register',
+    component: MerchantRegisterComponent,
+  },
+  {
+    path: 'login-landing',
+    component: LoginLandingComponent,
+  },
+  {
+    path: 'notification-access-screen',
+    component: NotificationAccessScreenComponent,
+  },
   {
     path: 'heavenly-balloons/:merchantId/:calendarId/:automationName',
     component: HeavenlyBalloonsComponent,
@@ -449,7 +464,10 @@ const routes: Routes = [
     ItemCreationComponent,
     ProviderItemsComponent,
     ClubLandingComponent,
-    ConfirmClubRegistrationComponent
+    ConfirmClubRegistrationComponent,
+    MerchantRegisterComponent,
+    LoginLandingComponent,
+    NotificationAccessScreenComponent
   ],
   imports: [
     CommonModule,
