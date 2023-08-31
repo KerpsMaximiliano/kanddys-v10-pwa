@@ -69,6 +69,7 @@ import { ItemsSlidesEditorComponent } from 'src/app/shared/components/items-slid
 import { ProviderItemsComponent } from './pages/provider-items/provider-items.component';
 import { ClubLandingComponent } from './pages/club-landing/club-landing.component';
 import { ConfirmClubRegistrationComponent } from './pages/confirm-club-registration/confirm-club-registration.component';
+import { MagicLinkSentComponent } from './pages/magic-link-sent/magic-link-sent.component';
 
 const routes: Routes = [
   {
@@ -217,6 +218,10 @@ const routes: Routes = [
   {
     path: 'confirm-quotation',
     component: ConfirmQuotationComponent,
+  },
+  {
+    path: 'magic-link-sent',
+    component: MagicLinkSentComponent,
   },
   {
     path: 'confirm-club-registration',
@@ -449,7 +454,8 @@ const routes: Routes = [
     ItemCreationComponent,
     ProviderItemsComponent,
     ClubLandingComponent,
-    ConfirmClubRegistrationComponent
+    ConfirmClubRegistrationComponent,
+    MagicLinkSentComponent
   ],
   imports: [
     CommonModule,

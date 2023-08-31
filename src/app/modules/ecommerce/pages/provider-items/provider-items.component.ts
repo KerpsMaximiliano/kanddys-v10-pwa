@@ -105,6 +105,7 @@ export class ProviderItemsComponent implements OnInit {
     sold: true,
     orders: true,
   };
+  numberOfItemsSold: number = 0;
 
   constructor(
     private headerService: HeaderService,
@@ -170,7 +171,7 @@ export class ProviderItemsComponent implements OnInit {
         },
       });
 
-      console.log('VENDIDO', sold);
+      this.numberOfItemsSold = sold?.total;
     }
   }
 
@@ -210,15 +211,13 @@ export class ProviderItemsComponent implements OnInit {
     this.presentationOpened = false;
     localStorage.setItem('providersPresentationClosed', 'true');
 
-    if (this.itemsISell.length === 0) {
-      this.itemsTutorialOpened = true;
-    } /* else if (
+    if (
       this.headerService.user &&
       this.merchantsService.merchantData &&
-      this.itemsISell.length > 0
+      this.numberOfItemsSold > 0
     ) {
       this.searchTutorialsOpened = true;
-    }*/
+    }
   };
 
   activateOrDeactivateFilters(filterKey: string) {
@@ -1401,7 +1400,6 @@ export class ProviderItemsComponent implements OnInit {
     this.searchTutorialCardsOpened[cardName] = false;
 
     if (
-      !this.searchTutorialCardsOpened['searchbar'] &&
       !this.searchTutorialCardsOpened['sold'] &&
       !this.searchTutorialCardsOpened['orders']
     ) {

@@ -9,12 +9,7 @@
         Notificale por correo electrónico
       </button>
 
-      <button
-        mat-button
-        class="whatsapp-button"
-        *ngIf="requesterPhone"
-        (click)="confirmToWhatsapp()"
-      >
+      <button mat-button class="whatsapp-button" (click)="confirmToWhatsapp()">
         <div class="content">
           <span>
             Notificale por WhatsApp
@@ -24,10 +19,10 @@
       </button>
     </div>
 
-    <p *ngIf="!requesterPhone">
-      Ahora puedes avisarle a la floristeria que has confirmado la
-      disponibilidad y los precios en la plataforma
-    </p>
+    <div class="expectingMagicLink" *ngIf="expectingMagicLink">
+      Pronto te llegará un correo para validar el tu membresía de proveedor
+      (gratis).
+    </div>
   </div>
 
   <div class="bottom">

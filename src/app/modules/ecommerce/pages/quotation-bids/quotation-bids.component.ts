@@ -1100,18 +1100,6 @@ export class QuotationBidsComponent implements OnInit {
 
     unlockUI();
 
-    let bodyMessage = `¡Saludos florales! Te escribo para presentarte www.floristerias.club, una plataforma que revoluciona la forma en que las floristerías y proveedores se conectan.`;
-
-    bodyMessage += ` Nuestra plataforma simplifica la comunicación, compra y venta de productos, brindando una experiencia fluida y efectiva. Me encantaría saber si cuentas con ciertos productos en tu catálogo.`;
-
-    bodyMessage += ` Por favor, sigue este enlace: ${encodeURIComponent(
-      link
-    )}, para confirmar la disponibilidad y precios de tus productos en nuestra plataforma.`;
-
-    bodyMessage += ` ¡Esperamos verte pronto en www.floristerias.club y ser parte de nuestra vibrante comunidad floral! ¡Gracias por considerarnos como una opción para expandir tu alcance y conectar con floristerías de todo el país!`;
-
-    bodyMessage += ` ¡Saludos florales y quedamos a tu disposición para cualquier consulta!`;
-
     this.bottomSheet.open(OptionsMenuComponent, {
       data: {
         title: `Comparte con otros Proveedores y compara sus precios:`,
@@ -1142,6 +1130,12 @@ export class QuotationBidsComponent implements OnInit {
           {
             value: `Compártelo por WhatsApp`,
             callback: () => {
+              const listOfItemNames = this.quotationGlobalItems
+                .map((item) => `-${item.name || 'Producto sin nombre'}\n`)
+                .join('');
+              let bodyMessage = `Hola, pudieras confirmame la disponibilidad y precios de estos artículos 🙏? ${listOfItemNames} en este enlace te los muestro y lo puedes ajustar bien fácil 👉${encodeURIComponent(
+                link
+              )}`;
               let whatsappLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(
                 bodyMessage
               )}`;
@@ -1152,6 +1146,12 @@ export class QuotationBidsComponent implements OnInit {
           {
             value: `Compártelo por correo electrónico`,
             callback: () => {
+              const listOfItemNames = this.quotationGlobalItems
+              .map((item) => `-${item.name || 'Producto sin nombre'}%0D%0A`)
+              .join('');
+              let bodyMessage = `Hola, pudieras confirmame la disponibilidad y precios de estos artículos 🙏?: %0D%0A${listOfItemNames} en este enlace te los muestro y lo puedes ajustar bien fácil 👉${encodeURIComponent(
+                link
+              )}`;
               const subject = encodeURIComponent(
                 'Amplía tu Alcance con www.floristerias.club, conecta a floristerías con proveedores'
               );
