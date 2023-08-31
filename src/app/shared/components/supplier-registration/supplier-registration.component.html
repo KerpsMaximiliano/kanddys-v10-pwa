@@ -12,6 +12,14 @@
         (click)="openMagicLinkDialog()"
         >Guardar</span
       >
+
+      <img
+        *ngIf="atLeastOneHasPriceAdded && logged"
+        [src]="assetsFolder + '/share-icon2.svg'"
+        class="share-header"
+        alt="Icono de una persona"
+        (click)="notifyAdjustments()"
+      />
     </div>
 
     <form class="search-bar-wrapper">
@@ -45,6 +53,20 @@
       ></ng-container>
     </div>
   </div>
+
+  <footer
+    class="notify-metchant"
+    *ngIf="atLeastOneHasPriceAdded && logged"
+    (click)="notifyAdjustments()"
+  >
+    <img [src]="assetsFolder + '/share-icon2.svg'" alt="Icono de una persona" />
+
+    <span>{{
+      requester && !showAllProviderItems
+        ? "Notificar a " + (requester.name || "Floristeria")
+        : "Notificar"
+    }}</span>
+  </footer>
 </div>
 
 <ng-template
@@ -105,8 +127,10 @@
 
         <img
           class="price-tutorial-img"
-          *ngIf="firstItem && tutorialOpened && itemsTutorialCardsOpened['price']"
-          [src]="assetsFolder + '/card-arrow-up.svg'"
+          *ngIf="
+            firstItem && tutorialOpened && itemsTutorialCardsOpened['price']
+          "
+          [src]="assetsFolder + '/price-arrow.svg'"
           alt=""
         />
       </div>
@@ -116,46 +140,74 @@
       <div class="quantity-title">VENDIENDO</div>
 
       <div class="item-quantity">
-        <span
-          mat-button
-          class="button icon"
-          (click)="
-            item.stock >= 1
-              ? changeAmount(item, 'subtract', itemIndex, item.inSaleflow)
-              : null
-          "
-        >
-          <ng-container *ngIf="item.inSaleflow">
-            {{ item.stock > 1 ? "-" : "" }}
+        <ng-container *ngIf="item.useStock">
+          <ng-container *ngIf="item.stock === 0">
+            <img
+              class="infinite-units small"
+              (click)="
+                changeAmount(item, 'infinite', itemIndex, item.inSaleflow)
+              "
+              [src]="assetsFolder + '/infinity2.png'"
+              alt="infinite stock"
+            />
           </ng-container>
 
-          <ng-container *ngIf="!item.inSaleflow">
-            {{ unitsForItemsThatYouDontSell[item._id] > 1 ? "-" : "" }}
-          </ng-container>
-
-          <mat-icon
-            *ngIf="item.stock === 1"
-            style="font-size: 19px; width: 23px"
-            >delete</mat-icon
+          <span
+            mat-button
+            class="button icon"
+            *ngIf="item.stock >= 1"
+            (click)="changeAmount(item, 'subtract', itemIndex, item.inSaleflow)"
           >
-        </span>
+            <ng-container *ngIf="item.inSaleflow">
+              {{ item.stock > 1 ? "-" : "" }}
+            </ng-container>
 
-        <span>{{
-          !item.stock
-            ? 0
-            : !item.inSaleflow
-            ? unitsForItemsThatYouDontSell[item._id]
+            <ng-container *ngIf="!item.inSaleflow">
+              {{ unitsForItemsThatYouDontSell[item._id] > 1 ? "-" : "" }}
+            </ng-container>
+
+            <mat-icon
+              *ngIf="item.stock === 1"
+              style="font-size: 19px; width: 23px"
+              >delete</mat-icon
+            >
+          </span>
+
+          <span>{{
+            !item.stock
+              ? 0
+              : !item.inSaleflow
               ? unitsForItemsThatYouDontSell[item._id]
-              : 0
-            : item.stock
-        }}</span>
+                ? unitsForItemsThatYouDontSell[item._id]
+                : 0
+              : item.stock
+          }}</span>
 
-        <span
-          mat-button
-          class="button icon"
-          (click)="changeAmount(item, 'add', itemIndex, item.inSaleflow)"
-          >+</span
-        >
+          <span
+            mat-button
+            class="button icon"
+            (click)="changeAmount(item, 'add', itemIndex, item.inSaleflow)"
+            >+</span
+          >
+        </ng-container>
+
+        <ng-container *ngIf="!item.useStock">
+          <img
+            class="infinite-units"
+            (click)="changeAmount(item, 'add', itemIndex, item.inSaleflow)"
+            [src]="assetsFolder + '/infinity2.png'"
+            alt="infinite stock"
+          />
+        </ng-container>
+
+        <img
+          class="stock-tutorial-img"
+          *ngIf="
+            firstItem && tutorialOpened && itemsTutorialCardsOpened['stock']
+          "
+          [src]="assetsFolder + '/stock-arrow.svg'"
+          alt=""
+        />
       </div>
     </div>
   </div>
@@ -176,112 +228,82 @@
 
 <ng-template #itemsTutorialContent>
   <div class="items-tutorial-wrapper">
-    <ng-container
-      *ngTemplateOutlet="
-        helpCard;
-        context: {
-          containerStyles: {
-            width: '92.52%',
-            maxWidth: '396px'
-          },
-          middleText: 'Adiciona el precio de los artículos que vendes',
-          middleTextStyles: {
-            marginBottom: '16px',
-            fontFamily: 'InterSemiBold',
-            fontSize: '23px',
-            fontStyle: 'normal'
-          },
-          bottomText: 'Ok',
-          bottomTextClickHandler: closeItemsTutorial,
-          openedStateObject: itemsTutorialCardsOpened,
-          cardName: 'price'
-        }
-      "
-    ></ng-container>
-    <ng-container
-      *ngTemplateOutlet="
-        helpCard;
-        context: {
-          containerStyles: {
-            width: '92.52%',
-            maxWidth: '396px',
-            padding: '32px 50px 39px 50px'
-          },
-          topText: 'Bienvenido a www.floristerias.club',
-          topTextStyles: {
-            color: '#FFF',
-            textAlign: 'center',
-            fontFamily: 'InterSemiBold',
-            fontSize: '23px',
-            fontStyle: 'normal',
-            fontWeight: '600',
-            lineHeight: 'normal',
-            marginBottom: '44px'
-          },
-          middleText:
-            'Seguir desarrollando una plataforma de soluciones a los desafíos que enfrentan las floristerías y sus proveedores.',
-          middleTextStyles: {
-            color: '#FFF',
-            textAlign: 'center',
-            fontFamily: 'InterRegular',
-            fontSize: '20px',
-            fontStyle: 'normal',
-            fontWeight: 400,
-            lineHeight: 'normal',
-            marginBottom: '24px'
-          },
-          upperMiddleText: 'PROMESA A TODOS LOS MIEMBROS',
-          upperMiddleTextStyles: {
-            color: '#F6F6F6',
-            fontFamily: 'InterLight',
-            fontSize: '13px',
-            fontStyle: 'normal',
-            lineHeight: 'normal',
-            marginBottom: '15px'
-          },
-          bottomText: 'Ok',
-          bottomTextClickHandler: closeItemsTutorial,
-          openedStateObject: itemsTutorialCardsOpened,
-          cardName: 'welcome'
-        }
-      "
-    ></ng-container>
-    <ng-container
-      *ngTemplateOutlet="
-        helpCard;
-        context: {
-          containerStyles: {
-            width: '92.52%',
-            maxWidth: '396px'
-          },
-          topText: 'MEMBRESÍA DE PROVEEDORES (GRATIS)',
-          topTextStyles: {
-            color: '#F6F6F6',
-            fontFamily: 'InterLight',
-            fontSize: '13px',
-            fontStyle: 'normal',
-            lineHeight: 'normal',
-            marginBottom: '17px'
-          },
-          middleText:
-            'Esta plataforma exhibe lo que ofreces a Floristerías y Floristas',
-          middleTextStyles: {
-            color: '#FFF',
-            textAlign: 'center',
-            fontFamily: 'InterRegular',
-            fontSize: '20px',
-            fontStyle: 'normal',
-            fontWeight: 400,
-            lineHeight: 'normal',
-            marginBottom: '23px'
-          },
-          bottomText: 'Ok',
-          bottomTextClickHandler: closeItemsTutorial,
-          openedStateObject: itemsTutorialCardsOpened,
-          cardName: 'membership'
-        }
-      "
-    ></ng-container>
+    <div class="card price" *ngIf="itemsTutorialCardsOpened['price']">
+      <div class="header-1">Adiciona el precio de los artículos</div>
+
+      <div class="accept-button" (click)="closeItemsTutorial('price')">Ok</div>
+    </div>
+
+    <div class="card stock" *ngIf="itemsTutorialCardsOpened['stock']">
+      <div class="header-1">Ajusta la disponibilidad</div>
+
+      <div class="accept-button" (click)="closeItemsTutorial('stock')">Ok</div>
+    </div>
+
+    <div
+      class="card full-width"
+      style="padding: 26px 26px 36px 33px"
+      *ngIf="itemsTutorialCardsOpened['welcome'] && requester"
+    >
+      <div class="header-2">
+        Hola, Soy {{ requester.name }}, te agradecería que me confirmes tus
+        precios y disponibilidad, gracias !!
+      </div>
+
+      <div class="header-3">www.floristerias.club</div>
+    </div>
+
+    <ng-container *ngIf="itemsTutorialCardsOpened['welcome'] && !requester">
+      <ng-container
+        *ngTemplateOutlet="
+          helpCard;
+          context: {
+            containerStyles: {
+              width: '100%',
+              maxWidth: '100%',
+              gridColumn: 'span 2',
+              padding: '32px 50px 39px 50px'
+            },
+            topText: 'Bienvenido a www.floristerias.club',
+            topTextStyles: {
+              color: '#FFF',
+              textAlign: 'center',
+              fontFamily: 'InterSemiBold',
+              fontSize: '23px',
+              fontStyle: 'normal',
+              fontWeight: '600',
+              lineHeight: 'normal',
+              marginBottom: '44px'
+            },
+            middleText:
+              'Seguir desarrollando una plataforma de soluciones a los desafíos que enfrentan las floristerías y sus proveedores.',
+            middleTextStyles: {
+              color: '#FFF',
+              textAlign: 'center',
+              fontFamily: 'InterRegular',
+              fontSize: '20px',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              lineHeight: 'normal',
+              marginBottom: '24px'
+            },
+            upperMiddleText: 'PROMESA A TODOS LOS MIEMBROS',
+            upperMiddleTextStyles: {
+              color: '#F6F6F6',
+              fontFamily: 'InterLight',
+              fontSize: '13px',
+              fontStyle: 'normal',
+              lineHeight: 'normal',
+              marginBottom: '15px'
+            },
+            bottomText: 'Ok',
+            bottomTextClickHandler: closeItemsTutorial,
+            openedStateObject: itemsTutorialCardsOpened,
+            cardName: 'welcome'
+          }
+        "
+      ></ng-container>
+    </ng-container>
   </div>
 </ng-template>
 

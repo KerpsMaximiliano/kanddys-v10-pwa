@@ -30,6 +30,7 @@ export class ConfirmQuotationComponent implements OnInit {
   quotationId: string;
   items: Array<Item> = [];
   requesterPhone: string = null;
+  requesterEmail: string = null;
   queryParams: Record<string, any> = {}; //{quotationItems: 'iditem1-iditem2-iditem3', requesterPhone: 'telefono'}
   quotationItems: Array<string> = null;
   completeImageURLWrapper = completeImageURL;
@@ -72,9 +73,10 @@ export class ConfirmQuotationComponent implements OnInit {
               ? JSON.parse(decodeURIComponent(jsondata))
               : { ...this.queryParams };
 
-            const { requesterPhone } = parsedData;
+            const { requesterPhone, requesterEmail } = parsedData;
 
             if (requesterPhone) this.requesterPhone = requesterPhone;
+            if (requesterEmail) this.requesterEmail = requesterEmail;
 
             this.quotationId = quotationId;
 
@@ -137,6 +139,10 @@ export class ConfirmQuotationComponent implements OnInit {
               }
             }
 
+            const urlWithoutQueryParams = this.router.url.split('?')[0];
+
+            window.history.replaceState({}, 'SaleFlow', urlWithoutQueryParams);
+
             unlockUI();
           }
         );
@@ -156,11 +162,29 @@ export class ConfirmQuotationComponent implements OnInit {
         this.quotationId;
     }
 
-    const whatsappLink = `https://api.whatsapp.com/send?phone=${
-      this.requesterPhone
-    }&text=${encodeURIComponent(message)}`;
+    let whatsappLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(
+      message
+    )}`;
+
+    if (this.requesterPhone) {
+      whatsappLink += `&phone=${this.requesterPhone}`;
+    }
 
     window.location.href = whatsappLink;
+  }
+
+  confirmToMail() {
+    console.log('Redirigiendo al mail');
+    const subject = encodeURIComponent(
+      'Precios y disponibilidad confirmados en www.floristerias.club'
+    );
+    const body = encodeURIComponent(
+      'Hola, ya he confirmado mis precios y disponibilidad en la plataforma, ya puedes seguir con tu compra'
+    );
+    const mailtoLink = `mailto:${
+      this.requesterEmail ? this.requesterEmail : ''
+    }?subject=${subject}&body=${body}`;
+    window.location.href = mailtoLink;
   }
 
   goToQuotation() {
@@ -171,8 +195,9 @@ export class ConfirmQuotationComponent implements OnInit {
       ],
       {
         queryParams: {
-          overwriteSupplier: this.merchantService.merchantData._id,
-          overwriteItems: this.items.map((item) => item.parentItem).join('-'),
+          overwriteItems: this.items
+            .map((item) => (item.parentItem ? item.parentItem : item._id))
+            .join('-'),
         },
       }
     );
@@ -180,6 +205,10 @@ export class ConfirmQuotationComponent implements OnInit {
 
   goToDashboard() {
     this.router.navigate(['admin/dashboard']);
+  }
+
+  goToLanding() {
+    this.router.navigate(['ecommerce/club-landing']);
   }
 
   goToArticleDetail(itemID: string) {

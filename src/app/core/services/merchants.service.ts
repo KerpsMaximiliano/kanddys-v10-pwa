@@ -84,6 +84,7 @@ export class MerchantsService {
           fetchPolicy: 'no-cache',
         });
         if (!merchantResult) return;
+        console.log("A")
         return new Merchant(merchantResult.merchant);
       } else {
         const merchantResult = await this.graphql.query({
@@ -92,6 +93,7 @@ export class MerchantsService {
           fetchPolicy: 'no-cache',
         });
         if (!merchantResult) return;
+        console.log("B")
         return new Merchant(merchantResult.merchant);
       }
     } catch (error) {

@@ -42,6 +42,8 @@ import {
   buyersByItemInMerchantStore,
   itemsQuantityOfFilters,
   providersItemMetrics,
+  itemsQuantitySold,
+  itemsQuantitySoldTotal,
 } from '../graphql/items.gql';
 import {
   Item,
@@ -55,7 +57,7 @@ import {
   ItemParamInput,
   ItemParamValueInput,
 } from '../models/item';
-import { PaginationInput } from '../models/saleflow';
+import { PaginationInput, PaginationOptionsInput } from '../models/saleflow';
 import { ListParams } from '../types/general.types';
 import { ExtendedQuestionInput } from 'src/app/shared/components/form-creator/form-creator.component';
 import { SlideInput } from '../models/post';
@@ -142,13 +144,22 @@ export class ItemsService {
     return response;
   }
 
-  async items(merchantId: string, params: ListParams = {}): Promise<Item[]> {
-    const { items: result = [] } = await this.graphql.query({
-      query: items,
-      variables: { params, merchantId },
+  async itemsQuantitySold(paginate: PaginationInput): Promise<any> {
+    const response = await this.graphql.query({
+      query: itemsQuantitySold,
+      variables: { paginate },
       fetchPolicy: 'no-cache',
     });
-    return (result || []).map((r: any) => new Item(r));
+    return response?.itemsQuantitySold;
+  }
+
+  async itemsQuantitySoldTotal(paginate: PaginationInput): Promise<any> {
+    const response = await this.graphql.query({
+      query: itemsQuantitySoldTotal,
+      variables: { paginate },
+      fetchPolicy: 'no-cache',
+    });
+    return response?.itemsQuantitySoldTotal;
   }
 
   async updateItem(input: ItemInput, id: string) {

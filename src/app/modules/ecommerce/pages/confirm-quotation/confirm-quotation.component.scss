@@ -1,5 +1,5 @@
 .container {
-  height: 100vh;
+  height: 100%;
   background: #f6f6f6;
   overflow-y: scroll;
   display: flex;
@@ -9,16 +9,16 @@
   .top {
     position: relative;
     padding: 0px 18px;
-    padding-top: 10px;
+    padding-top: 60px;
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
 
     h2 {
       color: #181d17;
-      text-align: center;
-      font-family: Inter;
+      text-align: left;
+      font-family: InterBold;
       font-size: 23px;
       font-style: normal;
       font-weight: 700;
@@ -26,37 +26,60 @@
       margin: 0px;
     }
 
-    button {
-      ::ng-deep .mat-button-wrapper {
-        width: 100%;
-      }
-
-      width: 100%;
-      height: fit-content;
-      border-radius: 23px;
-      background: #87cd9b;
+    .notify-buttons {
       display: flex;
-      color: #181d17;
-      text-align: center;
-      font-family: Inter;
-      font-size: 17px;
-      font-style: normal;
-      font-weight: 700;
-      line-height: normal;
-      padding: 10px 0px;
-      margin-top: 33px;
-      
-      .content {
+      flex-direction: column;
+      align-items: center;
+      margin-top: 37px;
+
+      .whatsapp-button {
+        ::ng-deep .mat-button-wrapper {
+          width: 100%;
+        }
         width: 100%;
+        height: fit-content;
+        border-radius: 23px;
+        background: #87cd9b;
         display: flex;
-        justify-content: center;
+        color: #181d17;
+        text-align: center;
+        font-family: Inter;
+        font-size: 17px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        padding: 10px 0px;
+        margin-top: 13px;
+
+        .content {
+          width: 100%;
+          display: flex;
+          justify-content: center;
+
+          span {
+            position: relative;
+
+            img {
+              position: absolute;
+              width: 22.206px;
+              height: 22.301px;
+              flex-shrink: 0;
+              right: -13.31vw;
+            }
+          }
+        }
       }
 
-      img {
-        width: 22.206px;
-        height: 22.301px;
-        margin-left: 7px;
-        flex-shrink: 0;
+      .mail-button {
+        padding: 0px;
+        margin: 0px;
+        background-color: transparent;
+        color: #7b7b7b;
+        text-align: center;
+        font-family: InterMedium;
+        font-size: 17px;
+        font-style: normal;
+        line-height: normal;
       }
     }
 
@@ -80,20 +103,40 @@
     padding: 0px 18px;
     padding-top: 16px;
 
-    h3 {
-      color: #7b7b7b;
-      font-family: Inter;
+    .quotation-link {
+      background-color: transparent;
+      padding: 0px;
+      margin: 0px;
+      margin-bottom: 11px;
+      color: #2874ad;
+      font-family: InterBold;
       font-size: 17px;
       font-style: normal;
-      font-weight: 500;
+      font-weight: 700;
       line-height: normal;
-      margin: 0px;
-      margin-bottom: 7px;
     }
 
     .flex-items {
       display: flex;
     }
+  }
+}
+
+.close {
+  color: #c4c5c3;
+  text-align: right;
+  font-family: InterLight;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 300;
+  line-height: normal;
+  position: absolute;
+  top: 10px;
+  left: 18px;
+  z-index: 999;
+
+  &:hover {
+    cursor: pointer;
   }
 }
 
@@ -121,6 +164,7 @@
 
   &.containerFlexBox {
     flex-wrap: wrap;
+    padding-bottom: 31px;
   }
 }
 
@@ -323,4 +367,26 @@ button {
 button,
 a {
   cursor: pointer;
+}
+
+.landing-footer-container {
+  background: #181d17;
+  padding: 46px 0px 34px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .landing-link {
+    color: #fff;
+    text-align: center;
+    font-family: InterBold;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
 }

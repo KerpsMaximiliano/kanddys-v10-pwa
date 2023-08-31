@@ -6,6 +6,16 @@
   padding: 24px !important;
   background: #fff !important;
 }
+
+::ng-deep .cdk-overlay-pane.login {
+  width: 100%;
+  max-width: 500px !important;
+
+  .mat-dialog-container {
+    width: 100% !important;
+  }
+}
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -287,27 +297,9 @@ footer {
   font-size: 17px;
   background: var(--el-verdecito, #87cd9b);
 
-  button {
-    border: none;
-    color: #181d17 !important;
-    background: var(--el-verdecito, #87cd9b);
-    font-family: InterBold;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-
-    &:hover {
-      cursor: pointer;
-    }
-  }
-
-  .left {
-    font-family: InterRegular;
-  }
-
-  .right {
-    margin-left: auto;
+  img {
+    margin-right: 5px;
+    margin-top: -3px;
   }
 }
 
@@ -413,6 +405,7 @@ footer {
 }
 
 .item-quantity {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -423,6 +416,15 @@ footer {
   margin-left: auto;
   margin-top: 2px;
   width: 100%;
+
+  .infinite-units {
+    color: #6d6d6d;
+    font-family: InterRegular;
+    font-size: 33px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  }
 
   &.deactivated {
     background-color: darken($color: #fff, $amount: 3);
@@ -453,6 +455,12 @@ footer {
       cursor: not-allowed;
     }
   }
+
+  .stock-tutorial-img {
+    position: absolute;
+    top: 9px;
+    left: -1px;
+  }
 }
 
 .item-add-price {
@@ -470,6 +478,13 @@ footer {
 .price-tutorial-img {
   position: absolute;
   top: 6px;
+  left: -45px;
+}
+
+.stock-tutorial-img {
+  position: absolute;
+  top: 6px;
+  left: -45px;
 }
 
 .items-tutorial-wrapper {
@@ -477,10 +492,72 @@ footer {
   z-index: 999;
   width: 100%;
   margin-left: -18px;
+  padding-top: 25px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 6px;
+  row-gap: 9px;
+  padding: 35px 17px 0px;
 
-  .help-card-container {
-    &:first-child {
-      margin-top: 25px;
+  .card {
+    border-radius: 15.591px;
+    background: var(--el-mas-oscuro, #181d17);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 34px 22px 22px 22px;
+
+    &.price {
+      grid-column: 1/2;
+    }
+
+    &.stock {
+      grid-column: 2/3;
+    }
+
+    .header-1 {
+      color: var(--blanco, #fff);
+      text-align: center;
+      font-family: InterSemiBold;
+      font-size: 23px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: normal;
+    }
+
+    .header-2 {
+      color: #fff;
+      text-align: center;
+      font-family: InterRegular;
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+
+    .header-3 {
+      color: var(--blanco, #fff);
+      text-align: center;
+      font-family: InterSemiBold;
+      font-size: 23px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: normal;
+      padding-top: 31px;
+    }
+
+    .accept-button {
+      color: var(--el-verdecito, #87cd9b);
+      text-align: right;
+      font-family: InterSemiBold;
+      font-size: 17px;
+      font-style: normal;
+      line-height: normal;
+    }
+
+    &.full-width {
+      grid-column: span 2;
     }
   }
 }
@@ -509,4 +586,26 @@ footer {
 
 ::ng-deep .merchant-registration .mat-dialog-content {
   overflow: visible;
+}
+
+.infinite-units {
+  margin: auto;
+
+  &.small {
+    width: 18.1813px;
+    margin: 0px;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.share-header {
+  filter: invert(78%) sepia(12%) saturate(1303%) hue-rotate(92deg)
+    brightness(94%) contrast(87%);
+
+  &:hover {
+    cursor: pointer;
+  }
 }

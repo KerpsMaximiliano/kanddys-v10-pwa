@@ -144,6 +144,7 @@ export class ProviderItemsComponent implements OnInit {
           this.parseMagicLinkData();
         }
         await this.getItemsISell();
+        await this.getNumberOfItemsSold();
 
         this.checkIfPresentationWasClosedBefore();
 
@@ -155,6 +156,22 @@ export class ProviderItemsComponent implements OnInit {
         });
       }
     );
+  }
+
+  async getNumberOfItemsSold() {
+    if (this.isTheUserAMerchant) {
+      const sold = await this.itemsService.itemsQuantitySoldTotal({
+        findBy: {
+          type: 'supplier',
+          merchant: this.merchantsService.merchantData._id,
+        },
+        options: {
+          limit: -1,
+        },
+      });
+
+      console.log('VENDIDO', sold);
+    }
   }
 
   async infinitePagination() {
@@ -1071,7 +1088,6 @@ export class ProviderItemsComponent implements OnInit {
                           name: result?.value['merchantName'],
                           phone: result?.value['merchantPhone'],
                         };
-
 
                         let toBeDone: {
                           operation: 'UPDATE' | 'CREATE';
