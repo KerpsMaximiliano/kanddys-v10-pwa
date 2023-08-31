@@ -280,7 +280,7 @@ export class ProviderItemsComponent implements OnInit {
         await this.itemsService.listItems(supplierSpecificItemsPagination)
       )?.listItems;
 
-      this.itemsISell = supplierSpecificItems;
+      if (supplierSpecificItems) this.itemsISell = supplierSpecificItems;
     }
   }
 

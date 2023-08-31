@@ -104,7 +104,7 @@
 
       <ng-container *ngTemplateOutlet="itemsTutorialOverlay"></ng-container>
 
-      <section *ngIf="itemsISell.length > 0">
+      <section *ngIf="itemsISell?.length > 0">
         <h3>ARTICULOS QUE ESTOY EXHIBIENDO A LOS MIEMBROS</h3>
 
         <div class="list-of-items">
@@ -127,7 +127,7 @@
         </div>
       </section>
 
-      <section *ngIf="itemsIDontSell.length > 0">
+      <section *ngIf="itemsIDontSell?.length > 0">
         <h3>ARTICULOS QUE NECESITAN LAS FLORISTERIAS MIEMBROS</h3>
 
         <div class="list-of-items">
@@ -154,7 +154,7 @@
       </section>
     </main>
 
-    <footer *ngIf="!searchOpened && itemsIDontSell.length > 0">
+    <footer *ngIf="!searchOpened && itemsIDontSell?.length > 0">
       Adiciona el precio para empezar a vender
     </footer>
   </div>

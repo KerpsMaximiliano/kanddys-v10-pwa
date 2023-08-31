@@ -368,8 +368,6 @@ export class QuotationBidsComponent implements OnInit {
         this.requesterId = parsedData.requesterId;
       }
 
-      console.log(parsedData);
-
       if (
         parsedData.temporalQuotationsToBeSaved &&
         parsedData.quotationSelectedIndex >= 0
@@ -407,10 +405,10 @@ export class QuotationBidsComponent implements OnInit {
   }
 
   authQuotations = async (parsedData: Record<string, any>) => {
+    lockUI();
     const temporalQuotations: Array<QuotationInput> =
       parsedData.temporalQuotationsToBeSaved;
 
-    console.log('AUTENTICANDO COTIZACIONES', temporalQuotations);
 
     await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
 
@@ -430,6 +428,8 @@ export class QuotationBidsComponent implements OnInit {
         quotation.name ===
         temporalQuotations[Number(parsedData.quotationSelectedIndex)].name
     );
+
+    unlockUI();
 
     window.location.href =
       window.location.href.split('?')[0] + '/' + quotation._id;
