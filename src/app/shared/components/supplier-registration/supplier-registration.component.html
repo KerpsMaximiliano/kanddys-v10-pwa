@@ -9,7 +9,7 @@
         [ngClass]="{
           valid: atLeastOneHasPriceAdded
         }"
-        (click)="openMagicLinkDialog()"
+        (click)="atLeastOneHasPriceAdded ? openMagicLinkDialog() : null"
         >Guardar</span
       >
 
@@ -243,7 +243,11 @@
     <div
       class="card full-width"
       style="padding: 26px 26px 36px 33px"
-      *ngIf="(itemsTutorialCardsOpened['price'] || itemsTutorialCardsOpened['stock']) && requester"
+      *ngIf="
+        (itemsTutorialCardsOpened['price'] ||
+          itemsTutorialCardsOpened['stock']) &&
+        requester
+      "
     >
       <div class="header-2">
         Hola, Soy {{ requester.name }}, te agradecería que me confirmes tus
