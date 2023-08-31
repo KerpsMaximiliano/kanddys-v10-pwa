@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-
+import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PaginationInput } from 'src/app/core/models/saleflow';
-import { shortFormatID } from 'src/app/core/helpers/strings.helpers'
+import { shortFormatID, truncateString } from 'src/app/core/helpers/strings.helpers'
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
@@ -22,21 +22,40 @@ export class OrderProgressComponent implements OnInit {
     { id: 4, name: 'shipped', selected: false },
     { id: 5, name: 'delivered', selected: false },
   ];
+
+  deliveryStatus : any[] | null = null;
+  deliveryZones : any[] | null = null;
+
   constructor(
     private merchantsService: MerchantsService,
     private orderService: OrderService,
+    private deliveryZonesService: DeliveryZonesService,
     private router: Router,
   ) {}
-  
+
+  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
+
+  merchantId : string;
+  userId : string;
+
   env : string = environment.assetsUrl
+
   tutorialEnabled : boolean = true;
+
+  externalOrderDialog : boolean = false;
+  externalOrderNumber : number = 0;
+  externalOrderImages : File[] = [];
+
   showLocations : boolean = false;
+
   orders = []
+
   shortFormatID = shortFormatID
   default_image = 'https://cdn-icons-png.flaticon.com/512/149/149071.png'
   orderDeliveryStatus(status) {
     return this.orderService.orderDeliveryStatus(status);
   }
+
   ngOnInit(): void {
     this.generate()
     this.toggleTutorial()
@@ -72,8 +91,9 @@ export class OrderProgressComponent implements OnInit {
     return totalprice;
   }
 
-  orderDeliveryLength(status){
-    return this.orders.filter(order => order.orderStatusDelivery == status).length
+  orderDeliveryLength(status) {
+    if(!this.deliveryStatus) return 0;
+    return this.deliveryStatus[status];
   }
 
   filterData() {
@@ -88,8 +108,11 @@ export class OrderProgressComponent implements OnInit {
 
     lockUI()
 
-    const { _id } = await this.merchantsService.merchantDefault();
-    console.log("merchant _id", _id)
+    await this.merchantsService.merchantDefault().then((res) => {
+      this.merchantId = res._id;
+      this.userId = res.owner._id;
+    });
+    console.log("merchant _id", this.merchantId);
     
     const pagination: PaginationInput = {
       findBy: {
@@ -105,14 +128,26 @@ export class OrderProgressComponent implements OnInit {
     };
     const orders = (
       await this.merchantsService.ordersByMerchant(
-        _id,
+        this.merchantId,
         pagination
       )
     )?.ordersByMerchant;
     this.orders = orders != undefined ? orders : []
     console.log(orders);
 
+    this.orderService.orderQuantityOfFiltersStatusDelivery({ findBy: {merchant: this.merchantId} }).then((res) => {
+      this.deliveryStatus = res
+    })
+
+    this.deliveryZonesService.deliveryZones().then((res) => {
+      this.deliveryZones = res
+    })
+
     unlockUI()
+  }
+
+  emitFileInputClick() {
+    (document.querySelector('#file') as HTMLElement).click();
   }
 
   goToOrderDetail(orderID: string) {
@@ -176,5 +211,47 @@ export class OrderProgressComponent implements OnInit {
       }
     }
     return;
+  }
+
+  async loadFile(event: Event) {
+    const fileList = (event.target as HTMLInputElement).files;
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList[i];
+      if (!this.imageFiles.includes(file.type)) return;
+      this.externalOrderImages.push(file);
+    }
+    if (!this.externalOrderImages.length) return;
+
+    this.externalOrderDialog = true;
+  }
+
+  sendExternalOrder(sendAmount : boolean) {
+    if(!sendAmount) {
+      this.orderService.createOrderExternal({
+        metadata: {
+          files: this.externalOrderImages,
+        },
+        merchants: this.merchantId, //backend is merchants, if changed to merchant change this
+        user: this.userId,
+      }).then((res) => {
+        console.log(res)
+      })
+    } else {
+      this.orderService.createOrderExternal({
+        metadata: {
+          files: this.externalOrderImages,
+        },
+        amount: this.externalOrderNumber,
+        merchants: this.merchantId, //backend is merchants, if changed change this
+        user: this.userId,
+      }).then((res) => {
+        console.log(res)
+      })
+    }
+    this.externalOrderDialog = false;
+  }
+
+  truncateString (word) {
+    return truncateString(word, 12)
   }
 }
