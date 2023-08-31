@@ -1126,7 +1126,6 @@ export class ProviderItemsComponent implements OnInit {
                             );
                         }
 
-                        lockUI();
 
                         if (toBeDone.operation === 'CREATE') {
                           const createdItem = (
