@@ -16,7 +16,7 @@ import { environment } from 'src/environments/environment';
 export class OrderProgressComponent implements OnInit {
 
   progress = [
-    { id: 1, name: 'in progress', selected: true },
+    { id: 1, name: 'in progress', selected: false },
     { id: 2, name: 'pickup', selected: false },
     { id: 3, name: 'pending', selected: false },
     { id: 4, name: 'shipped', selected: false },
@@ -26,6 +26,9 @@ export class OrderProgressComponent implements OnInit {
   deliveryStatus : any[] | null = null;
   deliveryZones : any[] | null = null;
   deliveryZoneQuantities : any[] | null = null;
+
+  selectedProgress = [];
+  selectedZones = [];
 
   constructor(
     private merchantsService: MerchantsService,
@@ -42,6 +45,9 @@ export class OrderProgressComponent implements OnInit {
   env : string = environment.assetsUrl
 
   tutorialEnabled : boolean = true;
+
+  pickUp : any = {amount: 0, selected: false};
+  delivery : any = {amount: 0, selected: false};
 
   externalOrderDialog : boolean = false;
   externalOrderNumber : number = 0;
@@ -62,7 +68,7 @@ export class OrderProgressComponent implements OnInit {
     this.toggleTutorial()
   }
 
-  select(id) {
+  selectProgress(id) {
     this.progress.forEach((e) => {
       if (e.id == id) {
         e.selected = !e.selected;
@@ -72,6 +78,22 @@ export class OrderProgressComponent implements OnInit {
     setTimeout(() => {
       unlockUI()
     }, 500);
+    this.selectedProgress = this.progress.filter(progress => progress.selected).map(progress => progress.name)
+    this.generate()
+  }
+
+  selectZone(id) {
+    this.deliveryZones.forEach((e) => {
+      if (e._id == id) {
+        e.selected = !e.selected;
+      }
+    });
+    lockUI()
+    setTimeout(() => {
+      unlockUI()
+    }, 500);
+    this.selectedZones = this.deliveryZones.filter(zone => zone.selected).map(zone => zone._id)
+    this.generate()
   }
 
   calcTotal(subtotals: any) {
@@ -86,7 +108,7 @@ export class OrderProgressComponent implements OnInit {
 
   calcTotalPrice() {
     let totalprice = 0;
-    this.filterData().forEach(order => {
+    this.orders.forEach(order => {
       totalprice += this.calcTotal(order.subtotals);
     });
     return totalprice;
@@ -97,31 +119,40 @@ export class OrderProgressComponent implements OnInit {
     return this.deliveryStatus[status];
   }
 
-  filterData() {
-    const selectedProgress = this.progress.map(p => {
-      if (p.selected) return p.name
-    })
-    const filteredOrders = this.orders.filter(order => selectedProgress.indexOf(order.orderStatusDelivery) >= 0 )
-    return filteredOrders.length > 0 ? filteredOrders : this.orders;
-  }
-
   async generate() {
 
     lockUI()
-
-    await this.merchantsService.merchantDefault().then((res) => {
-      this.merchantId = res._id;
-      this.userId = res.owner._id;
-    });
-    console.log("merchant _id", this.merchantId);
-    
+    if(!this.merchantId) {
+      await this.merchantsService.merchantDefault().then((res) => {
+        this.merchantId = res._id;
+        this.userId = res.owner._id;
+      });
+      console.log("merchant _id", this.merchantId);
+    }
+    console.log(this.selectedProgress)
+    console.log(this.selectedZones)
+    let ShippingType;
+    if(this.pickUp.selected && this.delivery.selected) {
+      ShippingType = ["pickup", "delivery"]
+    } else if(this.pickUp.selected) {
+      ShippingType = "pickup"
+    } else if(this.delivery.selected) {
+      ShippingType = "delivery"
+    } else {
+      ShippingType = null
+    }
+    let findBy = {}
+    if(this.selectedProgress.length > 0) {
+      findBy["orderStatusDelivery"] = this.selectedProgress
+    }
+    if(this.selectedZones.length > 0) {
+      findBy["deliveryZone"] = this.selectedZones
+    }
+    if(ShippingType) {
+      findBy["shippingType"] = ShippingType
+    }
     const pagination: PaginationInput = {
-      findBy: {
-        orderStatus: ["to confirm", "completed"],
-        // orderStatusDelivery: this.progress.map(progress => { 
-        //   if (progress.selected) return progress.name
-        // })
-      },
+      findBy: findBy,
       options: {
         limit: 25,
         sortBy: 'updatedAt:desc'
@@ -134,21 +165,63 @@ export class OrderProgressComponent implements OnInit {
       )
     )?.ordersByMerchant;
     this.orders = orders != undefined ? orders : []
-    console.log(orders);
+    console.log(orders, "ordersByMerchant");
 
-    this.orderService.orderQuantityOfFiltersStatusDelivery({ findBy: {merchant: this.merchantId} }).then((res) => {
+    await this.orderService.orderQuantityOfFiltersStatusDelivery({ findBy: {merchant: this.merchantId} }).then((res) => {
       this.deliveryStatus = res
     })
 
-    this.deliveryZonesService.deliveryZones(
+    await this.deliveryZonesService.deliveryZones(
       {
         findBy:{merchant: this.merchantId},
         options: {sortBy: "createdAt:desc", limit: -1}
       }).then((res) => {
-      this.deliveryZones = res
+      this.deliveryZones = res.map((deliveryZone) => {
+        let zone = {
+          ...deliveryZone,
+          selected: false,
+        }
+        return zone;
+      })
+      console.log(this.deliveryZones)
+    })
+    let deliveryZonesIds = this.deliveryZones.map((deliveryZone) => deliveryZone._id)
+    console.log(deliveryZonesIds)
+    await this.orderService.orderQuantityOfFiltersDeliveryZone({ 
+        findBy: 
+        {
+          merchant: this.merchantId,
+          orderStatusDelivery: this.selectedProgress,
+          deliveryZone: deliveryZonesIds,
+        } 
+      }).then((res) => {
+      this.deliveryZoneQuantities = res
+      console.log(this.deliveryZoneQuantities)
     })
 
+    await this.orderService.orderQuantityOfFiltersShippingType({ 
+      findBy: 
+      {
+        merchant: this.merchantId,
+        orderStatusDelivery: this.selectedProgress,
+      } 
+    }).then((res) => {
+      this.pickUp = {
+        amount: res.pickup,
+        selected: false,
+      }
+      this.delivery ={
+        amount: res.delivery,
+        selected: false,
+      }
+    })
     unlockUI()
+  }
+
+  findAmount(id) {
+    if(!this.deliveryZoneQuantities) return 0;
+    const quantity = this.deliveryZoneQuantities.find((quantity) => quantity.deliveryzone._id === id)
+    return quantity !== undefined ? quantity.count : 0;
   }
 
   emitFileInputClick() {

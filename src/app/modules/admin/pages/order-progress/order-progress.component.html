@@ -58,7 +58,7 @@
     <div class="progress-container">
       <ng-container *ngFor="let i of progress">
         <div class="progress-item">
-          <div class="progress" [ngClass]="{'progress-selected': i.selected}" (click)="select(i.id)">
+          <div class="progress" [ngClass]="{'progress-selected': i.selected}" (click)="selectProgress(i.id)">
             <span>{{ orderDeliveryStatus(i.name) }} </span>
             <span>{{ "(" + orderDeliveryLength(i.name) + ")" }}</span>
           </div>
@@ -77,21 +77,21 @@
     </div>
     <div *ngIf="showLocations" class="progress-container">
       <div class="progress-item">
-        <div class="progress">
+        <div class="progress" [ngClass]="{'progress-selected': delivery.selected}" (click)="delivery.selected === !delivery.selected">
           <span>Delivery </span>
-          <span>(78)</span>
+          <span>({{delivery.amount || 0}})</span>
         </div>
       </div>
       <div class="progress-item">
-        <div class="progress">
+        <div class="progress" [ngClass]="{'progress-selected': pickUp.selected}" (click)="pickUp.selected">
           <span>PickUp </span>
-          <span>(78)</span>
+          <span>({{pickUp.amount || 0}})</span>
         </div>
       </div>
       <div *ngFor="let zone of deliveryZones" class="progress-item">
-        <div class="progress">
+        <div class="progress" [ngClass]="{'progress-selected': zone.selected}" (click)="selectZone(zone._id)">
           <span>{{zone.zona}} </span>
-          <span>(78)</span>
+          <span>({{findAmount(zone._id)}})</span>
         </div>
       </div>
       <!--<div class="progress-item">
@@ -123,11 +123,11 @@
   <div class="content">
     <div class="content-title-container">
       <p class="content-title">
-        {{filterData().length}} facturas. ${{calcTotalPrice().toFixed(2)}} de beneficio.
+        {{orders.length}} facturas. ${{calcTotalPrice().toFixed(2)}} de beneficio.
       </p>
     </div>
     <div class="content-cards-container">
-      <div class="content-card" *ngFor="let order of filterData(); index as i" (click)="goToOrderDetail(order._id)">
+      <div class="content-card" *ngFor="let order of orders; index as i" (click)="goToOrderDetail(order._id)">
         <div class="display-flex">
           <!-- <img [src]=" order.user.image?order.user.image:'https://cdn-icons-png.flaticon.com/512/149/149071.png'" width="66px"> -->
           <div class="content-card-info">
