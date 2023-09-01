@@ -9,7 +9,7 @@
         [ngClass]="{
           valid: atLeastOneHasPriceAdded
         }"
-        (click)="openMagicLinkDialog()"
+        (click)="atLeastOneHasPriceAdded ? openMagicLinkDialog() : null"
         >Guardar</span
       >
 
@@ -235,15 +235,20 @@
     </div>
 
     <div class="card stock" *ngIf="itemsTutorialCardsOpened['stock']">
-      <div class="header-1">Ajusta la disponibilidad</div>
+      <div class="header-1" style="margin-top: auto;">Ajusta la disponibilidad</div>
 
-      <div class="accept-button" (click)="closeItemsTutorial('stock')">Ok</div>
+      <div class="accept-button" style="padding-top: 18px;" (click)="closeItemsTutorial('stock')">Ok</div>
     </div>
 
     <div
       class="card full-width"
       style="padding: 26px 26px 36px 33px"
-      *ngIf="(itemsTutorialCardsOpened['price'] || itemsTutorialCardsOpened['stock']) && requester"
+      *ngIf="
+        (itemsTutorialCardsOpened['price'] ||
+          itemsTutorialCardsOpened['stock']) &&
+        requester &&
+        !showAllProviderItems
+      "
     >
       <div class="header-2">
         Hola, Soy {{ requester.name }}, te agradecería que me confirmes tus
@@ -253,7 +258,27 @@
       <div class="header-3">www.floristerias.club</div>
     </div>
 
-    <ng-container *ngIf="itemsTutorialCardsOpened['welcome'] && !requester">
+    <div
+      class="card full-width"
+      style="padding: 26px 26px 36px 33px"
+      *ngIf="
+        (itemsTutorialCardsOpened['price'] ||
+          itemsTutorialCardsOpened['stock']) &&
+        !requester &&
+        !showAllProviderItems
+      "
+    >
+      <div class="header-2">
+        Hola, te agradecería que me confirmes tus precios y disponibilidad,
+        gracias !!
+      </div>
+
+      <div class="header-3">www.floristerias.club</div>
+    </div>
+
+    <ng-container
+      *ngIf="itemsTutorialCardsOpened['welcome'] && showAllProviderItems"
+    >
       <ng-container
         *ngTemplateOutlet="
           helpCard;

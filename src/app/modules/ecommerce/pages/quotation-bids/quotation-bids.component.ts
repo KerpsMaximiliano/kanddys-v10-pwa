@@ -1136,9 +1136,9 @@ export class QuotationBidsComponent implements OnInit {
               let bodyMessage = `Hola, pudieras confirmame la disponibilidad y precios de estos artículos 🙏? \n${listOfItemNames} en este enlace te los muestro y lo puedes ajustar bien fácil 👉${encodeURIComponent(
                 link
               )}`;
-              let whatsappLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(
+              let whatsappLink = `https://api.whatsapp.com/send?text=${
                 bodyMessage
-              )}`;
+              }`;
 
               window.location.href = whatsappLink;
             },
@@ -1373,8 +1373,8 @@ export class QuotationBidsComponent implements OnInit {
                 callback: async () => {
                   let fieldsToCreateInMerchantRegistrationDialog: FormData = {
                     buttonsTexts: {
-                      accept: 'Confirmar mi correo',
-                      cancel: 'Cancelar',
+                      accept: 'Guardar mis datos comerciales',
+                      cancel: 'Omitir',
                     },
                     containerStyles: {
                       padding: '39.74px 17px 47px 24px',

@@ -260,7 +260,7 @@ section {
   &.opened {
     margin: auto;
     max-width: 500px;
-    position: absolute;
+    position: fixed;
     top: 0px;
     left: 0px;
     bottom: 0px;
@@ -572,5 +572,14 @@ footer {
 
   &:hover {
     cursor: pointer;
+  }
+}
+
+::ng-deep .cdk-overlay-pane.login {
+  width: 100%;
+  max-width: 500px !important;
+
+  .mat-dialog-container {
+    width: 100% !important;
   }
 }

@@ -388,6 +388,8 @@ export class ProviderItemsComponent implements OnInit {
       let itemsQueryResult = items?.listItems;
 
       itemsQueryResult.forEach((item, itemIndex) => {
+        item.stock = 0;
+        item.useStock = true;
         item.images.forEach((image) => {
           if (!image.value.includes('http'))
             image.value = 'https://' + image.value;
@@ -460,7 +462,7 @@ export class ProviderItemsComponent implements OnInit {
     itemIndex: number,
     providedByMe: boolean
   ) {
-    console.log("providedByMe", providedByMe);
+    console.log('providedByMe', providedByMe);
     try {
       let newAmount: number;
       if (type === 'add' && providedByMe) {
@@ -1028,6 +1030,7 @@ export class ProviderItemsComponent implements OnInit {
     const emailDialogRef = this.dialog.open(FormComponent, {
       data: fieldsToCreateInEmailDialog,
       disableClose: true,
+      panelClass: 'login'
     });
 
     emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
@@ -1051,8 +1054,8 @@ export class ProviderItemsComponent implements OnInit {
                 callback: async () => {
                   let fieldsToCreateInMerchantRegistrationDialog: FormData = {
                     buttonsTexts: {
-                      accept: 'Confirmar mi correo',
-                      cancel: 'Cancelar',
+                      accept: 'Guardar mis datos comerciales',
+                      cancel: 'Omitir',
                     },
                     containerStyles: {
                       padding: '39.74px 17px 47px 24px',
@@ -1063,10 +1066,7 @@ export class ProviderItemsComponent implements OnInit {
                         name: 'merchantName',
                         type: 'text',
                         placeholder: 'Escribe el nombre comercial',
-                        validators: [
-                          Validators.pattern(/[\S]/),
-                          Validators.required,
-                        ],
+                        validators: [Validators.pattern(/[\S]/)],
                         inputStyles: {
                           padding: '11px 1px',
                         },
@@ -1077,10 +1077,7 @@ export class ProviderItemsComponent implements OnInit {
                         name: 'merchantPhone',
                         type: 'phone',
                         placeholder: 'Escribe el nombre comercial',
-                        validators: [
-                          Validators.pattern(/[\S]/),
-                          Validators.required,
-                        ],
+                        validators: [Validators.pattern(/[\S]/)],
                         inputStyles: {
                           padding: '11px 1px',
                         },
@@ -1093,24 +1090,23 @@ export class ProviderItemsComponent implements OnInit {
                     {
                       data: fieldsToCreateInMerchantRegistrationDialog,
                       disableClose: true,
-                      panelClass: 'merchant-registration',
+                      panelClass: ['login', 'merchant-registration'],
                     }
                   );
 
                   merchantRegistrationDialogRef
                     .afterClosed()
                     .subscribe(async (result: FormGroup) => {
-                      if (
-                        result?.controls?.merchantName.valid &&
-                        result?.controls?.merchantPhone.valid
-                      ) {
-                        lockUI();
+                      const merchantInput: Record<string, any> = {};
 
-                        const merchantInput: Record<string, any> = {
-                          name: result?.value['merchantName'],
-                          phone: result?.value['merchantPhone'],
-                        };
+                      if (result?.controls?.merchantName.valid)
+                        merchantInput.name = result?.value['merchantName'];
 
+                      if (result?.controls?.merchantPhone.valid)
+                        merchantInput.phone = result?.value['merchantPhone'];
+                      lockUI();
+
+                      try {
                         let toBeDone: {
                           operation: 'UPDATE' | 'CREATE';
                           itemId?: string;
@@ -1125,8 +1121,6 @@ export class ProviderItemsComponent implements OnInit {
                               itemInput.parentItem
                             );
                         }
-
-                        lockUI();
 
                         if (toBeDone.operation === 'CREATE') {
                           const createdItem = (
@@ -1171,20 +1165,11 @@ export class ProviderItemsComponent implements OnInit {
 
                         unlockUI();
 
-                        this.dialogService.open(
-                          GeneralFormSubmissionDialogComponent,
-                          {
-                            type: 'centralized-fullscreen',
-                            props: {
-                              icon: 'check-circle.svg',
-                              showCloseButton: false,
-                              message:
-                                'Se ha enviado un link mágico a tu correo electrónico',
-                            },
-                            customClass: 'app-dialog',
-                            flags: ['no-header'],
-                          }
-                        );
+                        this.router.navigate(['ecommerce/magic-link-sent']);
+                      } catch (error) {
+                        unlockUI();
+                        console.error(error);
+                        this.headerService.showErrorToast();
                       }
                     });
                 },
@@ -1284,20 +1269,7 @@ export class ProviderItemsComponent implements OnInit {
 
                     unlockUI();
 
-                    this.dialogService.open(
-                      GeneralFormSubmissionDialogComponent,
-                      {
-                        type: 'centralized-fullscreen',
-                        props: {
-                          icon: 'check-circle.svg',
-                          showCloseButton: false,
-                          message:
-                            'Se ha enviado un link mágico a tu correo electrónico',
-                        },
-                        customClass: 'app-dialog',
-                        flags: ['no-header'],
-                      }
-                    );
+                    this.router.navigate(['ecommerce/magic-link-sent']);
                   } else if (
                     result?.controls?.magicLinkEmailOrPhone.valid === false
                   ) {
@@ -1322,6 +1294,7 @@ export class ProviderItemsComponent implements OnInit {
         this.dialog.open(OptionsDialogComponent, {
           data: optionsDialogTemplate,
           disableClose: true,
+          panelClass: 'login'
         });
       } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
         unlockUI();
@@ -1363,6 +1336,7 @@ export class ProviderItemsComponent implements OnInit {
       const dialog2Ref = this.dialog.open(FormComponent, {
         data: fieldsToCreate,
         disableClose: true,
+        panelClass: 'login'
       });
 
       dialog2Ref.afterClosed().subscribe(async (result: FormGroup) => {
@@ -1385,15 +1359,26 @@ export class ProviderItemsComponent implements OnInit {
 
             itemInput.merchant = merchantDefault._id;
 
-            const createdItem = (await this.itemsService.createItem(itemInput))
-              ?.createItem;
+            const toBeDone =
+              await this.determineIfItemNeedsToBeUpdatedOrCreated(
+                merchantDefault,
+                itemInput.parentItem
+              );
 
-            await this.saleflowService.addItemToSaleFlow(
-              {
-                item: createdItem._id,
-              },
-              saleflowDefault._id
-            );
+            if(toBeDone.operation === 'CREATE') {
+              const createdItem = (await this.itemsService.createItem(itemInput))
+                ?.createItem;
+  
+              await this.saleflowService.addItemToSaleFlow(
+                {
+                  item: createdItem._id,
+                },
+                saleflowDefault._id
+              );
+            } else if(toBeDone.operation === 'UPDATE') {
+              await this.itemsService.updateItem(itemInput, toBeDone.itemId)
+            }
+
 
             window.location.href =
               environment.uri + '/ecommerce/provider-items';

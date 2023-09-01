@@ -76,6 +76,13 @@ export class ConfirmQuotationComponent implements OnInit {
               ? JSON.parse(decodeURIComponent(jsondata))
               : { ...this.queryParams };
 
+            if(JSON.stringify(parsedData) !== '{}') localStorage.setItem('confirm-quotation-data', JSON.stringify(parsedData));
+            else {
+              let storedData = localStorage.getItem("confirm-quotation-data")
+              storedData = storedData ? JSON.parse(storedData) : {};
+              parsedData = storedData;
+            }
+
             let { requesterPhone, requesterEmail, expectingMagicLink, rambo } =
               parsedData;
             rambo = JSON.parse(rambo || 'false');
