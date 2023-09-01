@@ -388,6 +388,8 @@ export class ProviderItemsComponent implements OnInit {
       let itemsQueryResult = items?.listItems;
 
       itemsQueryResult.forEach((item, itemIndex) => {
+        item.stock = 0;
+        item.useStock = true;
         item.images.forEach((image) => {
           if (!image.value.includes('http'))
             image.value = 'https://' + image.value;
@@ -1028,6 +1030,7 @@ export class ProviderItemsComponent implements OnInit {
     const emailDialogRef = this.dialog.open(FormComponent, {
       data: fieldsToCreateInEmailDialog,
       disableClose: true,
+      panelClass: 'login'
     });
 
     emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
@@ -1063,9 +1066,7 @@ export class ProviderItemsComponent implements OnInit {
                         name: 'merchantName',
                         type: 'text',
                         placeholder: 'Escribe el nombre comercial',
-                        validators: [
-                          Validators.pattern(/[\S]/),
-                        ],
+                        validators: [Validators.pattern(/[\S]/)],
                         inputStyles: {
                           padding: '11px 1px',
                         },
@@ -1076,9 +1077,7 @@ export class ProviderItemsComponent implements OnInit {
                         name: 'merchantPhone',
                         type: 'phone',
                         placeholder: 'Escribe el nombre comercial',
-                        validators: [
-                          Validators.pattern(/[\S]/),
-                        ],
+                        validators: [Validators.pattern(/[\S]/)],
                         inputStyles: {
                           padding: '11px 1px',
                         },
@@ -1091,7 +1090,7 @@ export class ProviderItemsComponent implements OnInit {
                     {
                       data: fieldsToCreateInMerchantRegistrationDialog,
                       disableClose: true,
-                      panelClass: 'merchant-registration',
+                      panelClass: ['login', 'merchant-registration'],
                     }
                   );
 
@@ -1295,6 +1294,7 @@ export class ProviderItemsComponent implements OnInit {
         this.dialog.open(OptionsDialogComponent, {
           data: optionsDialogTemplate,
           disableClose: true,
+          panelClass: 'login'
         });
       } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
         unlockUI();
@@ -1336,6 +1336,7 @@ export class ProviderItemsComponent implements OnInit {
       const dialog2Ref = this.dialog.open(FormComponent, {
         data: fieldsToCreate,
         disableClose: true,
+        panelClass: 'login'
       });
 
       dialog2Ref.afterClosed().subscribe(async (result: FormGroup) => {
@@ -1358,15 +1359,26 @@ export class ProviderItemsComponent implements OnInit {
 
             itemInput.merchant = merchantDefault._id;
 
-            const createdItem = (await this.itemsService.createItem(itemInput))
-              ?.createItem;
+            const toBeDone =
+              await this.determineIfItemNeedsToBeUpdatedOrCreated(
+                merchantDefault,
+                itemInput.parentItem
+              );
 
-            await this.saleflowService.addItemToSaleFlow(
-              {
-                item: createdItem._id,
-              },
-              saleflowDefault._id
-            );
+            if(toBeDone.operation === 'CREATE') {
+              const createdItem = (await this.itemsService.createItem(itemInput))
+                ?.createItem;
+  
+              await this.saleflowService.addItemToSaleFlow(
+                {
+                  item: createdItem._id,
+                },
+                saleflowDefault._id
+              );
+            } else if(toBeDone.operation === 'UPDATE') {
+              await this.itemsService.updateItem(itemInput, toBeDone.itemId)
+            }
+
 
             window.location.href =
               environment.uri + '/ecommerce/provider-items';

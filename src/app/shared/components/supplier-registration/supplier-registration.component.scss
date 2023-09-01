@@ -1,5 +1,7 @@
 .container {
   background: #f6f6f6;
+  position: relative;
+  min-height: 100%;
 }
 
 ::ng-deep .login-dialog-container .mat-dialog-container {
@@ -566,7 +568,7 @@ footer {
   &.opened {
     margin: auto;
     max-width: 500px;
-    position: fixed;
+    position: absolute;
     top: 0px;
     left: 0px;
     bottom: 0px;

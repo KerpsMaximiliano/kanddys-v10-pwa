@@ -1300,9 +1300,9 @@ export class CartComponent implements OnInit {
                 link
               )}`;
 
-              let whatsappLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(
+              let whatsappLink = `https://api.whatsapp.com/send?text=${
                 bodyMessage
-              )}`;
+              }`;
 
               window.location.href = whatsappLink;
             },

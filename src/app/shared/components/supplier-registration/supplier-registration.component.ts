@@ -252,6 +252,8 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
                   item.description?.toLowerCase().includes(change.toLowerCase())
               );
             });
+
+            console.log("los items", this.quotationItems);
           }
         );
       }
@@ -1600,12 +1602,12 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
                 itemIdsToUpdate.length > 0
                   ? createdItems.concat(itemIdsToUpdate).join('-')
                   : createdItems.join('-'),
+              rambo: this.showAllProviderItems
             };
 
             if (this.requester) {
               queryParams.requesterPhone = this.requester.owner.phone;
               queryParams.requesterEmail = this.requester.owner.email;
-              queryParams.rambo = this.showAllProviderItems;
             }
 
             if (!this.showAllProviderItems) {
