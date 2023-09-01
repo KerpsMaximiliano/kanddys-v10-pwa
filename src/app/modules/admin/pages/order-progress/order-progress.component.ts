@@ -129,8 +129,6 @@ export class OrderProgressComponent implements OnInit {
       });
       console.log("merchant _id", this.merchantId);
     }
-    console.log(this.selectedProgress)
-    console.log(this.selectedZones)
     let ShippingType;
     if(this.pickUp.selected && this.delivery.selected) {
       ShippingType = ["pickup", "delivery"]
@@ -165,28 +163,26 @@ export class OrderProgressComponent implements OnInit {
       )
     )?.ordersByMerchant;
     this.orders = orders != undefined ? orders : []
-    console.log(orders, "ordersByMerchant");
 
     await this.orderService.orderQuantityOfFiltersStatusDelivery({ findBy: {merchant: this.merchantId} }).then((res) => {
       this.deliveryStatus = res
     })
-
-    await this.deliveryZonesService.deliveryZones(
-      {
-        findBy:{merchant: this.merchantId},
-        options: {sortBy: "createdAt:desc", limit: -1}
-      }).then((res) => {
-      this.deliveryZones = res.map((deliveryZone) => {
-        let zone = {
-          ...deliveryZone,
-          selected: false,
-        }
-        return zone;
+    if(!this.deliveryZones) {
+      await this.deliveryZonesService.deliveryZones(
+        {
+          findBy:{merchant: this.merchantId},
+          options: {sortBy: "createdAt:desc", limit: -1}
+        }).then((res) => {
+        this.deliveryZones = res.map((deliveryZone) => {
+          let zone = {
+            ...deliveryZone,
+            selected: false,
+          }
+          return zone;
+        })
       })
-      console.log(this.deliveryZones)
-    })
+    }
     let deliveryZonesIds = this.deliveryZones.map((deliveryZone) => deliveryZone._id)
-    console.log(deliveryZonesIds)
     await this.orderService.orderQuantityOfFiltersDeliveryZone({ 
         findBy: 
         {
@@ -196,7 +192,6 @@ export class OrderProgressComponent implements OnInit {
         } 
       }).then((res) => {
       this.deliveryZoneQuantities = res
-      console.log(this.deliveryZoneQuantities)
     })
 
     await this.orderService.orderQuantityOfFiltersShippingType({ 
@@ -311,8 +306,6 @@ export class OrderProgressComponent implements OnInit {
         },
         merchants: this.merchantId, //backend is merchants, if changed to merchant change this
         user: this.userId,
-      }).then((res) => {
-        console.log(res)
       })
     } else {
       this.orderService.createOrderExternal({
@@ -322,8 +315,6 @@ export class OrderProgressComponent implements OnInit {
         amount: this.externalOrderNumber,
         merchants: this.merchantId, //backend is merchants, if changed change this
         user: this.userId,
-      }).then((res) => {
-        console.log(res)
       })
     }
     this.externalOrderDialog = false;
