@@ -69,181 +69,396 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     tab1: [
       {
         text: "🛟 “Cotiza Flash” con Proveedores",
-        subText: "Seleccionas, comparas y decides"
+        subText: "Seleccionas, comparas y decides",
+        routerLink: ["/ecommerce/supplier-items-selector"],
+        linkName: "",
+        queryParams: {},
+        authorization: false,
+        isDummy: false
       },
       {
-        text: "🧞 “3 Ofertas Flash” de los Proveedores",
-        subText: "Compra flores ideales para eventos cortos e inmediatos"
+        text: "🧞 “Ofertas Flash” de los Proveedores",
+        subText: "Compra flores ideales para eventos cortos e inmediatos",
+        routerLink: ["/"],
+        linkName: "",
+        queryParams: {},
+        authorization: false,
+        isDummy: true
       },
       {
         text: "📦 “Control Flash” de los pedidos",
-        subText: "Sube la foto de la factura y ve cambiando el status según el progreso"
+        subText: "Sube la foto de la factura y ve cambiando el status según el progreso",
+        routerLink: ["/admin/order-progress"],
+        linkName: "",
+        queryParams: {},
+        authorization: true,
+        isDummy: false
       },
       {
         text: "🧾 “Factura Flash” a tus compradores",
-        subText: "Escribe fácilmente lo que te compraron para que lleves el control desde tu celular"
+        subText: "Escribe fácilmente lo que te compraron para que lleves el control desde tu celular",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "📝 “Cotiza Flash” a tus compradores",
-        subText: "Escribe fácilmente lo que potencialmente te compraran y potencialmente conviértela en factura."
+        subText: "Escribe fácilmente lo que potencialmente te compraran y potencialmente conviértela en factura.",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "🎁 “Premios Flash” para tus seguidores",
-        subText: "Incentiva a quienes te mencionan en sus redes sociales"
+        subText: "Incentiva a quienes te mencionan en sus redes sociales",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "✨ “Recompensas Flash” para compradores",
-        subText: "Fideliza a tus compradores con la foto de la factura que le emites"
+        subText: "Fideliza a tus compradores con la foto de la factura que le emites",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "🙌 “Afiliación Flash” de membresía al Club",
-        subText: "Comparte tu código ALGOID para ganar hasta $125 cada mes por cada invitado"
+        subText: "Comparte tu código ALGOID para ganar hasta $125 cada mes por cada invitado",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "🔗 “QR Flash” para guiarlos a donde necesites ",
-        subText: "Pegas el enlace y descargas el QR"
+        subText: "Pegas el enlace y descargas el QR",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "✋ “Opinión de Compradores”",
-        subText: "Compradores reciben una encuesta que después que recibieron lo que compraron"
+        subText: "Compradores reciben una encuesta que después que recibieron lo que compraron",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
-        subText: ""
+        subText: "",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       }
     ],
     tab2: [
       {
-        text: "🛟 “144 Cotizaciones Flash” con Proveedores",
-        subText: "Seleccionas, comparas y decides"
+        text: "🛟 “Cotizaciones Flash” con Proveedores",
+        subText: "Seleccionas, comparas y decides",
+        routerLink: ["/ecommerce/supplier-items-selector"],
+        linkName: "",
+        queryParams: {},
+        authorization: false,
+        isDummy: false
       },
       {
-        text: "🧞 “41 Ofertas Flash” de los Proveedores",
-        subText: "Compra flores ideales para eventos cortos e inmediatos"
+        text: "🧞 “Ofertas Flash” de los Proveedores",
+        subText: "Compra flores ideales para eventos cortos e inmediatos",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
-        text: "📦 “144 pedidos en Control Flash”",
-        subText: "Sube la foto de la factura y ve cambiando el status según el progreso"
+        text: "📦 “pedidos en Control Flash”",
+        subText: "Sube la foto de la factura y ve cambiando el status según el progreso",
+        routerLink: ["/admin/order-progress"],
+        linkName: "",
+        queryParams: {},
+        authorization: true,
+        isDummy: false
       },
       {
-        text: "🛒 “144 Factura Flash” a tus compradores",
-        subText: "Escribes fácilmente lo que te compraron para que lleves el control desde tu celular"
+        text: "🛒 “Factura Flash” a tus compradores",
+        subText: "Escribes fácilmente lo que te compraron para que lleves el control desde tu celular",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
-        text: "🎁 “144 seguidores en Premios Flash”",
-        subText: "Incentiva a quienes te mencionan en sus redes sociales"
+        text: "🎁 “seguidores en Premios Flash”",
+        subText: "Incentiva a quienes te mencionan en sus redes sociales",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
-        text: "✨ “144 compradores en Recompensas Flash”",
-        subText: "Fideliza a tus compradores con la foto de la factura que le emites"
+        text: "✨ “compradores en Recompensas Flash”",
+        subText: "Fideliza a tus compradores con la foto de la factura que le emites",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
-        text: "🙌 “144  códigos activos de Afiliación Flash”",
-        subText: "Tu código ALGOID, ganas hasta $125 cada mes por cada invitado. Haz ganado $14,547."
+        text: "🙌 “códigos activos de Afiliación Flash”",
+        subText: "Tu código ALGOID, ganas hasta $125 cada mes por cada invitado. Haz ganado $14,547.",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
-        text: "🔗 “144 enlaces QR Flash”",
-        subText: "Pegas el enlace y descargas el QR"
+        text: "🔗 “enlaces QR Flash”",
+        subText: "Pegas el enlace y descargas el QR",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
-        text: "✋ “144 opiniones de Compradores”",
-        subText: "Encuesta que reciben después que recibieron lo que compraron"
+        text: "✋ “opiniones de Compradores”",
+        subText: "Encuesta que reciben después que recibieron lo que compraron",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
-        subText: ""
+        subText: "",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
     ],
     tab3: [
       {
         text: "🛟 “Cotiza Flash” con Proveedores",
-        subText: "Seleccionas, comparas y decides"
+        subText: "Seleccionas, comparas y decides",
+        routerLink: ["/ecommerce/supplier-items-selector"],
+        linkName: "",
+        queryParams: {},
+        authorization: false,
+        isDummy: false
       },
       {
         text: "🧞 “Ofertas Flash” para Miembros",
-        subText: "Vende las flores ideales para eventos cortos e inmediatos"
+        subText: "Vende las flores ideales para eventos cortos e inmediatos",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "📦 “Control Flash” de los pedidos",
-        subText: "Sube la foto de la factura y ve cambiando el status según el progreso"
+        subText: "Sube la foto de la factura y ve cambiando el status según el progreso",
+        routerLink: ["/admin/order-progress"],
+        linkName: "",
+        queryParams: {},
+        authorization: true,
+        isDummy: false
       },
       {
         text: "🧾 “Factura Flash” a tus compradores",
-        subText: "Selecciona lo que te compraron para que lleves el control desde tu celular"
+        subText: "Selecciona lo que te compraron para que lleves el control desde tu celular",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "📝 “Cotiza Flash” a tus compradores",
-        subText: "Selecciona lo que potencialmente te compraran y potencialmente conviértela en factura."
+        subText: "Selecciona lo que potencialmente te compraran y potencialmente conviértela en factura.",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "🎁 “Premios Flash” para tus seguidores",
-        subText: "Incentiva a quienes te mencionan en sus redes sociales"
+        subText: "Incentiva a quienes te mencionan en sus redes sociales",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "✨ “Recompensas Flash” para compradores",
-        subText: "Fideliza a tus compradores con la foto de la factura que le emites"
+        subText: "Fideliza a tus compradores con la foto de la factura que le emites",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "🙌 “Afiliación Flash” de membresía al Club",
-        subText: "Comparte tu código ALGOID para ganar hasta $125 cada mes por cada invitado"
+        subText: "Comparte tu código ALGOID para ganar hasta $125 cada mes por cada invitado",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "🔗 “QR Flash” para guiarlos a donde necesites ",
-        subText: "Pegas el enlace y descargas el QR"
+        subText: "Pegas el enlace y descargas el QR",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "✋ “Opinión de Compradores”",
-        subText: "Compradores reciben una encuesta que después que recibieron lo que compraron"
+        subText: "Compradores reciben una encuesta que después que recibieron lo que compraron",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
-        subText: ""
+        subText: "",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       }
     ],
     tab4: [
       {
         text: "🛟 “Cotiza Flash” con Proveedores",
-        subText: "Seleccionas, comparas y decides"
+        subText: "Seleccionas, comparas y decides",
+        routerLink: ["/ecommerce/supplier-items-selector"],
+        linkName: "",
+        queryParams: {},
+        authorization: false,
+        isDummy: false
       },
       {
         text: "🧞 “Ofertas Flash” para Miembros",
-        subText: "Vende las flores ideales para eventos cortos e inmediatos"
+        subText: "Vende las flores ideales para eventos cortos e inmediatos",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "📦 “Control Flash” de los pedidos",
-        subText: "Sube la foto de la factura y ve cambiando el status según el progreso"
+        subText: "Sube la foto de la factura y ve cambiando el status según el progreso",
+        routerLink: ["/admin/order-progress"],
+        linkName: "",
+        queryParams: {},
+        authorization: true,
+        isDummy: false
       },
       {
         text: "🧾 “Factura Flash” a tus compradores",
-        subText: "Selecciona lo que te compraron para que lleves el control desde tu celular"
+        subText: "Selecciona lo que te compraron para que lleves el control desde tu celular",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "📝 “Cotiza Flash” a tus compradores",
-        subText: "Selecciona lo que potencialmente te compraran y potencialmente conviértela en factura."
+        subText: "Selecciona lo que potencialmente te compraran y potencialmente conviértela en factura.",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "🎁 “Premios Flash” para tus seguidores",
-        subText: "Incentiva a quienes te mencionan en sus redes sociales"
+        subText: "Incentiva a quienes te mencionan en sus redes sociales",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "✨ “Recompensas Flash” para compradores",
-        subText: "Fideliza a tus compradores con la foto de la factura que le emites"
+        subText: "Fideliza a tus compradores con la foto de la factura que le emites",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "🙌 “Afiliación Flash” de membresía al Club",
-        subText: "Comparte tu código ALGOID para ganar hasta $125 cada mes por cada invitado"
+        subText: "Comparte tu código ALGOID para ganar hasta $125 cada mes por cada invitado",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "🔗 “QR Flash” para guiarlos a donde necesites ",
-        subText: "Pegas el enlace y descargas el QR"
+        subText: "Pegas el enlace y descargas el QR",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "✋ “Opinión de Compradores”",
-        subText: "Compradores reciben una encuesta que después que recibieron lo que compraron"
+        subText: "Compradores reciben una encuesta que después que recibieron lo que compraron",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
-        subText: ""
+        subText: "",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       }
     ]
   }
@@ -257,21 +472,107 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   ]
 
   tabVendor = [
-    "🌼 Lo que vendo",
-    "📦 Control Flash",
-    "💰 Mis beneficios",
-    "🧾 Facturas Flash",
-    "📝  Cotizaciones Flash",
-    "📢 Comisiones de quienes venden por mi"
+    {
+      text: "🌼 Lo que vendo",
+      routerLink: ["/admin/dashboard"],
+      linkName: "",
+      queryParams: {},
+      authorization: true,
+      isDummy: false
+    },
+    {
+      text: "📦 Control Flash",
+      routerLink: ["/admin/order-progress"],
+      linkName: "",
+      queryParams: {},
+      authorization: true,
+      isDummy: false
+    },
+    // {
+    //   text: "💰 Mis beneficios",
+    //   routerLink: ["/ecommerce/supplier-items-selector"],
+    //   linkName: "",
+    //   queryParams: {},
+    //   authorization: true,
+    //   isDummy: false
+    // },
+    // {
+    //   text: "🧾 Facturas Flash",
+    //   routerLink: ["/ecommerce/supplier-items-selector"],
+    //   linkName: "",
+    //   queryParams: {},
+    //   authorization: false,
+    //   isDummy: false
+    // },
+    // {
+    //   text: "📝 Cotizaciones Flash",
+    //   routerLink: ["/ecommerce/supplier-items-selector"],
+    //   linkName: "",
+    //   queryParams: {},
+    //   authorization: false,
+    //   isDummy: false
+    // },
+    // {
+    //   text: "📢 Comisiones de quienes venden por mi",
+    //   routerLink: ["/ecommerce/supplier-items-selector"],
+    //   linkName: "",
+    //   queryParams: {},
+    //   authorization: false,
+    //   isDummy: false
+    // },
   ]
 
   tabProvider = [
-    "🌼 Lo que vendo",
-    "📦 Control Flash",
-    "💰 Mis beneficios",
-    "🧾 Facturas Flash",
-    "📝  Cotizaciones Flash",
-    "📢 Comisiones de quienes venden por mi"
+    {
+      text: "🌼 Lo que vendo",
+      routerLink: ["/admin/supplier-dashboard"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: true,
+      isDummy: false
+    },
+    {
+      text: "📦 Control Flash",
+      routerLink: ["/admin/order-progress"],
+      linkName: "",
+      queryParams: {},
+      authorization: true,
+      isDummy: false
+    },
+    // {
+    //   text: "💰 Mis beneficios",
+    //   routerLink: ["/ecommerce/supplier-items-selector"],
+    //   linkName: "",
+    //   queryParams: {},
+    //   authorization: true,
+    //   isDummy: false
+    // },
+    // {
+    //   text: "🧾 Facturas Flash",
+    //   routerLink: ["/ecommerce/supplier-items-selector"],
+    //   linkName: "",
+    //   queryParams: {},
+    //   authorization: false,
+    //   isDummy: false
+    // },
+    // {
+    //   text: "📝 Cotizaciones Flash",
+    //   routerLink: ["/ecommerce/supplier-items-selector"],
+    //   linkName: "",
+    //   queryParams: {},
+    //   authorization: false,
+    //   isDummy: false
+    // },
+    // {
+    //   text: "📢 Comisiones de quienes venden por mi",
+    //   routerLink: ["/ecommerce/supplier-items-selector"],
+    //   linkName: "",
+    //   queryParams: {},
+    //   authorization: false,
+    //   isDummy: false
+    // },
   ]
 
   tabs: Array<Tabs> = [
@@ -469,6 +770,12 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         // console.log(supplier)
         // console.log(vendor)
       }
+    } else {
+      // Borrar de cada tab los tabs que tienen authorize true
+      this.tabContents.tab1 = this.tabContents.tab1.filter(tab => !tab.authorization);
+      this.tabContents.tab2 = this.tabContents.tab2.filter(tab => !tab.authorization);
+      this.tabContents.tab3 = this.tabContents.tab3.filter(tab => !tab.authorization);
+      this.tabContents.tab4 = this.tabContents.tab4.filter(tab => !tab.authorization);
     }
     unlockUI()
   }
@@ -505,6 +812,28 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     if (this.tabIndex==1) this.mainTitle = "HERRAMIENTAS GRATIS  PARA PROVEEDORES"
     if (this.tabIndex==0) this.mainTitle = "HERRAMIENTAS GRATIS FACILES DE USAR"
     return this.tabContents.tab3
+  }
+
+  redirectToLink(link: any) {
+    this.headerService.flowRouteForEachPage[link.linkName] = this.router.url;
+
+    if (link.isDummy) {
+      const message = `Hola, me interesa esta funcionalidad: ${link.text}`;
+      const phone = '19188156444';
+      window.location.href = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
+      return;
+    }
+
+    this.headerService.flowRoute = this.headerService.buildURL(
+      link.routerLink.join('/'),
+      link.queryParams ? link.queryParams : null
+    );
+
+    this.router.navigate(link.routerLink, {
+      queryParams: link.queryParams ? link.queryParams : {},
+    });
+
+    this.close();
   }
 
   share() {

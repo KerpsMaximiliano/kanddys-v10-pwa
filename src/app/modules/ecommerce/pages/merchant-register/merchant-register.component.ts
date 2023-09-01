@@ -87,6 +87,7 @@ export class MerchantRegisterComponent implements OnInit {
           await this.createMerchant(formData.name, this.user._id, categories);
           if (this.merchant) await this.generateMagicLink(this.credentials);
           unlockUI();
+          return this.router.navigate(['/ecommerce/notification-access-screen']);
         }
       }
     }
@@ -107,6 +108,13 @@ export class MerchantRegisterComponent implements OnInit {
       } catch (error) {
         console.log(error);
         unlockUI();
+        this.snackBar.open(
+          'Ha ocurrido un error al crear el usuario, es posible que ya exista un usuario con ese email/teléfono',
+          'Close',
+          {
+            duration: 5000,
+          }
+        );
       }
     }
 
@@ -126,6 +134,13 @@ export class MerchantRegisterComponent implements OnInit {
       } catch (error) {
         console.log(error);
         unlockUI();
+        this.snackBar.open(
+          'Ha ocurrido un error, es posible que ya exista un Merchant con ese nombre',
+          'Close',
+          {
+            duration: 5000,
+          }
+        );
       }
     }
 
@@ -142,7 +157,7 @@ export class MerchantRegisterComponent implements OnInit {
       try {
         await this.authService.generateMagicLink(
           emailOrPhone,
-          '/ecommerce/club-landing',
+          '/ecommerce/login-landing',
           null,
           'MerchantAccess',
           {
@@ -161,6 +176,13 @@ export class MerchantRegisterComponent implements OnInit {
         );
       } catch (error) {
         console.log(error);
+        this.snackBar.open(
+          'Ha ocurrido un error',
+          'Close',
+          {
+            duration: 5000,
+          }
+        );
       }
     }
 
