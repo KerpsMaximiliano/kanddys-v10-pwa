@@ -292,6 +292,7 @@ export class OrderProgressComponent implements OnInit {
     for (let i = 0; i < fileList.length; i++) {
       const file = fileList[i];
       if (!this.imageFiles.includes(file.type)) return;
+      this.externalOrderImages.push(file);
     }
     if (!this.externalOrderImages.length) return;
 
