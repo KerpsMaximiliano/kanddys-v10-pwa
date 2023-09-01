@@ -44,6 +44,10 @@
   line-height: normal;
   margin-top: 50px;
   margin-bottom: 0;
+
+  &.smallMarginTop {
+    margin-top: 20px;
+  }
 }
 
 .search-bar-container {
@@ -148,7 +152,7 @@ input[type="text"] {
   display: flex;
   align-items: center;
   column-gap: 13px;
-  margin-top: 23px;
+  margin-top: 50px;
   margin-left: 21px;
 
   &:hover {

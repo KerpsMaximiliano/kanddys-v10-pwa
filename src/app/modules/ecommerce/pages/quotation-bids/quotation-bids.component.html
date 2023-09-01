@@ -1,4 +1,8 @@
 <div class="container">
+  <!--
+    <ng-container *ngTemplateOutlet="tutorialOverlay"></ng-container>
+  -->
+
   <div class="header">
     <div class="flex">
       <button class="close" (click)="showQuotations()">X</button>
@@ -20,7 +24,8 @@
       *ngIf="
         (currentView === 'QUOTATION_CONFIG' &&
           isTheCurrentUserTheQuotationMerchant) ||
-        typeOfQuotation === 'TEMPORAL_QUOTATION'
+        (currentView === 'QUOTATION_CONFIG' &&
+          typeOfQuotation === 'TEMPORAL_QUOTATION')
       "
       [src]="assetsFolder + '/trash-black.svg'"
       class="delete-icon"
@@ -33,19 +38,45 @@
           ? assetsFolder + '/icon_info.png'
           : assetsFolder + '/dropdown_icon.png'
       "
+      *ngIf="typeOfQuotation !== 'TEMPORAL_QUOTATION'"
       (click)="changeView()"
       style="cursor: pointer"
     />
+
+    <button
+      class="save-btn"
+      [ngClass]="{
+        tutorialOpened: tutorialOpened
+      }"
+      *ngIf="typeOfQuotation === 'TEMPORAL_QUOTATION'"
+      (click)="saveTemporalQuotation($event)"
+    >
+      Guardar
+
+      <img
+        class="arrow-tutorial"
+        *ngIf="tutorialCardsOpened['saveTemporalQuotation']"
+        [src]="assetsFolder + '/arrow-save-tutorial.svg'"
+        alt="indicator"
+      />
+
+      <div
+        class="help-card"
+        *ngIf="tutorialCardsOpened['saveTemporalQuotation']"
+      >
+        <h6 class="card-title">Guardar el listado de artículos es opcional.</h6>
+
+        <div class="buttons">
+          <button class="cancel">No mostrar tutorial</button>
+          <button class="accept">Ok</button>
+        </div>
+      </div>
+    </button>
   </div>
   <div class="content">
     <ng-container [ngSwitch]="currentView">
       <ng-container *ngSwitchCase="'SUPPLIERS_LIST'">
-        <div class="providers-config-header-wrapper" (click)="changeView(true)">
-          Proveedores le cotizan y venden fácilmente en el Club de las
-          Floristerías..<span>mira como</span>
-        </div>
-
-        <p class="content-title">Precios de Suplidores Locales:</p>
+        <p class="content-title">Precios de proveedores locales:</p>
         <ng-container *ngIf="quotationMatches.length > 0">
           <div class="content-cards-container">
             <div
@@ -87,7 +118,9 @@
         </ng-container>
 
         <ng-container *ngIf="quotationMatches.length === 0">
-          <p class="content-title">No hay suplidores para estos productos todavía...</p>
+          <p class="content-title">
+            No hay suplidores para estos productos todavía...
+          </p>
         </ng-container>
       </ng-container>
 
@@ -147,8 +180,41 @@
     colorDark="#000000"
   ></qrcode>
 
+  <div class="help-card-share" *ngIf="tutorialCardsOpened['share']">
+    <h6 class="card-title">
+      Comparte los artículos que necesitas con los Proveedores que te convienen.
+    </h6>
+
+    <div class="accept-wrapper">
+      <button class="accept" (click)="tutorialCardsOpened['share'] = false">
+        Ok
+      </button>
+    </div>
+
+    <ng-template #tutorialOverlay>
+      <div
+        class="tutorial-wrapper"
+        [ngClass]="{
+          opened: tutorialOpened
+        }"
+      ></div>
+    </ng-template>
+  </div>
+
   <footer *ngIf="currentView === 'SUPPLIERS_LIST'">
-    <button class="share-btn" (click)="shareQuotation()">Comparte</button>
+    <button class="share-btn" (click)="shareQuotation()">
+      <img
+        *ngIf="tutorialCardsOpened['share']"
+        class="arrow-tutorial-2"
+        [src]="assetsFolder + '/share-new-arrow.svg'"
+        alt="indicator"
+      />
+
+      <img
+        [src]="assetsFolder + '/share-icon2.svg'"
+        alt="Icono de una persona"
+      />
+    </button>
 
     <span class="average-label" *ngIf="quotationMatches?.length > 0"
       >Promedio: ${{ providersPriceAverage | number : "1.2-2" }}</span

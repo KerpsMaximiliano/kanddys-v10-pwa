@@ -260,7 +260,7 @@ section {
   &.opened {
     margin: auto;
     max-width: 500px;
-    position: absolute;
+    position: fixed;
     top: 0px;
     left: 0px;
     bottom: 0px;
@@ -555,5 +555,31 @@ footer {
   .price-tutorial-img {
     position: absolute;
     top: 6px;
+  }
+}
+
+::ng-deep .merchant-registration .mat-dialog-content {
+  overflow: visible;
+}
+
+.infinite-units {
+  margin: auto;
+
+  &.small {
+    width: 18.1813px;
+    margin: 0px;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+::ng-deep .cdk-overlay-pane.login {
+  width: 100%;
+  max-width: 500px !important;
+
+  .mat-dialog-container {
+    width: 100% !important;
   }
 }

@@ -6,6 +6,7 @@ import { Merchant } from './merchant';
 import { ExchangeData } from './wallet';
 
 type SaleflowLayout = 'simple-card' | 'description-card' | 'image-full-width';
+type DeliveryLocationType = 'default' | 'city-reference';
 
 export class DeliveryLocation {
   _id?: string;
@@ -16,6 +17,7 @@ export class DeliveryLocation {
   referencePoint?: string;
   nickName: string;
   note: string;
+  type?: DeliveryLocationType;
 }
 export class DeliveryLocationInput {
   city?: string;
@@ -25,6 +27,7 @@ export class DeliveryLocationInput {
   referencePoint?: string;
   nickName?: string;
   googleMapsURL?: string;
+  type?: DeliveryLocationType;
 }
 
 export class ModuleConfig {

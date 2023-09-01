@@ -86,7 +86,9 @@ export class InventoryComponent implements OnInit {
                 this.quotationsService.temporalQuotations.map(
                   (quotation) => quotation.items
                 ),
-                {}
+                {
+                  limit: -1,
+                }
               );
 
             for (const matchesByQuotation of matchesByEachQuotation) {
@@ -112,7 +114,9 @@ export class InventoryComponent implements OnInit {
             this.quotationsService.temporalQuotations.map(
               (quotation) => quotation.items
             ),
-            {}
+            {
+              limit: -1,
+            }
           );
 
         for (const matchesByQuotation of matchesByEachQuotation) {
@@ -166,7 +170,9 @@ export class InventoryComponent implements OnInit {
       const matchesByEachQuotation =
         await this.quotationsService.multipleQuotationMatches(
           this.quotations.map((quotation) => quotation._id),
-          {}
+          {
+            limit: -1,
+          }
         );
 
       for (const matchesByQuotation of matchesByEachQuotation) {

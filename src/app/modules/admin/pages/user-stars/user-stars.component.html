@@ -1,35 +1,51 @@
 <app-navigation [opened]="openNavigation" (closed)="openNavigation = false">
-<div class="container">
-  <div class="header">
-    <div class="header-top" (click)="openNavigation = !openNavigation">
-      <p>{{totalStars}} ✨</p>
-      <mat-icon>menu</mat-icon>
-    </div>
-    <p class="header-title">
-      Ganas 50 ✨ por cada $1.00 que factures y al llegar a 1,000 ✨ la canjeas
-      por un descuento.
-    </p>
-  </div>
-  <div class="content">
-    <p class="content-title">✨ Ganadas</p>
-    <div class="content-cards-container">
-      <div class="content-card" *ngFor="let i of walletUserStarsList">
-        <div class="content-card-top-container">
-          <div class="flex-space-between">
-            <div class="flex">
-              <div class="content-card-img"></div>
-              <div class="content-card-merchant">{{i.currency?.merchant?.name || i.currency?.merchant?.email || i.currency?.merchant?.phone}}</div>
-            </div>
-            <div class="content-card-swaps">{{i.metadata?.usesStars || 0}} canjeos</div>
-          </div>
-          <app-progress-bar [text]="getText(i)"[status]="getPercentage(i)"></app-progress-bar>
+  <div class="container">
+    <div class="header">
+      <div class="header-top-container">
+        <img src="../../../../../assets/icons/info.svg" />
+        <div class="flex" (click)="openNavigation = !openNavigation">
+          <p class="header-top-text">Premios ✨</p>
+          <mat-icon>menu</mat-icon>
         </div>
-          <hr />
-          <p class="content-card-bill">
-            {{i.orderIncomes?.count || 0 }} Facturas en total
-          </p>
+      </div>
+    </div>
+    <div class="content">
+      <p class="content-title">
+        Esta plataforma le permite a los comerciantes WeLike premiarte según tus
+        compras.
+      </p>
+
+      <p class="content-title content-title-mt">
+        Utiliza fotos
+        <img src="../../../../../assets/icons/camera-photo.svg" /> de tus
+        facturas cuando compres fuera de la plataforma para que no dejes de
+        ganar “Estrellas” y alcanzar tu premio.
+      </p>
+      <input placeholder="Buscar..." />
+      <div class="input-overlay">📦</div>
+      <div class="content-cards-container">
+        <div class="content-card" *ngFor="let i of walletUserStarsList">
+          <div class="content-card-top-container">
+            <div class="flex-space-between">
+              <div class="flex">
+                <div class="content-card-img"></div>
+                <div class="content-card-merchant">
+                  {{
+                    i.currency?.merchant?.name ||
+                      i.currency?.merchant?.email ||
+                      i.currency?.merchant?.phone
+                  }}
+                </div>
+              </div>
+              <img src="../../../../../assets/icons/camera-photo-gray.svg" />
+            </div>
+            <app-progress-bar
+              [text]="getText(i)"
+              [status]="getPercentage(i)"
+            ></app-progress-bar>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 </app-navigation>
