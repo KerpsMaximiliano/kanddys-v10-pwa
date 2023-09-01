@@ -122,11 +122,10 @@
   <div *ngIf="externalOrderDialog" class="dialog external-order-dialog">
     <p class="external-order-title">Monto Pagado:</p>
     <input
-      [ngModel]="externalOrderNumber | currency"
       class="external-order-input"
       placeholder="$ escribe..." 
       type="number"
-      (ngModelChange)="externalOrderNumber"
+      [(ngModel)]="externalOrderNumber"
     >
     <div class="tutorial-button-holder">
       <button class="tutorial-button" (click)="sendExternalOrder(false)">Brincar</button>

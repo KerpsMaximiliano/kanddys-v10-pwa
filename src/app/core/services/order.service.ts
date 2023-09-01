@@ -656,6 +656,7 @@ export class OrderService {
       mutation: createOrderExternal,
       variables: { input },
       fetchPolicy: 'no-cache',
+      context:{ useMultipart: true }
     });
     return result?.createOrderExternal;
   }

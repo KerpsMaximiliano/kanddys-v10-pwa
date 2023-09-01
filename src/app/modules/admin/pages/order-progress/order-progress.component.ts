@@ -50,7 +50,7 @@ export class OrderProgressComponent implements OnInit {
   delivery : any = {amount: 0, selected: false};
 
   externalOrderDialog : boolean = false;
-  externalOrderNumber : number = 0;
+  externalOrderNumber : number | undefined;
   externalOrderImages : File[] = [];
 
   showLocations : boolean = false;
@@ -288,10 +288,10 @@ export class OrderProgressComponent implements OnInit {
 
   async loadFile(event: Event) {
     const fileList = (event.target as HTMLInputElement).files;
+    console.log(fileList)
     for (let i = 0; i < fileList.length; i++) {
       const file = fileList[i];
       if (!this.imageFiles.includes(file.type)) return;
-      this.externalOrderImages.push(file);
     }
     if (!this.externalOrderImages.length) return;
 
@@ -299,25 +299,20 @@ export class OrderProgressComponent implements OnInit {
   }
 
   sendExternalOrder(sendAmount : boolean) {
-    if(!sendAmount) {
-      this.orderService.createOrderExternal({
-        metadata: {
-          files: this.externalOrderImages,
-        },
-        merchants: this.merchantId, //backend is merchants, if changed to merchant change this
-        user: this.userId,
-      })
-    } else {
-      this.orderService.createOrderExternal({
-        metadata: {
-          files: this.externalOrderImages,
-        },
-        amount: this.externalOrderNumber,
-        merchants: this.merchantId, //backend is merchants, if changed change this
-        user: this.userId,
-      })
+    let orderData = {
+      metadata: {
+        files: this.externalOrderImages,
+      },
+      merchants: this.merchantId, //backend is merchants, if changed to merchant change this
+      user: this.userId,
     }
+    if(sendAmount) {
+      orderData["amount"] = this.externalOrderNumber;
+    }
+    this.orderService.createOrderExternal(orderData)
     this.externalOrderDialog = false;
+    this.externalOrderImages = [];
+    this.externalOrderNumber = undefined;
   }
 
   truncateString (word) {
