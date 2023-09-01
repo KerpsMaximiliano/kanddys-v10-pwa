@@ -106,6 +106,7 @@ export class Item extends Model<Item> {
   type?: 'default' | 'supplier';
   notificationStockPhoneOrEmail?: string;
   approvedByAdmin?: boolean;
+  useStock?: boolean;
 }
 
 export class ItemImage extends Model<ItemImage> {

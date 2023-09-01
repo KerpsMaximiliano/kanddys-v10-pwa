@@ -1,34 +1,34 @@
 <div class="container">
+  <div class="close" (click)="goToQuotation()">X</div>
+
   <div class="top">
-    <h2>
-      Artículos confirmados,
-      {{
-        headerService.user?.name ||
-          headerService.user?.phone ||
-          headerService.user?.email
-      }}
-    </h2>
+    <h2>Los precios de tus artículos están guardados.</h2>
 
-    <button
-      mat-button
-      class="main-cta"
-      *ngIf="requesterPhone"
-      (click)="confirmToWhatsapp()"
-    >
-      <div class="content">
-        Confírmalo desde el WhatsApp
-        <img [src]="assetsFolder + '/whatsApp-img.webp'" alt="" />
-      </div>
-    </button>
+    <div class="notify-buttons">
+      <button (click)="confirmToMail()" class="mail-button">
+        Notificale por correo electrónico
+      </button>
 
-    <p *ngIf="!requesterPhone">
-      Ahora puedes avisarle a la floristeria que has confirmado la
-      disponibilidad y los precios en la plataforma
-    </p>
+      <button mat-button class="whatsapp-button" (click)="confirmToWhatsapp()">
+        <div class="content">
+          <span>
+            Notificale por WhatsApp
+            <img [src]="assetsFolder + '/whatsApp-img.webp'" alt="" />
+          </span>
+        </div>
+      </button>
+    </div>
+
+    <div class="expectingMagicLink" *ngIf="expectingMagicLink">
+      Pronto te llegará un correo para validar el tu membresía de proveedor
+      (gratis).
+    </div>
   </div>
 
   <div class="bottom">
-    <h3>{{ items.length }} Artículos en la cotización</h3>
+    <button class="quotation-link" (click)="goToQuotation()">
+      Ver los artículos de la cotización
+    </button>
 
     <div class="flexBox containerFlexBox">
       <ng-container *ngFor="let item of items; index as i">
@@ -41,13 +41,11 @@
         <!-- ÁREA INFERIOR DE LA SECCIÓN DE LOS ARTÍCULOS -->
       </ng-container>
     </div>
-
-    <div class="supplier-options">
-      <button (click)="goToQuotation()">Ver la cotización</button>
-      <button (click)="goToDashboard()">
-        Ir a la biblioteca de mis artículos
-      </button>
-    </div>
+  </div>
+  <div class="landing-footer-container">
+    <button class="landing-link" (click)="goToLanding()">
+      www.floristerias.club
+    </button>
   </div>
 </div>
 

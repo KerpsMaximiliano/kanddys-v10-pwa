@@ -105,6 +105,7 @@ export class ProviderItemsComponent implements OnInit {
     sold: true,
     orders: true,
   };
+  numberOfItemsSold: number = 0;
 
   constructor(
     private headerService: HeaderService,
@@ -144,6 +145,7 @@ export class ProviderItemsComponent implements OnInit {
           this.parseMagicLinkData();
         }
         await this.getItemsISell();
+        await this.getNumberOfItemsSold();
 
         this.checkIfPresentationWasClosedBefore();
 
@@ -155,6 +157,22 @@ export class ProviderItemsComponent implements OnInit {
         });
       }
     );
+  }
+
+  async getNumberOfItemsSold() {
+    if (this.isTheUserAMerchant) {
+      const sold = await this.itemsService.itemsQuantitySoldTotal({
+        findBy: {
+          type: 'supplier',
+          merchant: this.merchantsService.merchantData._id,
+        },
+        options: {
+          limit: -1,
+        },
+      });
+
+      this.numberOfItemsSold = sold?.total;
+    }
   }
 
   async infinitePagination() {
@@ -193,15 +211,13 @@ export class ProviderItemsComponent implements OnInit {
     this.presentationOpened = false;
     localStorage.setItem('providersPresentationClosed', 'true');
 
-    if (this.itemsISell.length === 0) {
-      this.itemsTutorialOpened = true;
-    } /* else if (
+    if (
       this.headerService.user &&
       this.merchantsService.merchantData &&
-      this.itemsISell.length > 0
+      this.numberOfItemsSold > 0
     ) {
       this.searchTutorialsOpened = true;
-    }*/
+    }
   };
 
   activateOrDeactivateFilters(filterKey: string) {
@@ -264,7 +280,7 @@ export class ProviderItemsComponent implements OnInit {
         await this.itemsService.listItems(supplierSpecificItemsPagination)
       )?.listItems;
 
-      this.itemsISell = supplierSpecificItems;
+      if (supplierSpecificItems) this.itemsISell = supplierSpecificItems;
     }
   }
 
@@ -372,6 +388,8 @@ export class ProviderItemsComponent implements OnInit {
       let itemsQueryResult = items?.listItems;
 
       itemsQueryResult.forEach((item, itemIndex) => {
+        item.stock = 0;
+        item.useStock = true;
         item.images.forEach((image) => {
           if (!image.value.includes('http'))
             image.value = 'https://' + image.value;
@@ -440,43 +458,66 @@ export class ProviderItemsComponent implements OnInit {
 
   async changeAmount(
     item: Item,
-    type: 'add' | 'subtract',
+    type: 'add' | 'subtract' | 'infinite',
     itemIndex: number,
     providedByMe: boolean
   ) {
+    console.log('providedByMe', providedByMe);
     try {
       let newAmount: number;
       if (type === 'add' && providedByMe) {
         newAmount = item.stock >= 0 ? item.stock + 1 : 1;
+        item.useStock = true;
       } else if (type === 'subtract' && providedByMe) {
         newAmount = item.stock >= 1 ? item.stock - 1 : 0;
+        item.useStock = true;
       }
 
       if (type === 'add' && !providedByMe) {
         newAmount = !this.unitsForItemsThatYouDontSell[item._id]
           ? 1
           : this.unitsForItemsThatYouDontSell[item._id] + 1;
+        item.useStock = true;
       } else if (type === 'subtract' && !providedByMe) {
         newAmount =
           this.unitsForItemsThatYouDontSell[item._id] >= 1
             ? this.unitsForItemsThatYouDontSell[item._id] - 1
             : 0;
+        item.useStock = true;
+      }
+
+      if (type === 'infinite' && providedByMe) {
+        this.itemsService.updateItem(
+          {
+            useStock: false,
+          },
+          item._id
+        );
+        this.itemsISell[itemIndex].useStock = false;
+        return;
+      } else if (type === 'infinite' && !providedByMe) {
+        this.itemsIDontSell[itemIndex].useStock = false;
+        return;
       }
 
       if (providedByMe) {
         this.itemsService.updateItem(
           {
             stock: newAmount,
+            useStock: true,
           },
           item._id
         );
 
         this.itemsISell[itemIndex].stock = newAmount;
+        this.itemsISell[itemIndex].useStock = true;
       } else {
         this.itemsIDontSell[itemIndex].stock = newAmount;
+        this.itemsIDontSell[itemIndex].useStock = true;
         this.unitsForItemsThatYouDontSell[item._id] = newAmount;
       }
     } catch (error) {
+      console.error(error);
       this.headerService.showErrorToast();
     }
   }
@@ -861,7 +902,7 @@ export class ProviderItemsComponent implements OnInit {
           : 0,
       notificationStock: true,
       notificationStockLimit: item.notificationStockLimit,
-      useStock: true,
+      useStock: item.useStock,
       type: 'supplier',
     };
 
@@ -914,7 +955,7 @@ export class ProviderItemsComponent implements OnInit {
   async openMagicLinkDialog(itemInput: ItemInput) {
     let fieldsToCreateInEmailDialog: FormData = {
       title: {
-        text: 'Acceso al Club:',
+        text: 'Correo Electrónico para guardarlo:',
       },
       buttonsTexts: {
         accept: 'Recibir el enlace con acceso',
@@ -933,6 +974,37 @@ export class ProviderItemsComponent implements OnInit {
           inputStyles: {
             padding: '11px 1px',
           },
+          styles: {
+            gap: '0px',
+          },
+          bottomTexts: [
+            {
+              text: 'Este correo también sirve para accesar al Club y aprovechar todas las herramientas que se están creando.',
+              styles: {
+                color: '#FFF',
+                fontFamily: 'InterLight',
+                fontSize: '19px',
+                fontStyle: 'normal',
+                fontWeight: '300',
+                lineHeight: 'normal',
+                marginBottom: '28px',
+                marginTop: '36px',
+              },
+            },
+            {
+              text: 'La promesa del Club es desarrollar funcionalidades que necesites.',
+              styles: {
+                color: '#FFF',
+                fontFamily: 'InterLight',
+                fontSize: '19px',
+                fontStyle: 'normal',
+                fontWeight: '300',
+                lineHeight: 'normal',
+                margin: '0px',
+                padding: '0px',
+              },
+            },
+          ],
           submitButton: {
             text: '>',
             styles: {
@@ -958,106 +1030,271 @@ export class ProviderItemsComponent implements OnInit {
     const emailDialogRef = this.dialog.open(FormComponent, {
       data: fieldsToCreateInEmailDialog,
       disableClose: true,
+      panelClass: 'login'
     });
 
     emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
       if (result?.controls?.magicLinkEmailOrPhone.valid) {
         const emailOrPhone = result?.value['magicLinkEmailOrPhone'];
+        const myUser = await this.authService.checkUser(emailOrPhone);
+        const myMerchant = !myUser
+          ? null
+          : await this.merchantsService.merchantDefault(myUser._id);
 
-        let optionsDialogTemplate: OptionsDialogTemplate = {
-          options: [
-            {
-              value: 'Accederé con la clave',
-              callback: async () => {
-                await addPassword(emailOrPhone);
-              },
-            },
-            {
-              value: 'Prefiero recibir el enlace de acceso en mi correo',
-              callback: async () => {
-                const myUser = await this.authService.checkUser(emailOrPhone);
-                const merchantDefault = myUser
-                  ? await this.merchantsService.merchantDefault(myUser._id)
-                  : null;
+        let optionsDialogTemplate: OptionsDialogTemplate = null;
 
-                let toBeDone: {
-                  operation: 'UPDATE' | 'CREATE';
-                  itemId?: string;
-                } = {
-                  operation: 'CREATE',
-                };
-
-                if (merchantDefault) {
-                  toBeDone =
-                    await this.determineIfItemNeedsToBeUpdatedOrCreated(
-                      merchantDefault,
-                      itemInput.parentItem
-                    );
-                }
-
-                lockUI();
-
-                if (toBeDone.operation === 'CREATE') {
-                  const createdItem = (
-                    await this.itemsService.createPreItem(itemInput)
-                  )?.createPreItem;
-
-                  let redirectionRoute = '/ecommerce/provider-items';
-
-                  await this.authService.generateMagicLink(
-                    emailOrPhone,
-                    redirectionRoute,
-                    null,
-                    'MerchantAccess',
-                    {
-                      jsondata: JSON.stringify({
-                        createdItem: createdItem._id,
-                      }),
+        if (!myUser) {
+          optionsDialogTemplate = {
+            title:
+              'Notamos que es la primera vez que intentas acceder con este correo, prefieres:',
+            options: [
+              {
+                value:
+                  'Empezar mi Membresía al Club con este correo electrónico',
+                callback: async () => {
+                  let fieldsToCreateInMerchantRegistrationDialog: FormData = {
+                    buttonsTexts: {
+                      accept: 'Guardar mis datos comerciales',
+                      cancel: 'Omitir',
                     },
-                    []
-                  );
-                } else if (toBeDone.operation === 'UPDATE') {
-                  let redirectionRoute = '/ecommerce/provider-items';
-
-                  await this.authService.generateMagicLink(
-                    emailOrPhone,
-                    redirectionRoute,
-                    null,
-                    'MerchantAccess',
-                    {
-                      jsondata: JSON.stringify({
-                        updateItem: {
-                          _id: toBeDone.itemId,
-                          stock: itemInput.stock,
-                          pricing: itemInput.pricing,
+                    containerStyles: {
+                      padding: '39.74px 17px 47px 24px',
+                    },
+                    fields: [
+                      {
+                        label: 'Nombre Comercial que verán tus compradores:',
+                        name: 'merchantName',
+                        type: 'text',
+                        placeholder: 'Escribe el nombre comercial',
+                        validators: [Validators.pattern(/[\S]/)],
+                        inputStyles: {
+                          padding: '11px 1px',
                         },
-                      }),
-                    },
-                    []
+                      },
+                      {
+                        label:
+                          'WhatsApp que recibirá las facturas que te mandarán los compradores:',
+                        name: 'merchantPhone',
+                        type: 'phone',
+                        placeholder: 'Escribe el nombre comercial',
+                        validators: [Validators.pattern(/[\S]/)],
+                        inputStyles: {
+                          padding: '11px 1px',
+                        },
+                      },
+                    ],
+                  };
+
+                  const merchantRegistrationDialogRef = this.dialog.open(
+                    FormComponent,
+                    {
+                      data: fieldsToCreateInMerchantRegistrationDialog,
+                      disableClose: true,
+                      panelClass: ['login', 'merchant-registration'],
+                    }
                   );
-                }
 
-                unlockUI();
+                  merchantRegistrationDialogRef
+                    .afterClosed()
+                    .subscribe(async (result: FormGroup) => {
+                      const merchantInput: Record<string, any> = {};
 
-                this.dialogService.open(GeneralFormSubmissionDialogComponent, {
-                  type: 'centralized-fullscreen',
-                  props: {
-                    icon: 'check-circle.svg',
-                    showCloseButton: false,
-                    message:
-                      'Se ha enviado un link mágico a tu correo electrónico',
-                  },
-                  customClass: 'app-dialog',
-                  flags: ['no-header'],
-                });
+                      if (result?.controls?.merchantName.valid)
+                        merchantInput.name = result?.value['merchantName'];
+
+                      if (result?.controls?.merchantPhone.valid)
+                        merchantInput.phone = result?.value['merchantPhone'];
+                      lockUI();
+
+                      try {
+                        let toBeDone: {
+                          operation: 'UPDATE' | 'CREATE';
+                          itemId?: string;
+                        } = {
+                          operation: 'CREATE',
+                        };
+
+                        if (myMerchant) {
+                          toBeDone =
+                            await this.determineIfItemNeedsToBeUpdatedOrCreated(
+                              myMerchant,
+                              itemInput.parentItem
+                            );
+                        }
+
+                        if (toBeDone.operation === 'CREATE') {
+                          const createdItem = (
+                            await this.itemsService.createPreItem(itemInput)
+                          )?.createPreItem;
+
+                          let redirectionRoute = '/ecommerce/provider-items';
+
+                          await this.authService.generateMagicLink(
+                            emailOrPhone,
+                            redirectionRoute,
+                            null,
+                            'MerchantAccess',
+                            {
+                              jsondata: JSON.stringify({
+                                createdItem: createdItem._id,
+                                merchantInput,
+                              }),
+                            },
+                            []
+                          );
+                        } else if (toBeDone.operation === 'UPDATE') {
+                          let redirectionRoute = '/ecommerce/provider-items';
+
+                          await this.authService.generateMagicLink(
+                            emailOrPhone,
+                            redirectionRoute,
+                            null,
+                            'MerchantAccess',
+                            {
+                              jsondata: JSON.stringify({
+                                updateItem: {
+                                  _id: toBeDone.itemId,
+                                  stock: itemInput.stock,
+                                  pricing: itemInput.pricing,
+                                },
+                              }),
+                            },
+                            []
+                          );
+                        }
+
+                        unlockUI();
+
+                        this.router.navigate(['ecommerce/magic-link-sent']);
+                      } catch (error) {
+                        unlockUI();
+                        console.error(error);
+                        this.headerService.showErrorToast();
+                      }
+                    });
+                },
               },
-            },
-          ],
-        };
+              {
+                value: 'Intentar con otro correo electrónico.',
+                callback: async () => {
+                  return this.openMagicLinkDialog(itemInput);
+                },
+              },
+              {
+                value:
+                  'Algo anda mal porque no es la primera vez que trato de acceder con este correo',
+                callback: async () => {
+                  this.reportEmailIssue(emailOrPhone);
+                },
+              },
+            ],
+          };
+        } else {
+          optionsDialogTemplate = {
+            title:
+              'Bienvenido de vuelta ' +
+              (myMerchant
+                ? myMerchant.name
+                : myUser.name || myUser.email || myUser.phone) +
+              ', prefieres:',
+            options: [
+              {
+                value: 'Prefiero acceder con la clave',
+                callback: () => {
+                  addPassword(emailOrPhone);
+                },
+              },
+              {
+                value: 'Prefiero recibir el enlace de acceso en mi correo',
+                callback: async () => {
+                  if (result?.controls?.magicLinkEmailOrPhone.valid) {
+                    let emailOrPhone = result?.value['magicLinkEmailOrPhone'];
+
+                    let toBeDone: {
+                      operation: 'UPDATE' | 'CREATE';
+                      itemId?: string;
+                    } = {
+                      operation: 'CREATE',
+                    };
+
+                    if (myMerchant) {
+                      toBeDone =
+                        await this.determineIfItemNeedsToBeUpdatedOrCreated(
+                          myMerchant,
+                          itemInput.parentItem
+                        );
+                    }
+
+                    lockUI();
+
+                    if (toBeDone.operation === 'CREATE') {
+                      const createdItem = (
+                        await this.itemsService.createPreItem(itemInput)
+                      )?.createPreItem;
+
+                      let redirectionRoute = '/ecommerce/provider-items';
+
+                      await this.authService.generateMagicLink(
+                        emailOrPhone,
+                        redirectionRoute,
+                        null,
+                        'MerchantAccess',
+                        {
+                          jsondata: JSON.stringify({
+                            createdItem: createdItem._id,
+                          }),
+                        },
+                        []
+                      );
+                    } else if (toBeDone.operation === 'UPDATE') {
+                      let redirectionRoute = '/ecommerce/provider-items';
+
+                      await this.authService.generateMagicLink(
+                        emailOrPhone,
+                        redirectionRoute,
+                        null,
+                        'MerchantAccess',
+                        {
+                          jsondata: JSON.stringify({
+                            updateItem: {
+                              _id: toBeDone.itemId,
+                              stock: itemInput.stock,
+                              pricing: itemInput.pricing,
+                            },
+                          }),
+                        },
+                        []
+                      );
+                    }
+
+                    unlockUI();
+
+                    this.router.navigate(['ecommerce/magic-link-sent']);
+                  } else if (
+                    result?.controls?.magicLinkEmailOrPhone.valid === false
+                  ) {
+                    unlockUI();
+                    this.snackbar.open('Datos invalidos', 'Cerrar', {
+                      duration: 3000,
+                    });
+                  }
+                },
+              },
+              {
+                value:
+                  'Algo anda mal porque no es la primera vez que trato de acceder con este correo',
+                callback: async () => {
+                  this.reportEmailIssue(emailOrPhone);
+                },
+              },
+            ],
+          };
+        }
 
         this.dialog.open(OptionsDialogComponent, {
           data: optionsDialogTemplate,
           disableClose: true,
+          panelClass: 'login'
         });
       } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
         unlockUI();
@@ -1099,6 +1336,7 @@ export class ProviderItemsComponent implements OnInit {
       const dialog2Ref = this.dialog.open(FormComponent, {
         data: fieldsToCreate,
         disableClose: true,
+        panelClass: 'login'
       });
 
       dialog2Ref.afterClosed().subscribe(async (result: FormGroup) => {
@@ -1121,15 +1359,26 @@ export class ProviderItemsComponent implements OnInit {
 
             itemInput.merchant = merchantDefault._id;
 
-            const createdItem = (await this.itemsService.createItem(itemInput))
-              ?.createItem;
+            const toBeDone =
+              await this.determineIfItemNeedsToBeUpdatedOrCreated(
+                merchantDefault,
+                itemInput.parentItem
+              );
 
-            await this.saleflowService.addItemToSaleFlow(
-              {
-                item: createdItem._id,
-              },
-              saleflowDefault._id
-            );
+            if(toBeDone.operation === 'CREATE') {
+              const createdItem = (await this.itemsService.createItem(itemInput))
+                ?.createItem;
+  
+              await this.saleflowService.addItemToSaleFlow(
+                {
+                  item: createdItem._id,
+                },
+                saleflowDefault._id
+              );
+            } else if(toBeDone.operation === 'UPDATE') {
+              await this.itemsService.updateItem(itemInput, toBeDone.itemId)
+            }
+
 
             window.location.href =
               environment.uri + '/ecommerce/provider-items';
@@ -1159,7 +1408,6 @@ export class ProviderItemsComponent implements OnInit {
     this.searchTutorialCardsOpened[cardName] = false;
 
     if (
-      !this.searchTutorialCardsOpened['searchbar'] &&
       !this.searchTutorialCardsOpened['sold'] &&
       !this.searchTutorialCardsOpened['orders']
     ) {
@@ -1249,6 +1497,18 @@ export class ProviderItemsComponent implements OnInit {
 
   sendWhatsappToAppOwner() {
     let message = `Hola, quiero agregar un artículo como proveedor de www.floristerias.club`;
+
+    const whatsappLink = `https://api.whatsapp.com/send?phone=19188156444&text=${encodeURIComponent(
+      message
+    )}`;
+
+    window.location.href = whatsappLink;
+  }
+
+  reportEmailIssue(emailOrPhone: string) {
+    let message =
+      `Algo anda mal porque es la primera vez que trato de acceder con este correo: ` +
+      emailOrPhone;
 
     const whatsappLink = `https://api.whatsapp.com/send?phone=19188156444&text=${encodeURIComponent(
       message

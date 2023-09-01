@@ -2,15 +2,22 @@
   <div class="container">
     <div class="header">
       <div class="header-top-container">
-        <img src="../../../../../assets/icons/info.svg" />
+          <img src="../../../../../assets/icons/info.svg" />
+          <mat-icon class="add">add</mat-icon>
+        <img src="../../../../../assets/icons/switch-green.svg" />
         <div class="flex" (click)="openNavigation = !openNavigation">
-          <p class="header-top-text">Recompensas de ✨ para 🚀</p>
-          <mat-icon>menu</mat-icon>
+          <p class="header-top-text">Premia a tus Clientes ✨</p>
+          <mat-icon class="menu">menu</mat-icon>
         </div>
       </div>
     </div>
     <div class="content">
-      <p class="content-title">Compradores con ✨</p>
+      <div class="input-container">
+        <input placeholder="Buscar..." />
+        <img src="../../../../../assets/icons/qrcode.svg" />
+      </div>
+      <div class="input-overlay">📦</div>
+      <p class="content-title">COMPRADORES</p>
       <div class="content-cards-container">
         <div class="content-card" *ngFor="let wallet of walletCurrencies">
           <div class="content-card-top-container">
@@ -25,22 +32,19 @@
                   }}
                 </div>
               </div>
-              <div class="content-card-swaps">
-                {{ wallet.metadata ? wallet.metadata?.usesStars : 0 }} canjeos
-              </div>
             </div>
             <app-progress-bar
               [text]="getText(wallet)"
               [status]="getPercentage(wallet)"
             ></app-progress-bar>
           </div>
-          <hr />
-          <p class="content-card-bill">
-            {{ wallet.orderIncomes?.count || 0 }} Facturas en total,
-            {{ wallet.orderIncomes?.total || 0 | currency }}
-          </p>
         </div>
       </div>
+      <p class="bottom-text">
+        Esta plataforma te permite premiar a tus clientes para incentivarlos a
+        que vuelvan a comprarte.
+      </p>
     </div>
   </div>
+  <div class="footer">Otorga “Estrellas”</div>
 </app-navigation>

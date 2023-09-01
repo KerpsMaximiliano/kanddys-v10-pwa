@@ -52,6 +52,7 @@ import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.servic
 import { DomSanitizer } from '@angular/platform-browser';
 import { ContactService } from 'src/app/core/services/contact.service';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
 import { ContactHeaderComponent } from 'src/app/shared/components/contact-header/contact-header.component';
 import * as moment from 'moment';
 
@@ -208,7 +209,8 @@ export class OrderDetailComponent implements OnInit {
     private deliveryzoneService: DeliveryZonesService,
     public _DomSanitizer: DomSanitizer,
     private contactService: ContactService,
-    private _bottomSheet: MatBottomSheet
+    private _bottomSheet: MatBottomSheet,
+    private NgNavigatorShareService: NgNavigatorShareService
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -802,6 +804,119 @@ export class OrderDetailComponent implements OnInit {
     this.activeStatusIndex = status.findIndex(
       (status) => status === updatedStatus
     );
+    this.openNotificationDialog()
+  }
+
+  openEmail() {
+    (document.querySelector('#mailLink') as HTMLElement).click();
+  }
+
+  openNotificationDialog() {
+    const link = `${environment.uri}/ecommerce/order-detail/${this.order._id}`;
+    if (this.order.user.email && this.order.user.phone) {
+      this._bottomSheet.open(OptionsMenuComponent, {
+        data: {
+          title: `¿Notificar del nuevo Status a ${this.order.user.name || this.order.user.email || this.order.user.phone}?`,
+          options: [
+            {
+              value: `Copia el enlace de la factura`,
+              callback: () => {
+                this.clipboard.copy(link);
+              },
+            },
+            {
+              value: `Comparte el enlace de la factura`,
+              callback: () => {
+                this.NgNavigatorShareService.share({
+                  title: '',
+                  url: link,
+                });
+              },
+            },
+            {
+              value: `Compártecelo por Whatsapp`,
+              callback: () => {
+                this.goToWhatsapp()
+              },
+            },
+            {
+              value: `Compártecelo por correo electronico`,
+              callback: () => {
+                this.openEmail();
+              },
+            },
+          ],
+          styles: {
+            fullScreen: true,
+          },
+        }
+      });
+    } else if(!this.order.user.email) {
+      this._bottomSheet.open(OptionsMenuComponent, {
+        data: {
+          title: `¿Notificar del nuevo Status a ${this.order.user.name || this.order.user.email || this.order.user.phone}?`,
+          options: [
+            {
+              value: `Copia el enlace de la factura`,
+              callback: () => {
+                this.clipboard.copy(link);
+              },
+            },
+            {
+              value: `Comparte el enlace de la factura`,
+              callback: () => {
+                this.NgNavigatorShareService.share({
+                  title: '',
+                  url: link,
+                });
+              },
+            },
+            {
+              value: `Compártecelo por Whatsapp`,
+              callback: () => {
+                this.goToWhatsapp()
+              },
+            },
+          ],
+          styles: {
+            fullScreen: true,
+          },
+        }
+      });
+    } else {
+      this._bottomSheet.open(OptionsMenuComponent, {
+        data: {
+          title: `¿Notificar del nuevo Status a ${this.order.user.name || this.order.user.email || this.order.user.phone}?`,
+          options: [
+            {
+              value: `Copia el enlace de la factura`,
+              callback: () => {
+                this.clipboard.copy(link);
+              },
+            },
+            {
+              value: `Comparte el enlace de la factura`,
+              callback: () => {
+                this.NgNavigatorShareService.share({
+                  title: '',
+                  url: link,
+                });
+              },
+            },
+            {
+              value: `Compártecelo por correo electronico`,
+              callback: () => {
+                this.openEmail();
+              },
+            },
+          ],
+          styles: {
+            fullScreen: true,
+          },
+        }
+      });
+    }
+    
   }
 
   createTag() {

@@ -1,0 +1,94 @@
+.container {
+    min-height: 100vh;
+    background-color: #181D17;
+    padding: 40px 17px 0px 24px;
+    .input-area {
+        margin-bottom: 50px;
+        .label {
+            max-width: 385px;
+            color: #FFF;
+            font-family: InterBold;
+            font-size: 19px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: normal;
+            margin-bottom: 30px;
+        }
+        .input {
+            input {
+                background: none;
+                border: none;
+                border-bottom: 2px solid #87CD9B;
+                width: 100%;
+                color: #FFF;
+                font-family: InterBold;
+                font-size: 21px;
+                font-style: normal;
+                font-weight: 700;
+                line-height: normal;
+                padding-bottom: 13px;
+            }
+
+            ::ng-deep .mat-form-field {
+                width: 48%;
+                margin: 0px 1%
+            }
+
+            ::ng-deep .mat-form-field-underline {
+                border-bottom: 2px solid #87CD9B;
+            }
+
+
+            ::ng-deep .mat-select-arrow {
+                color: #87CD9B;
+            }
+
+            ::ng-deep .mat-select-value {
+                text-align: center;
+            }
+
+            ::ng-deep .mat-select-value-text {
+                color: white;
+                font-family: InterBold;
+                font-size: 21px;
+                font-style: normal;
+                font-weight: 700;
+                line-height: normal;
+            }
+
+            ::ng-deep .mat-form-field-label {
+                text-align: center;
+                top: 8px;
+                color: white;
+                font-family: InterBold;
+                font-size: 21px;
+                font-style: normal;
+                font-weight: 700;
+                line-height: normal;
+            }
+        }
+    }
+    button.cancel {
+        color: #C4C5C3;
+        font-family: InterRegular;
+        font-size: 17px;
+        font-style: normal;
+        font-weight: 300;
+        line-height: normal;
+        padding: 10px;
+        margin-right: 20px;
+        margin-bottom: 20px;
+    }
+    button.submit {
+        color: #181D17;
+        font-family: InterBold;
+        font-size: 17px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        border-radius: 8px;
+        background: #87CD9B;
+        padding: 10px;
+        margin-bottom: 20px;
+    }
+}
