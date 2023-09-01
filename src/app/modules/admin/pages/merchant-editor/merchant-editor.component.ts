@@ -212,7 +212,7 @@ export class MerchantEditorComponent implements OnInit {
   }
 
   openFormForField = (
-    field: 'PAYMENT-METHODS'
+    field: 'PAYMENT-METHODS' | 'PAYPAL-METHOD' | 'BANK-METHOD'
   ) => {
     let fieldsToCreateForFormDialog: FormData = {
       fields: [],
@@ -236,6 +236,7 @@ export class MerchantEditorComponent implements OnInit {
             inputStyles: {
               display: 'none'
             },
+            validators: [Validators.pattern(/[\S]/)],
             bottomButton: {
               text: 'PayPal',
               containerStyles: {
@@ -258,6 +259,7 @@ export class MerchantEditorComponent implements OnInit {
             inputStyles: {
               display: 'none'
             },
+            validators: [Validators.pattern(/[\S]/)],
             bottomButton: {
               text: 'Transferencia bancaria',
               containerStyles: {
