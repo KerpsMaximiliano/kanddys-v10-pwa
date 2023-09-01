@@ -1373,8 +1373,8 @@ export class QuotationBidsComponent implements OnInit {
                 callback: async () => {
                   let fieldsToCreateInMerchantRegistrationDialog: FormData = {
                     buttonsTexts: {
-                      accept: 'Confirmar mi correo',
-                      cancel: 'Cancelar',
+                      accept: 'Guardar mis datos comerciales',
+                      cancel: 'Omitir',
                     },
                     containerStyles: {
                       padding: '39.74px 17px 47px 24px',

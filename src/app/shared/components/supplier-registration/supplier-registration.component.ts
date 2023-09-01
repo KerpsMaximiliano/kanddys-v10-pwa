@@ -116,6 +116,8 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
   }
 
   async executeInitProcesses() {
+    localStorage.removeItem('confirm-quotation-data');
+
     this.routeParamsSubscription = this.route.params.subscribe(
       async ({ quotationId }) => {
         this.queryParamsSubscription = this.route.queryParams.subscribe(
@@ -578,16 +580,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
       });
 
     if (openSuccessDialog) {
-      this.dialogService.open(GeneralFormSubmissionDialogComponent, {
-        type: 'centralized-fullscreen',
-        props: {
-          icon: 'check-circle.svg',
-          showCloseButton: false,
-          message: 'Se ha enviado un link mágico a tu correo electrónico',
-        },
-        customClass: 'app-dialog',
-        flags: ['no-header'],
-      });
+      this.router.navigate(['ecommerce/magic-link-sent']);
     }
   }
 
@@ -1180,8 +1173,8 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
                 callback: async () => {
                   let fieldsToCreateInMerchantRegistrationDialog: FormData = {
                     buttonsTexts: {
-                      accept: 'Confirmar mi correo',
-                      cancel: 'Cancelar',
+                      accept: 'Guardar mis datos comerciales',
+                      cancel: 'Omitir',
                     },
                     containerStyles: {
                       padding: '39.74px 17px 47px 24px',
@@ -1192,10 +1185,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
                         name: 'merchantName',
                         type: 'text',
                         placeholder: 'Escribe el nombre comercial',
-                        validators: [
-                          Validators.pattern(/[\S]/),
-                          Validators.required,
-                        ],
+                        validators: [Validators.pattern(/[\S]/)],
                         inputStyles: {
                           padding: '11px 1px',
                         },
@@ -1206,10 +1196,7 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
                         name: 'merchantPhone',
                         type: 'phone',
                         placeholder: 'Escribe el nombre comercial',
-                        validators: [
-                          Validators.pattern(/[\S]/),
-                          Validators.required,
-                        ],
+                        validators: [Validators.pattern(/[\S]/)],
                         inputStyles: {
                           padding: '11px 1px',
                         },
@@ -1229,16 +1216,17 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
                   merchantRegistrationDialogRef
                     .afterClosed()
                     .subscribe(async (result: FormGroup) => {
-                      if (
-                        result?.controls?.merchantName.valid &&
-                        result?.controls?.merchantPhone.valid
-                      ) {
-                        const merchantInput: Record<string, any> = {
-                          name: result?.value['merchantName'],
-                          phone: result?.value['merchantPhone'],
-                        };
+                      const merchantInput: Record<string, any> = {};
 
-                        lockUI();
+                      if (result?.controls?.merchantName.valid)
+                        merchantInput.name = result?.value['merchantName'];
+
+                      if (result?.controls?.merchantPhone.valid)
+                        merchantInput.phone = result?.value['merchantPhone'];
+
+                      lockUI();
+
+                      try {
                         const itemsThatArentOnSupplierSaleflow =
                           this.quotationItems.filter(
                             (item) => !item.inSaleflow && item.pricing !== null
@@ -1346,6 +1334,10 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
 
                         this.router.navigate(['ecommerce/magic-link-sent']);
                         unlockUI();
+                      } catch (error) {
+                        unlockUI();
+                        console.error(error);
+                        this.headerService.showErrorToast();
                       }
                     });
                 },
@@ -1591,7 +1583,9 @@ export class SupplierRegistrationComponent implements OnInit, OnDestroy {
                 true
               );
 
-            const itemIdsToUpdate =  itemsToUpdate ? Object.keys(itemsToUpdate) : [];
+            const itemIdsToUpdate = itemsToUpdate
+              ? Object.keys(itemsToUpdate)
+              : [];
 
             if (itemsToUpdate && itemIdsToUpdate.length > 0) {
               await Promise.all(

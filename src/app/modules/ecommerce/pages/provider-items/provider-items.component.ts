@@ -460,7 +460,7 @@ export class ProviderItemsComponent implements OnInit {
     itemIndex: number,
     providedByMe: boolean
   ) {
-    console.log("providedByMe", providedByMe);
+    console.log('providedByMe', providedByMe);
     try {
       let newAmount: number;
       if (type === 'add' && providedByMe) {
@@ -1051,8 +1051,8 @@ export class ProviderItemsComponent implements OnInit {
                 callback: async () => {
                   let fieldsToCreateInMerchantRegistrationDialog: FormData = {
                     buttonsTexts: {
-                      accept: 'Confirmar mi correo',
-                      cancel: 'Cancelar',
+                      accept: 'Guardar mis datos comerciales',
+                      cancel: 'Omitir',
                     },
                     containerStyles: {
                       padding: '39.74px 17px 47px 24px',
@@ -1065,7 +1065,6 @@ export class ProviderItemsComponent implements OnInit {
                         placeholder: 'Escribe el nombre comercial',
                         validators: [
                           Validators.pattern(/[\S]/),
-                          Validators.required,
                         ],
                         inputStyles: {
                           padding: '11px 1px',
@@ -1079,7 +1078,6 @@ export class ProviderItemsComponent implements OnInit {
                         placeholder: 'Escribe el nombre comercial',
                         validators: [
                           Validators.pattern(/[\S]/),
-                          Validators.required,
                         ],
                         inputStyles: {
                           padding: '11px 1px',
@@ -1100,17 +1098,16 @@ export class ProviderItemsComponent implements OnInit {
                   merchantRegistrationDialogRef
                     .afterClosed()
                     .subscribe(async (result: FormGroup) => {
-                      if (
-                        result?.controls?.merchantName.valid &&
-                        result?.controls?.merchantPhone.valid
-                      ) {
-                        lockUI();
+                      const merchantInput: Record<string, any> = {};
 
-                        const merchantInput: Record<string, any> = {
-                          name: result?.value['merchantName'],
-                          phone: result?.value['merchantPhone'],
-                        };
+                      if (result?.controls?.merchantName.valid)
+                        merchantInput.name = result?.value['merchantName'];
 
+                      if (result?.controls?.merchantPhone.valid)
+                        merchantInput.phone = result?.value['merchantPhone'];
+                      lockUI();
+
+                      try {
                         let toBeDone: {
                           operation: 'UPDATE' | 'CREATE';
                           itemId?: string;
@@ -1125,7 +1122,6 @@ export class ProviderItemsComponent implements OnInit {
                               itemInput.parentItem
                             );
                         }
-
 
                         if (toBeDone.operation === 'CREATE') {
                           const createdItem = (
@@ -1170,20 +1166,11 @@ export class ProviderItemsComponent implements OnInit {
 
                         unlockUI();
 
-                        this.dialogService.open(
-                          GeneralFormSubmissionDialogComponent,
-                          {
-                            type: 'centralized-fullscreen',
-                            props: {
-                              icon: 'check-circle.svg',
-                              showCloseButton: false,
-                              message:
-                                'Se ha enviado un link mágico a tu correo electrónico',
-                            },
-                            customClass: 'app-dialog',
-                            flags: ['no-header'],
-                          }
-                        );
+                        this.router.navigate(['ecommerce/magic-link-sent']);
+                      } catch (error) {
+                        unlockUI();
+                        console.error(error);
+                        this.headerService.showErrorToast();
                       }
                     });
                 },
@@ -1283,20 +1270,7 @@ export class ProviderItemsComponent implements OnInit {
 
                     unlockUI();
 
-                    this.dialogService.open(
-                      GeneralFormSubmissionDialogComponent,
-                      {
-                        type: 'centralized-fullscreen',
-                        props: {
-                          icon: 'check-circle.svg',
-                          showCloseButton: false,
-                          message:
-                            'Se ha enviado un link mágico a tu correo electrónico',
-                        },
-                        customClass: 'app-dialog',
-                        flags: ['no-header'],
-                      }
-                    );
+                    this.router.navigate(['ecommerce/magic-link-sent']);
                   } else if (
                     result?.controls?.magicLinkEmailOrPhone.valid === false
                   ) {
