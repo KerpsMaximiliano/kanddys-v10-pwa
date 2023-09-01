@@ -182,6 +182,8 @@ export class MerchantOffersComponent implements OnInit {
         data: item._id,
       });
       await this.itemInCart(item);
+      console.log(this.headerService.order.products);
+      
       if (this.isItemInCart) this.goToCheckout();
     }
   }

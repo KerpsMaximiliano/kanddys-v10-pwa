@@ -346,6 +346,8 @@ export class HeaderService {
       order.products.push(product);
       this.order?.products?.push(product);
     }
+    this.order = order;
+    console.log("🚀 ~ file: header.service.ts:350 ~ HeaderService ~ order:", order)
     localStorage.setItem(this.saleflow._id, JSON.stringify({ order, ...rest }));
   }
 
