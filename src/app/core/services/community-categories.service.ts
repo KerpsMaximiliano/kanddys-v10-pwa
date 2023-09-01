@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { CommunityCategory, CommunityCategoryInput } from '../models/community-categories';
-import { communitycategories, createCommunityCategory } from '../graphql/community-categories.gql';
+import { communitycategories, createCommunityCategory, communitycategoriesPaginate } from '../graphql/community-categories.gql';
 import { ListParams } from '../types/general.types';
+import { PaginationInput } from 'src/app/core/models/saleflow';
 
 @Injectable({
   providedIn: 'root',
@@ -32,6 +33,22 @@ export class CommunityCategoriesService {
       });
       if (!result) return undefined;
       return result?.communitycategories;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async communitycategoriesPaginate(
+    paginate: PaginationInput
+  ): Promise<{ results: any[] }> {
+    try {
+      const result = await this.graphql.query({
+        query: communitycategoriesPaginate,
+        variables: { paginate },
+        fetchPolicy: 'no-cache',
+      });
+      if (!result) return undefined;
+      return result?.communitycategoriesPaginate;
     } catch (e) {
       console.log(e);
     }

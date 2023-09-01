@@ -88,6 +88,10 @@ export const merchantDefault = gql`
       bio
       address
       contactFooter
+      categories {
+        _id
+        name
+      }
       owner {
         _id
         phone

@@ -3,6 +3,13 @@ import { AirtableConfiguration, AirtableConfigurationInput } from './airtable';
 import { SocialMediaModel, SocialMediaModelInput } from './saleflow';
 import { User } from './user';
 
+export class Category {
+  _id: string;
+  name: string;
+  description: string;
+  type: string;
+}
+
 export class Merchant extends Model<Merchant> {
   owner?: User;
   name: string;
@@ -18,6 +25,7 @@ export class Merchant extends Model<Merchant> {
   facebook?: string;
   instagram?: string;
   category?: String;
+  categories?: Category[];
   active?: boolean;
   ipUser?: string;
   hasOwner?: boolean;
