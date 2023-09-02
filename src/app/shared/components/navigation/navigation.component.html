@@ -55,9 +55,20 @@
           Gestión de Proveedor:
         </div>
         <div class="tab-content">
-          <div class="tab-content-item" *ngFor="let item of tabProvider">
-            {{ item }}
-          </div>
+          <!-- <div class="tab-content-item" *ngFor="let item of tabProvider">
+            {{ item.text }}
+          </div> -->
+          <ul>
+            <li class="tab-content-item" [routerLinkActive]="!link.isDummy ? 'active' : ''" *ngFor="let link of tabProvider">
+              <a
+                  [routerLink]="!link.isDummy ? link.routerLink : null"
+                  (click)="redirectToLink(link)"
+                  style="padding: 0px"
+              >
+                <span class="text">{{link.text}}</span><br>
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
 
@@ -67,9 +78,20 @@
           Gestión de mi Tienda:
         </div>
         <div class="tab-content">
-          <div class="tab-content-item" *ngFor="let item of tabVendor">
-            {{ item }}
-          </div>
+          <!-- <div class="tab-content-item" *ngFor="let item of tabVendor">
+            {{ item.text }}
+          </div> -->
+          <ul>
+            <li class="tab-content-item" [routerLinkActive]="!link.isDummy ? 'active' : ''" *ngFor="let link of tabVendor">
+              <a
+                  [routerLink]="!link.isDummy ? link.routerLink : null"
+                  (click)="redirectToLink(link)"
+                  style="padding: 0px"
+              >
+                <span class="text">{{link.text}}</span><br>
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
 
@@ -79,9 +101,9 @@
         </div>
         <div class="tab-content">
           <ul>
-            <li class="tab-content-item" routerLinkActive="active" *ngFor="let link of filterData()">
+            <li class="tab-content-item" [routerLinkActive]="!link.isDummy ? 'active' : ''" *ngFor="let link of filterData()">
               <a
-                  [routerLink]="link.routerLink"
+                  [routerLink]="!link.isDummy ? link.routerLink : null"
                   (click)="redirectToLink(link)"
                   style="padding: 0px"
               >

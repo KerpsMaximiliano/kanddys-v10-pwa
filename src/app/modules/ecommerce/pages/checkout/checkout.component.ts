@@ -1111,7 +1111,7 @@ export class CheckoutComponent implements OnInit {
           matDialogRef.afterClosed().subscribe(async (value) => {
             if (!value) return;
             if (value.user?._id || value.session.user._id) {
-              await this.orderService.authOrder(createdOrder, value._id);
+              await this.orderService.authOrder(createdOrder, value.user?._id || value.session.user._id);
               unlockUI();
               this.router.navigate([`../../order-detail/${createdOrder}`], {
                 relativeTo: this.route,

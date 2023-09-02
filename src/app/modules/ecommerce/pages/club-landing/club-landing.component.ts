@@ -9,7 +9,6 @@ import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/option
 import { ClubDialogComponent } from 'src/app/shared/dialogs/club-dialog/club-dialog.component';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -28,6 +27,7 @@ import {
   OptionsDialogComponent,
   OptionsDialogTemplate,
 } from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 
 interface ReviewsSwiper {
   title: string;
@@ -42,7 +42,7 @@ interface Tabs {
     text: string;
     active: boolean;
     content?: string[];
-  }>
+  }>;
   active?: boolean;
 }
 
@@ -69,181 +69,396 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     tab1: [
       {
         text: "🛟 “Cotiza Flash” con Proveedores",
-        subText: "Seleccionas, comparas y decides"
+        subText: "Seleccionas, comparas y decides",
+        routerLink: ["/ecommerce/supplier-items-selector"],
+        linkName: "",
+        queryParams: {},
+        authorization: false,
+        isDummy: false
       },
       {
-        text: "🧞 “3 Ofertas Flash” de los Proveedores",
-        subText: "Compra flores ideales para eventos cortos e inmediatos"
+        text: "🧞 “Ofertas Flash” de los Proveedores",
+        subText: "Compra flores ideales para eventos cortos e inmediatos",
+        routerLink: ["/"],
+        linkName: "",
+        queryParams: {},
+        authorization: false,
+        isDummy: true
       },
       {
         text: "📦 “Control Flash” de los pedidos",
-        subText: "Sube la foto de la factura y ve cambiando el status según el progreso"
+        subText: "Sube la foto de la factura y ve cambiando el status según el progreso",
+        routerLink: ["/admin/order-progress"],
+        linkName: "",
+        queryParams: {},
+        authorization: true,
+        isDummy: false
       },
       {
         text: "🧾 “Factura Flash” a tus compradores",
-        subText: "Escribe fácilmente lo que te compraron para que lleves el control desde tu celular"
+        subText: "Escribe fácilmente lo que te compraron para que lleves el control desde tu celular",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "📝 “Cotiza Flash” a tus compradores",
-        subText: "Escribe fácilmente lo que potencialmente te compraran y potencialmente conviértela en factura."
+        subText: "Escribe fácilmente lo que potencialmente te compraran y potencialmente conviértela en factura.",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "🎁 “Premios Flash” para tus seguidores",
-        subText: "Incentiva a quienes te mencionan en sus redes sociales"
+        subText: "Incentiva a quienes te mencionan en sus redes sociales",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "✨ “Recompensas Flash” para compradores",
-        subText: "Fideliza a tus compradores con la foto de la factura que le emites"
+        subText: "Fideliza a tus compradores con la foto de la factura que le emites",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "🙌 “Afiliación Flash” de membresía al Club",
-        subText: "Comparte tu código ALGOID para ganar hasta $125 cada mes por cada invitado"
+        subText: "Comparte tu código ALGOID para ganar hasta $125 cada mes por cada invitado",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "🔗 “QR Flash” para guiarlos a donde necesites ",
-        subText: "Pegas el enlace y descargas el QR"
+        subText: "Pegas el enlace y descargas el QR",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "✋ “Opinión de Compradores”",
-        subText: "Compradores reciben una encuesta que después que recibieron lo que compraron"
+        subText: "Compradores reciben una encuesta que después que recibieron lo que compraron",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
-        subText: ""
+        subText: "",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       }
     ],
     tab2: [
       {
-        text: "🛟 “144 Cotizaciones Flash” con Proveedores",
-        subText: "Seleccionas, comparas y decides"
+        text: "🛟 “Cotizaciones Flash” con Proveedores",
+        subText: "Seleccionas, comparas y decides",
+        routerLink: ["/ecommerce/supplier-items-selector"],
+        linkName: "",
+        queryParams: {},
+        authorization: false,
+        isDummy: false
       },
       {
-        text: "🧞 “41 Ofertas Flash” de los Proveedores",
-        subText: "Compra flores ideales para eventos cortos e inmediatos"
+        text: "🧞 “Ofertas Flash” de los Proveedores",
+        subText: "Compra flores ideales para eventos cortos e inmediatos",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
-        text: "📦 “144 pedidos en Control Flash”",
-        subText: "Sube la foto de la factura y ve cambiando el status según el progreso"
+        text: "📦 “pedidos en Control Flash”",
+        subText: "Sube la foto de la factura y ve cambiando el status según el progreso",
+        routerLink: ["/admin/order-progress"],
+        linkName: "",
+        queryParams: {},
+        authorization: true,
+        isDummy: false
       },
       {
-        text: "🛒 “144 Factura Flash” a tus compradores",
-        subText: "Escribes fácilmente lo que te compraron para que lleves el control desde tu celular"
+        text: "🛒 “Factura Flash” a tus compradores",
+        subText: "Escribes fácilmente lo que te compraron para que lleves el control desde tu celular",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
-        text: "🎁 “144 seguidores en Premios Flash”",
-        subText: "Incentiva a quienes te mencionan en sus redes sociales"
+        text: "🎁 “seguidores en Premios Flash”",
+        subText: "Incentiva a quienes te mencionan en sus redes sociales",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
-        text: "✨ “144 compradores en Recompensas Flash”",
-        subText: "Fideliza a tus compradores con la foto de la factura que le emites"
+        text: "✨ “compradores en Recompensas Flash”",
+        subText: "Fideliza a tus compradores con la foto de la factura que le emites",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
-        text: "🙌 “144  códigos activos de Afiliación Flash”",
-        subText: "Tu código ALGOID, ganas hasta $125 cada mes por cada invitado. Haz ganado $14,547."
+        text: "🙌 “códigos activos de Afiliación Flash”",
+        subText: "Tu código ALGOID, ganas hasta $125 cada mes por cada invitado. Haz ganado $14,547.",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
-        text: "🔗 “144 enlaces QR Flash”",
-        subText: "Pegas el enlace y descargas el QR"
+        text: "🔗 “enlaces QR Flash”",
+        subText: "Pegas el enlace y descargas el QR",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
-        text: "✋ “144 opiniones de Compradores”",
-        subText: "Encuesta que reciben después que recibieron lo que compraron"
+        text: "✋ “opiniones de Compradores”",
+        subText: "Encuesta que reciben después que recibieron lo que compraron",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
-        subText: ""
+        subText: "",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
     ],
     tab3: [
       {
         text: "🛟 “Cotiza Flash” con Proveedores",
-        subText: "Seleccionas, comparas y decides"
+        subText: "Seleccionas, comparas y decides",
+        routerLink: ["/ecommerce/supplier-items-selector"],
+        linkName: "",
+        queryParams: {},
+        authorization: false,
+        isDummy: false
       },
       {
         text: "🧞 “Ofertas Flash” para Miembros",
-        subText: "Vende las flores ideales para eventos cortos e inmediatos"
+        subText: "Vende las flores ideales para eventos cortos e inmediatos",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "📦 “Control Flash” de los pedidos",
-        subText: "Sube la foto de la factura y ve cambiando el status según el progreso"
+        subText: "Sube la foto de la factura y ve cambiando el status según el progreso",
+        routerLink: ["/admin/order-progress"],
+        linkName: "",
+        queryParams: {},
+        authorization: true,
+        isDummy: false
       },
       {
         text: "🧾 “Factura Flash” a tus compradores",
-        subText: "Selecciona lo que te compraron para que lleves el control desde tu celular"
+        subText: "Selecciona lo que te compraron para que lleves el control desde tu celular",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "📝 “Cotiza Flash” a tus compradores",
-        subText: "Selecciona lo que potencialmente te compraran y potencialmente conviértela en factura."
+        subText: "Selecciona lo que potencialmente te compraran y potencialmente conviértela en factura.",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "🎁 “Premios Flash” para tus seguidores",
-        subText: "Incentiva a quienes te mencionan en sus redes sociales"
+        subText: "Incentiva a quienes te mencionan en sus redes sociales",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "✨ “Recompensas Flash” para compradores",
-        subText: "Fideliza a tus compradores con la foto de la factura que le emites"
+        subText: "Fideliza a tus compradores con la foto de la factura que le emites",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "🙌 “Afiliación Flash” de membresía al Club",
-        subText: "Comparte tu código ALGOID para ganar hasta $125 cada mes por cada invitado"
+        subText: "Comparte tu código ALGOID para ganar hasta $125 cada mes por cada invitado",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "🔗 “QR Flash” para guiarlos a donde necesites ",
-        subText: "Pegas el enlace y descargas el QR"
+        subText: "Pegas el enlace y descargas el QR",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "✋ “Opinión de Compradores”",
-        subText: "Compradores reciben una encuesta que después que recibieron lo que compraron"
+        subText: "Compradores reciben una encuesta que después que recibieron lo que compraron",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
-        subText: ""
+        subText: "",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       }
     ],
     tab4: [
       {
         text: "🛟 “Cotiza Flash” con Proveedores",
-        subText: "Seleccionas, comparas y decides"
+        subText: "Seleccionas, comparas y decides",
+        routerLink: ["/ecommerce/supplier-items-selector"],
+        linkName: "",
+        queryParams: {},
+        authorization: false,
+        isDummy: false
       },
       {
         text: "🧞 “Ofertas Flash” para Miembros",
-        subText: "Vende las flores ideales para eventos cortos e inmediatos"
+        subText: "Vende las flores ideales para eventos cortos e inmediatos",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "📦 “Control Flash” de los pedidos",
-        subText: "Sube la foto de la factura y ve cambiando el status según el progreso"
+        subText: "Sube la foto de la factura y ve cambiando el status según el progreso",
+        routerLink: ["/admin/order-progress"],
+        linkName: "",
+        queryParams: {},
+        authorization: true,
+        isDummy: false
       },
       {
         text: "🧾 “Factura Flash” a tus compradores",
-        subText: "Selecciona lo que te compraron para que lleves el control desde tu celular"
+        subText: "Selecciona lo que te compraron para que lleves el control desde tu celular",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "📝 “Cotiza Flash” a tus compradores",
-        subText: "Selecciona lo que potencialmente te compraran y potencialmente conviértela en factura."
+        subText: "Selecciona lo que potencialmente te compraran y potencialmente conviértela en factura.",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "🎁 “Premios Flash” para tus seguidores",
-        subText: "Incentiva a quienes te mencionan en sus redes sociales"
+        subText: "Incentiva a quienes te mencionan en sus redes sociales",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "✨ “Recompensas Flash” para compradores",
-        subText: "Fideliza a tus compradores con la foto de la factura que le emites"
+        subText: "Fideliza a tus compradores con la foto de la factura que le emites",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "🙌 “Afiliación Flash” de membresía al Club",
-        subText: "Comparte tu código ALGOID para ganar hasta $125 cada mes por cada invitado"
+        subText: "Comparte tu código ALGOID para ganar hasta $125 cada mes por cada invitado",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "🔗 “QR Flash” para guiarlos a donde necesites ",
-        subText: "Pegas el enlace y descargas el QR"
+        subText: "Pegas el enlace y descargas el QR",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "✋ “Opinión de Compradores”",
-        subText: "Compradores reciben una encuesta que después que recibieron lo que compraron"
+        subText: "Compradores reciben una encuesta que después que recibieron lo que compraron",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       },
       {
         text: "Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales",
-        subText: ""
+        subText: "",
+        routerLink: [""],
+        linkName: "",
+        queryParams: {},
+        isDummy: true,
+        authorization: false
       }
     ]
   }
@@ -257,98 +472,184 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   ]
 
   tabVendor = [
-    "🌼 Lo que vendo",
-    "📦 Control Flash",
-    "💰 Mis beneficios",
-    "🧾 Facturas Flash",
-    "📝  Cotizaciones Flash",
-    "📢 Comisiones de quienes venden por mi"
+    {
+      text: "🌼 Lo que vendo",
+      routerLink: ["/admin/dashboard"],
+      linkName: "",
+      queryParams: {},
+      authorization: true,
+      isDummy: false
+    },
+    {
+      text: "📦 Control Flash",
+      routerLink: ["/admin/order-progress"],
+      linkName: "",
+      queryParams: {},
+      authorization: true,
+      isDummy: false
+    },
+    // {
+    //   text: "💰 Mis beneficios",
+    //   routerLink: ["/ecommerce/supplier-items-selector"],
+    //   linkName: "",
+    //   queryParams: {},
+    //   authorization: true,
+    //   isDummy: false
+    // },
+    // {
+    //   text: "🧾 Facturas Flash",
+    //   routerLink: ["/ecommerce/supplier-items-selector"],
+    //   linkName: "",
+    //   queryParams: {},
+    //   authorization: false,
+    //   isDummy: false
+    // },
+    // {
+    //   text: "📝 Cotizaciones Flash",
+    //   routerLink: ["/ecommerce/supplier-items-selector"],
+    //   linkName: "",
+    //   queryParams: {},
+    //   authorization: false,
+    //   isDummy: false
+    // },
+    // {
+    //   text: "📢 Comisiones de quienes venden por mi",
+    //   routerLink: ["/ecommerce/supplier-items-selector"],
+    //   linkName: "",
+    //   queryParams: {},
+    //   authorization: false,
+    //   isDummy: false
+    // },
   ]
 
   tabProvider = [
-    "🌼 Lo que vendo",
-    "📦 Control Flash",
-    "💰 Mis beneficios",
-    "🧾 Facturas Flash",
-    "📝  Cotizaciones Flash",
-    "📢 Comisiones de quienes venden por mi"
+    {
+      text: "🌼 Lo que vendo",
+      routerLink: ["/admin/supplier-dashboard"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: true,
+      isDummy: false
+    },
+    {
+      text: "📦 Control Flash",
+      routerLink: ["/admin/order-progress"],
+      linkName: "",
+      queryParams: {},
+      authorization: true,
+      isDummy: false
+    },
+    // {
+    //   text: "💰 Mis beneficios",
+    //   routerLink: ["/ecommerce/supplier-items-selector"],
+    //   linkName: "",
+    //   queryParams: {},
+    //   authorization: true,
+    //   isDummy: false
+    // },
+    // {
+    //   text: "🧾 Facturas Flash",
+    //   routerLink: ["/ecommerce/supplier-items-selector"],
+    //   linkName: "",
+    //   queryParams: {},
+    //   authorization: false,
+    //   isDummy: false
+    // },
+    // {
+    //   text: "📝 Cotizaciones Flash",
+    //   routerLink: ["/ecommerce/supplier-items-selector"],
+    //   linkName: "",
+    //   queryParams: {},
+    //   authorization: false,
+    //   isDummy: false
+    // },
+    // {
+    //   text: "📢 Comisiones de quienes venden por mi",
+    //   routerLink: ["/ecommerce/supplier-items-selector"],
+    //   linkName: "",
+    //   queryParams: {},
+    //   authorization: false,
+    //   isDummy: false
+    // },
   ]
 
   tabs: Array<Tabs> = [
     {
-      text: "Control",
+      text: 'Control',
       subTabs: [
         {
-          text: "Ordenes",
+          text: 'Ordenes',
           active: true,
           content: [
-            "“.. puedo ver el estado actualizado de cada orden desde mi celular”",
-            "“.. la función de notificar a los clientes por WhatsApp o correo electrónico es una verdadera maravilla!”",
-            "“¡Es como magia para mantener todo bajo control!”",
-            "“.. me permite estar al tanto de cada orden de una manera que nunca imaginé”",
-            "“.. puedo filtrar las facturas según su estado para priorizar lo que necesito atender primero”",
-            "“.. es como tener a tu asistente personal siempre contigo”",
-            "“.. puedo ver qué órdenes necesitan mi atención inmediata y cuáles están en camino”"
-          ]
+            '“.. puedo ver el estado actualizado de cada orden desde mi celular”',
+            '“.. la función de notificar a los clientes por WhatsApp o correo electrónico es una verdadera maravilla!”',
+            '“¡Es como magia para mantener todo bajo control!”',
+            '“.. me permite estar al tanto de cada orden de una manera que nunca imaginé”',
+            '“.. puedo filtrar las facturas según su estado para priorizar lo que necesito atender primero”',
+            '“.. es como tener a tu asistente personal siempre contigo”',
+            '“.. puedo ver qué órdenes necesitan mi atención inmediata y cuáles están en camino”',
+          ],
         },
         {
-          text: "Entregas",
+          text: 'Entregas',
           active: false,
           content: [
-            "“.. puedo cobrar extra según la zona de entrega especificada por el comprador”",
-            "“..  maximizo lo que cobro y me permite entregar mas lejos”",
-            "“..  me muestra un enfoque estratégico de las entregas y eso me ayuda en la logística para entregar a tiempo”"
-          ]
+            '“.. puedo cobrar extra según la zona de entrega especificada por el comprador”',
+            '“..  maximizo lo que cobro y me permite entregar mas lejos”',
+            '“..  me muestra un enfoque estratégico de las entregas y eso me ayuda en la logística para entregar a tiempo”',
+          ],
         },
         {
-          text: "Clientes",
+          text: 'Clientes',
           active: false,
           content: [
-            "“.. los reportes que puedo exportar me ayudan a planificar y ejecutar campañas”",
-            "“..  puedo dirigir mis mensajes a grupos específicos con información precisa basado en sus preferencias”",
-            "“..  tener una visión clara de quiénes son mis compradores y qué quieren”"
-          ]
-        }
+            '“.. los reportes que puedo exportar me ayudan a planificar y ejecutar campañas”',
+            '“..  puedo dirigir mis mensajes a grupos específicos con información precisa basado en sus preferencias”',
+            '“..  tener una visión clara de quiénes son mis compradores y qué quieren”',
+          ],
+        },
       ],
-      active: false
+      active: false,
     },
     {
-      text: "Más Ventas",
+      text: 'Más Ventas',
       subTabs: [
         {
-          text: "#hashtags",
+          text: '#hashtags',
           active: false,
           content: [
-            "“.. asigno un simple #hashtag y, voilà, los interesados pueden dirigirse directamente a la compra desde cualquier red social”",
-            "“.. es una manera genial de simplificar el proceso de compra desde las plataformas sociales”",
-            "“.. convierto a los seguidores en compradores de manera rápida y sencilla”"
-          ]
+            '“.. asigno un simple #hashtag y, voilà, los interesados pueden dirigirse directamente a la compra desde cualquier red social”',
+            '“.. es una manera genial de simplificar el proceso de compra desde las plataformas sociales”',
+            '“.. convierto a los seguidores en compradores de manera rápida y sencilla”',
+          ],
         },
         {
-          text: "Proveedores",
+          text: 'Proveedores',
           active: true,
           content: [
-            "“.. puedo acceder a una red amplia de proveedores de flores en un abrir y cerrar de ojos.”",
-            "¡Esta función de Cotización Eficiente con Proveedores en la aplicación es como tener un equipo de compras personal a tu disposición!",
-            "“.. es como si los proveedores compitieran por ofrecerme las mejores ofertas, lo cual me siento confiado de donde comprar”",
-            "“.. me permite conectarme con un montón de proveedores y pedir cotizaciones en cuestión de minutos”",
-            "“.. significa que puedo tomar decisiones más inteligentes y aumentar mis ganancias”",
-            "“.. puedo pedir cotizaciones y luego simplemente comparar y elegir la opción más conveniente”",
-            "“.. no solo ahorro dinero, sino que también ahorro tiempo al evitar largas negociaciones, realmente es un ganar-ganar”"
-          ]
+            '“.. puedo acceder a una red amplia de proveedores de flores en un abrir y cerrar de ojos.”',
+            '¡Esta función de Cotización Eficiente con Proveedores en la aplicación es como tener un equipo de compras personal a tu disposición!',
+            '“.. es como si los proveedores compitieran por ofrecerme las mejores ofertas, lo cual me siento confiado de donde comprar”',
+            '“.. me permite conectarme con un montón de proveedores y pedir cotizaciones en cuestión de minutos”',
+            '“.. significa que puedo tomar decisiones más inteligentes y aumentar mis ganancias”',
+            '“.. puedo pedir cotizaciones y luego simplemente comparar y elegir la opción más conveniente”',
+            '“.. no solo ahorro dinero, sino que también ahorro tiempo al evitar largas negociaciones, realmente es un ganar-ganar”',
+          ],
         },
         {
-          text: "Premios",
+          text: 'Premios',
           active: false,
           content: [
-            "“.. brindo incentivos a mis clientes, lo que realmente fomenta la fidelidad y la satisfacción”",
-            "“.. el programa de recompensar su lealtad es simplemente brillante”",
-            "“..  los premios no solo los mantiene contentos, sino que también crea un vínculo más sólido con nosotros”"
-          ]
-        }
+            '“.. brindo incentivos a mis clientes, lo que realmente fomenta la fidelidad y la satisfacción”',
+            '“.. el programa de recompensar su lealtad es simplemente brillante”',
+            '“..  los premios no solo los mantiene contentos, sino que también crea un vínculo más sólido con nosotros”',
+          ],
+        },
       ],
-      active: true
-    }
+      active: true,
+    },
   ];
 
   activeTabIndex: number = 0;
@@ -402,13 +703,12 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   constructor(
     public headerService: HeaderService,
     private ngNavigatorShareService: NgNavigatorShareService,
-    private location: Location,
     private bottomSheet: MatBottomSheet,
-    private merchantsService: MerchantsService,
     private itemsService: ItemsService,
     private dialogService: DialogService,
     private dialog: MatDialog,
     private authService: AuthService,
+    private merchantsService: MerchantsService,
     private snackbar: MatSnackBar,
     private route: ActivatedRoute,
     private router: Router
@@ -470,6 +770,12 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         // console.log(supplier)
         // console.log(vendor)
       }
+    } else {
+      // Borrar de cada tab los tabs que tienen authorize true
+      this.tabContents.tab1 = this.tabContents.tab1.filter(tab => !tab.authorization);
+      this.tabContents.tab2 = this.tabContents.tab2.filter(tab => !tab.authorization);
+      this.tabContents.tab3 = this.tabContents.tab3.filter(tab => !tab.authorization);
+      this.tabContents.tab4 = this.tabContents.tab4.filter(tab => !tab.authorization);
     }
     unlockUI()
   }
@@ -506,6 +812,28 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     if (this.tabIndex==1) this.mainTitle = "HERRAMIENTAS GRATIS  PARA PROVEEDORES"
     if (this.tabIndex==0) this.mainTitle = "HERRAMIENTAS GRATIS FACILES DE USAR"
     return this.tabContents.tab3
+  }
+
+  redirectToLink(link: any) {
+    this.headerService.flowRouteForEachPage[link.linkName] = this.router.url;
+
+    if (link.isDummy) {
+      const message = `Hola, me interesa esta funcionalidad: ${link.text}`;
+      const phone = '19188156444';
+      window.location.href = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
+      return;
+    }
+
+    this.headerService.flowRoute = this.headerService.buildURL(
+      link.routerLink.join('/'),
+      link.queryParams ? link.queryParams : null
+    );
+
+    this.router.navigate(link.routerLink, {
+      queryParams: link.queryParams ? link.queryParams : {},
+    });
+
+    this.close();
   }
 
   share() {
@@ -546,7 +874,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   async openMagicLinkDialog() {
     let fieldsToCreateInEmailDialog: FormData = {
       title: {
-        text: 'Acceso al Club:',
+        text: 'Correo Electrónico para guardarlo:',
       },
       buttonsTexts: {
         accept: 'Recibir el enlace con acceso',
@@ -565,6 +893,37 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
           inputStyles: {
             padding: '11px 1px',
           },
+          styles: {
+            gap: '0px',
+          },
+          bottomTexts: [
+            {
+              text: 'Este correo también sirve para accesar al Club y aprovechar todas las herramientas que se están creando.',
+              styles: {
+                color: '#FFF',
+                fontFamily: 'InterLight',
+                fontSize: '19px',
+                fontStyle: 'normal',
+                fontWeight: '300',
+                lineHeight: 'normal',
+                marginBottom: '28px',
+                marginTop: '36px',
+              },
+            },
+            {
+              text: 'La promesa del Club es desarrollar funcionalidades que necesites.',
+              styles: {
+                color: '#FFF',
+                fontFamily: 'InterLight',
+                fontSize: '19px',
+                fontStyle: 'normal',
+                fontWeight: '300',
+                lineHeight: 'normal',
+                margin: '0px',
+                padding: '0px',
+              },
+            },
+          ],
           submitButton: {
             text: '>',
             styles: {
@@ -677,7 +1036,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
             if (!session) throw new Error('invalid credentials');
 
-            if (session) this.openNavigation = true;
+            this.openNavigation = true;
 
             unlockUI();
           } else if (result?.controls?.password.valid === false) {
@@ -779,8 +1138,9 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         {
           value: 'Algo anda mal porque es la primera vez que trato de acceder con este correo',
           callback: () => {
-            // TODO
-            console.log("CHARMY > MARILU, CHANGE MY MIND");
+            const phone = '19188156444';
+            const message = 'Algo anda mal porque es la primera vez que trato de acceder con este correo';
+            window.location.href = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
           }
         }
       ],
@@ -801,21 +1161,66 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         {
           value: 'Empezar mi Membresía al Club con este correo electrónico',
           callback: async () => {
-            await this.registeringUserFlow(credentials);
+            this.typeOfMerchantFlow(credentials);
           },
         },
         {
           value: 'Intentar con otro correo electrónico.',
           callback: async () => {
-            // TODO - Mostrar form de correo de nuevo
+            await this.openMagicLinkDialog();
           },
         },
         {
           value: 'Algo anda mal porque no es la primera vez que trato de acceder con este correo',
           callback: () => {
-            // TODO - Hacer este flow
+            const phone = '19188156444';
+            const message = 'Algo anda mal porque no es la primera vez que trato de acceder con este correo';
+            window.location.href = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
           }
         }
+      ],
+    };
+
+    this.dialog.open(OptionsDialogComponent, {
+      data: optionsDialogTemplate,
+      disableClose: true,
+    });
+  }
+
+  private typeOfMerchantFlow(credentials: any) {
+    let optionsDialogTemplate: OptionsDialogTemplate = {
+      title: `¿Qué tipo de comercio tienes?`,
+      options: [
+        {
+          value: 'Soy tienda, vendo al consumidor final',
+          callback: async () => {
+            return this.router.navigate(
+              ['/ecommerce/merchant-register'],
+              {
+                queryParams: {
+                  credentials: credentials,
+                  type: 'vendor',
+                }
+              }
+            );
+            // await this.registeringUserFlow(credentials);
+          },
+        },
+        {
+          value: 'Soy proveedor, le vendo a tiendas',
+          callback: async () => {
+            return this.router.navigate(
+              ['/ecommerce/merchant-register'],
+              {
+                queryParams: {
+                  credentials: credentials,
+                  type: 'supplier',
+                }
+              }
+            );
+            // await this.registeringUserFlow(credentials);
+          },
+        },
       ],
     };
 
@@ -887,6 +1292,18 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     });
 
     // TODO - Capturar el evento de cerrar el dialogo y hacer el flujo de registro
+  }
+
+  sendWhatsappToAppOwner(emailOrPhone: string) {
+    let message =
+      `Algo anda mal porque es la primera vez que trato de acceder con este correo: ` +
+      emailOrPhone;
+
+    const whatsappLink = `https://api.whatsapp.com/send?phone=19188156444&text=${encodeURIComponent(
+      message
+    )}`;
+
+    window.location.href = whatsappLink;
   }
 
   changeTab(tabIndex: number) {

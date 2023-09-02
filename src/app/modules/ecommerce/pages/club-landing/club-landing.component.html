@@ -46,9 +46,20 @@
             Gestión de Proveedor:
           </div>
           <div class="tab-content">
-            <div class="tab-content-item" *ngFor="let item of tabProvider">
+            <!-- <div class="tab-content-item" *ngFor="let item of tabProvider">
               {{ item }}
-            </div>
+            </div> -->
+            <ul>
+              <li class="tab-content-item" [routerLinkActive]="!link.isDummy ? 'active' : ''" *ngFor="let link of tabProvider">
+                <a
+                    [routerLink]="!link.isDummy ? link.routerLink : null"
+                    (click)="redirectToLink(link)"
+                    style="padding: 0px"
+                >
+                  <span class="text">{{link.text}}</span><br>
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
 
@@ -58,9 +69,21 @@
             Gestión de mi Tienda:
           </div>
           <div class="tab-content">
-            <div class="tab-content-item" *ngFor="let item of tabVendor">
+            <!-- <div class="tab-content-item" *ngFor="let item of tabVendor">
               {{ item }}
-            </div>
+            </div> -->
+
+            <ul>
+              <li class="tab-content-item" [routerLinkActive]="!link.isDummy ? 'active' : ''" *ngFor="let link of tabVendor">
+                <a
+                    [routerLink]="!link.isDummy ? link.routerLink : null"
+                    (click)="redirectToLink(link)"
+                    style="padding: 0px"
+                >
+                  <span class="text">{{link.text}}</span><br>
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
 
@@ -89,10 +112,22 @@
             {{!tabIndex ?"Como Floristería ¿qué necesitas?":"Como Proveedor de Floristerías y Tiendas de Regalos ¿qué necesitas?"}}
           </div> -->
           <div class="tab-content">
-            <div class="tab-content-item" *ngFor="let item of filterData()">
+            <!-- <div class="tab-content-item" *ngFor="let item of filterData()">
               <span class="text">{{item.text}}</span><br>
               <span class="subText">{{item.subText}}</span>
-            </div>
+            </div> -->
+            <ul>
+              <li class="tab-content-item" [routerLinkActive]="!link.isDummy ? 'active' : ''" *ngFor="let link of filterData()">
+                <a
+                    [routerLink]="!link.isDummy ? link.routerLink : null"
+                    (click)="redirectToLink(link)"
+                    style="padding: 0px"
+                >
+                  <span class="text">{{link.text}}</span><br>
+                  <span class="subText">{{link.subText}}</span>
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
 
