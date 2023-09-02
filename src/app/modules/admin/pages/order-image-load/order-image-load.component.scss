@@ -1,0 +1,141 @@
+.container {
+  background: #f6f6f6;
+  min-height: 100vh;
+  width: 100%;
+  padding-bottom: 100px;
+  overflow-y: scroll;
+}
+
+.header {
+  width: 100%;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  padding-left: 20px;
+  padding-right: 20px;
+  background: #ffffff;
+}
+
+.header-img {
+  background: #e9e371;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin-right: 11px;
+}
+
+.header-title {
+  color: #272727;
+  font-family: InterMedium;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin: 0;
+}
+
+.content {
+  padding-top: 20px;
+  padding-left: 16px;
+  padding-right: 16px;
+  height: 100%;
+}
+
+.mt-zero {
+  margin-top: 0 !important;
+}
+
+.section-label {
+  font-family: InterRegular;
+  font-size: 13px;
+  margin: 0;
+  margin-top: 39px;
+  margin-bottom: 10px;
+  color: #272727;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.questions {
+  margin: 4px 0;
+  padding: 17px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0px 4px 4px rgba(#000000, 0.25);
+
+  p {
+    margin: 0;
+    font-size: 17px;
+    color: #7b7b7b;
+
+    &.title {
+      font-family: InterBold;
+    }
+
+    &.body {
+      font-family: InterRegular;
+    }
+  }
+  .label {
+    font-weight: 700;
+  }
+  .gray-out {
+    font-weight: 400;
+  }
+
+  .m-top {
+    margin-top: 6px;
+  }
+}
+
+.img-container {
+  width: 100%;
+  height: 300px;
+  border-radius: 18px;
+  background: #936105;
+
+  img {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 18px;
+  }
+}
+
+.file-input {
+  display: none;
+}
+
+.footer {
+  background: #87cd9b;
+  height: 29px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: -29px;
+  padding-right: 18px;
+  padding-left: 18px;
+}
+
+.footer-title {
+  color: #181d17;
+  font-family: InterMedium;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin: 0;
+}
+
+.footer-benefict {
+  color: #181d17;
+  text-align: right;
+  font-family: InterMedium;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin: 0;
+}

@@ -1,0 +1,54 @@
+<div class="container">
+  <div class="header">
+    <div class="header-img"></div>
+    <div class="header-title">MerchantId</div>
+  </div>
+  <app-progress-slider
+    title="ACTUALIZACION DEL PROGRESO"
+    [statusList]="statusList"
+  ></app-progress-slider>
+
+  <div class="content">
+      <p class="section-label mt-zero">IMAGEN</p>
+      <div class="img-container" (click)="fileUpload.click()">
+        <img [src]="image" />
+      </div>
+      <p class="section-label">COMPRADOR</p>
+      <div class="questions">
+        <p class="label body gray-out capitalize">Adiciona quien lo compró</p>
+      </div>
+      <p class="section-label">MONTO</p>
+      <div class="questions">
+        <p class="label body gray-out capitalize">
+          Adiciona el monto facturado
+        </p>
+      </div>
+      <p class="section-label">FACTURA</p>
+      <div class="questions">
+        <p class="label body gray-out capitalize">
+          Adiciona tu identificador de la factura
+        </p>
+      </div>
+      <p class="section-label">RECIPIENTE</p>
+      <div class="questions">
+        <p class="label body gray-out capitalize">Adiciona quien lo recibirá</p>
+      </div>
+      <p class="section-label">NOTAS</p>
+      <div class="questions">
+        <p class="label body gray-out capitalize">
+          Adicione cosas que le interese guardar con esta factura
+        </p>
+      </div>
+  </div>
+  <input
+    type="file"
+    id="fileUpload"
+    class="file-input"
+    (change)="onFileSelected($event)"
+    #fileUpload
+  />
+</div>
+<div class="footer">
+  <p class="footer-title">Adiciona egresos</p>
+  <p class="footer-benefict">Beneficio: $24,548.65</p>
+</div>
