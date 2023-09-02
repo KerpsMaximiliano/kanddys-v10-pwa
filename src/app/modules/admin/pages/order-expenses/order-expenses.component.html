@@ -1,7 +1,6 @@
 <div style="display: flex; flex-direction: column; min-height: 100vh">
   <header class="header">
     <a
-      *ngIf="order && !adding"
       mat-icon-button
       [routerLink]="['../../order-slides']"
       queryParamsHandling="merge"
@@ -12,125 +11,41 @@
         role="doc-backlink"
       />
     </a>
-    <button
-      mat-icon-button
-      *ngIf="order && adding"
-      (click)="createExpenditure()"
-    >
-      <img
-        src="../../../../../assets/icons/close-button.svg"
-        alt="back"
-        role="doc-backlink"
-      />
-    </button>
-
-    <p>💰 Control & Beneficios de {{ "N784" }}</p>
+    <!--HACER DINAMICO el Cödigo-->
+    <p>💰 Control & Beneficios de {{ orderData.dateId }}</p>
   </header>
   <main>
-    <ng-container *ngIf="!adding">
+    <ng-container>
       <section>
         <div class="expenses-list">
-          <!--TODO: hacer el precio dinamico-->
+          <!--TODO: investigar cual es la fecha de creacion-->
           <app-named-expense
             [title]="'Monto de la factura'"
-            [subtitle]="'N479, ' + daysAgo(expenditures[0]?.createdAt)"
-            [pricing]="expenditures[0].amount"
-            (onDelete)="onDelete(expenditures[0])"
+            [subtitle]="orderData.dateId + ', ' + orderData.date"
+            [pricing]="orderData.pricing"
+            [totalOrder]="orderData.totalOrders"
           ></app-named-expense>
           <app-named-expense
-            *ngFor="let expenditure of orderExpenditures"
+            *ngFor="let expenditure of orderExpenditures; let i = index"
             [title]="expenditure?.name ? expenditure.name : 'Sin nombre'"
-            [subtitle]="daysAgo(expenditure.createdAt)"
+            [subtitle]="orderData.dateId + ', ' + daysAgo(expenditure.createdAt)"
             [pricing]="expenditure.amount"
-            (onDelete)="onDelete(expenditure)"
+            (onModifyTitle)="modifyTitle(expenditures[i])"
+            (onModifyPrice)="modifyPrice(expenditures[i])"
           ></app-named-expense>
-          <button type="button" class="add-expenses">Adiciona un egreso</button>
+          <button
+            type="button"
+            class="add-expenses"
+            (click)="createExpenditure()"
+          >
+            Adiciona un egreso
+          </button>
         </div>
       </section>
-      <!-- Esto fue comentado según el nuevo diseño, pero esta forma es mucho más clara -->
-      <!-- <section style="padding: 12px">
-        <div class="flex-between light">
-          <span>Ingresos</span>
-          <span>${{ benefits.benefits | number }}</span>
-        </div>
-        <div class="flex-between light">
-          <span>Egresos</span>
-          <span>(${{ benefits.less | number }})</span>
-        </div>
-        <div class="flex-between bold">
-          <span>Ingresos menos egresos</span>
-          <span>${{ benefits.benefits - benefits.less | number }}</span>
-        </div>
-      </section> -->
       <div class="spacer"></div>
       <footer class="bottom-footer">
-        <p>
-          Beneficio: {{ benefits.benefits - benefits.less | number }}
-        </p>
+        <p>Beneficio: $ {{ benefits.benefits - benefits.less | number }}</p>
       </footer>
-    </ng-container>
-    <ng-container *ngIf="adding">
-      <div>
-        <form class="form" [formGroup]="expenseForm">
-          <mat-form-field appearance="outline">
-            <mat-label>Nombre</mat-label>
-            <input matInput formControlName="name" />
-          </mat-form-field>
-          <mat-card style="width: 100%; height: 100%">
-            <app-currency-input
-              [fieldStyles]="{
-                boxShadow: 'none',
-                backgroundColor: 'transparent',
-                borderRadius: '6px',
-                padding: '8px 0px'
-              }"
-              (onInputEvent)="onCurrencyInput($event)"
-            ></app-currency-input>
-          </mat-card>
-        </form>
-        <mat-tab-group mat-align-tabs="center">
-          <mat-tab label="PREVIAMENTE USADOS" style="font-size: 12px">
-            <div class="expenses-list" *ngIf="expendituresByUsed.length">
-              <button
-                class="btn"
-                (click)="addExpenditure(expenditure)"
-                *ngFor="let expenditure of expendituresByUsed"
-              >
-                <app-named-expense
-                  [title]="expenditure.name"
-                  [subtitle]="daysAgo(expenditure.createdAt)"
-                  [pricing]="expenditure.amount"
-                  [shadow]="true"
-                  [showIcon]="false"
-                ></app-named-expense>
-              </button>
-            </div>
-            <h4 class="no-expends" *ngIf="!expendituresByUsed.length">
-              No quedan egresos por agregar
-            </h4>
-          </mat-tab>
-          <mat-tab label="POR ZONA DE ENTREGA" style="font-size: 12px">
-            <div class="expenses-list" *ngIf="expendituresByZone.length">
-              <button
-                class="btn"
-                (click)="addExpenditure(expenditure)"
-                *ngFor="let expenditure of expendituresByZone"
-              >
-                <app-named-expense
-                  [title]="expenditure.name"
-                  [subtitle]="daysAgo(expenditure.createdAt)"
-                  [pricing]="expenditure.amount"
-                  [shadow]="true"
-                  [showIcon]="false"
-                ></app-named-expense>
-              </button>
-            </div>
-            <h4 class="no-expends" *ngIf="!expendituresByZone.length">
-              No quedan egresos por agregar
-            </h4>
-          </mat-tab>
-        </mat-tab-group>
-      </div>
     </ng-container>
   </main>
 </div>

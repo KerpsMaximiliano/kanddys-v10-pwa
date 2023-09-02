@@ -1,6 +1,10 @@
-<h1 mat-dialog-title>{{ data.title }}</h1>
-<mat-dialog-content>{{ data.description }}</mat-dialog-content>
-<mat-dialog-actions>
-  <button mat-button cdkFocusInitial (click)="onClose('cancel')">No</button>
-  <button mat-button (click)="onClose('confirm')">Sí</button>
-</mat-dialog-actions>
+<div class="modal" style="padding: 24px 12px 6px; background: #fdfdfd">
+  <h1 mat-dialog-title style="text-align: center">{{ data.title }}</h1>
+  <mat-dialog-content style="text-align: center">{{
+    data.description
+  }}</mat-dialog-content>
+  <mat-dialog-actions style="justify-content: center">
+    <button mat-button cdkFocusInitial (click)="onClose('cancel')">No</button>
+    <button mat-button (click)="onClose('confirm')">Sí</button>
+  </mat-dialog-actions>
+</div>

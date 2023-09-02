@@ -1,33 +1,19 @@
-<mat-card
-  class="card"
-  [ngClass]="{
-    'mat-elevation-z0': !shadow,
-    'mat-elevation-z2': shadow
-  }"
->
-  <!-- <button
-    *ngIf="showIcon"
-    class="delete-btn mat-elevation-z0"
-    mat-mini-fab
-    aria-label="Delete expense"
-    style="color: #000"
-    (click)="onDelete.emit()"
-  >
-    <mat-icon>delete_outline</mat-icon>
-  </button> -->
+<mat-card class="card">
   <mat-card-header>
-    <mat-card-title class="title">{{ title }}</mat-card-title>
+    <mat-card-title class="title" (click)="modifyTitle()">{{
+      title
+    }}</mat-card-title>
     <mat-card-subtitle class="subtitle">
-      <span *ngIf="true">Icono</span>
+      <span *ngIf="showIcon">Icono</span>
       {{ subtitle }}
     </mat-card-subtitle>
     <div style="flex: 1"></div>
     <div class="description-extra">
-      <div class="pricing">
+      <div class="pricing" (click)="modifyPrice()">
         <span>${{ pricing | number }}</span>
       </div>
       <div class="quantity-items">
-        <span>{{ "4" }} artículos</span>
+        <span>{{ totalOrder }} artículos</span>
       </div>
     </div>
   </mat-card-header>
