@@ -301,7 +301,7 @@ export class CartComponent implements OnInit {
       this.showQuotationOrder = true;
       this.showOffersTitle = true;
       this.offersItems = true;
-      this.offerTitle = "Oferta \"flash\" de" + this.headerService.saleflow?.merchant?.name;
+      this.offerTitle = "Oferta \"flash\" de " + this.headerService.saleflow?.merchant?.name;
     }
     else if(this.isOrderFromAQuotation){
       localStorage.getItem("offersFlow") ? localStorage.removeItem("offersFlow"): null;
