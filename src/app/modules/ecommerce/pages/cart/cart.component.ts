@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppService } from 'src/app/app.service';
 import { Item } from 'src/app/core/models/item';
@@ -41,6 +41,10 @@ import {
 import { QuotationsService } from 'src/app/core/services/quotations.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { NgNavigatorShareService } from 'ng-navigator-share';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { base64ToBlob } from 'src/app/core/helpers/files.helpers';
 
 interface ExtendedItem extends Item {
   ready?: boolean;
@@ -53,6 +57,7 @@ interface ExtendedItem extends Item {
 })
 export class CartComponent implements OnInit {
   env: string = environment.assetsUrl;
+  URI: string = environment.uri;
 
   currentUser: User;
   logged: boolean = false;
@@ -91,6 +96,11 @@ export class CartComponent implements OnInit {
   showOffersTitle: boolean = false;
   offersItems: boolean = false;
   offerTitle:string= "";
+
+  @ViewChild('quotationQrCode', { read: ElementRef })
+  quotationQrCode: ElementRef;
+  quotationLink: string;
+
   progress: 'checkout' | 'other';
 
   constructor(
@@ -106,8 +116,11 @@ export class CartComponent implements OnInit {
     private route: ActivatedRoute,
     public postsService: PostsService,
     private authService: AuthService,
-    private _bottomSheet: MatBottomSheet
-  ) { }
+    private _bottomSheet: MatBottomSheet,
+    private ngNavigatorShareService: NgNavigatorShareService,
+    private clipboard: Clipboard,
+    private matSnackBar: MatSnackBar
+  ) {}
 
   async ngOnInit() {
     console.log(this.headerService.saleflow);
@@ -198,6 +211,11 @@ export class CartComponent implements OnInit {
 
     if (this.quotationsService.quotationInCart) {
       this.isOrderFromAQuotation = true;
+      this.quotationLink =
+        this.URI +
+        '/ecommerce/supplier-register/' +
+        this.quotationsService.quotationInCart._id;
+
       this.quotationsService.quotationInCart.items.forEach(
         (supplierItemIdInList) => {
           if (
@@ -250,6 +268,7 @@ export class CartComponent implements OnInit {
 
     if (this.quotationsService.selectedTemporalQuotation) {
       this.isOrderFromAQuotation = true;
+      this.quotationLink = this.URI + '/ecommerce/supplier-register';
 
       this.quotationsService.selectedTemporalQuotation.items.forEach(
         (supplierItemIdInList) => {
@@ -1060,11 +1079,9 @@ export class CartComponent implements OnInit {
 
   openSubmitDialog() {
     if (this.progress === 'checkout') {
-      return this.router.navigate(
-        [
-          `/ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
-        ]
-      );
+      return this.router.navigate([
+        `/ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
+      ]);
     }
     if (
       !this.isSuppliersBuyerFlow(this.items) &&
@@ -1210,14 +1227,14 @@ export class CartComponent implements OnInit {
   }
 
   goToStore() {
-    return this.router.navigate([
-      `/ecommerce/${this.headerService.saleflow.merchant.slug}/store`,
-    ],
+    return this.router.navigate(
+      [`/ecommerce/${this.headerService.saleflow.merchant.slug}/store`],
       {
         queryParams: {
           mode: this.isSuppliersBuyerFlow(this.items) ? 'supplier' : 'standard',
-        }
-      });
+        },
+      }
+    );
   }
 
   toggleCheckbox(event: any) {
@@ -1232,5 +1249,153 @@ export class CartComponent implements OnInit {
 
   urlIsVideo(url: string) {
     return isVideo(url);
+  }
+
+  async shareQuotation() {
+    const queryParams: Record<string, any> = {};
+
+    if (this.quotationsService.quotationInCart) {
+      (queryParams.items =
+        this.quotationsService.quotationInCart.items.join('-')),
+        (queryParams.quotationName =
+          this.quotationsService.quotationInCart.name);
+
+      if (this.merchantsService.merchantData?._id) {
+        queryParams.requesterId = this.merchantsService.merchantData?._id;
+      }
+    } else if (this.quotationsService.selectedTemporalQuotation) {
+      queryParams.items =
+        this.quotationsService.selectedTemporalQuotation.items.join('-');
+      queryParams.quotationName =
+        this.quotationsService.selectedTemporalQuotation.name;
+      queryParams.temporalQuotation = true;
+
+      if (this.merchantsService.merchantData?._id) {
+        queryParams.requesterId = this.merchantsService.merchantData?._id;
+      }
+
+      queryParams.itemsForTemporalQuotation =
+        this.quotationsService.selectedTemporalQuotation.items;
+    }
+
+    lockUI();
+
+    const link = (
+      await this.authService.generateMagicLinkNoAuth(
+        null,
+        `ecommerce/supplier-register`,
+        this.quotationsService.quotationInCart &&
+          !this.quotationsService.selectedTemporalQuotation
+          ? this.quotationsService.quotationInCart._id
+          : '',
+        'QuotationAccess',
+        {
+          jsondata: JSON.stringify(queryParams),
+        },
+        [],
+        true
+      )
+    )?.generateMagicLinkNoAuth;
+
+    unlockUI();
+
+    this._bottomSheet.open(OptionsMenuComponent, {
+      data: {
+        title: `Comparte el carrito en tus redes sociales, Youtube o DM (el proveedor te paga una comisión)`,
+        options: [
+          {
+            value: `Copia el enlace`,
+            callback: () => {
+              this.clipboard.copy(link);
+
+              this.matSnackBar.open(
+                'Se ha copiado el enlace al portapapeles',
+                'Cerrar',
+                {
+                  duration: 3000,
+                }
+              );
+            },
+          },
+          {
+            value: `Comparte el enlace`,
+            callback: () => {
+              this.ngNavigatorShareService.share({
+                title: '',
+                url: link,
+              });
+            },
+          },
+          {
+            value: `Compártelo por WhatsApp`,
+            callback: () => {
+              const listOfItemNames = this.items
+                .concat(this.quotationItemsNotAvailableOrNotInSaleflow)
+                .map((item) => `-${item.name || 'Producto sin nombre'}\n`)
+                .join('');
+              let bodyMessage = `Hola, pudieras confirmame la disponibilidad y precios de estos artículos 🙏? \n${listOfItemNames} en este enlace te los muestro y lo puedes ajustar bien fácil 👉${encodeURIComponent(
+                link
+              )}`;
+
+              let whatsappLink = `https://api.whatsapp.com/send?text=${
+                bodyMessage
+              }`;
+
+              window.location.href = whatsappLink;
+            },
+          },
+          {
+            value: `Compártelo por correo electrónico`,
+            callback: () => {
+              const listOfItemNames = this.items
+                .concat(this.quotationItemsNotAvailableOrNotInSaleflow)
+                .map((item) => `-${item.name || 'Producto sin nombre'}%0D%0A`)
+                .join('');
+              let bodyMessage = `Hola, pudieras confirmame la disponibilidad y precios de estos artículos 🙏?: %0D%0A${listOfItemNames} en este enlace te los muestro y lo puedes ajustar bien fácil 👉${encodeURIComponent(
+                link
+              )}`;
+
+              const subject = encodeURIComponent(
+                'Amplía tu Alcance con www.floristerias.club, conecta a floristerías con proveedores'
+              );
+
+              const mailtoLink = `mailto:?subject=${subject}&body=${bodyMessage}`;
+              window.location.href = mailtoLink;
+            },
+          },
+          {
+            value: `Descarga el QR`,
+            callback: () => {
+              this.downloadQr();
+            },
+          },
+        ],
+        styles: {
+          fullScreen: true,
+        },
+      },
+    });
+  }
+
+  downloadQr() {
+    const parentElement =
+      this.quotationQrCode.nativeElement.querySelector('img').src;
+    let blobData = base64ToBlob(parentElement);
+    if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
+      //IE
+      (window.navigator as any).msSaveOrOpenBlob(
+        blobData,
+        'Enlace a mi cotización'
+      );
+    } else {
+      // chrome
+      const blob = new Blob([blobData], { type: 'image/png' });
+      const url = window.URL.createObjectURL(blob);
+      // window.open(url);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'Enlace a mi cotización';
+      link.click();
+    }
   }
 }

@@ -35,6 +35,7 @@ export class SlideInput {
   index: number;
   type: 'audio' | 'poster' | 'text';
   _id?: string;
+  post?: string;
 }
 
 export class Post extends Model<Post> {
@@ -101,6 +102,8 @@ export class PostInput {
   ctaLink?: string;
   envelopeText?: string;
   virtualMessage?: boolean;
+  categories?: string[];
+  active?: boolean;
 }
 
 export class Slide extends Model<Slide> {

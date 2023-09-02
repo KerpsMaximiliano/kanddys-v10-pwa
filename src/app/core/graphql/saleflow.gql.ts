@@ -249,6 +249,7 @@ export const listItems = gql`
         name
       }
       stock
+      useStock
       params {
         _id
         name

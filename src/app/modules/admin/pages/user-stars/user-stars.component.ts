@@ -51,6 +51,7 @@ export class UserStarsComponent implements OnInit {
       result.forEach((element) => {
         this.totalStars += element.metadata?.usesStars || 0;
       });
+      console.log(this.walletUserStarsList);
       this.walletUserStarsList.forEach(async (element) => {
         console.log(element);
         element.orderIncomes = await this.orderIncomes(element.owner);

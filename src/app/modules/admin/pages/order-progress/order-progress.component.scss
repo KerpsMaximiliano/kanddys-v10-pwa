@@ -35,11 +35,125 @@
   }
 }
 
+.blur {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0.7;
+  background: var(--blanco, #FFF);
+  filter: blur(3px);
+  z-index: 49;
+}
+
+.dialog {
+  position: absolute;
+  z-index: 51;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  background: #181d17;
+  width: 90%;
+  height: 295px;
+  flex-shrink: 0;
+  border-radius: 15.591px; 
+  top: 111px;
+  margin-left: 16px;
+  margin-right: 16px;
+}
+
+.tutorial-title {
+  font-family: InterLight;
+  color: #F6F6F6;
+  font-size: 13px;
+  line-height: 16px;
+  margin-top: 40px;
+}
+
+.arrow-svg {
+  position: absolute;
+  top: -46px;
+  right: 30px;
+  height: 100px;
+  width: 30px;
+}
+
+.tutorial-text {
+  color: #fff;
+  font-family: InterSemiBold;
+  font-size: 23px;
+  line-height: 27.84px;
+  margin-bottom: 16px;
+  margin-left: 25px;
+  margin-right: 25px;
+  text-align: center;
+}
+
+.tutorial-button-holder {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+
+.tutorial-button {
+  cursor: pointer;
+  font-family: InterLight;
+  font-size: 17px;
+  border: 0;
+  background: transparent;
+  color: #C4C5C3;
+}
+
+.ok-button {
+  cursor: pointer;
+  font-family: InterBold;
+  font-size: 17px;
+  border:0;
+  width: 176px;
+  height: 32px;
+  color: #181d17;
+  border-radius: 8px;
+  background: #87CD9B;
+}
+
+.dates-container {
+  display: flex;
+  flex-direction: column;
+  background: #181d17;
+  padding-bottom: 5px;
+}
+
+
+.progress-camera {
+  display: flex;
+  justify-content: space-between;
+  background: #181d17;
+  align-items: center;
+  padding: 14px;
+  z-index: 50;
+}
+
+.camera-icon {
+  color: #87CD9B;
+  width: 28px;
+  height: 21px;
+  cursor: pointer;
+}
+
+.selection-text {
+  font-family: InterLight;
+  color: #F6F6F6;
+  font-size: 13px;
+  line-height: 16px;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
 .progress-container {
   width: 100%;
-  padding-top: 20px;
   padding-bottom: 24px;
-  background: #181d17;
   display: flex;
   padding-left: 20px;
   align-items: flex-start;
@@ -75,6 +189,26 @@
   color: #181d17;
   background: #c4c5c3;
   font-weight: 700;
+}
+
+.location-container {
+  display: flex;
+  align-items: flex-end;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.location-icon {
+  margin-right: 10px;
+  width: 16px;
+  height: 21px;
+}
+
+.expand-icon {
+  height: 20px;
+  color:#87CD9B;
 }
 
 .content {
@@ -179,19 +313,92 @@
   margin: auto 15px;
 }
 
+.dialog.external-order-dialog {
+  border-radius: 6px;
+
+  border: 1px solid rgba(59, 101, 74, 0.70);
+  background: #181D17;
+  height: 229px;
+  padding: 0px 21px;
+}
+
+.external-order-title {
+  align-self: flex-start;
+  color: #FFF;
+  font-family: InterSemiBold;
+  font-size: 19px;
+}
+
+.external-order-input {
+  width: 100%;
+  background: transparent;
+  color: #FFF;
+  font-family: InterBold;
+  font-size: 21px;
+  border: 0;
+  border-bottom: 1px solid #87CD9B;
+  padding-bottom: 13px;
+  appearance: textfield;
+}
+
+.external-order-input::placeholder {
+  color: #7B7B7B;
+  font-family: InterBold;
+  font-size: 21px;
+}
+
+.ok-button.external-order-button {
+  width: 70%;
+}
+
 @media (max-width: 400px) {
   .header {
     p {
       font-size: 16px;
     }
   }
+  .green-sphere {
+    top: 20px;
+  }
+  .tutorial-text {
+    font-size: 20px;
+  }
+  .tutorial-button {
+    font-size: 15px;
+  }
+  .ok-button {
+    font-size: 15px;
+  }
+  .arrow-svg {
+    top: -48px;
+    width: 31px;
+  }
 }
 
 
 @media(max-width:365px){
-    .header {
-        p {
-          font-size: 15px;
-        }
-      }
+  .header {
+    p {
+      font-size: 15px;
     }
+  }
+  .green-sphere {
+    top: 33px;
+    right: 36px;
+  }
+  .tutorial-text {
+    font-size: 20px;
+  }
+  .tutorial-button {
+    font-size: 15px;
+  }
+  .ok-button {
+    font-size: 15px;
+    width: 150px;
+  }
+  .arrow-svg {
+    top: -48px;
+    right: 23px;
+  }
+}
+

@@ -107,6 +107,7 @@ export class Item extends Model<Item> {
   notificationStockPhoneOrEmail?: string;
   approvedByAdmin?: boolean;
   priceOriginal?:number;
+  useStock?: boolean;
 }
 
 export class ItemImage extends Model<ItemImage> {

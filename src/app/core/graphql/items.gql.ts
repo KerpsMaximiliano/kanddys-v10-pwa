@@ -154,6 +154,18 @@ export const items = gql`
   }
 `;
 
+export const itemsQuantitySold = gql`
+  query itemsQuantitySold($paginate: PaginationInput!) {
+    itemsQuantitySold(paginate: $paginate)
+  }
+`;
+
+export const itemsQuantitySoldTotal = gql`
+  query itemsQuantitySoldTotal($paginate: PaginationInput!) {
+    itemsQuantitySoldTotal(paginate: $paginate)
+  }
+`;
+
 export const itemsByMerchant = gql`
   query itemsByMerchant($id: ObjectID, $sort: Boolean) {
     itemsByMerchant(id: $id, sort: $sort) {
@@ -321,6 +333,7 @@ export const listItems = gql`
       notificationStockPhoneOrEmail
       parentItem
       priceOriginal
+      useStock
     }
   }
 `;
