@@ -346,6 +346,7 @@ export class HeaderService {
       order.products.push(product);
       this.order?.products?.push(product);
     }
+    this.order = order;
     localStorage.setItem(this.saleflow._id, JSON.stringify({ order, ...rest }));
   }
 
