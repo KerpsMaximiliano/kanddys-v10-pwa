@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-
+import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { PaginationInput } from 'src/app/core/models/saleflow';
-import { shortFormatID } from 'src/app/core/helpers/strings.helpers'
+import { shortFormatID, truncateString } from 'src/app/core/helpers/strings.helpers'
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
@@ -16,33 +16,59 @@ import { environment } from 'src/environments/environment';
 export class OrderProgressComponent implements OnInit {
 
   progress = [
-    { id: 1, name: 'in progress', selected: true },
+    { id: 1, name: 'in progress', selected: false },
     { id: 2, name: 'pickup', selected: false },
     { id: 3, name: 'pending', selected: false },
     { id: 4, name: 'shipped', selected: false },
     { id: 5, name: 'delivered', selected: false },
   ];
+
+  deliveryStatus : any[] | null = null;
+  deliveryZones : any[] | null = null;
+  deliveryZoneQuantities : any[] | null = null;
+
+  selectedProgress = [];
+  selectedZones = [];
+
   constructor(
     private merchantsService: MerchantsService,
     private orderService: OrderService,
+    private deliveryZonesService: DeliveryZonesService,
     private router: Router,
   ) {}
-  
+
+  imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
+
+  merchantId : string;
+  userId : string;
+
   env : string = environment.assetsUrl
+
   tutorialEnabled : boolean = true;
+
+  pickUp : any = {amount: 0, selected: false};
+  delivery : any = {amount: 0, selected: false};
+
+  externalOrderDialog : boolean = false;
+  externalOrderNumber : number | undefined;
+  externalOrderImages : File[] = [];
+
   showLocations : boolean = false;
+
   orders = []
+
   shortFormatID = shortFormatID
   default_image = 'https://cdn-icons-png.flaticon.com/512/149/149071.png'
   orderDeliveryStatus(status) {
     return this.orderService.orderDeliveryStatus(status);
   }
+
   ngOnInit(): void {
     this.generate()
     this.toggleTutorial()
   }
 
-  select(id) {
+  selectProgress(id) {
     this.progress.forEach((e) => {
       if (e.id == id) {
         e.selected = !e.selected;
@@ -52,6 +78,22 @@ export class OrderProgressComponent implements OnInit {
     setTimeout(() => {
       unlockUI()
     }, 500);
+    this.selectedProgress = this.progress.filter(progress => progress.selected).map(progress => progress.name)
+    this.generate()
+  }
+
+  selectZone(id) {
+    this.deliveryZones.forEach((e) => {
+      if (e._id == id) {
+        e.selected = !e.selected;
+      }
+    });
+    lockUI()
+    setTimeout(() => {
+      unlockUI()
+    }, 500);
+    this.selectedZones = this.deliveryZones.filter(zone => zone.selected).map(zone => zone._id)
+    this.generate()
   }
 
   calcTotal(subtotals: any) {
@@ -66,38 +108,49 @@ export class OrderProgressComponent implements OnInit {
 
   calcTotalPrice() {
     let totalprice = 0;
-    this.filterData().forEach(order => {
+    this.orders.forEach(order => {
       totalprice += this.calcTotal(order.subtotals);
     });
     return totalprice;
   }
 
-  orderDeliveryLength(status){
-    return this.orders.filter(order => order.orderStatusDelivery == status).length
-  }
-
-  filterData() {
-    const selectedProgress = this.progress.map(p => {
-      if (p.selected) return p.name
-    })
-    const filteredOrders = this.orders.filter(order => selectedProgress.indexOf(order.orderStatusDelivery) >= 0 )
-    return filteredOrders.length > 0 ? filteredOrders : this.orders;
+  orderDeliveryLength(status) {
+    if(!this.deliveryStatus) return 0;
+    return this.deliveryStatus[status];
   }
 
   async generate() {
 
     lockUI()
-
-    const { _id } = await this.merchantsService.merchantDefault();
-    console.log("merchant _id", _id)
-    
+    if(!this.merchantId) {
+      await this.merchantsService.merchantDefault().then((res) => {
+        this.merchantId = res._id;
+        this.userId = res.owner._id;
+      });
+      console.log("merchant _id", this.merchantId);
+    }
+    let ShippingType;
+    if(this.pickUp.selected && this.delivery.selected) {
+      ShippingType = ["pickup", "delivery"]
+    } else if(this.pickUp.selected) {
+      ShippingType = "pickup"
+    } else if(this.delivery.selected) {
+      ShippingType = "delivery"
+    } else {
+      ShippingType = null
+    }
+    let findBy = {}
+    if(this.selectedProgress.length > 0) {
+      findBy["orderStatusDelivery"] = this.selectedProgress
+    }
+    if(this.selectedZones.length > 0) {
+      findBy["deliveryZone"] = this.selectedZones
+    }
+    if(ShippingType) {
+      findBy["shippingType"] = ShippingType
+    }
     const pagination: PaginationInput = {
-      findBy: {
-        orderStatus: ["to confirm", "completed"],
-        // orderStatusDelivery: this.progress.map(progress => { 
-        //   if (progress.selected) return progress.name
-        // })
-      },
+      findBy: findBy,
       options: {
         limit: 25,
         sortBy: 'updatedAt:desc'
@@ -105,14 +158,69 @@ export class OrderProgressComponent implements OnInit {
     };
     const orders = (
       await this.merchantsService.ordersByMerchant(
-        _id,
+        this.merchantId,
         pagination
       )
     )?.ordersByMerchant;
     this.orders = orders != undefined ? orders : []
-    console.log(orders);
 
+    await this.orderService.orderQuantityOfFiltersStatusDelivery({ findBy: {merchant: this.merchantId} }).then((res) => {
+      this.deliveryStatus = res
+    })
+    if(!this.deliveryZones) {
+      await this.deliveryZonesService.deliveryZones(
+        {
+          findBy:{merchant: this.merchantId},
+          options: {sortBy: "createdAt:desc", limit: -1}
+        }).then((res) => {
+        this.deliveryZones = res.map((deliveryZone) => {
+          let zone = {
+            ...deliveryZone,
+            selected: false,
+          }
+          return zone;
+        })
+      })
+    }
+    let deliveryZonesIds = this.deliveryZones.map((deliveryZone) => deliveryZone._id)
+    await this.orderService.orderQuantityOfFiltersDeliveryZone({ 
+        findBy: 
+        {
+          merchant: this.merchantId,
+          orderStatusDelivery: this.selectedProgress,
+          deliveryZone: deliveryZonesIds,
+        } 
+      }).then((res) => {
+      this.deliveryZoneQuantities = res
+    })
+
+    await this.orderService.orderQuantityOfFiltersShippingType({ 
+      findBy: 
+      {
+        merchant: this.merchantId,
+        orderStatusDelivery: this.selectedProgress,
+      } 
+    }).then((res) => {
+      this.pickUp = {
+        amount: res.pickup,
+        selected: false,
+      }
+      this.delivery ={
+        amount: res.delivery,
+        selected: false,
+      }
+    })
     unlockUI()
+  }
+
+  findAmount(id) {
+    if(!this.deliveryZoneQuantities) return 0;
+    const quantity = this.deliveryZoneQuantities.find((quantity) => quantity.deliveryzone._id === id)
+    return quantity !== undefined ? quantity.count : 0;
+  }
+
+  emitFileInputClick() {
+    (document.querySelector('#file') as HTMLElement).click();
   }
 
   goToOrderDetail(orderID: string) {
@@ -176,5 +284,39 @@ export class OrderProgressComponent implements OnInit {
       }
     }
     return;
+  }
+
+  async loadFile(event: Event) {
+    const fileList = (event.target as HTMLInputElement).files;
+    console.log(fileList)
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList[i];
+      if (!this.imageFiles.includes(file.type)) return;
+      this.externalOrderImages.push(file);
+    }
+    if (!this.externalOrderImages.length) return;
+
+    this.externalOrderDialog = true;
+  }
+
+  sendExternalOrder(sendAmount : boolean) {
+    let orderData = {
+      metadata: {
+        files: this.externalOrderImages,
+      },
+      merchants: this.merchantId, //backend is merchants, if changed to merchant change this
+      user: this.userId,
+    }
+    if(sendAmount) {
+      orderData["amount"] = this.externalOrderNumber;
+    }
+    this.orderService.createOrderExternal(orderData)
+    this.externalOrderDialog = false;
+    this.externalOrderImages = [];
+    this.externalOrderNumber = undefined;
+  }
+
+  truncateString (word) {
+    return truncateString(word, 12)
   }
 }

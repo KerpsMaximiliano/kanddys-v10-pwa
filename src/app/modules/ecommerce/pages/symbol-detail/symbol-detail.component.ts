@@ -905,8 +905,8 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   async saveProduct() {
     if (this.itemData && this.itemData.type === 'supplier' && this.supplierViewer) {
       const foundItemIndex =
-        this.quotationsService.selectedItemsForQuotation.findIndex(
-          (itemId) => itemId === this.itemData._id
+      this.quotationsService.selectedItemsForQuotation.findIndex(
+        (itemId) => itemId === this.itemData._id
         );
 
       if (foundItemIndex < 0) {

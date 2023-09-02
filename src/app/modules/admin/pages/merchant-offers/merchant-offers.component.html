@@ -45,7 +45,7 @@
               }"
             ></div>
               <div>
-                <p class="item-merchant">{{supplier.merchant.name}}</p>
+                <p class="item-merchant" (click)="saveProduct(supplier)">{{supplier.merchant.name}}</p>
               </div>
             </div>
             <p class="item-incomes">${{supplier.pricing}}</p>

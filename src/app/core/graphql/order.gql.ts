@@ -829,11 +829,34 @@ export const incomeTotalByType = gql`
   }
 `;
 
-
-
 export const ordersIncomeMerchantByUser = gql`
   query ordersIncomeMerchantByUser($userId: [ObjectID!]!,$merchantId:ObjectID!) {
     ordersIncomeMerchantByUser(userId:$userId,merchantId:$merchantId)
    }
 `;
 
+export const createOrderExternal = gql`
+  mutation createOrderExternal($input: ItemOrderExternalInput!) {
+    createOrderExternal(input: $input) {
+      _id
+    }
+  }
+`;
+
+export const orderQuantityOfFiltersStatusDelivery = gql`
+  query orderQuantityOfFiltersStatusDelivery($pagination: PaginationInput) {
+    orderQuantityOfFiltersStatusDelivery(pagination: $pagination)
+  }
+`;
+
+export const orderQuantityOfFiltersDeliveryZone = gql`
+  query orderQuantityOfFiltersDeliveryZone($pagination: PaginationInput) {
+    orderQuantityOfFiltersDeliveryZone(pagination: $pagination)
+  }
+`;
+
+export const orderQuantityOfFiltersShippingType = gql`
+  query orderQuantityOfFiltersShippingType($pagination: PaginationInput) {
+    orderQuantityOfFiltersShippingType(pagination: $pagination)
+  }
+`;
