@@ -45,7 +45,7 @@
   z-index: 49;
 }
 
-.tutorial-dialog {
+.dialog {
   position: absolute;
   z-index: 51;
   display: flex;
@@ -139,6 +139,7 @@
   color: #87CD9B;
   width: 28px;
   height: 21px;
+  cursor: pointer;
 }
 
 .selection-text {
@@ -310,6 +311,44 @@
 
 .content-card-info {
   margin: auto 15px;
+}
+
+.dialog.external-order-dialog {
+  border-radius: 6px;
+
+  border: 1px solid rgba(59, 101, 74, 0.70);
+  background: #181D17;
+  height: 229px;
+  padding: 0px 21px;
+}
+
+.external-order-title {
+  align-self: flex-start;
+  color: #FFF;
+  font-family: InterSemiBold;
+  font-size: 19px;
+}
+
+.external-order-input {
+  width: 100%;
+  background: transparent;
+  color: #FFF;
+  font-family: InterBold;
+  font-size: 21px;
+  border: 0;
+  border-bottom: 1px solid #87CD9B;
+  padding-bottom: 13px;
+  appearance: textfield;
+}
+
+.external-order-input::placeholder {
+  color: #7B7B7B;
+  font-family: InterBold;
+  font-size: 21px;
+}
+
+.ok-button.external-order-button {
+  width: 70%;
 }
 
 @media (max-width: 400px) {

@@ -1,121 +1,114 @@
 <div class="container">
-    <div *ngIf="tutorialEnabled" class="blur"></div>
-    <div *ngIf="tutorialEnabled" class="tutorial-dialog">
-      <p class="tutorial-title">CONTROLA TODAS LAS ORDENES</p>
-      <div class="arrow-svg">
-        <svg viewBox="0 0 34 106" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path id="Vector 1261" d="M34 9L19 0.339746V17.6603L34 9ZM8 9V7.5H6.5V9H8ZM0 98C0 102.418 3.58172 106 8 106C12.4183 106 16 102.418 16 98C16 93.5817 12.4183 90 8 90C3.58172 90 0 93.5817 0 98ZM20.5 7.5H8V10.5H20.5V7.5ZM6.5 9V98H9.5V9H6.5Z" fill="#6FCF97"/>
-        </svg>
-      </div>
-      <p class="tutorial-text">
-        Sube la foto de la factura cuando te compren fuera de la plataforma para mantener el control desde tu celular.
+  <div *ngIf="tutorialEnabled || externalOrderDialog" class="blur"></div>
+  <div *ngIf="tutorialEnabled" class="dialog">
+    <p class="tutorial-title">CONTROLA TODAS LAS ORDENES</p>
+    <div class="arrow-svg">
+      <svg viewBox="0 0 34 106" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path id="Vector 1261"
+          d="M34 9L19 0.339746V17.6603L34 9ZM8 9V7.5H6.5V9H8ZM0 98C0 102.418 3.58172 106 8 106C12.4183 106 16 102.418 16 98C16 93.5817 12.4183 90 8 90C3.58172 90 0 93.5817 0 98ZM20.5 7.5H8V10.5H20.5V7.5ZM6.5 9V98H9.5V9H6.5Z"
+          fill="#6FCF97" />
+      </svg>
+    </div>
+    <p class="tutorial-text">
+      Sube la foto de la factura cuando te compren fuera de la plataforma para mantener el control desde tu celular.
+    </p>
+    <div class="tutorial-button-holder">
+      <button class="tutorial-button" (click)="toggleTutorial(true)">No Mostrar Tutorial</button>
+      <button class="ok-button" (click)="tutorialEnabled = false">Ok</button>
+    </div>
+  </div>
+  <div class="header">
+    <div class="flex">
+      <mat-icon class="close-icon" (click)="back()">close</mat-icon>
+      <p>📦 Progresos de facturas</p>
+    </div>
+    <mat-icon>search</mat-icon>
+  </div>
+  <div class="dates-container">
+    <div class="progress-camera">
+      <p class="selection-text">PROGRESS</p>
+      <img
+        alt="camara"
+        class="camera-icon"
+        src="{{env}}/green-camera.png"
+        (click)="emitFileInputClick()"
+      />
+      <input title="file" type="file" id="file" 
+        [style.display]="'none'" 
+        (change)="loadFile($event)" 
+        multiple [accept]="[
+          '.png',
+          '.jpg',
+          '.jpeg',
+          '.webp',
+          '.webm',
+          '.mp4',
+          '.m4v',
+          '.mpg',
+          '.mpeg',
+          '.mpeg4',
+          '.mov',
+          '.3gp',
+          '.mts',
+          '.m2ts',
+          '.mxf'
+          ]" 
+      />
+    </div>
+    <div class="progress-container">
+      <ng-container *ngFor="let i of progress">
+        <div class="progress-item">
+          <div class="progress" [ngClass]="{'progress-selected': i.selected}" (click)="selectProgress(i.id)">
+            <span>{{ orderDeliveryStatus(i.name) }} </span>
+            <span>{{ "(" + orderDeliveryLength(i.name) + ")" }}</span>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+    <div class="location-container">
+      <img alt="lugar" class="location-icon" src="{{env}}/location-3.png" (click)="showLocations = !showLocations"
+        [style.color]="showLocations ? '#F6F6F6' : '#87CD9B'" />
+      <p class="selection-text" *ngIf="showLocations">
+        LUGAR DE ENTREGAS
       </p>
-      <div class="tutorial-button-holder">
-        <button class="tutorial-button" (click)="toggleTutorial(true)">No Mostrar Tutorial</button>
-        <button class="ok-button" (click)="tutorialEnabled = false">Ok</button>
-      </div>
+      <mat-icon *ngIf="showLocations" class="expand-icon">
+        expand_more
+      </mat-icon>
     </div>
-    <div class="header">
-        <div class="flex">
-            <mat-icon class="close-icon" (click)="back()">close</mat-icon>
-            <p>📦 Progresos de facturas</p>
+    <div *ngIf="showLocations" class="progress-container">
+      <div class="progress-item">
+        <div class="progress" [ngClass]="{'progress-selected': delivery.selected}" (click)="delivery.selected === !delivery.selected">
+          <span>Delivery </span>
+          <span>({{delivery.amount || 0}})</span>
         </div>
-        <mat-icon>search</mat-icon>
-    </div>
-    <div class="dates-container">
-      <div class="progress-camera">
-        <p class="selection-text">PROGRESS</p>
-        <img alt="camara" class="camera-icon" src="{{env}}/green-camera.png" />
       </div>
-      <div class="progress-container">
-          <ng-container *ngFor="let i of progress">
-            <div class="progress-item">
-              <div class="progress" [ngClass]="{'progress-selected': i.selected}" (click)="select(i.id)">
-                <span>{{ orderDeliveryStatus(i.name) }}</span>
-                <span>{{ "(" + orderDeliveryLength(i.name) + ")" }}</span>
-              </div>
-            </div>
-          </ng-container>
+      <div class="progress-item">
+        <div class="progress" [ngClass]="{'progress-selected': pickUp.selected}" (click)="pickUp.selected">
+          <span>PickUp </span>
+          <span>({{pickUp.amount || 0}})</span>
+        </div>
       </div>
-      <div class="location-container">
-        <img 
-          alt="lugar"
-          class="location-icon"
-          src="{{env}}/location-3.png"
-          (click)="showLocations = !showLocations"
-          [style.color]="showLocations ? '#F6F6F6' : '#87CD9B'"
-        />
-        <p class="selection-text" *ngIf="showLocations">
-          LUGAR DE ENTREGAS
-        </p>
-        <mat-icon
-          *ngIf="showLocations"
-          class="expand-icon"
-        >
-          expand_more
-        </mat-icon>
-      </div>
-      <div *ngIf="showLocations" class="progress-container">
-        <div class="progress-item">
-          <div class="progress">
-            <span>Delivery</span>
-            <span>(78)</span>
-          </div>
-        </div>
-        <div class="progress-item">
-          <div class="progress">
-            <span>PickUp</span>
-            <span>(78)</span>
-          </div>
-        </div>
-        <div class="progress-item">
-          <div class="progress">
-            <span>ZonaID</span>
-            <span>(78)</span>
-          </div>
-        </div>
-        <div class="progress-item">
-          <div class="progress">
-            <span>ZonaID</span>
-            <span>(78)</span>
-          </div>
-        </div>
-        <div class="progress-item">
-          <div class="progress">
-            <span>ZonaID</span>
-            <span>(78)</span>
-          </div>
-        </div>
-        <div class="progress-item">
-          <div class="progress">
-            <span>ZonaID</span>
-            <span>(78)</span>
-          </div>
-        </div>
-        <div class="progress-item">
-          <div class="progress">
-            <span>ZonaID</span>
-            <span>(78)</span>
-          </div>
+      <div *ngFor="let zone of deliveryZones" class="progress-item">
+        <div class="progress" [ngClass]="{'progress-selected': zone.selected}" (click)="selectZone(zone._id)">
+          <span>{{zone.zona}} </span>
+          <span>({{findAmount(zone._id)}})</span>
         </div>
       </div>
     </div>
-    <div class="content">
-      <div class="content-title-container">
-        <p class="content-title">
-            {{filterData().length}} facturas. ${{calcTotalPrice().toFixed(2)}} de beneficio.
-        </p>
-      </div>
-      <div class="content-cards-container">
-        <div
-          class="content-card"
-          *ngFor="let order of filterData(); index as i"
-          (click)="goToOrderDetail(order._id)"
-        >
+  </div>
+  <div class="content">
+    <div class="content-title-container">
+      <p class="content-title">
+        {{orders.length}} facturas. ${{calcTotalPrice().toFixed(2)}} de beneficio.
+      </p>
+    </div>
+    <div class="content-cards-container">
+      <div class="content-card" *ngFor="let order of orders; index as i" (click)="goToOrderDetail(order._id)">
         <div class="display-flex">
           <!-- <img [src]=" order.user.image?order.user.image:'https://cdn-icons-png.flaticon.com/512/149/149071.png'" width="66px"> -->
           <div class="content-card-info">
-            <p class="content-card-title">{{ order.user != null ? (order.user.name || order.user.email || order.user.phone) : "Usuario borrado" }}</p>
+            <p class="content-card-title">{{ order.user != null ? (order.user.name || order.user.email ||
+              order.user.phone) : "Usuario borrado" }}</p>
             <p class="content-card-extra-info">{{ shortFormatID(order.dateId) }}, hace {{dateHandler(order.dateId)}}</p>
           </div>
         </div>
@@ -124,8 +117,19 @@
           <p class="content-card-extra-info">{{ order.items.length }} artículos</p>
         </div>
       </div>
-        
-      </div>
     </div>
   </div>
-  
+  <div *ngIf="externalOrderDialog" class="dialog external-order-dialog">
+    <p class="external-order-title">Monto Pagado:</p>
+    <input
+      class="external-order-input"
+      placeholder="$ escribe..." 
+      type="number"
+      [(ngModel)]="externalOrderNumber"
+    >
+    <div class="tutorial-button-holder">
+      <button class="tutorial-button" (click)="sendExternalOrder(false)">Brincar</button>
+      <button class="ok-button external-order-button" (click)="sendExternalOrder(true)">Guardar</button>
+    </div>
+  </div>
+</div>
