@@ -16,7 +16,7 @@
           (${{ pricing | number }})
         </span>
       </div>
-      <div class="quantity-items">
+      <div class="quantity-items" *ngIf="isPrincipal">
         <span>{{ totalOrder }} artículos</span>
       </div>
     </div>

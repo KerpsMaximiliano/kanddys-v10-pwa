@@ -145,11 +145,11 @@ export class OrderExpensesComponent implements OnInit {
   createExpenditure() {
     let fieldsToCreateForFormDialog: FormData = {
       fields: [{
-        label: 'Precio del egreso',
+        label: 'Monto del egreso',
         name: 'price',
         type: 'currency',
         validators: [Validators.pattern(/[\S]/), Validators.min(0.1)],
-      },],
+      }],
       buttonsTexts: {
         cancel: "Cancelar",
         accept: "Ok"
@@ -161,35 +161,30 @@ export class OrderExpensesComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(async (input: FormGroup) => {
-      const isFieldValid = input?.value["price"] && input?.controls["price"].valid
       if (input?.value["price"] === '') return
-      try {
-        if (isFieldValid) {
-          const inputExpenditure = {
-            name: '',
-            amount: input.value["price"],
-            type: "others",
-          } as Expenditure;
+      const isFieldValid = input?.value["price"] && input?.controls["price"].valid
+      if (isFieldValid) {
+        const inputExpenditure = {
+          name: '',
+          amount: input.value["price"],
+          type: "others",
+        } as Expenditure;
 
-          // inputExpenditure será el nuevo expenditure para insertar al final de orderExpenditures
-          this.orderExpenditures.push(inputExpenditure)
-          const newExpenditure = await this.orderService.createExpenditure(
-            this.merchantsService.merchantData._id,
-            inputExpenditure
-          )
-          this.orderExpenditures[this.orderExpenditures.length - 1]._id = newExpenditure._id;
+        // inputExpenditure será el nuevo expenditure para insertar al final de orderExpenditures
+        this.orderExpenditures.push(inputExpenditure)
+        const newExpenditure = await this.orderService.createExpenditure(
+          this.merchantsService.merchantData._id,
+          inputExpenditure
+        )
+        this.orderExpenditures[this.orderExpenditures.length - 1]._id = newExpenditure._id;
 
-          this.orderService.orderAddExpenditure(newExpenditure._id, this.order._id);
-          this.order.expenditures.push(newExpenditure._id);
-          this.calculateExpenses();
+        this.orderService.orderAddExpenditure(newExpenditure._id, this.order._id);
+        this.order.expenditures.push(newExpenditure._id);
+        this.calculateExpenses();
 
-          this.matSnackbar.open(`Factura agregada`, '', { duration: 2000, });
-        } else {
-          this.headerService.showErrorToast("Precio invalido");
-        }
-      } catch (error) {
-        console.error(error);
-        this.headerService.showErrorToast(error);
+        this.matSnackbar.open(`Factura agregada`, '', { duration: 2000, });
+      } else {
+        this.headerService.showErrorToast("Monto invalido");
       }
     });
   }
@@ -270,7 +265,7 @@ export class OrderExpensesComponent implements OnInit {
   modifyPrice(orderPosition: number) {
     let fieldsToCreateForFormDialog = {
       fields: [{
-        label: 'Precio del egreso',
+        label: 'Monto del egreso',
         name: 'price',
         type: 'currency',
         validators: [Validators.pattern(/[\S]/), Validators.min(0.1)],
@@ -304,6 +299,7 @@ export class OrderExpensesComponent implements OnInit {
             bottom: '0',
           }
         }
+
       },],
     };
 
@@ -315,27 +311,24 @@ export class OrderExpensesComponent implements OnInit {
       const amount = input?.value["price"]
       const isFieldValid = amount && input?.controls["price"].valid
       if (amount === '') return
-      try {
-        if (isFieldValid) {
-          const expenditure = {
-            name: this.orderExpenditures[orderPosition].name,
-            amount,
-            type: this.orderExpenditures[orderPosition].type,
-          } as Expenditure;
-          this.orderService
-            .updateExpenditure(expenditure, this.orderExpenditures[orderPosition]._id)
-            .then(() => {
-              this.orderExpenditures[orderPosition].amount = amount
-              this.calculateExpenses()
-              this.matSnackbar.open(`Precio de la factura actualizada`, '', { duration: 2000 });
-            })
-            .catch(error => console.error(error));
-        } else {
-          this.headerService.showErrorToast("Precio invalido");
-        }
-      } catch (error) {
-        console.error(error);
+      if (isFieldValid) {
+        const expenditure = {
+          name: this.orderExpenditures[orderPosition].name,
+          amount,
+          type: this.orderExpenditures[orderPosition].type,
+        } as Expenditure;
+        this.orderService
+          .updateExpenditure(expenditure, this.orderExpenditures[orderPosition]._id)
+          .then(() => {
+            this.orderExpenditures[orderPosition].amount = amount
+            this.calculateExpenses()
+            this.matSnackbar.open(`Monto de la factura actualizada`, '', { duration: 2000 });
+          })
+          .catch(error => console.error(error));
+      } else {
+        this.headerService.showErrorToast("Monto invalido");
       }
+
     });
   }
 }

@@ -1,6 +1,7 @@
 .card {
   padding: 12px;
   border-radius: 6px;
+  box-shadow: none;
 }
 .description,
 .description-extra {
@@ -16,7 +17,7 @@
   font-weight: 700;
   line-height: normal;
 
-  &.active{
+  &.active {
     cursor: pointer;
   }
 }
