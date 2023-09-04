@@ -214,6 +214,7 @@ export const listItems = gql`
       content
       name
       pricing
+      priceOriginal
       pricePerUnit
       description
       createdAt

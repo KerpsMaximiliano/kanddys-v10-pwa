@@ -106,6 +106,7 @@ export class Item extends Model<Item> {
   type?: 'default' | 'supplier';
   notificationStockPhoneOrEmail?: string;
   approvedByAdmin?: boolean;
+  priceOriginal?:number;
   useStock?: boolean;
 }
 
