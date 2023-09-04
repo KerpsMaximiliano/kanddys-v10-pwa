@@ -1,8 +1,9 @@
 <mat-card class="card">
   <mat-card-header>
-    <mat-card-title class="title" (click)="modifyTitle()">{{
-      title
-    }}</mat-card-title>
+    <mat-card-title class="title" (click)="modifyTitle()">
+      <span *ngIf="isPrincipal">{{ title }}</span>
+      <span *ngIf="!isPrincipal" style="cursor: pointer">{{ title }}</span>
+    </mat-card-title>
     <mat-card-subtitle class="subtitle">
       <span *ngIf="showIcon">Icono</span>
       {{ subtitle }}
@@ -10,7 +11,10 @@
     <div style="flex: 1"></div>
     <div class="description-extra">
       <div class="pricing" (click)="modifyPrice()">
-        <span>${{ pricing | number }}</span>
+        <span *ngIf="isPrincipal">${{ pricing | number }}</span>
+        <span *ngIf="!isPrincipal" style="cursor: pointer">
+          (${{ pricing | number }})
+        </span>
       </div>
       <div class="quantity-items">
         <span>{{ totalOrder }} artículos</span>

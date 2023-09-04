@@ -24,14 +24,19 @@
             [subtitle]="orderData.dateId + ', ' + orderData.date"
             [pricing]="orderData.pricing"
             [totalOrder]="orderData.totalOrders"
+            [isPrincipal]="true"
           ></app-named-expense>
           <app-named-expense
             *ngFor="let expenditure of orderExpenditures; let i = index"
             [title]="expenditure?.name ? expenditure.name : 'Sin nombre'"
-            [subtitle]="orderData.dateId + ', ' + daysAgo(expenditure.createdAt)"
+            [subtitle]="
+              orderData?.dateId && expenditure?.createdAt
+                ? orderData.dateId + ', ' + daysAgo(expenditure.createdAt)
+                : orderData.dateId + ', Hoy'
+            "
             [pricing]="expenditure.amount"
-            (onModifyTitle)="modifyTitle(expenditures[i])"
-            (onModifyPrice)="modifyPrice(expenditures[i])"
+            (onModifyTitle)="modifyTitle(i)"
+            (onModifyPrice)="modifyPrice(i)"
           ></app-named-expense>
           <button
             type="button"

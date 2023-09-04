@@ -15,7 +15,10 @@
   font-style: normal;
   font-weight: 700;
   line-height: normal;
-  cursor: pointer;
+
+  &.active{
+    cursor: pointer;
+  }
 }
 .subtitle {
   margin-bottom: 0;
@@ -29,7 +32,6 @@
 .pricing {
   font-size: 17px;
   font-style: normal;
-  cursor: pointer;
 }
 .quantity-items,
 .subtitle {

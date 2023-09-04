@@ -56,13 +56,9 @@ export class OrderExpensesComponent implements OnInit {
     public headerService: HeaderService,
   ) { }
 
-  ngOnInit() {
-    this.getExpenditures()
-  }
-
-  async getExpenditures(): Promise<void> {
-    this.orderId = this.route.snapshot.paramMap.get('orderId');
-    this.order = (await this.orderService.order(this.orderId))?.order;
+  async ngOnInit() {
+    const orderId = this.route.snapshot.paramMap.get('orderId');
+    this.order = (await this.orderService.order(orderId))?.order;
     if (!this.order) throw new Error('No hay orden');
     this.expenditures = await this.orderService.expenditures({
       findBy: {
@@ -93,7 +89,8 @@ export class OrderExpensesComponent implements OnInit {
     });
   }
 
-  onDelete(expenditure: Expenditure) {
+  onDelete(orderPosition: number) {
+    const expenditure = this.orderExpenditures[orderPosition]
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: `Borrar egreso`,
@@ -101,12 +98,18 @@ export class OrderExpensesComponent implements OnInit {
       },
     });
     dialogRef.afterClosed().subscribe((result) => {
-      if (result === 'confirm') {
-        this.orderService.orderRemoveExpenditure(expenditure._id, this.order._id);
-        this.order.expenditures = this.order.expenditures.filter((value) => value !== expenditure._id);
-        this.filterExpenditures();
-        this.calculateExpenses();
+      try {
+        console.log(expenditure._id)
+        if (result === 'confirm') {
+          this.orderService.orderRemoveExpenditure(expenditure._id, this.order._id)
+          this.order.expenditures = this.order.expenditures.filter((value) => value !== expenditure._id);
+          this.orderExpenditures.splice(orderPosition, 1)
+          this.calculateExpenses();
+        }
+      } catch (error) {
+        console.error(error);
       }
+
     });
   }
 
@@ -159,32 +162,27 @@ export class OrderExpensesComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(async (input: FormGroup) => {
       const isFieldValid = input?.value["price"] && input?.controls["price"].valid
-      if (input.value["price"] === '') return
+      if (input?.value["price"] === '') return
       try {
         if (isFieldValid) {
-          const expenditure = {
+          const inputExpenditure = {
             name: '',
             amount: input.value["price"],
             type: "others",
           } as Expenditure;
-          const newExpenditure = await this.orderService
-            .createExpenditure(this.merchantsService.merchantData._id, expenditure);
-          this.orderService.orderAddExpenditure(newExpenditure._id, this.order._id)
-          this.expenditures = await this.orderService.expenditures({
-            findBy: {
-              merchant: this.merchantsService.merchantData._id,
-            },
-            options: {
-              sortBy: 'createdAt:desc',
-            },
-          });
-          this.filterExpenditures();
-          this.benefits.benefits = this.order.subtotals.reduce(
-            (a, b) => a + b.amount,
-            0
-          );
+
+          // inputExpenditure será el nuevo expenditure para insertar al final de orderExpenditures
+          this.orderExpenditures.push(inputExpenditure)
+          const newExpenditure = await this.orderService.createExpenditure(
+            this.merchantsService.merchantData._id,
+            inputExpenditure
+          )
+          this.orderExpenditures[this.orderExpenditures.length - 1]._id = newExpenditure._id;
+
+          this.orderService.orderAddExpenditure(newExpenditure._id, this.order._id);
+          this.order.expenditures.push(newExpenditure._id);
           this.calculateExpenses();
-          this.orderExpenditures.unshift(this.expenditures[0])
+
           this.matSnackbar.open(`Factura agregada`, '', { duration: 2000, });
         } else {
           this.headerService.showErrorToast("Precio invalido");
@@ -196,7 +194,7 @@ export class OrderExpensesComponent implements OnInit {
     });
   }
 
-  modifyTitle(order: Expenditure) {
+  modifyTitle(orderPosition: number) {
     const fieldsToCreateForFormDialog: FormData = {
       fields: [{
         label: 'Nombre del egreso',
@@ -215,7 +213,7 @@ export class OrderExpensesComponent implements OnInit {
           },
           callback: () => {
             this.dialog.closeAll()
-            this.onDelete(order)
+            this.onDelete(orderPosition)
           }
         },
         submitButton: {
@@ -251,15 +249,12 @@ export class OrderExpensesComponent implements OnInit {
         if (isFieldValid) {
           const expenditure = {
             name,
-            amount: order.amount,
-            type: order.type,
+            amount: this.orderExpenditures[orderPosition].amount,
+            type: this.orderExpenditures[orderPosition].type,
           } as Expenditure;
-          this.orderService.updateExpenditure(expenditure, order._id)
-            .then((data) => {
-              const idOrderUpdated = data._id
-              const id = this.orderExpenditures
-                .findIndex(orderExpenditure => orderExpenditure._id === idOrderUpdated)
-              this.orderExpenditures[id].name = name
+          this.orderService.updateExpenditure(expenditure, this.orderExpenditures[orderPosition]._id)
+            .then(() => {
+              this.orderExpenditures[orderPosition].name = name
               this.matSnackbar.open(`Nombre de la factura actualizada`, '', { duration: 2000, });
             }).catch(error => {
               console.error(error)
@@ -272,7 +267,7 @@ export class OrderExpensesComponent implements OnInit {
     });
   }
 
-  modifyPrice(order: Expenditure) {
+  modifyPrice(orderPosition: number) {
     let fieldsToCreateForFormDialog = {
       fields: [{
         label: 'Precio del egreso',
@@ -323,21 +318,18 @@ export class OrderExpensesComponent implements OnInit {
       try {
         if (isFieldValid) {
           const expenditure = {
-            name: order.name,
+            name: this.orderExpenditures[orderPosition].name,
             amount,
-            type: order.type,
+            type: this.orderExpenditures[orderPosition].type,
           } as Expenditure;
-          this.orderService.updateExpenditure(
-            expenditure,
-            order._id
-          ).then(data => {
-            const idOrderUpdated = data._id
-            const id = this.orderExpenditures.findIndex(
-              orderExpenditure => orderExpenditure._id === idOrderUpdated
-            )
-            this.orderExpenditures[id].amount = amount
-            this.matSnackbar.open(`Precio de la factura actualizada`, '', { duration: 2000 });
-          }).catch(error => console.error(error));
+          this.orderService
+            .updateExpenditure(expenditure, this.orderExpenditures[orderPosition]._id)
+            .then(() => {
+              this.orderExpenditures[orderPosition].amount = amount
+              this.calculateExpenses()
+              this.matSnackbar.open(`Precio de la factura actualizada`, '', { duration: 2000 });
+            })
+            .catch(error => console.error(error));
         } else {
           this.headerService.showErrorToast("Precio invalido");
         }
