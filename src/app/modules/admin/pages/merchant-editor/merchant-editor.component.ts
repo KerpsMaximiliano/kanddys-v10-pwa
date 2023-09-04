@@ -335,6 +335,7 @@ export class MerchantEditorComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result: FormGroup) => {
+      let tempObj = {};
       fieldsArrayForFieldValidation.forEach((field) => {
         let error = `${field.fieldTextDescription} invalido`;
 
@@ -346,10 +347,27 @@ export class MerchantEditorComponent implements OnInit {
             this.itemFormData.patchValue({
               [field.fieldName]: result?.value[field.fieldKey],
             });
-            if (field.fieldName === 'paypal-email')
+            if (field.fieldName === 'paypal-email') {
+              if (!this.paymentMethods.some(element => element.type === 'paypal')) this.paymentMethods.push({type: 'paypal'});
               this.paymentMethods.filter(obj => obj.type === 'paypal')[0]['email'] = result?.value[field.fieldKey];
-            else
-              this.paymentMethods.filter(obj => obj.type === 'bank')[0][field.fieldName] = result?.value[field.fieldKey];
+            } else {
+              tempObj[field.fieldName] = result?.value[field.fieldKey];
+              if (tempObj.hasOwnProperty('bankName') && tempObj.hasOwnProperty('account')) {
+                this.paymentMethods.push({
+                  type: 'bank',
+                  ...tempObj
+                });
+              }
+            }
+            this.paymentMethodsString = '';
+            for (let item of this.paymentMethods) {
+              if (item.type === 'paypal') {
+                this.paymentMethodsString = 'PayPal email: ' + item.email + (this.paymentMethodsString.length? ', ' + this.paymentMethodsString: '');
+              }
+              if (item.type === 'bank') {
+                this.paymentMethodsString += (this.paymentMethodsString.length? ', ': '') + item.bankName;
+              }
+            }
           } else {
             this.headerService.showErrorToast(error);
           }
