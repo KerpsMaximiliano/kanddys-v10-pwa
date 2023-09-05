@@ -4,6 +4,7 @@ const body = `
     _id
     name
     description
+    type
 `;
 
 export const createCommunityCategory = gql`
@@ -18,6 +19,16 @@ export const communitycategories = gql`
   query communitycategories($params: ListParams) {
     communitycategories(params: $params) {
       ${body}
+    }
+  }
+`;
+
+export const communitycategoriesPaginate = gql`
+  query communitycategoriesPaginate($paginate: PaginationInput!) {
+    communitycategoriesPaginate(paginate: $paginate) {
+      results {
+        ${body}
+      }
     }
   }
 `;
