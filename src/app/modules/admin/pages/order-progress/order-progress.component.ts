@@ -139,7 +139,9 @@ export class OrderProgressComponent implements OnInit {
     } else {
       ShippingType = null
     }
-    let findBy = {}
+    let findBy = {
+      merchant: this.merchantId,
+    }
     if(this.selectedProgress.length > 0) {
       findBy["orderStatusDelivery"] = this.selectedProgress
     }
@@ -153,17 +155,16 @@ export class OrderProgressComponent implements OnInit {
       findBy: findBy,
       options: {
         limit: 25,
-        sortBy: 'updatedAt:desc'
+        sortBy: 'createdAt:desc'
       },
     };
     const orders = (
-      await this.merchantsService.ordersByMerchant(
-        this.merchantId,
+      await this.orderService.orderPaginate(
         pagination
       )
-    )?.ordersByMerchant;
+    )
     this.orders = orders != undefined ? orders : []
-
+    console.log(this.orders)
     await this.orderService.orderQuantityOfFiltersStatusDelivery({ findBy: {merchant: this.merchantId} }).then((res) => {
       this.deliveryStatus = res
     })
@@ -223,7 +224,19 @@ export class OrderProgressComponent implements OnInit {
     (document.querySelector('#file') as HTMLElement).click();
   }
 
-  goToOrderDetail(orderID: string) {
+  goToOrderDetail(orderID: string, index) {
+    if(this.orders[index].orderType === 'external') {
+      return this.router.navigate(
+        [
+          `/ecommerce/manual-order-management/${orderID}`
+        ],
+        {
+          queryParams: {
+            redirectTo: this.router.url
+          }
+        }
+      );
+    }
     return this.router.navigate(
       [
         `/ecommerce/order-detail/${orderID}`

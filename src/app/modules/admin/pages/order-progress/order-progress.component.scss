@@ -136,10 +136,14 @@
 }
 
 .camera-icon {
-  color: #87CD9B;
   width: 28px;
   height: 21px;
   cursor: pointer;
+}
+
+.camera-icon.grey {
+  width: 21px;
+  height: 16px;
 }
 
 .selection-text {
