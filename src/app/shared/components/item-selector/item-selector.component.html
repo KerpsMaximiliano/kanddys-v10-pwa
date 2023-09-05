@@ -44,7 +44,9 @@
         </button>
       </ng-container>
 
-      <p class="title">
+      <p class="title" [ngClass]="{
+        smallMarginTop: supplierMode
+      }">
         {{
           !supplierMode
             ? "Selecciona los artículos de tu interés"

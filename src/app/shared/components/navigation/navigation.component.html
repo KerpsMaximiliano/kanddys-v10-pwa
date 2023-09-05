@@ -8,68 +8,181 @@
     disableClose
   >
     <div class="navigation-main-container">
+      <div class="close-btn" style="cursor: pointer;" (click)="close()">
+        <span>X</span>
+      </div>
       <div class="header-wrapper">
         <div class="left-part">
-          <!--
-            <img
-              [src]="assetsFolder + '/icon_info.png'"
-              class="info-button"
-              alt="open internal information"
-              (click)="(null)"
-            />
-          -->
+          
+          <img
+            [src]="assetsFolder + '/icon_info.png'"
+            class="info-button"
+            alt="open internal information"
+            (click)="(null)"
+          />
+    
+          <div class="title">www.floristerias.club</div>
+         
 
           <ng-container>
-            <div class="tabs">
-              <div
-                class="tab"
-                (click)="changeTab(i)"
-                *ngFor="let tab of tabs; index as i"
-                [ngClass]="{ active: tab.active }"
-              >
-                {{ tab.text }}
-              </div>
-            </div>
           </ng-container>
         </div>
 
         <div class="right-part">
           <div class="member">
-            <div class="user-button" *ngIf="!headerService.user">
+            <!-- <div class="user-button" *ngIf="!headerService.user">
               (Invitado)
-            </div>
+            </div> -->
           </div>
-
-          <div class="close" style="cursor: pointer">
+          <div class="user">
+            <span *ngIf="headerService.user" (click)="openDialog()">{{userID}}</span>
+            <span *ngIf="!headerService.user" (click)="enterClub()">Ingresa al Club</span>
+          </div>
+          <!-- <div class="close" style="cursor: pointer;">
             <span (click)="close()">X</span>
-          </div>
+          </div> -->
+        </div>
+      </div>
+      <div class="landing-title">
+        Desarrollamos herramientas que se usan desde el celular para los Miembros del Club
+      </div>
+      <div class="sub-title" *ngIf="headerService.user">
+        (Soy {{tabIndex ? "proveedor" : "tienda"}})
+      </div>
+      <div class="tabs-container" *ngIf="tabIndex==1 && headerService.user">
+        <!-- TABS -->
+        <div class="tab-question" >
+          Gestión de Proveedor:
+        </div>
+        <div class="tab-content">
+          <!-- <div class="tab-content-item" *ngFor="let item of tabProvider">
+            {{ item.text }}
+          </div> -->
+          <ul>
+            <li class="tab-content-item" [routerLinkActive]="!link.isDummy ? 'active' : ''" *ngFor="let link of tabProvider">
+              <a
+                  [routerLink]="!link.isDummy ? link.routerLink : null"
+                  (click)="redirectToLink(link)"
+                  style="padding: 0px"
+              >
+                <span class="text">{{link.text}}</span><br>
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
 
-      <section>
-        <ng-container *ngFor="let tab of tabs; index as i">
-          <ng-container *ngIf="tab.active">
-            <h2 class="logged-user-header">{{ tab.headerText }}</h2>
-            <div class="header-border"></div>
+      <div class="tabs-container" *ngIf="tabIndex==0 && headerService.user">
+        <!-- TABS -->
+        <div class="tab-question" >
+          Gestión de mi Tienda:
+        </div>
+        <div class="tab-content">
+          <!-- <div class="tab-content-item" *ngFor="let item of tabVendor">
+            {{ item.text }}
+          </div> -->
+          <ul>
+            <li class="tab-content-item" [routerLinkActive]="!link.isDummy ? 'active' : ''" *ngFor="let link of tabVendor">
+              <a
+                  [routerLink]="!link.isDummy ? link.routerLink : null"
+                  (click)="redirectToLink(link)"
+                  style="padding: 0px"
+              >
+                <span class="text">{{link.text}}</span><br>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
 
-            <ul>
-              <ng-container *ngFor="let link of tab.links">
-                <li routerLinkActive="active">
-                  <a
-                    mat-button
-                    [routerLink]="link.routerLink"
-                    (click)="redirectToLink(link)"
-                    [queryParams]="link.queryParams ? link.queryParams : null"
-                    style="padding: 0px"
-                  >
-                    {{ link.text }}
-                  </a>
-                </li>
+      <div class="tabs-container">
+        <div class="title">
+          {{mainTitle}}
+        </div>
+        <div class="tab-content">
+          <ul>
+            <li class="tab-content-item" [routerLinkActive]="!link.isDummy ? 'active' : ''" *ngFor="let link of filterData()">
+              <a
+                  [routerLink]="!link.isDummy ? link.routerLink : null"
+                  (click)="redirectToLink(link)"
+                  style="padding: 0px"
+              >
+                <span class="text">{{link.text}}</span><br>
+                <span class="subText">{{link.subText}}</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tabs-container" *ngIf="!headerService.user">
+        <!-- TABS -->
+        <div class="title">
+          HERRAMIENTAS CS* DE PAGOS (CON CLOUD SERVICE)
+        </div>
+        <div class="tab-content">
+          <div class="tab-content-item" *ngFor="let item of tabServices">
+            {{ item }}
+          </div>
+        </div>
+      </div>
+      <ng-container>
+        <div class="tabs-container">
+          <!-- TABS -->
+          <div class="tabs">
+            <div
+              class="tab"
+              (click)="changeTab(i)"
+              *ngFor="let tab of underTabs; index as i"
+              [ngClass]="{ active: tab.active }"
+            >
+              {{ tab.text }}
+            </div>
+          </div>
+
+          <!-- SUBTABS -->
+          <div
+            class="subtabs"
+            *ngFor="let tab of underTabs; index as i"
+            [ngClass]="{ active: tab.active }"
+          >
+            <ng-container *ngIf="tab.active">
+              <div
+                class="subtab"
+                *ngFor="let subtab of tab.subTabs; index as j"
+                (click)="changeSubtab(i, j)"
+                [ngClass]="{ active: subtab.active }"
+              >
+                {{ subtab.text }}
+              </div>
+            </ng-container>
+          </div>
+          <!-- CONTENIDO DE SUBTABS -->
+          <ng-container *ngFor="let tab of underTabs; index as i">
+            <ng-container *ngIf="tab.active">
+              <ng-container *ngFor="let subtab of tab.subTabs; index as j">
+                <ng-container *ngIf="subtab.active">
+                  <div class="footer-swiper">
+                    <h3 class="footer-swiper-title">{{ !tabIndex ? "LO QUE MAS LE GUSTA A LAS FLORISTERIAS" : "LO QUE MAS LE GUSTA A LOS PROVEEDORES" }}</h3>
+            
+                    <div class="swiper-custom-container">
+                      <swiper [config]="footerSwiperConfig">
+                        <div *ngFor="let content of subtab.content">
+                          <div class="slide-content">{{ content }}</div>
+            
+                          <div class="blank-space"></div>
+                        </div>
+                      </swiper>
+                    </div>
+                  </div>
+                </ng-container>
               </ng-container>
-            </ul>
+            </ng-container>
           </ng-container>
-        </ng-container>
-      </section>
+        </div>
+      </ng-container>
+
+      <footer class="footer" [ngClass]="{'no-green' : headerService.user}">{{headerService.user ? "Embajadores ganan hasta US$750 💚": "CS* $0.30 por factura hasta US$250"}}</footer>
     </div>
   </mat-sidenav>
   <mat-sidenav-content>

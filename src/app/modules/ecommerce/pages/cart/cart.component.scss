@@ -20,8 +20,7 @@ p {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 17px;
-    padding-bottom: 13px;
+    padding: 10px 12.49px 7px 17px;
     height: auto;
 
     background-color: #fff;
@@ -41,6 +40,7 @@ p {
       text-overflow: ellipsis;
       -webkit-line-clamp: 1;
       -webkit-box-orient: vertical;
+      width: 80%;
     }
 
     .close {
@@ -60,7 +60,7 @@ p {
     .left-area {
       display: flex;
       gap: 8px;
-      justify-content: center;
+      justify-content: flex-start;
       align-items: center;
 
       i {
@@ -73,6 +73,29 @@ p {
     .right-area {
       display: flex;
       align-items: flex-end;
+
+      .share-btn {
+        display: flex;
+        align-items: flex-end;
+        color: #181d17;
+        font-family: InterLight;
+        font-size: clamp(9px, 3vw, 14px);
+        font-style: normal;
+        font-weight: 300;
+        line-height: normal;
+
+        span {
+          width: 112px;
+
+          @media (max-width: 400px) {
+            width: 94px;
+          }
+        }
+
+        img {
+          margin-left: 5.65px;
+        }
+      }
 
       .header-text {
         font-family: "RobotoRegular";
@@ -459,7 +482,7 @@ footer {
 .cta-title {
   cursor: pointer;
   font-family: InterBold;
-  color: #189AC1;
+  color: #189ac1;
   font-size: 17px;
 }
 
@@ -484,4 +507,14 @@ footer {
   .left-side {
     width: 60% !important;
   }
+}
+
+.original-price{
+  text-align: left; 
+  margin-left: -2px; 
+  float: left;
+  color: #7b7b7b;
+  text-decoration: line-through;
+  padding-right: 15px;
+
 }

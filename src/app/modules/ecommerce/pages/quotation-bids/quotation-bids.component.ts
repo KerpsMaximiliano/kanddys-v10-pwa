@@ -19,7 +19,10 @@ import { QuotationsService } from 'src/app/core/services/quotations.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
-import { FormComponent } from 'src/app/shared/dialogs/form/form.component';
+import {
+  FormComponent,
+  FormData,
+} from 'src/app/shared/dialogs/form/form.component';
 import { environment } from 'src/environments/environment';
 import { Item } from 'src/app/core/models/item';
 import { ItemsService } from 'src/app/core/services/items.service';
@@ -32,6 +35,12 @@ import {
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
 import { base64ToBlob } from 'src/app/core/helpers/files.helpers';
+import {
+  OptionsDialogComponent,
+  OptionsDialogTemplate,
+} from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
+import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 
 @Component({
   selector: 'app-quotation-bids',
@@ -55,7 +64,6 @@ export class QuotationBidsComponent implements OnInit {
   isCurrentUserASupplier: boolean = false;
   isTheCurrentUserTheQuotationMerchant: boolean = false;
   quotationLink: string;
-  tutorialOpened: boolean = false;
   requesterId: string = null;
 
   //magicLink-specific variables
@@ -63,6 +71,13 @@ export class QuotationBidsComponent implements OnInit {
   fetchedItemsFromMagicLink: Array<Item> = [];
 
   fromProviderAdjustments: boolean = false;
+
+  //tutorial variables
+  tutorialOpened: boolean = false;
+  tutorialCardsOpened = {
+    saveTemporalQuotation: true,
+    share: true,
+  };
 
   constructor(
     private quotationsService: QuotationsService,
@@ -78,6 +93,7 @@ export class QuotationBidsComponent implements OnInit {
     private clipboard: Clipboard,
     private bottomSheet: MatBottomSheet,
     private router: Router,
+    private dialogService: DialogService,
     private matSnackBar: MatSnackBar
   ) {}
 
@@ -106,7 +122,7 @@ export class QuotationBidsComponent implements OnInit {
           );
 
           if (this.encodedJSONData) {
-            this.parseMagicLinkData();
+            await this.parseMagicLinkData();
           }
 
           if (quotationId) {
@@ -159,6 +175,11 @@ export class QuotationBidsComponent implements OnInit {
             this.quotationMatches = quotationMatches;
 
             if (this.quotationMatches.length === 0) {
+              this.tutorialOpened = true;
+              this.tutorialCardsOpened = {
+                saveTemporalQuotation: false,
+                share: true,
+              };
               this.matSnackBar.open('No hay coincidencias', 'Cerrar', {
                 duration: 5000,
               });
@@ -210,6 +231,11 @@ export class QuotationBidsComponent implements OnInit {
             this.quotationMatches = quotationMatches;
 
             if (this.quotationMatches.length === 0) {
+              this.tutorialOpened = true;
+              this.tutorialCardsOpened = {
+                saveTemporalQuotation: false,
+                share: true,
+              };
               this.matSnackBar.open('No hay coincidencias', 'Cerrar', {
                 duration: 5000,
               });
@@ -225,6 +251,7 @@ export class QuotationBidsComponent implements OnInit {
             }
           } else if (!quotationId) {
             this.typeOfQuotation = 'TEMPORAL_QUOTATION';
+            this.tutorialOpened = true;
 
             if (!this.quotationsService.selectedTemporalQuotation) {
               let storedSelectedTemporalQuotation: any = localStorage.getItem(
@@ -326,6 +353,8 @@ export class QuotationBidsComponent implements OnInit {
               '?itemsForTemporalQuotation=' +
               this.temporalQuotation.items.join('-');
           }
+
+          this.checkIfTutorialsWereSeenAlready();
         }
       );
     });
@@ -337,6 +366,13 @@ export class QuotationBidsComponent implements OnInit {
 
       if (parsedData.requesterId) {
         this.requesterId = parsedData.requesterId;
+      }
+
+      if (
+        parsedData.temporalQuotationsToBeSaved &&
+        parsedData.quotationSelectedIndex >= 0
+      ) {
+        return await this.authQuotations(parsedData);
       }
 
       if (parsedData.fromProviderAdjustments) {
@@ -367,6 +403,37 @@ export class QuotationBidsComponent implements OnInit {
       return;
     }
   }
+
+  authQuotations = async (parsedData: Record<string, any>) => {
+    lockUI();
+    const temporalQuotations: Array<QuotationInput> =
+      parsedData.temporalQuotationsToBeSaved;
+
+
+    await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+
+    const createdQuotations = await Promise.all(
+      temporalQuotations.map((quotation) =>
+        this.quotationsService.createQuotation(
+          this.merchantsService.merchantData._id,
+          quotation
+        )
+      )
+    );
+
+    localStorage.removeItem('temporalQuotations');
+
+    const quotation = createdQuotations.find(
+      (quotation) =>
+        quotation.name ===
+        temporalQuotations[Number(parsedData.quotationSelectedIndex)].name
+    );
+
+    unlockUI();
+
+    window.location.href =
+      window.location.href.split('?')[0] + '/' + quotation._id;
+  };
 
   createQuotationFromMagicLink = async (
     itemIds: Array<string>,
@@ -987,21 +1054,32 @@ export class QuotationBidsComponent implements OnInit {
   }
 
   async shareQuotation() {
+    this.tutorialCardsOpened = {
+      saveTemporalQuotation: false,
+      share: false,
+    };
     const queryParams: Record<string, any> = {};
 
     if (this.typeOfQuotation === 'DATABASE_QUOTATION') {
-      queryParams.requesterId =
-        this.merchantsService.merchantData && !this.requesterId
-          ? this.merchantsService.merchantData._id
-          : this.requesterId
-          ? this.requesterId
-          : null;
-      queryParams.supplierMerchantId = this.merchantsService.merchantData
-        ? this.merchantsService.merchantData._id
-        : null;
+      (queryParams.items = this.quotation.items.join('-')),
+        (queryParams.quotationName = this.quotation.name);
+
+      if (this.merchantsService.merchantData?._id) {
+        queryParams.requesterId = this.merchantsService.merchantData?._id;
+      }
     } else if (this.typeOfQuotation === 'TEMPORAL_QUOTATION') {
+      queryParams.items =
+        this.quotationsService.selectedTemporalQuotation.items.join('-');
+      queryParams.quotationName =
+        this.quotationsService.selectedTemporalQuotation.name;
+      queryParams.temporalQuotation = true;
+
+      if (this.merchantsService.merchantData?._id) {
+        queryParams.requesterId = this.merchantsService.merchantData?._id;
+      }
+
       queryParams.itemsForTemporalQuotation =
-        this.temporalQuotation.items;
+        this.quotationsService.selectedTemporalQuotation.items;
     }
 
     lockUI();
@@ -1009,7 +1087,7 @@ export class QuotationBidsComponent implements OnInit {
     const link = (
       await this.authService.generateMagicLinkNoAuth(
         null,
-        `ecommerce/quotation-bids`,
+        `ecommerce/supplier-register`,
         this.quotation && !this.temporalQuotation ? this.quotation._id : '',
         'QuotationAccess',
         {
@@ -1024,7 +1102,7 @@ export class QuotationBidsComponent implements OnInit {
 
     this.bottomSheet.open(OptionsMenuComponent, {
       data: {
-        title: `Comparte el carrito en tus redes sociales, Youtube o DM (el proveedor te paga una comisión)`,
+        title: `Comparte con otros Proveedores y compara sus precios:`,
         options: [
           {
             value: `Copia el enlace`,
@@ -1047,6 +1125,39 @@ export class QuotationBidsComponent implements OnInit {
                 title: '',
                 url: link,
               });
+            },
+          },
+          {
+            value: `Compártelo por WhatsApp`,
+            callback: () => {
+              const listOfItemNames = this.quotationGlobalItems
+                .map((item) => `-${item.name || 'Producto sin nombre'}\n`)
+                .join('');
+              let bodyMessage = `Hola, pudieras confirmame la disponibilidad y precios de estos artículos 🙏? \n${listOfItemNames} en este enlace te los muestro y lo puedes ajustar bien fácil 👉${encodeURIComponent(
+                link
+              )}`;
+              let whatsappLink = `https://api.whatsapp.com/send?text=${
+                bodyMessage
+              }`;
+
+              window.location.href = whatsappLink;
+            },
+          },
+          {
+            value: `Compártelo por correo electrónico`,
+            callback: () => {
+              const listOfItemNames = this.quotationGlobalItems
+              .map((item) => `-${item.name || 'Producto sin nombre'}%0D%0A`)
+              .join('');
+              let bodyMessage = `Hola, pudieras confirmame la disponibilidad y precios de estos artículos 🙏?: %0D%0A${listOfItemNames} en este enlace te los muestro y lo puedes ajustar bien fácil 👉${encodeURIComponent(
+                link
+              )}`;
+              const subject = encodeURIComponent(
+                'Amplía tu Alcance con www.floristerias.club, conecta a floristerías con proveedores'
+              );
+
+              const mailtoLink = `mailto:?subject=${subject}&body=${bodyMessage}`;
+              window.location.href = mailtoLink;
             },
           },
           {
@@ -1113,5 +1224,516 @@ export class QuotationBidsComponent implements OnInit {
         duration: 3000,
       }
     );
+  }
+
+  checkIfTutorialsWereSeenAlready = () => {
+    const tutorialsConfig = JSON.parse(
+      localStorage.getItem('tutorials-config')
+    );
+
+    if (tutorialsConfig && 'temporal-quotations-save' in tutorialsConfig) {
+      this.tutorialCardsOpened['saveTemporalQuotation'] = false;
+    }
+  };
+
+  async saveTemporalQuotation(event: MouseEvent) {
+    const clickedElement = event.target as HTMLElement;
+
+    if (clickedElement.classList.contains('accept')) {
+      this.tutorialCardsOpened['saveTemporalQuotation'] = false;
+    }
+
+    if (clickedElement.classList.contains('cancel')) {
+      this.tutorialCardsOpened['saveTemporalQuotation'] = false;
+
+      let tutorialsConfig = JSON.parse(
+        localStorage.getItem('tutorials-config')
+      );
+
+      if (!tutorialsConfig) tutorialsConfig = {};
+
+      localStorage.setItem(
+        'tutorials-config',
+        JSON.stringify({
+          ...tutorialsConfig,
+          'temporal-quotations-save': true,
+        })
+      );
+    }
+
+    if (!clickedElement.classList.contains('save-btn')) {
+      // Prevent the click event handler from running for children elements
+      event.stopPropagation();
+      return;
+    }
+
+    //it saves temporal quotations with a user session
+    await this.openMagicLinkDialog();
+  }
+
+  async openMagicLinkDialog() {
+    let fieldsToCreateInEmailDialog: FormData = {
+      title: {
+        text: 'Correo Electrónico para guardarlo:',
+      },
+      buttonsTexts: {
+        accept: 'Recibir el enlace con acceso',
+        cancel: 'Cancelar',
+      },
+      containerStyles: {
+        padding: '35px 23px 38px 18px',
+      },
+      hideBottomButtons: true,
+      fields: [
+        {
+          name: 'magicLinkEmailOrPhone',
+          type: 'email',
+          placeholder: 'Escribe el correo electrónico..',
+          validators: [Validators.pattern(/[\S]/), Validators.required],
+          inputStyles: {
+            padding: '11px 1px',
+          },
+          styles: {
+            gap: '0px',
+          },
+          bottomTexts: [
+            {
+              text: 'Este correo también sirve para accesar al Club y aprovechar todas las herramientas que se están creando.',
+              styles: {
+                color: '#FFF',
+                fontFamily: 'InterLight',
+                fontSize: '19px',
+                fontStyle: 'normal',
+                fontWeight: '300',
+                lineHeight: 'normal',
+                marginBottom: '28px',
+                marginTop: '36px',
+              },
+            },
+            {
+              text: 'La promesa del Club es desarrollar funcionalidades que necesites.',
+              styles: {
+                color: '#FFF',
+                fontFamily: 'InterLight',
+                fontSize: '19px',
+                fontStyle: 'normal',
+                fontWeight: '300',
+                lineHeight: 'normal',
+                margin: '0px',
+                padding: '0px',
+              },
+            },
+          ],
+          submitButton: {
+            text: '>',
+            styles: {
+              borderRadius: '8px',
+              background: '#87CD9B',
+              padding: '6px 15px',
+              color: '#181D17',
+              textAlign: 'center',
+              fontFamily: 'InterBold',
+              fontSize: '17px',
+              fontStyle: 'normal',
+              fontWeight: '700',
+              lineHeight: 'normal',
+              position: 'absolute',
+              right: '1px',
+              top: '8px',
+            },
+          },
+        },
+      ],
+    };
+
+    const emailDialogRef = this.matDialog.open(FormComponent, {
+      data: fieldsToCreateInEmailDialog,
+      disableClose: true,
+      panelClass: 'login',
+    });
+
+    emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+      if (result?.controls?.magicLinkEmailOrPhone.valid) {
+        const emailOrPhone = result?.value['magicLinkEmailOrPhone'];
+        const myUser = await this.authService.checkUser(emailOrPhone);
+        const myMerchant = !myUser
+          ? null
+          : await this.merchantsService.merchantDefault(myUser._id);
+
+        let optionsDialogTemplate: OptionsDialogTemplate = null;
+
+        if (!myUser) {
+          optionsDialogTemplate = {
+            title:
+              'Notamos que es la primera vez que intentas acceder con este correo, prefieres:',
+            options: [
+              {
+                value:
+                  'Empezar mi Membresía al Club con este correo electrónico',
+                callback: async () => {
+                  let fieldsToCreateInMerchantRegistrationDialog: FormData = {
+                    buttonsTexts: {
+                      accept: 'Guardar mis datos comerciales',
+                      cancel: 'Omitir',
+                    },
+                    containerStyles: {
+                      padding: '39.74px 17px 47px 24px',
+                    },
+                    fields: [
+                      {
+                        label: 'Nombre Comercial que verán tus compradores:',
+                        name: 'merchantName',
+                        type: 'text',
+                        placeholder: 'Escribe el nombre comercial',
+                        validators: [
+                          Validators.pattern(/[\S]/),
+                          Validators.required,
+                        ],
+                        inputStyles: {
+                          padding: '11px 1px',
+                        },
+                      },
+                      {
+                        label:
+                          'WhatsApp que recibirá las facturas que te mandarán los compradores:',
+                        name: 'merchantPhone',
+                        type: 'phone',
+                        placeholder: 'Escribe el nombre comercial',
+                        validators: [
+                          Validators.pattern(/[\S]/),
+                          Validators.required,
+                        ],
+                        inputStyles: {
+                          padding: '11px 1px',
+                        },
+                      },
+                    ],
+                  };
+
+                  const merchantRegistrationDialogRef = this.matDialog.open(
+                    FormComponent,
+                    {
+                      data: fieldsToCreateInMerchantRegistrationDialog,
+                      disableClose: true,
+                      panelClass: ['merchant-registration', 'login'],
+                    }
+                  );
+
+                  merchantRegistrationDialogRef
+                    .afterClosed()
+                    .subscribe(async (result: FormGroup) => {
+                      if (
+                        result?.controls?.merchantName.valid &&
+                        result?.controls?.merchantPhone.valid
+                      ) {
+                        lockUI();
+
+                        const merchantInput: Record<string, any> = {
+                          name: result?.value['merchantName'],
+                          phone: result?.value['merchantPhone'],
+                        };
+
+                        const temporalQuotationsStoredInLocalStorage =
+                          localStorage.getItem('temporalQuotations');
+                        let temporalQuotations: Array<QuotationInput> = [];
+
+                        if (temporalQuotationsStoredInLocalStorage) {
+                          const storedTemporalQuotations: any = JSON.parse(
+                            temporalQuotationsStoredInLocalStorage
+                          );
+
+                          if (Array.isArray(storedTemporalQuotations)) {
+                            temporalQuotations = storedTemporalQuotations;
+                          }
+
+                          const currentQuotationIndex =
+                            temporalQuotations.findIndex(
+                              (quotation) =>
+                                quotation.items.join('-') ===
+                                this.quotationsService.selectedTemporalQuotation
+                                  .customId
+                            );
+
+                          await this.authService.generateMagicLink(
+                            emailOrPhone,
+                            `ecommerce/quotation-bids`,
+                            null,
+                            'MerchantAccess',
+                            {
+                              jsondata: JSON.stringify({
+                                merchantInput,
+                                temporalQuotationsToBeSaved: temporalQuotations,
+                                quotationSelectedIndex: currentQuotationIndex,
+                              }),
+                            },
+                            []
+                          );
+
+                          this.dialogService.open(
+                            GeneralFormSubmissionDialogComponent,
+                            {
+                              type: 'centralized-fullscreen',
+                              props: {
+                                icon: 'check-circle.svg',
+                                showCloseButton: false,
+                                message:
+                                  'Se ha enviado un link mágico a tu correo electrónico',
+                              },
+                              customClass: 'app-dialog',
+                              flags: ['no-header'],
+                            }
+                          );
+                        }
+
+                        unlockUI();
+                      }
+                    });
+                },
+              },
+              {
+                value: 'Intentar con otro correo electrónico.',
+                callback: async () => {
+                  return this.openMagicLinkDialog();
+                },
+              },
+              {
+                value:
+                  'Algo anda mal porque no es la primera vez que trato de acceder con este correo',
+                callback: async () => {
+                  this.sendWhatsappToAppOwner(emailOrPhone);
+                },
+              },
+            ],
+          };
+        } else {
+          optionsDialogTemplate = {
+            title:
+              'Bienvenido de vuelta ' +
+              (myMerchant
+                ? myMerchant.name
+                : myUser.name || myUser.email || myUser.phone) +
+              ', prefieres:',
+            options: [
+              {
+                value: 'Prefiero acceder con la clave',
+                callback: () => {
+                  addPassword(emailOrPhone);
+                },
+              },
+              {
+                value: 'Prefiero recibir el enlace de acceso en mi correo',
+                callback: async () => {
+                  if (result?.controls?.magicLinkEmailOrPhone.valid) {
+                    let emailOrPhone = result?.value['magicLinkEmailOrPhone'];
+
+                    lockUI();
+
+                    const temporalQuotationsStoredInLocalStorage =
+                      localStorage.getItem('temporalQuotations');
+                    let temporalQuotations: Array<QuotationInput> = [];
+
+                    if (temporalQuotationsStoredInLocalStorage) {
+                      const storedTemporalQuotations: any = JSON.parse(
+                        temporalQuotationsStoredInLocalStorage
+                      );
+
+                      if (Array.isArray(storedTemporalQuotations)) {
+                        temporalQuotations = storedTemporalQuotations;
+                      }
+
+                      const currentQuotationIndex =
+                        temporalQuotations.findIndex(
+                          (quotation) =>
+                            quotation.items.join('-') ===
+                            this.quotationsService.selectedTemporalQuotation
+                              .customId
+                        );
+
+                      await this.authService.generateMagicLink(
+                        emailOrPhone,
+                        `ecommerce/quotation-bids`,
+                        null,
+                        'MerchantAccess',
+                        {
+                          jsondata: JSON.stringify({
+                            temporalQuotationsToBeSaved: temporalQuotations,
+                            quotationSelectedIndex: currentQuotationIndex,
+                          }),
+                        },
+                        []
+                      );
+
+                      this.dialogService.open(
+                        GeneralFormSubmissionDialogComponent,
+                        {
+                          type: 'centralized-fullscreen',
+                          props: {
+                            icon: 'check-circle.svg',
+                            showCloseButton: false,
+                            message:
+                              'Se ha enviado un link mágico a tu correo electrónico',
+                          },
+                          customClass: 'app-dialog',
+                          flags: ['no-header'],
+                        }
+                      );
+                    }
+
+                    unlockUI();
+                  } else if (
+                    result?.controls?.magicLinkEmailOrPhone.valid === false
+                  ) {
+                    unlockUI();
+                    this.matSnackBar.open('Datos invalidos', 'Cerrar', {
+                      duration: 3000,
+                    });
+                  }
+                },
+              },
+              {
+                value:
+                  'Algo anda mal porque no es la primera vez que trato de acceder con este correo',
+                callback: async () => {
+                  this.sendWhatsappToAppOwner(emailOrPhone);
+                },
+              },
+            ],
+          };
+        }
+
+        this.matDialog.open(OptionsDialogComponent, {
+          data: optionsDialogTemplate,
+          disableClose: true,
+          panelClass: 'login',
+        });
+      } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
+        unlockUI();
+        this.matSnackBar.open('Datos invalidos', 'Cerrar', {
+          duration: 3000,
+        });
+      }
+    });
+
+    const addPassword = async (emailOrPhone: string) => {
+      emailDialogRef.close();
+
+      let fieldsToCreate: FormData = {
+        title: {
+          text: 'Clave de Acceso:',
+        },
+        buttonsTexts: {
+          accept: 'Accesar al Club',
+          cancel: 'Cancelar',
+        },
+        fields: [
+          {
+            name: 'password',
+            type: 'password',
+            placeholder: 'Escribe la contraseña',
+            validators: [Validators.pattern(/[\S]/)],
+            bottomButton: {
+              text: 'Prefiero recibir el correo con el enlace de acceso',
+              callback: () => {
+                //Cerrar 2do dialog
+
+                return switchToMagicLinkDialog();
+              },
+            },
+          },
+        ],
+      };
+
+      const dialog2Ref = this.matDialog.open(FormComponent, {
+        data: fieldsToCreate,
+        disableClose: true,
+        panelClass: 'login',
+      });
+
+      dialog2Ref.afterClosed().subscribe(async (result: FormGroup) => {
+        try {
+          if (result?.controls?.password.valid) {
+            let password = result?.value['password'];
+
+            lockUI();
+
+            const session = await this.authService.signin(
+              emailOrPhone,
+              password,
+              true
+            );
+
+            if (!session) throw new Error('invalid credentials');
+            await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+
+            //code to execute after user session is on memory
+            const temporalQuotationsStoredInLocalStorage =
+              localStorage.getItem('temporalQuotations');
+            let temporalQuotations: Array<QuotationInput> = [];
+
+            if (temporalQuotationsStoredInLocalStorage) {
+              const storedTemporalQuotations: any = JSON.parse(
+                temporalQuotationsStoredInLocalStorage
+              );
+
+              if (Array.isArray(storedTemporalQuotations)) {
+                temporalQuotations = storedTemporalQuotations;
+              }
+
+              const currentQuotationIndex = temporalQuotations.findIndex(
+                (quotation) =>
+                  quotation.items.join('-') ===
+                  this.quotationsService.selectedTemporalQuotation.customId
+              );
+
+              const createdQuotations = await Promise.all(
+                temporalQuotations.map((quotation) =>
+                  this.quotationsService.createQuotation(
+                    this.merchantsService.merchantData._id,
+                    quotation
+                  )
+                )
+              );
+
+              const quotation = createdQuotations.find(
+                (quotation) =>
+                  quotation.name ===
+                  temporalQuotations[currentQuotationIndex].name
+              );
+
+              window.location.href =
+                window.location.href.split('/').join('/') + '/' + quotation._id;
+            }
+
+            unlockUI();
+          } else if (result?.controls?.password.valid === false) {
+            unlockUI();
+            this.matSnackBar.open('Datos invalidos', 'Cerrar', {
+              duration: 3000,
+            });
+          }
+        } catch (error) {
+          unlockUI();
+          console.error(error);
+          this.headerService.showErrorToast();
+        }
+      });
+
+      const switchToMagicLinkDialog = () => {
+        dialog2Ref.close();
+        return this.openMagicLinkDialog();
+      };
+    };
+  }
+
+  sendWhatsappToAppOwner(emailOrPhone: string) {
+    let message =
+      `Algo anda mal porque es la primera vez que trato de acceder con este correo: ` +
+      emailOrPhone;
+
+    const whatsappLink = `https://api.whatsapp.com/send?phone=19188156444&text=${encodeURIComponent(
+      message
+    )}`;
+
+    window.location.href = whatsappLink;
   }
 }

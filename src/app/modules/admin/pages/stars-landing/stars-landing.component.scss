@@ -8,18 +8,18 @@
   background: #181d17;
   padding-left: 19px;
   padding-right: 19px;
-  padding-top: 17px;
-  padding-bottom: 26px;
+  padding-top: 16px;
+  padding-bottom: 16px;
 }
 
-.flex{
-    display:flex;
+.flex {
+  display: flex;
 }
 
 .header-top-container {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
 
   mat-icon {
     color: #87cd9b;
@@ -71,6 +71,7 @@
   font-family: InterBold;
   font-weight: 700;
   margin: 0;
+  text-align: center;
 }
 
 .content-box {
@@ -84,9 +85,9 @@
   font-family: InterMedium;
   font-weight: 600;
   margin-top: 6px;
-  p{
-    margin:0;
-    margin-top:12px;
+  p {
+    margin: 0;
+    margin-top: 12px;
     font-weight: 400;
   }
 }
@@ -102,28 +103,65 @@
   font-style: italic;
   font-weight: 400;
   line-height: normal;
-  margin-top:17px;
+  margin-top: 17px;
   padding-left: 13px;
   padding-right: 14px;
 }
 
-.content-items-title{
-  color: #181D17;
-font-family: InterMedium;
-font-size: 17px;
-font-style: normal;
-font-weight: 700;
-line-height: normal;
-margin-top:75px;
-margin-bottom: 0;
+.content-items-title {
+  color: #181d17;
+  font-family: InterMedium;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin-top: 75px;
+  margin-bottom: 0;
 }
 
-.content-item{
-  color: #2874AD;
-font-family: InterMedium;
-font-size: 17px;
-font-style: normal;
-font-weight: 700;
-line-height: normal;
-margin-top:12px;
+.content-item {
+  color: #2874ad;
+  font-family: InterMedium;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin-top: 12px;
+}
+
+.configuration-text {
+  color: #000;
+  font-family: InterLight;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 300;
+  line-height: normal;
+  margin-top: 48px;
+  margin-bottom: 0;
+  text-align: center;
+}
+
+.configuration-item-title {
+  color: #181d17;
+  text-align: center;
+  font-family: InterMedium;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin-top: 24px;
+  margin-bottom: 0;
+}
+
+.configuration-item {
+  color: #189ac1;
+  font-family: InterMedium;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  text-align: center;
+  margin-top: 3px;
+  margin-bottom: 0;
+  padding-bottom: 18px;
 }
