@@ -568,7 +568,7 @@ const routes: Routes = [
     component: OrderProgressComponent,
   },
   {
-    path: 'manual-order-management',
+    path: 'manual-order-management/:orderId',
     component: OrderImageLoadComponent,
   },
   {
