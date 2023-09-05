@@ -648,6 +648,10 @@ export class OrderDetailComponent implements OnInit {
     ]);
   }
 
+  goToBenefits() {
+    return this.router.navigate([`/admin/order-expenses/${this.order._id}`]);
+  }
+
   async addTag(tagId: string) {
     if (!this.selectedTags[tagId]) {
       await this.tagsService.addTagsInOrder(
