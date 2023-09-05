@@ -1,32 +1,37 @@
 <div class="container">
   <div class="header">
-    <div class="header-img"></div>
-    <div class="header-title">MerchantId</div>
+    <img 
+      alt="imagen"
+      class="header-img"
+      src="{{merchantImage}}"
+    />
+    <div class="header-title">{{merchantName}}</div>
   </div>
   <app-progress-slider
-    title="ACTUALIZACION DEL PROGRESO"
-    [statusList]="statusList"
+      [title]='"ACTUALIZACION DEL PROGRESO"'
+      [statusList]="statusList"
+      [activeIndex]="activeStatusIndex"
+      [isAdmin]="isMerchant"
+      [orderId]="orderId"
+      (statusUpdated)="handleStatusUpdated($event)"
   ></app-progress-slider>
-
   <div class="content">
       <p class="section-label mt-zero">IMAGEN</p>
-      <div class="img-container" (click)="fileUpload.click()">
-        <img [src]="image" />
-      </div>
+      <img [src]="image" class="img-container" (click)="fileUpload.click()" />
       <p class="section-label">COMPRADOR</p>
       <div class="questions">
         <p class="label body gray-out capitalize">Adiciona quien lo compró</p>
       </div>
       <p class="section-label">MONTO</p>
-      <div class="questions">
+      <div class="questions" (click)="openInputDialog('amount')">
         <p class="label body gray-out capitalize">
-          Adiciona el monto facturado
+          {{amount !== undefined ? (amount | currency) : 'Adiciona el monto facturado'}}
         </p>
       </div>
       <p class="section-label">FACTURA</p>
-      <div class="questions">
+      <div class="questions" (click)="openInputDialog('identification')">
         <p class="label body gray-out capitalize">
-          Adiciona tu identificador de la factura
+          {{identification ? identification :'Adiciona tu identificador de la factura'}}
         </p>
       </div>
       <p class="section-label">RECIPIENTE</p>
@@ -34,9 +39,9 @@
         <p class="label body gray-out capitalize">Adiciona quien lo recibirá</p>
       </div>
       <p class="section-label">NOTAS</p>
-      <div class="questions">
+      <div class="questions" (click)="openInputDialog('notes')">
         <p class="label body gray-out capitalize">
-          Adicione cosas que le interese guardar con esta factura
+          {{notes || 'Adicione cosas que le interese guardar con esta factura'}}
         </p>
       </div>
   </div>
@@ -50,5 +55,5 @@
 </div>
 <div class="footer">
   <p class="footer-title">Adiciona egresos</p>
-  <p class="footer-benefict">Beneficio: $24,548.65</p>
+  <p class="footer-benefict">Beneficio: {{profit | currency}}</p>
 </div>
