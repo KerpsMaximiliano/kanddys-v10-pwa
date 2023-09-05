@@ -569,5 +569,9 @@
       [style.display]="'none'"
       href="mailto:{{order.user.email}}"
     ></a>
+
+    <footer class="bottom-footer" *ngIf="isMerchant" (click)="goToBenefits()">
+      <p>Beneficio: ${{ itemsAmount | number : "1.2-2" }}</p>
+    </footer>
   </div>
 <!-- </app-navigation> -->
