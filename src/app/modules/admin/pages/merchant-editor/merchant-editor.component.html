@@ -71,6 +71,16 @@
         />
         <label class="square" [style.background]="image? formatImage(image) : '#936105'" for="image"></label>
       </div>
+      <div class="input-group" *ngIf="categoriesString && categoriesString.length > 0" (click)="openIndustriesDialog()">
+        <label for="slug">Industria</label
+        >
+        <span>{{ categoriesString }}</span>
+      </div>
+      <div class="input-group" *ngIf="paymentMethodsString && paymentMethodsString.length > 0" (click)="openFormForField('PAYMENT-METHODS')">
+        <label for="slug">Métodos de Pago</label
+        >
+        <span>{{ paymentMethodsString }}</span>
+      </div>
     </section>
     <section class="form-group form-optional">
       <p class="form-title">
@@ -107,15 +117,15 @@
             <img src="../../../../../assets/icons/add-button.svg" alt="" />
           </button>
         </div>
-        <div class="card">
+        <div class="card" *ngIf="categoriesString === null">
           <p>Industria</p>
-          <button type="button">
+          <button type="button" (click)="openIndustriesDialog()">
             <img src="../../../../../assets/icons/add-button.svg" alt="" />
           </button>
         </div>
-        <div class="card">
+        <div class="card" *ngIf="paymentMethodsString === null">
           <p>Métodos donde recibes los pagos de los compradores</p>
-          <button type="button">
+          <button type="button" (click)="openFormForField('PAYMENT-METHODS')">
             <img src="../../../../../assets/icons/add-button.svg" alt="" />
           </button>
         </div>
