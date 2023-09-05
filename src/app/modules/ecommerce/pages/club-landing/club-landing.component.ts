@@ -939,6 +939,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       this.tabContents.tab4 = this.tabContents.tab4.filter(tab => !tab.authorization);
     }
     unlockUI()
+    if (this.headerService.user) this.selectRole()
   }
 
   close() {
@@ -1001,6 +1002,43 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     this.ngNavigatorShareService.share({
       title: '',
       url: this.link,
+    });
+  }
+
+  selectRole() {
+    this.bottomSheet.open(OptionsMenuComponent, {
+      data: {
+        title: "Tipo de Comercio:",
+        options: [
+          {
+            value: `Tienda y decoradores, vendo al consumidor final`,
+            callback: async () => {
+              this.tabIndex = 0
+            },
+          },
+          {
+            value: `Proveedor, vendo a tiendas`,
+            callback: () => {
+              this.tabIndex = 1
+            },
+          },
+          {
+            value: `Productor, vendo a proveedores`,
+            callback: () => {
+              this.tabIndex = 1
+            },
+          },
+          {
+            value: `Abastecedor, vendo a productores`,
+            callback: () => {
+              this.tabIndex = 0
+            },
+          },
+        ],
+        styles: {
+          fullScreen: true,
+        },
+      },
     });
   }
 
