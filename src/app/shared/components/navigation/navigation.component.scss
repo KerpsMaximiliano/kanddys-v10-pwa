@@ -202,10 +202,6 @@
     border-left: 2px solid #87CD9B;
   }
 
-  .tab-content-item span.text {
-    padding-left: 15px;
-  }
-
   .tab-content-item span.subText {
     font-size: 15px;
   }
@@ -559,4 +555,49 @@ footer {
 footer.no-green {
   background-color: #935F00;
   color: white;
+}
+
+.last-pb {
+  margin-left: 20px;
+  margin-right: 20px;
+  padding-bottom: 70px;
+  .description {
+    margin-bottom: 34px;
+    * {
+      color: #F6F6F6;
+      font-family: InterRegular;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+    .title {
+      color: #FFF;
+      font-family: InterBold;
+      font-size: 19px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: normal;
+      margin-bottom: 14px;
+    }
+    .flex {
+      display: flex;
+      align-items: center;
+      .icon {
+        margin-right: 8px;
+      }
+    }
+    .content {
+      margin-bottom: 24px;
+    }
+  }
+  
+  .common {
+    color: #C4C5C3;
+    font-family: InterRegular;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  }
 }

@@ -582,11 +582,94 @@ export class NavigationComponent implements OnInit {
   }
 
   tabServices = [
-    "💰 Adicionar mi primer artículo para venderlo online y por WhatsApp (CS*)",
-    "📢 Más alcance pagándoles comisiones a quienes venden por mi (CS*)",
-    "🎁 Incentivar con premios a quienes me mencionan en sus cuentas sociales (CS*)",
-    "✨ Recompensar a mis clientes según lo que facturaron (CS*)",
-    "Preparar un 🛒 con algunas cosas que vendo para cotizar o facturar (CS*)"
+    { 
+      text: "🌼 Vitrina Online para exhibir lo que vendo*",
+      routerLink: ["/admin/dashboard"],
+      linkName: "",
+      queryParams: {},
+      authorization: false,
+        isDummy: false
+    },
+    { 
+      text: "🛟 Artículos que compro",
+      routerLink: ["/admin/dashboard"],
+      linkName: "",
+      queryParams: {},
+      authorization: false,
+        isDummy: false
+    },
+    { 
+      text: "⚡️️ Ofertas flash para comprar",
+      routerLink: ["/admin/dashboard"],
+      linkName: "",
+      queryParams: {},
+      authorization: false,
+        isDummy: false
+    },
+    { 
+      text: "🧞‍♂️‍️️️ Crea ofertas flash para vender*",
+      routerLink: ["/admin/dashboard"],
+      linkName: "",
+      queryParams: {},
+      authorization: false,
+        isDummy: false
+    },
+    { 
+      text: "📦 Seguimiento de los pedidos",
+      routerLink: ["/admin/dashboard"],
+      linkName: "",
+      queryParams: {},
+      authorization: false,
+        isDummy: false
+    },
+    { 
+      text: "💸 Seguimiento del dinero por factura",
+      routerLink: ["/admin/dashboard"],
+      linkName: "",
+      queryParams: {},
+      authorization: false,
+        isDummy: false
+    },
+    { 
+      text: "🛒 Comparte una cotización de lo que vendes",
+      routerLink: ["/admin/dashboard"],
+      linkName: "",
+      queryParams: {},
+      authorization: false,
+        isDummy: false
+    },
+    { 
+      text: "✨ Fideliza a compradores con recompensas",
+      routerLink: ["/admin/dashboard"],
+      linkName: "",
+      queryParams: {},
+      authorization: false,
+        isDummy: false
+    },
+    { 
+      text: "🎁 Premia a los seguidores que te mencionan",
+      routerLink: ["/admin/dashboard"],
+      linkName: "",
+      queryParams: {},
+      authorization: false,
+        isDummy: false
+    },
+    { 
+      text: "✋ Analiza las opiniones de los compradores",
+      routerLink: ["/admin/dashboard"],
+      linkName: "",
+      queryParams: {},
+      authorization: false,
+        isDummy: false
+    },
+    { 
+      text: "💚 Invita y monetiza cada mes",
+      routerLink: ["/admin/dashboard"],
+      linkName: "",
+      queryParams: {},
+      authorization: false,
+        isDummy: false
+    },
   ]
 
   tabVendor = [
@@ -642,7 +725,7 @@ export class NavigationComponent implements OnInit {
 
   tabProvider = [
     {
-      text: "🌼 Lo que vendo",
+      text: "🌼 Vitrina Online",
       routerLink: ["/admin/supplier-dashboard"],
       linkName: "",
       queryParams: {
@@ -652,45 +735,123 @@ export class NavigationComponent implements OnInit {
       isDummy: false
     },
     {
-      text: "📦 Control Flash",
+      text: "🧾 Facturas",
       routerLink: ["/admin/order-progress"],
       linkName: "",
       queryParams: {},
       authorization: true,
       isDummy: false
     },
-    // {
-    //   text: "💰 Mis beneficios",
-    //   routerLink: ["/ecommerce/supplier-items-selector"],
-    //   linkName: "",
-    //   queryParams: {},
-    //   authorization: true,
-    //   isDummy: false
-    // },
-    // {
-    //   text: "🧾 Facturas Flash",
-    //   routerLink: ["/ecommerce/supplier-items-selector"],
-    //   linkName: "",
-    //   queryParams: {},
-    //   authorization: false,
-    //   isDummy: false
-    // },
-    // {
-    //   text: "📝 Cotizaciones Flash",
-    //   routerLink: ["/ecommerce/supplier-items-selector"],
-    //   linkName: "",
-    //   queryParams: {},
-    //   authorization: false,
-    //   isDummy: false
-    // },
-    // {
-    //   text: "📢 Comisiones de quienes venden por mi",
-    //   routerLink: ["/ecommerce/supplier-items-selector"],
-    //   linkName: "",
-    //   queryParams: {},
-    //   authorization: false,
-    //   isDummy: false
-    // },
+    {
+      text: "📢 Comisiones de quienes venden por mi",
+      routerLink: ["/admin/supplier-dashboard"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: true,
+      isDummy: false
+    },
+    {
+      text: "🛟 Artículos que compro",
+      routerLink: ["/admin/supplier-dashboard"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: true,
+      isDummy: false
+    },
+    {
+      text: "⚡️️ Ofertas flash para comprar",
+      routerLink: ["/admin/supplier-dashboard"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: true,
+      isDummy: false
+    },
+    {
+      text: "🧞‍♂️‍️️️ Crea ofertas flash para vender*",
+      routerLink: ["/admin/supplier-dashboard"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: true,
+      isDummy: false
+    },
+    {
+      text: "📦 Seguimiento de los pedidos",
+      routerLink: ["/admin/supplier-dashboard"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: true,
+      isDummy: false
+    },
+    {
+      text: "💸 Seguimiento del dinero por factura",
+      routerLink: ["/admin/supplier-dashboard"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: true,
+      isDummy: false
+    },
+    {
+      text: "🛒 Comparte una cotización de lo que vendes",
+      routerLink: ["/admin/supplier-dashboard"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: true,
+      isDummy: false
+    },
+    {
+      text: "✨ Recompensas de Compradores",
+      routerLink: ["/admin/supplier-dashboard"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: true,
+      isDummy: false
+    },
+    {
+      text: "🎁 Premios de seguidores que te mencionan",
+      routerLink: ["/admin/supplier-dashboard"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: true,
+      isDummy: false
+    },
+    {
+      text: "✋ Analiza las opiniones de los compradores",
+      routerLink: ["/admin/supplier-dashboard"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: true,
+      isDummy: false
+    },
+    {
+      text: "💚 Invita y monetiza cada mes",
+      routerLink: ["/admin/supplier-dashboard"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: true,
+      isDummy: false
+    },
   ]
 
   underTabs: Array<underTab> = [

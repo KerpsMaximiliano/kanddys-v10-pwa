@@ -33,17 +33,14 @@
       </div>
     
       <main>
-        <div class="landing-title">
-          Desarrollamos herramientas que se usan desde el celular para los Miembros del Club
-        </div>
-        <div class="sub-title" *ngIf="headerService.user">
-          (Soy {{tabIndex ? "proveedor" : "tienda"}})
+        <div class="landing-title" *ngIf="!headerService.user">
+          Apps para la industria de las flores que se usan para crecer
         </div>
 
-        <div class="tabs-container" *ngIf="tabIndex==1 && headerService.user">
+        <div class="tabs-container" *ngIf="headerService.user">
           <!-- TABS -->
           <div class="tab-question" >
-            Gestión de Proveedor:
+            Gestión Comercial de TipoID.
           </div>
           <div class="tab-content">
             <!-- <div class="tab-content-item" *ngFor="let item of tabProvider">
@@ -63,146 +60,73 @@
           </div>
         </div>
 
-        <div class="tabs-container" *ngIf="tabIndex==0 && headerService.user">
-          <!-- TABS -->
-          <div class="tab-question" >
-            Gestión de mi Tienda:
-          </div>
-          <div class="tab-content">
-            <!-- <div class="tab-content-item" *ngFor="let item of tabVendor">
-              {{ item }}
-            </div> -->
-
-            <ul>
-              <li class="tab-content-item" [routerLinkActive]="!link.isDummy ? 'active' : ''" *ngFor="let link of tabVendor">
-                <a
-                    [routerLink]="!link.isDummy ? link.routerLink : null"
-                    (click)="redirectToLink(link)"
-                    style="padding: 0px"
-                >
-                  <span class="text">{{link.text}}</span><br>
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="tabs-container">
-          <!-- TABS -->
-          <div class="title">
-            {{mainTitle}}
-          </div>
-          <!-- <div class="tabs" *ngIf="isVendor == isProvider">
-            <div
-              class="tab"
-              (click)="tabIndex=0"
-              [ngClass]="{ active: !tabIndex }"
-            >
-              Floristerias & Tiendas de Regalos
-            </div>
-            <div
-              class="tab"
-              (click)="tabIndex=1"
-              [ngClass]="{ active: tabIndex }"
-            >
-              Proveedores
-            </div>
-          </div>
-          <div class="tab-question" >
-            {{!tabIndex ?"Como Floristería ¿qué necesitas?":"Como Proveedor de Floristerías y Tiendas de Regalos ¿qué necesitas?"}}
-          </div> -->
-          <div class="tab-content">
-            <!-- <div class="tab-content-item" *ngFor="let item of filterData()">
-              <span class="text">{{item.text}}</span><br>
-              <span class="subText">{{item.subText}}</span>
-            </div> -->
-            <ul>
-              <li class="tab-content-item" [routerLinkActive]="!link.isDummy ? 'active' : ''" *ngFor="let link of filterData()">
-                <a
-                    [routerLink]="!link.isDummy ? link.routerLink : null"
-                    (click)="redirectToLink(link)"
-                    style="padding: 0px"
-                >
-                  <span class="text">{{link.text}}</span><br>
-                  <span class="subText">{{link.subText}}</span>
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-
         <div class="tabs-container" *ngIf="!headerService.user">
           <!-- TABS -->
           <div class="title">
-            HERRAMIENTAS CS* DE PAGOS (CON CLOUD SERVICE)
+            HERRAMIENTAS GRATIS
           </div>
           <div class="tab-content">
-            <div class="tab-content-item" *ngFor="let item of tabServices">
-              {{ item }}
+            <ul>
+              <li class="tab-content-item" [routerLinkActive]="!link.isDummy ? 'active' : ''" *ngFor="let link of tabServices">
+                <a
+                    [routerLink]="!link.isDummy ? link.routerLink : null"
+                    (click)="redirectToLink(link)"
+                    style="padding: 0px"
+                >
+                  <span class="text">{{link.text}}</span><br>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="description">
+          <div class="title">
+            Monetización Multi-Nivel
+          </div>
+          <div class="content">
+            💚 Este programa de afiliación te permite incrementar tus ingresos pasivamente al invitar a comercios de la industria de las flores (abastecedores, productores, proveedores, tiendas, decoradores).
+          </div>
+          <div class="flex">
+            <div class="icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="67" height="67" viewBox="0 0 67 67" fill="none">
+                <circle cx="33.451" cy="32.5135" r="13.0994" fill="white"/>
+                <circle cx="16.659" cy="52.6824" r="8.23714" fill="#F7D455"/>
+                <circle cx="8.23714" cy="37.243" r="8.23714" fill="#F7D455"/>
+                <circle cx="33.1512" cy="58.0614" r="8.23714" fill="#F7D455"/>
+                <circle cx="50.1121" cy="52.4481" r="8.23714" fill="#F7D455"/>
+                <circle cx="58.7606" cy="37.0086" r="8.23714" fill="#F7D455"/>
+                <circle cx="55.9559" cy="19.7" r="8.23714" fill="#F7D455"/>
+                <circle cx="42.1512" cy="8.23714" r="8.23714" fill="#F7D455"/>
+                <circle cx="24.1434" cy="8.47151" r="8.23714" fill="#F7D455"/>
+                <circle cx="10.5809" cy="19.9324" r="8.23714" fill="#F7D455"/>
+                <line x1="39.5284" y1="16.5984" x2="38.0824" y2="19.9724" stroke="#F7D455" stroke-width="1.06473"/>
+                <line x1="27.2034" y1="16.1097" x2="29.1314" y2="19.2427" stroke="#F7D455" stroke-width="1.06473"/>
+                <line x1="18.0611" y1="23.8594" x2="21.6761" y2="25.5464" stroke="#F7D455" stroke-width="1.06473"/>
+                <line x1="16.3246" y1="35.3819" x2="20.1806" y2="34.8999" stroke="#F7D455" stroke-width="1.06473"/>
+                <line x1="21.7533" y1="46.1848" x2="24.4043" y2="42.8107" stroke="#F7D455" stroke-width="1.06473"/>
+                <line x1="32.9676" y1="49.8867" x2="32.9676" y2="45.5487" stroke="#F7D455" stroke-width="1.06473"/>
+                <line x1="44.4217" y1="45.8927" x2="41.7707" y2="42.7597" stroke="#F7D455" stroke-width="1.06473"/>
+                <line x1="50.0347" y1="36.6736" x2="46.1787" y2="35.9506" stroke="#F7D455" stroke-width="1.06473"/>
+                <line x1="49.16" y1="24.818" x2="45.7859" y2="26.505" stroke="#F7D455" stroke-width="1.06473"/>
+              </svg>
+            </div>
+            <div>
+              Monetizas el 15% de la colaboración de tus referidos directos y de los indirectos (referidos de quienes invitaste).
             </div>
           </div>
         </div>
 
         <div class="header-border"></div>
 
-        <ng-container>
-          <div class="tabs-container">
-            <!-- TABS -->
-            <div class="tabs">
-              <div
-                class="tab"
-                (click)="changeTab(i)"
-                *ngFor="let tab of tabs; index as i"
-                [ngClass]="{ active: tab.active }"
-              >
-                {{ tab.text }}
-              </div>
-            </div>
-  
-            <!-- SUBTABS -->
-            <div
-              class="subtabs"
-              *ngFor="let tab of tabs; index as i"
-              [ngClass]="{ active: tab.active }"
-            >
-              <ng-container *ngIf="tab.active">
-                <div
-                  class="subtab"
-                  *ngFor="let subtab of tab.subTabs; index as j"
-                  (click)="changeSubtab(i, j)"
-                  [ngClass]="{ active: subtab.active }"
-                >
-                  {{ subtab.text }}
-                </div>
-              </ng-container>
-            </div>
-            <!-- CONTENIDO DE SUBTABS -->
-            <ng-container *ngFor="let tab of tabs; index as i">
-              <ng-container *ngIf="tab.active">
-                <ng-container *ngFor="let subtab of tab.subTabs; index as j">
-                  <ng-container *ngIf="subtab.active">
-                    <div class="footer-swiper">
-                      <h3 class="footer-swiper-title">{{ !tabIndex ? "LO QUE MAS LE GUSTA A LAS FLORISTERIAS" : "LO QUE MAS LE GUSTA A LOS PROVEEDORES" }}</h3>
-              
-                      <div class="swiper-custom-container">
-                        <swiper [config]="swiperConfig">
-                          <div *ngFor="let content of subtab.content">
-                            <div class="slide-content">{{ content }}</div>
-              
-                            <div class="blank-space"></div>
-                          </div>
-                        </swiper>
-                      </div>
-                    </div>
-                  </ng-container>
-                </ng-container>
-              </ng-container>
-            </ng-container>
-          </div>
-        </ng-container>
+        <div class="common" *ngIf="!headerService.user">
+          *Exponer es gratis, vender es opcional.
+          <br><br>Colaboradores venden desde su 🌼 Vitrina Online y pueden comisionar a quienes vendieron por ellos.
+          <br><br>Los miembros colaboran US$0.30 por venta (máximo US$250 mensual).
+        </div>
 
       </main>
     
-      <footer (click)="share()" class="footer" [ngClass]="{'no-green' : headerService.user}">{{headerService.user ? "Embajadores ganan hasta US$750 💚": "CS* $0.30 por factura hasta US$250"}}</footer>
+      <footer (click)="share()" class="footer no-green">💚 Invita y monetiza cada mes</footer>
     </div>
 </app-navigation>
