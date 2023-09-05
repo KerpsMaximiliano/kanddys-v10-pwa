@@ -334,6 +334,7 @@ export class NewAddressComponent implements OnInit {
   ) {
     const { _id, ...addressInput } =
       this.addresses[this.selectedDeliveryIndex] || loginData.result;
+    addressInput.type = 'default';
     this.headerService.order.products[0].deliveryLocation = addressInput;
     this.headerService.storeLocation(addressInput);
     this.headerService.orderProgress.delivery = true;
@@ -548,6 +549,7 @@ export class NewAddressComponent implements OnInit {
       referencePoint: this.addressForm.value.referencePoint?.trim(),
       note: this.addressForm.value.note?.trim(),
       city: 'Santo Domingo',
+      type: 'default' as any,
     };
     if (
       this.headerService.user &&

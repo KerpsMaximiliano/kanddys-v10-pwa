@@ -75,7 +75,7 @@ type ValidEntities = 'item' | 'post' | 'collection';
 export class SymbolDetailComponent implements OnInit, AfterViewInit {
   routeParamsSubscription: Subscription = null;
   queryParamsSubscription: Subscription = null;
-  mode: 'preview' | 'image-preview' | 'saleflow';
+  mode: 'preview' | 'image-preview' | 'saleflow' | 'symbol-editor-preview';
   slidesPath: Array<{
     type: 'IMAGE' | 'VIDEO' | 'TEXT';
     path?: string | SafeUrl;
@@ -574,7 +574,6 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
       this.layout = 'EXPANDED-SLIDE';
     }
 
-    console.log(this.layout);
   }
 
   expandDescriptionAndShowAllSlidesSwiper() {
@@ -790,6 +789,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   }
 
   back = async () => {
+    if(this.redirectTo === 'symbol-editor') return this.location.back();
     if (this.supplierPreview) {
       return this.headerService.redirectFromQueryParams();
     }
@@ -905,8 +905,8 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   async saveProduct() {
     if (this.itemData && this.itemData.type === 'supplier' && this.supplierViewer) {
       const foundItemIndex =
-        this.quotationsService.selectedItemsForQuotation.findIndex(
-          (itemId) => itemId === this.itemData._id
+      this.quotationsService.selectedItemsForQuotation.findIndex(
+        (itemId) => itemId === this.itemData._id
         );
 
       if (foundItemIndex < 0) {

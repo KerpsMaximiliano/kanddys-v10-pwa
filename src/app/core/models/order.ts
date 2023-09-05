@@ -156,6 +156,21 @@ export class ItemOrderInput {
   receiverData?: ReceiverDataInput;
 }
 
+export class ItemOrderMetaDataInput {
+  files?: File[];
+  description?: string;
+}
+
+export class ItemOrderExternalInput {
+  metadata? : ItemOrderMetaDataInput;
+  amount?: number;
+  merchants?: string;
+  user?: string;
+  identification?: string;
+  createdAt?: Date;
+  receiverData?: ReceiverDataInput;
+}
+
 export class DeliveryDataInput {
   image: File;
 }

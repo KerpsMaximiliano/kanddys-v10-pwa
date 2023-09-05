@@ -1,5 +1,5 @@
 <div class="container">
-  <header class="header" *ngIf="!isOrderFromAQuotation">
+  <header class="header" *ngIf="!showQuotationOrder">
     <div class="left-area">
       <a style="cursor: pointer">
         <i class="fas fa-chevron-left" (click)="goBack()"></i
@@ -22,12 +22,13 @@
     </div>
   </header>
 
-  <header class="header quotation" *ngIf="isOrderFromAQuotation">
+  <header class="header quotation" *ngIf="showQuotationOrder">
     <div class="left-area">
       <button class="close" (click)="goBack()">X</button>
       <p class="title">
         {{
-          !isOrderFromAQuotation
+          showOffersTitle ? offerTitle : 
+          !showQuotationOrder
             ? "Artículos a facturarse"
             : (quotationsService.quotationInCart
                 ? quotationsService.quotationInCart.name
@@ -46,11 +47,18 @@
         }} -->
       </p>
     </div>
+
+    <div class="right-area">
+      <div class="share-btn" (click)="shareQuotation()">
+        <span>Compara precios</span>
+        <img [src]="env + '/share-icon2.svg'" alt="Icono de una persona" />
+      </div>
+    </div>
   </header>
 
   <main
     [ngClass]="{
-      quotation: isOrderFromAQuotation
+      quotation: showQuotationOrder
     }"
   >
     <ng-container
@@ -72,15 +80,13 @@
       "
     ></ng-container>
 
-    <h5 class="cta-title" (click)="goToStore()">
-      Adiciona otros artículos
-    </h5>
+    <h5 class="cta-title" (click)="goToStore()">Adiciona otros artículos</h5>
 
     <!-- TODO: acomodar esto por estilos de verdad -->
     <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
   </main>
 
-  <footer *ngIf="!isOrderFromAQuotation">
+  <footer *ngIf="!showQuotationOrder">
     <div style="text-align: center">
       <button
         mat-button
@@ -96,7 +102,7 @@
     </div>
   </footer>
 
-  <footer class="quotations-footer" *ngIf="isOrderFromAQuotation">
+  <footer class="quotations-footer" *ngIf="showQuotationOrder">
     <button class="continue-order" (click)="openSubmitDialog()">
       Sigue con la orden de Compra
     </button>
@@ -104,6 +110,18 @@
     <span class="total-label">Total: ${{ totalPrice | number : "1.2-2" }}</span>
   </footer>
 </div>
+
+<qrcode
+  *ngIf="quotationLink"
+  style="display: none"
+  #quotationQrCode
+  [qrdata]="quotationLink"
+  [elementType]="'img'"
+  [width]="500"
+  [errorCorrectionLevel]="'M'"
+  [allowEmptyString]="true"
+  colorDark="#000000"
+></qrcode>
 
 <ng-template
   #itemCard
@@ -113,7 +131,7 @@
   <mat-card
     class="card"
     [ngClass]="{
-      quotation: isOrderFromAQuotation
+      quotation: showQuotationOrder
     }"
     *ngFor="let item of arrayOfItems; index as i"
   >
@@ -167,7 +185,19 @@
           <p class="greyout-text" *ngIf="item?.description">
             {{ truncateString((item?.description).trim(), 38) }}
           </p>
-          <p class="main-text" style="margin-top: 3px">
+          <div *ngIf="item.priceOriginal && item.priceOriginal > 0" class="main-text" style="margin-top: 3px;">
+            <p  class="original-price">
+              ${{
+                item.priceOriginal * itemObjects[item._id]?.amount | number : "1.2-2"
+              }}
+            </p>
+            <p>
+              ${{
+                item.pricing * itemObjects[item._id]?.amount | number : "1.2-2"
+              }}
+            </p>
+          </div>
+          <p *ngIf="!item.priceOriginal || item.priceOriginal === 0" class="main-text" style="margin-top: 3px">
             ${{
               item.pricing * itemObjects[item._id]?.amount | number : "1.2-2"
             }}
@@ -364,7 +394,10 @@
       </div>
     </div>
 
-    <div class="card-footer" *ngIf="itemObjects[item._id]?.amount > item.stock || !item.stock">
+    <div
+      class="card-footer"
+      *ngIf="(itemObjects[item._id]?.amount > item.stock || !item.stock) && item.useStock"
+    >
       * Probablemente no tengan esta cantidad
     </div>
   </mat-card>

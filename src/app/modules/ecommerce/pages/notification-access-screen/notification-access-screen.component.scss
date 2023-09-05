@@ -1,0 +1,79 @@
+.container {
+    padding: 10px 15px;
+  
+    span.close {
+      color: #C4C5C3;
+      text-align: right;
+      font-family: InterRegular;
+      font-size: 24px;
+      font-style: normal;
+      font-weight: 300;
+      line-height: normal;
+    }
+  
+    .title {
+      max-width: 370px;
+      color: #181D17;
+      font-family: InterBold;
+      font-size: 27.499px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: normal;
+      margin-top: 21px;
+      margin-bottom: 36px;
+    }
+
+    .text {
+        max-width: 364px;
+        color: #7B7B7B;
+        font-family: InterRegular;
+        font-size: 17px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: normal;
+        margin-bottom: 54px;
+    }
+
+    .text-center {
+        text-align: center;
+        margin-bottom: 16px;
+    }
+
+    button {
+        width: 100%;
+        position: relative;
+        padding: 10px 0px;
+        border-radius: 28px;
+        background: #87CD9B;
+        span.value {
+            color: #181D17;
+            text-align: center;
+            font-family: InterBold;
+            font-size: 17px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: normal;
+        }
+        span.icon {
+            position: absolute;
+            padding-top: 6px;
+            right: 10%;
+        }
+    }
+  
+  }
+  
+.footer {
+    padding: 46px 0px 34px 0px;
+    position: absolute;
+    bottom: 0px;
+    color: #FFF;
+    text-align: center;
+    font-family: InterBold;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    background-color: #181D17;
+    width: 100%;
+}
