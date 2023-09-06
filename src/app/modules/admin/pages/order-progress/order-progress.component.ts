@@ -7,7 +7,9 @@ import { shortFormatID, truncateString } from 'src/app/core/helpers/strings.help
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
-
+import { MatDialog } from '@angular/material/dialog';
+import { FormComponent } from 'src/app/shared/dialogs/form/form.component';
+import { Validators } from '@angular/forms';
 @Component({
   selector: 'app-order-progress',
   templateUrl: './order-progress.component.html',
@@ -35,6 +37,7 @@ export class OrderProgressComponent implements OnInit {
     private orderService: OrderService,
     private deliveryZonesService: DeliveryZonesService,
     private router: Router,
+    private dialog: MatDialog,
   ) {}
 
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
@@ -49,7 +52,6 @@ export class OrderProgressComponent implements OnInit {
   pickUp : any = {amount: 0, selected: false};
   delivery : any = {amount: 0, selected: false};
 
-  externalOrderDialog : boolean = false;
   externalOrderNumber : number | undefined;
   externalOrderImages : File[] = [];
 
@@ -308,8 +310,40 @@ export class OrderProgressComponent implements OnInit {
       this.externalOrderImages.push(file);
     }
     if (!this.externalOrderImages.length) return;
+    this.externalOrderDialog();
+  }
 
-    this.externalOrderDialog = true;
+  externalOrderDialog() {
+    const dialogRef = this.dialog.open(FormComponent, {
+      width: '500px',
+      data: {
+        title: {text:'Monto Pagado:',},
+        fields: [
+          {
+            placeholder: "$ escribe...",
+            type: 'text',
+            name: 'externalOrderNumber',
+            validators: [Validators.pattern(/^\d+(\.\d{2})?$/)],
+          },
+        ],
+        buttonsTexts: {
+          cancel: 'Brincar',
+          accept: 'Guardar',
+        }
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log(result)
+      if (result) {
+        console.log(result)
+        this.externalOrderNumber = Number(result.value.externalOrderNumber);
+        console.log(this.externalOrderNumber)
+        this.sendExternalOrder(true);
+      } else {
+        this.sendExternalOrder(false);
+      }
+    });
   }
 
   sendExternalOrder(sendAmount : boolean) {
@@ -324,7 +358,6 @@ export class OrderProgressComponent implements OnInit {
       orderData["amount"] = this.externalOrderNumber;
     }
     this.orderService.createOrderExternal(orderData)
-    this.externalOrderDialog = false;
     this.externalOrderImages = [];
     this.externalOrderNumber = undefined;
   }

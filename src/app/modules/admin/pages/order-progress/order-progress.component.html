@@ -1,5 +1,5 @@
 <div class="container">
-  <div *ngIf="tutorialEnabled || externalOrderDialog" class="blur"></div>
+  <div *ngIf="tutorialEnabled" class="blur"></div>
   <div *ngIf="tutorialEnabled" class="dialog">
     <p class="tutorial-title">CONTROLA TODAS LAS ORDENES</p>
     <div class="arrow-svg">
@@ -127,19 +127,6 @@
           <p class="content-card-extra-info">{{ order.items.length }} artículos</p>
         </div>
       </div>
-    </div>
-  </div>
-  <div *ngIf="externalOrderDialog" class="dialog external-order-dialog">
-    <p class="external-order-title">Monto Pagado:</p>
-    <input
-      class="external-order-input"
-      placeholder="$ escribe..." 
-      type="number"
-      [(ngModel)]="externalOrderNumber"
-    >
-    <div class="tutorial-button-holder">
-      <button class="tutorial-button" (click)="sendExternalOrder(false)">Brincar</button>
-      <button class="ok-button external-order-button" (click)="sendExternalOrder(true)">Guardar</button>
     </div>
   </div>
 </div>
