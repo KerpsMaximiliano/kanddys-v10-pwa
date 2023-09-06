@@ -1030,7 +1030,8 @@ export class NavigationComponent implements OnInit {
       this.tabContents.tab3 = this.tabContents.tab3.filter(tab => !tab.authorization);
       this.tabContents.tab4 = this.tabContents.tab4.filter(tab => !tab.authorization);
     }
-
+    
+    if (this.headerService.user) this.selectRole()
   }
 
   openDialog() {
@@ -1598,5 +1599,42 @@ export class NavigationComponent implements OnInit {
 
   close() {
     this.sidenav.close();
+  }
+
+  selectRole() {
+    this.bottomSheet.open(OptionsMenuComponent, {
+      data: {
+        title: "Tipo de Comercio:",
+        options: [
+          {
+            value: `Tienda y decoradores, vendo al consumidor final`,
+            callback: async () => {
+              this.tabIndex = 0
+            },
+          },
+          {
+            value: `Proveedor, vendo a tiendas`,
+            callback: () => {
+              this.tabIndex = 1
+            },
+          },
+          {
+            value: `Productor, vendo a proveedores`,
+            callback: () => {
+              this.tabIndex = 1
+            },
+          },
+          {
+            value: `Abastecedor, vendo a productores`,
+            callback: () => {
+              this.tabIndex = 0
+            },
+          },
+        ],
+        styles: {
+          fullScreen: true,
+        },
+      },
+    });
   }
 }
