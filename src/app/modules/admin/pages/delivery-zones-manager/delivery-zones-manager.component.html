@@ -43,12 +43,12 @@
     </div> -->
     <div class="card" *ngFor="let zone of deliveryzones">
         <div class="id">
-            {{zone._id}}
+            {{zone.zona}}
         </div>
         <div class="desc">
             {{zone.name ? zone.name: "Opcional: puede adicionar la descripcion."}}
         </div>
-        <div class="detail" *ngIf="zone.name">
+        <div class="detail" *ngIf="zone.amount != 100">
             Cobrar extra 
             <span class="price" (click)="editExtra(0, zone)">${{priceFormat(zone.amount)}}</span><br>
             cuando la factura es menor a 
@@ -56,11 +56,11 @@
             Mi costo para el control de beneficios es
             <span class="price" (click)="editExtra(2, zone)">$0.00</span>
         </div>
-        <div class="detail" *ngIf="!zone.name">
+        <div class="detail" *ngIf="zone.amount == 100">
             Cobrar extra 
-            <span class="price">Delivery No está Disponible</span><br>
+            <span class="price" (click)="editExtra(0, zone)">Delivery No está Disponible</span><br>
             cuando la factura es menor a 
-            <span class="price">$NA</span>
+            <span class="price" (click)="editExtra(1, zone)">$NA</span>
         </div>
     </div>
 </div>

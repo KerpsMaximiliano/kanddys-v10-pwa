@@ -146,7 +146,7 @@ export class DeliveryZonesManagerComponent implements OnInit {
         label: label,
         name: 'price',
         type: 'number',
-        validators: [Validators.pattern(/[\S]/), Validators.min(0.1)],
+        validators: [Validators.pattern(/[\S]/)],
       },
     ];
     fieldsArrayForFieldValidation.push({
@@ -195,7 +195,11 @@ export class DeliveryZonesManagerComponent implements OnInit {
       amount: Number(data.price)
     }
     if (!zone.lesserAmount) input.type = "zone"
-    if (zone.lesserAmount) input.type = "lesser"
+    if (zone.lesserAmount) {
+      input.type = "lesser"
+      input.lesserAmount = zone.lesserAmount
+      input.lesserAmountLimit = zone.lesserAmountLimit
+    }
     lockUI()
     const deliveryZone = await this.deliveryZonesService.update(zone._id, input);
     console.log(deliveryZone);
@@ -206,7 +210,9 @@ export class DeliveryZonesManagerComponent implements OnInit {
   async updateLesser(zone : DeliveryZone, data: {price: string}) {
     // console.log("updateDeliveryZone", zone, data)
     const input: DeliveryZoneInput = {
+      amount: zone.amount,
       lesserAmount: Number(data.price),
+      lesserAmountLimit: Number(data.price),
       type: "lesser"
     }
     lockUI()
@@ -226,7 +232,7 @@ export class DeliveryZonesManagerComponent implements OnInit {
         },
         id
       );
-      // console.log(expenditure)
+      console.log(zone.expenditure.length, "update")
     } else {
       const merchant = await this.merchantsService.merchantDefault()
       const expenditure = await this.deliveryZonesService.createExpenditure(
@@ -237,7 +243,9 @@ export class DeliveryZonesManagerComponent implements OnInit {
         }
       );
       await this.deliveryZonesService.addExpenditure(expenditure._id, zone._id);
+      console.log(zone.expenditure.length, "add")
     }
+    this.generate()
     unlockUI()
   }
 
