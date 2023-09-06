@@ -9,10 +9,12 @@ export class DeliveryZoneInput {
     lesserAmount?: number;
     cost?: number;
     zona?: string;
+    name?: string;
     id?: string;
 }
 
 export class DeliveryZone extends Model<DeliveryZone> {
+    name?: string;
     type?: string;
     lesserAmountLimit?: number;
     greaterAmountLimit?: number;
