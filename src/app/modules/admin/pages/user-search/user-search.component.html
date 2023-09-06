@@ -1,8 +1,8 @@
 <div class="container">
-  <div class="flex-space-between">
+  <div class="flex-space-between" routerLink="../../ecommerce/cart">
     <mat-icon class="back-icon">chevron_left</mat-icon>
-    <div *ngIf="orders" class="continue-text">
-      Nuevo comprador <mat-icon>add_circle_outlined</mat-icon>
+    <div class="continue-text" routerLink="../../admin/user-entry">
+      Adiciona el recipiente <mat-icon>add_circle_outlined</mat-icon>
     </div>
   </div>
   <p class="search-title">
@@ -12,7 +12,7 @@
     <div><mat-icon>search</mat-icon></div>
     <input (keydown)="searchHandler($event)" />
   </div>
-  <div *ngIf="orders; else elseBlock" class="items-container">
+  <div *ngIf="orders;" class="items-container">
     <div *ngFor="let order of orders" class="item">
       <div class="flex-space-between">
         <p class="item-title">{{order.user.email ? order.user.email : order.user.phone}}</p>
@@ -24,9 +24,9 @@
       </div>
     </div>
   </div>
-  <ng-template #elseBlock>
+  <!-- <ng-template #elseBlock>
     <div class="continue-text elseblock">
       Agrega un nuevo comprador <mat-icon>add_circle_outlined</mat-icon>
     </div>
-  </ng-template>
+  </ng-template> -->
 </div>

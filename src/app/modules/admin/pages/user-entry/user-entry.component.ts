@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 
@@ -14,7 +15,8 @@ export class UserEntryComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private authService: AuthService,
-    private merchantsService: MerchantsService
+    private merchantsService: MerchantsService,
+    private router:Router
   ) {}
 
   ngOnInit(): void {
@@ -36,12 +38,13 @@ export class UserEntryComponent implements OnInit {
   async sendForm(): Promise<void> {
     if (!this.form.invalid) {
       const merchantDefault = await this.merchantsService.merchantDefault();
-
+      
       const { phone, name, clientOfMerchants } = this.form.value;
       const inputData = { phone, name, clientOfMerchants };
       inputData.clientOfMerchants = [merchantDefault._id];
-
+      
       const data = await this.authService.signup(inputData, '');
+      this.router.navigate(["/ecommerce/recipient-info-select"]);
       console.log(data);
     }
   }
