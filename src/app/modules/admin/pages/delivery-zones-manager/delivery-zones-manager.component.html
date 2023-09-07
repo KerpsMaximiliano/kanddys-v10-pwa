@@ -48,19 +48,19 @@
         <div class="desc">
             {{zone.name ? zone.name: "Opcional: puede adicionar la descripcion."}}
         </div>
-        <div class="detail" *ngIf="zone.amount != 100">
+        <div class="detail">
             Cobrar extra 
             <span class="price" (click)="editExtra(0, zone)">${{priceFormat(zone.amount)}}</span><br>
             cuando la factura es menor a 
-            <span class="price" (click)="editExtra(1, zone)">${{zone.lesserAmount ? priceFormat(zone.lesserAmount) : "iempre"}}</span><br><br>
+            <span class="price" (click)="editExtra(1, zone)">{{zone.lesserAmount ? "$" + priceFormat(zone.lesserAmount) : "Siempre"}}</span><br><br>
             Mi costo para el control de beneficios es
-            <span class="price" (click)="editExtra(2, zone)">$0.00</span>
+            <span class="price" (click)="editExtra(2, zone)">${{formatExpPrice(zone)}}</span>
         </div>
-        <div class="detail" *ngIf="zone.amount == 100">
+        <!-- <div class="detail" *ngIf="zone.amount == 100">
             Cobrar extra 
             <span class="price" (click)="editExtra(0, zone)">Delivery No está Disponible</span><br>
             cuando la factura es menor a 
             <span class="price" (click)="editExtra(1, zone)">$NA</span>
-        </div>
+        </div> -->
     </div>
 </div>

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { OrderService } from 'src/app/core/services/order.service';
 import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { FormData, FormComponent } from 'src/app/shared/dialogs/form/form.component';
@@ -19,9 +20,11 @@ import { DeliveryZone, DeliveryZoneInput } from 'src/app/core/models/deliveryzon
 export class DeliveryZonesManagerComponent implements OnInit {
 
   deliveryzones = [];
+  expenditures = [];
 
   constructor(
     private merchantsService: MerchantsService,
+    private orderService: OrderService,
     private deliveryZonesService: DeliveryZonesService,
     private headerService: HeaderService,
     private dialog: MatDialog,
@@ -44,12 +47,38 @@ export class DeliveryZonesManagerComponent implements OnInit {
         }
       }
     )
+    const expenditureIDs = []
+    this.deliveryzones.map(d => {
+      if (d.expenditure.length > 0) {
+        expenditureIDs.push(d.expenditure[0]);
+      }
+    })
+    this.expenditures = await this.orderService.expenditures({
+      findBy: {
+        merchant: merchant._id,
+        _id: expenditureIDs
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: -1
+      },
+    });
     console.log(this.deliveryzones)
+    console.log(this.expenditures)
+    console.log(expenditureIDs)
     unlockUI()
   }
 
   priceFormat(price: any) : any {
     return Number(price).toFixed(2);
+  }
+
+  formatExpPrice(zone: any) : any {
+    if (zone.expenditure.length) {
+      const exps = this.expenditures.filter(exp => exp._id == zone.expenditure[0]);
+      if (exps.length) return Number(exps[0].amount).toFixed(2);
+    }
+    return "0.00";
   }
 
   createZone() {
