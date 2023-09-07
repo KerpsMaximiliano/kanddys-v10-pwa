@@ -43,7 +43,8 @@ export class DeliveryZonesManagerComponent implements OnInit {
           limit: -1
         },
         findBy: {
-          merchant: merchant._id
+          merchant: merchant._id,
+          active: true
         }
       }
     )
