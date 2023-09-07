@@ -11,8 +11,6 @@
   height: 45px;
   display: flex;
   align-items: center;
-  padding-left: 20px;
-  padding-right: 20px;
   background: #ffffff;
 }
 
@@ -26,12 +24,35 @@
 
 .header-title {
   color: #272727;
-  font-family: InterMedium;
+  font-family: InterBold;
   font-size: 16px;
   font-style: normal;
-  font-weight: 700;
   line-height: normal;
   margin: 0;
+}
+
+.header-user {
+  color: #7B7B7B;
+  font-family: InterLight;
+  font-size: 15.864px;
+}
+
+.whatsappbutton {
+  all: unset;
+  cursor: pointer;
+}
+
+.id-card {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px;
+  p {
+    margin: 0;
+    color: #7B7B7B;
+    font-family: Inter;
+    font-size: 17px;
+  }
+
 }
 
 .content {
@@ -65,6 +86,7 @@
 
   p {
     margin: 0;
+    margin-bottom: 5px;
     font-size: 17px;
     color: #7b7b7b;
 

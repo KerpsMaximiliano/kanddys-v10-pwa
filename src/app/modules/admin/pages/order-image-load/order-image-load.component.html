@@ -1,11 +1,38 @@
 <div class="container">
   <div class="header">
+    <a>
+      <mat-icon
+        style="
+          font-size: 30px;
+          margin-top: 0.1em;
+          color: black;
+          margin-right: 14px;
+        "
+        (click)="returnEvent()"
+        >keyboard_arrow_left</mat-icon
+      >
+    </a>
     <img 
       alt="imagen"
       class="header-img"
       src="{{merchantImage}}"
     />
-    <div class="header-title">{{merchantName}}</div>
+    <div class="header-title">
+      {{merchantName }}
+      <span
+        class="header-user"
+        *ngIf="user?._id"
+      >
+       facturó a {{ user.name || user.email || user.phone}}
+      </span>
+    </div>
+    <a
+      class="whatsappbutton" 
+      *ngIf="user?.phone" 
+      href="https://api.whatsapp.com/send?phone={{user?.phone}}"
+    >
+      <img [src]="env + '/whatsApp-img.webp'" style="height: 25px; width: 25px" alt="" />
+    </a>
   </div>
   <app-progress-slider
       [title]='"ACTUALIZACION DEL PROGRESO"'
@@ -15,17 +42,23 @@
       [orderId]="orderId"
       (statusUpdated)="handleStatusUpdated($event)"
   ></app-progress-slider>
+  <div *ngIf="identification" class="id-card">
+    <p>Factura</p>
+    <p>{{identification}}</p>
+  </div>
   <div class="content">
       <p class="section-label mt-zero">IMAGEN</p>
-      <img [src]="image" class="img-container" (click)="fileUpload.click()" />
+      <img alt="imagen" [src]="image" class="img-container" (click)="fileUpload.click()" />
       <p class="section-label">COMPRADOR</p>
-      <div class="questions">
-        <p class="label body gray-out capitalize">Adiciona quien lo compró</p>
+      <div class="questions" (click)="goToUserSearch()">
+        <p class="label body gray-out capitalize">
+          {{user ? user.name || user.email || user.phone :'Adiciona quien lo compró'}}
+        </p>
       </div>
       <p class="section-label">MONTO</p>
       <div class="questions" (click)="openInputDialog('amount')">
         <p class="label body gray-out capitalize">
-          {{amount !== undefined ? (amount | currency) : 'Adiciona el monto facturado'}}
+          {{amount ? (amount | currency) : 'Adiciona el monto facturado'}}
         </p>
       </div>
       <p class="section-label">FACTURA</p>
@@ -35,8 +68,19 @@
         </p>
       </div>
       <p class="section-label">RECIPIENTE</p>
-      <div class="questions">
-        <p class="label body gray-out capitalize">Adiciona quien lo recibirá</p>
+      <div class="questions" (click)="openInputDialog('receiver')" >
+        <p *ngIf="!order.receiverData; else elseBlock" class="label body gray-out capitalize">
+          Adiciona quien lo recibirá
+        </p>
+        <ng-template #elseBlock>
+            <p class="label body gray-out capitalize">Lo recibirá: {{order.receiverData.receiver}}</p>
+            <p *ngIf="order.receiverData.receiverPhoneNumber" class="label body gray-out capitalize">
+              Telefono: {{order.receiverData.receiverPhoneNumber}}
+            </p>
+            <p *ngIf="order.receiverData.sender" class="label body gray-out capitalize">
+              Envía: {{order.receiverData.sender}}
+            </p>
+        </ng-template>
       </div>
       <p class="section-label">NOTAS</p>
       <div class="questions" (click)="openInputDialog('notes')">
@@ -46,10 +90,28 @@
       </div>
   </div>
   <input
+    title="file"
     type="file"
     id="fileUpload"
     class="file-input"
     (change)="onFileSelected($event)"
+    [accept]="[
+      '.png',
+      '.jpg',
+      '.jpeg',
+      '.webp',
+      '.webm',
+      '.mp4',
+      '.m4v',
+      '.mpg',
+      '.mpeg',
+      '.mpeg4',
+      '.mov',
+      '.3gp',
+      '.mts',
+      '.m2ts',
+      '.mxf'
+    ]"
     #fileUpload
   />
 </div>

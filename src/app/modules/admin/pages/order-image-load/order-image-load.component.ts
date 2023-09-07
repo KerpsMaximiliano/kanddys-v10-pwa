@@ -22,8 +22,11 @@ import {
   styleUrls: ['./order-image-load.component.scss'],
 })
 export class OrderImageLoadComponent implements OnInit {
+  env: string = environment.assetsUrl;
   profit: number = 0;
   order;
+  user;
+  userId: string;
   merchantId: string = '';
   merchantName: string = '';
   merchantImage: string = ''
@@ -34,8 +37,12 @@ export class OrderImageLoadComponent implements OnInit {
     status?:string;
   }> = [];
   image: any;
+  imageFile: File;
   amount: number;
   identification : string;
+  receiver : string;
+  receiverPhoneNumber : string;
+  sender : string;
   notes: string;
   orderId: string;
   messageLink: string;
@@ -47,7 +54,7 @@ export class OrderImageLoadComponent implements OnInit {
     public dialog: MatDialog,
     private clipboard: Clipboard,
     private _bottomSheet: MatBottomSheet,
-    private NgNavigatorShareService: NgNavigatorShareService
+    private NgNavigatorShareService: NgNavigatorShareService,
   ) {}
 
   ngOnInit(): void {
@@ -55,15 +62,42 @@ export class OrderImageLoadComponent implements OnInit {
   }
 
   async generate() {
-    console.log(this.route)
-    this.orderId = this.route.snapshot.paramMap.get('orderId');
     await this.merchantsService.merchantDefault().then((res) => {
       this.merchantId = res._id;
       this.merchantName = res.name;
       this.merchantImage = res.image;
-      console.log(res);
     })
-    await this.orderService.order(this.orderId).then((res) => {
+    await this.orderData()
+    this.buildStatusList();
+    if(!this.profit) {
+      const orders = (await this.orderService.orderPaginate({
+        findBy: {
+          merchant: this.merchantId,
+        },
+        options: {
+          limit: 25,
+          sortBy: 'createdAt:desc'
+        },
+      }))
+      orders.forEach(order => {
+        this.profit += this.calcTotal(order.subtotals);
+      });
+    }
+    if(this.route.snapshot.queryParamMap.get('userId')) {
+      this.userId = this.route.snapshot.queryParamMap.get('userId');
+      console.log('userId', this.userId)
+      if(this.userId !== this.order.user._id) {
+        console.log(this.userId)
+        console.log(this.order.user._id)
+        console.log('update order')
+        this.updateOrder('user');
+      }
+    }
+  }
+
+  async orderData() {
+    this.orderId = this.route.snapshot.paramMap.get('orderId');
+    await this.orderService.order(this.orderId, false).then((res) => {
       console.log(res)
       this.order = res.order;
       this.amount = res.order.subtotals.reduce((amount, currentSubtotal) => {
@@ -73,23 +107,9 @@ export class OrderImageLoadComponent implements OnInit {
       this.image = res.order.metadata.files[0];
       this.identification = res.order.identification;
       this.orderId = res.order._id;
+      this.user = res.order.user;
     })
-    console.log(this.merchantId)
-    console.log(this.order.merchants)
     this.isMerchant = this.order.merchants.findIndex((merchant) => merchant._id === this.merchantId) !== -1;
-    this.buildStatusList();
-    const orders = (await this.orderService.orderPaginate({
-        findBy: {
-          merchant: this.merchantId,
-        },
-        options: {
-          limit: 25,
-          sortBy: 'createdAt:desc'
-        },
-    }))
-    orders.forEach(order => {
-      this.profit += this.calcTotal(order.subtotals);
-    });
   }
 
   calcTotal(subtotals: any) {
@@ -101,17 +121,28 @@ export class OrderImageLoadComponent implements OnInit {
 
     return sum;
   }
+
+  goToUserSearch() {
+    this.router.navigate(['/admin/user-search'], {
+      queryParams: {
+        returnTo: 'manual-order-management',
+        manualOrderId: this.orderId
+      }
+    });
+  }
   
   onFileSelected(event) {
     const file: File = event.target.files[0];
     const reader = new FileReader();
+    this.imageFile = file;
     reader.readAsDataURL(file);
     reader.onload = (_event) => {
       this.image = reader.result;
     };
+    this.updateOrder('image');
   }
 
-  openInputDialog(type : 'amount' | 'notes' | 'identification') {
+  openInputDialog(type : 'amount' | 'notes' | 'identification'| 'receiver') {
     console.log('clicked')
     let title;
     if(type === 'amount') {
@@ -122,27 +153,40 @@ export class OrderImageLoadComponent implements OnInit {
       title = 'Identificación'
     }
     let fieldData = {
-      'amount': {
+      'amount': [{
         placeholder: this.amount ? this.amount : "$ escribe...",
         type: 'text',
         name: 'amount',
-        value: this.amount,
         validators: [Validators.pattern(/^\d+(\.\d{2})?$/)],
-      },
-      'notes': {
+      }],
+      'notes': [{
         placeholder: this.notes ? this.notes : "Escribe...",
         type: 'text',
         name: 'notes',
-        value: this.notes,
         validators: [Validators.pattern(/[\S]/)],
-      },
-      'identification': {
+      }],
+      'identification': [{
         placeholder: this.identification ? this.identification : "Escribe...",
         type: 'text',
         name: 'identification',
-        value: this.identification,
         validators: [Validators.pattern(/[\S]/)],
-      }
+      }],
+      'receiver': [{
+        label: 'Quien recibirá lo comprado?',
+        placeholder: "Escribe...",
+        type: 'text',
+        name: 'receiver',
+        validators: [Validators.required],
+      },{
+        label: 'Opcional, añada el telefono de quien recibirá lo comprado',
+        type: 'phone',
+        name: 'receiverPhoneNumber',
+      },{
+        label:'Opcional, ¿Quién Envía?',
+        placeholder: "Escribe...",
+        type: 'text',
+        name: 'sender',
+      }],
     };
     const dialogRef = this.dialog.open(FormComponent, {
       width: '500px',
@@ -150,9 +194,7 @@ export class OrderImageLoadComponent implements OnInit {
         title: {
           text: title,
         },
-        fields: [
-          fieldData[type]
-        ],
+        fields: fieldData[type],
         buttonsTexts: {
           cancel: 'Cancelar',
           accept: 'Ok',
@@ -171,12 +213,26 @@ export class OrderImageLoadComponent implements OnInit {
       if(result.value.identification) {
         this.identification = result.value.identification;
       }
+      if(result.value.receiver) {
+        this.receiver = result.value.receiver;
+      }
+      if(result.value.receiverPhoneNumber) {
+        this.receiverPhoneNumber = result.value.receiverPhoneNumber.internationalNumber;
+      }
+      if(result.value.sender) {
+        this.sender = result.value.sender;
+      }
       this.updateOrder(type)
     });
     
   }
 
-  updateOrder(type : 'amount' | 'notes' | 'identification') {
+  returnEvent() {
+    this.router.navigate(['/admin/order-progress']);
+  }
+  
+
+  async updateOrder(type : 'amount' | 'notes' | 'identification' | 'user' | 'receiver' | 'image') {
     let input;
     if(type === 'amount') {
       input = {
@@ -192,16 +248,41 @@ export class OrderImageLoadComponent implements OnInit {
       input = {
         identification: this.identification
       }
+    } else if (type === 'user') {
+      input = {
+        user: this.userId
+      }
+    } else if(type === 'receiver') {
+      input = {
+        receiverData: {
+          receiver: this.receiver,
+        }
+      }
+      if(this.receiverPhoneNumber){
+        input.receiverData.receiverPhoneNumber = this.receiverPhoneNumber;
+      }
+      if(this.sender) {
+        input.receiverData.sender = this.sender;
+      }
+    } else if(type === 'image') {
+      input = {
+        metadata: {
+          files: [this.imageFile]
+        }
+      }
     }
-    this.orderService.updateOrderExternal(input, this.orderId).then((res) => {
+    console.log(input)
+    await this.orderService.updateOrderExternal(input, this.orderId).then((res) => {
       console.log(res)
     })
+    if(type === 'user' || type === 'receiver') {
+      setTimeout(() => {
+        this.orderData();
+      }, 1000)
+    }
   }
 
   async handleStatusUpdated(event) {
-
-    console.log('fires handleStatus')
-    console.log(event)
     const status = this.statusList.map(a => a.status);
     this.activeStatusIndex = status.findIndex(
       (status) => status === event
@@ -230,14 +311,11 @@ export class OrderImageLoadComponent implements OnInit {
         status: status
       });
     }
-    console.log(this.statusList)
     const orderStatusDelivery = this.order.orderStatus;
-    console.log("🚀 ~ file: order-detail.component.ts:1056 ~ OrderDetailComponent ~ buildStatusList ~ orderStatuDelivery:", orderStatusDelivery)
     this.activeStatusIndex = statusList.findIndex(
       (status) => status === orderStatusDelivery
     );
     if(this.activeStatusIndex === -1) this.activeStatusIndex = 0;
-    console.log("🚀 ~ file: order-detail.component.ts:1062 ~ OrderDetailComponent ~ buildStatusList ~ this.activeStatusIndex:", this.activeStatusIndex)
   }
 
   openNotificationDialog() {
