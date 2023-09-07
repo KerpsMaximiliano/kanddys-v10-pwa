@@ -29,6 +29,8 @@ import {
 } from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 
+import { SelectRoleDialogComponent } from 'src/app/shared/dialogs/select-role-dialog/select-role-dialog.component';
+
 interface ReviewsSwiper {
   title: string;
   slides: Array<{
@@ -64,6 +66,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   isVendor = false;
   isProvider = false;
   mainTitle = "HERRAMIENTAS GRATIS  PARA PROVEEDORES"
+  isOpen = false;
+  curRole = 0;
 
   tabContents = {
     tab1: [
@@ -614,7 +618,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
     {
       text: "🧾 Facturas",
@@ -622,7 +627,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       linkName: "",
       queryParams: {},
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
     {
       text: "📢 Comisiones de quienes venden por mi",
@@ -632,7 +638,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
     {
       text: "🛟 Artículos que compro",
@@ -642,7 +649,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: true
     },
     {
       text: "⚡️️ Ofertas flash para comprar",
@@ -652,7 +660,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
     {
       text: "🧞‍♂️‍️️️ Crea ofertas flash para vender*",
@@ -662,7 +671,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
     {
       text: "📦 Seguimiento de los pedidos",
@@ -672,7 +682,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
     {
       text: "💸 Seguimiento del dinero por factura",
@@ -682,7 +693,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
     {
       text: "🛒 Comparte una cotización de lo que vendes",
@@ -692,7 +704,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
     {
       text: "✨ Recompensas de Compradores",
@@ -702,7 +715,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
     {
       text: "🎁 Premios de seguidores que te mencionan",
@@ -712,7 +726,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
     {
       text: "✋ Analiza las opiniones de los compradores",
@@ -722,7 +737,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
     {
       text: "💚 Invita y monetiza cada mes",
@@ -732,7 +748,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
   ]
 
@@ -939,7 +956,38 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       this.tabContents.tab4 = this.tabContents.tab4.filter(tab => !tab.authorization);
     }
     unlockUI()
-    if (this.headerService.user) this.selectRole()
+  }
+
+  setRole(role: number) {
+    this.curRole = role;
+    switch (role) {
+      case 0:
+        this.tabIndex = 0
+        break;
+      case 1:
+        this.tabIndex = 1
+        break;
+      case 2:
+        this.tabIndex = 1
+        break;
+      case 3:
+        this.tabIndex = 0
+        break;  
+      default:
+        this.tabIndex = 1;
+        break;
+      }
+      this.isOpen = false;
+  }
+
+  showDialog() {
+    const dialogRef = this.dialog.open(SelectRoleDialogComponent, {
+      data: {name: "king", animal: "tiger"},
+    });
+
+    dialogRef.afterClosed().subscribe(role => {
+      if (role != undefined) this.setRole(parseInt(role))
+    });
   }
 
   close() {
@@ -1002,43 +1050,6 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     this.ngNavigatorShareService.share({
       title: '',
       url: this.link,
-    });
-  }
-
-  selectRole() {
-    this.bottomSheet.open(OptionsMenuComponent, {
-      data: {
-        title: "Tipo de Comercio:",
-        options: [
-          {
-            value: `Tienda y decoradores, vendo al consumidor final`,
-            callback: async () => {
-              this.tabIndex = 0
-            },
-          },
-          {
-            value: `Proveedor, vendo a tiendas`,
-            callback: () => {
-              this.tabIndex = 1
-            },
-          },
-          {
-            value: `Productor, vendo a proveedores`,
-            callback: () => {
-              this.tabIndex = 1
-            },
-          },
-          {
-            value: `Abastecedor, vendo a productores`,
-            callback: () => {
-              this.tabIndex = 0
-            },
-          },
-        ],
-        styles: {
-          fullScreen: true,
-        },
-      },
     });
   }
 

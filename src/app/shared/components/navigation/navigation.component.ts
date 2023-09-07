@@ -39,6 +39,8 @@ import {
 } from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { SelectRoleDialogComponent } from '../../dialogs/select-role-dialog/select-role-dialog.component';
+
 interface NavigationTab {
   headerText: string;
   text: string;
@@ -70,6 +72,16 @@ interface NavigationTab {
       }>;
     };
   };
+}
+
+interface Tabs {
+  text: string;
+  subTabs?: Array<{
+    text: string;
+    active: boolean;
+    content?: string[];
+  }>;
+  active?: boolean;
 }
 
 interface underTab {
@@ -181,7 +193,82 @@ export class NavigationComponent implements OnInit {
     ],
   };
 
-  tabs: Array<NavigationTab> = [];
+  tabs: Array<Tabs> = [
+    {
+      text: 'Control',
+      subTabs: [
+        {
+          text: 'Ordenes',
+          active: true,
+          content: [
+            '“.. puedo ver el estado actualizado de cada orden desde mi celular”',
+            '“.. la función de notificar a los clientes por WhatsApp o correo electrónico es una verdadera maravilla!”',
+            '“¡Es como magia para mantener todo bajo control!”',
+            '“.. me permite estar al tanto de cada orden de una manera que nunca imaginé”',
+            '“.. puedo filtrar las facturas según su estado para priorizar lo que necesito atender primero”',
+            '“.. es como tener a tu asistente personal siempre contigo”',
+            '“.. puedo ver qué órdenes necesitan mi atención inmediata y cuáles están en camino”',
+          ],
+        },
+        {
+          text: 'Entregas',
+          active: false,
+          content: [
+            '“.. puedo cobrar extra según la zona de entrega especificada por el comprador”',
+            '“..  maximizo lo que cobro y me permite entregar mas lejos”',
+            '“..  me muestra un enfoque estratégico de las entregas y eso me ayuda en la logística para entregar a tiempo”',
+          ],
+        },
+        {
+          text: 'Clientes',
+          active: false,
+          content: [
+            '“.. los reportes que puedo exportar me ayudan a planificar y ejecutar campañas”',
+            '“..  puedo dirigir mis mensajes a grupos específicos con información precisa basado en sus preferencias”',
+            '“..  tener una visión clara de quiénes son mis compradores y qué quieren”',
+          ],
+        },
+      ],
+      active: false,
+    },
+    {
+      text: 'Más Ventas',
+      subTabs: [
+        {
+          text: '#hashtags',
+          active: false,
+          content: [
+            '“.. asigno un simple #hashtag y, voilà, los interesados pueden dirigirse directamente a la compra desde cualquier red social”',
+            '“.. es una manera genial de simplificar el proceso de compra desde las plataformas sociales”',
+            '“.. convierto a los seguidores en compradores de manera rápida y sencilla”',
+          ],
+        },
+        {
+          text: 'Proveedores',
+          active: true,
+          content: [
+            '“.. puedo acceder a una red amplia de proveedores de flores en un abrir y cerrar de ojos.”',
+            '¡Esta función de Cotización Eficiente con Proveedores en la aplicación es como tener un equipo de compras personal a tu disposición!',
+            '“.. es como si los proveedores compitieran por ofrecerme las mejores ofertas, lo cual me siento confiado de donde comprar”',
+            '“.. me permite conectarme con un montón de proveedores y pedir cotizaciones en cuestión de minutos”',
+            '“.. significa que puedo tomar decisiones más inteligentes y aumentar mis ganancias”',
+            '“.. puedo pedir cotizaciones y luego simplemente comparar y elegir la opción más conveniente”',
+            '“.. no solo ahorro dinero, sino que también ahorro tiempo al evitar largas negociaciones, realmente es un ganar-ganar”',
+          ],
+        },
+        {
+          text: 'Premios',
+          active: false,
+          content: [
+            '“.. brindo incentivos a mis clientes, lo que realmente fomenta la fidelidad y la satisfacción”',
+            '“.. el programa de recompensar su lealtad es simplemente brillante”',
+            '“..  los premios no solo los mantiene contentos, sino que también crea un vínculo más sólido con nosotros”',
+          ],
+        },
+      ],
+      active: true,
+    },
+  ];
 
   tabContents = {
     tab1: [
@@ -732,7 +819,8 @@ export class NavigationComponent implements OnInit {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
     {
       text: "🧾 Facturas",
@@ -740,7 +828,8 @@ export class NavigationComponent implements OnInit {
       linkName: "",
       queryParams: {},
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
     {
       text: "📢 Comisiones de quienes venden por mi",
@@ -750,7 +839,8 @@ export class NavigationComponent implements OnInit {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
     {
       text: "🛟 Artículos que compro",
@@ -760,7 +850,8 @@ export class NavigationComponent implements OnInit {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: true
     },
     {
       text: "⚡️️ Ofertas flash para comprar",
@@ -770,7 +861,8 @@ export class NavigationComponent implements OnInit {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
     {
       text: "🧞‍♂️‍️️️ Crea ofertas flash para vender*",
@@ -780,7 +872,8 @@ export class NavigationComponent implements OnInit {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
     {
       text: "📦 Seguimiento de los pedidos",
@@ -790,7 +883,8 @@ export class NavigationComponent implements OnInit {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
     {
       text: "💸 Seguimiento del dinero por factura",
@@ -800,7 +894,8 @@ export class NavigationComponent implements OnInit {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
     {
       text: "🛒 Comparte una cotización de lo que vendes",
@@ -810,7 +905,8 @@ export class NavigationComponent implements OnInit {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
     {
       text: "✨ Recompensas de Compradores",
@@ -820,7 +916,8 @@ export class NavigationComponent implements OnInit {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
     {
       text: "🎁 Premios de seguidores que te mencionan",
@@ -830,7 +927,8 @@ export class NavigationComponent implements OnInit {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
     {
       text: "✋ Analiza las opiniones de los compradores",
@@ -840,7 +938,8 @@ export class NavigationComponent implements OnInit {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
     {
       text: "💚 Invita y monetiza cada mes",
@@ -850,7 +949,8 @@ export class NavigationComponent implements OnInit {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
   ]
 
@@ -936,6 +1036,8 @@ export class NavigationComponent implements OnInit {
   isVendor = false;
   isProvider = false;
   mainTitle = "HERRAMIENTAS GRATIS  PARA PROVEEDORES"
+  curRole = 0;
+  isOpen = false;
 
   footerSwiperConfig: SwiperOptions = {
     slidesPerView: 1,
@@ -947,7 +1049,6 @@ export class NavigationComponent implements OnInit {
       clickable: true,
     },
   };
-
 
   constructor(
     private authService: AuthService,
@@ -1030,8 +1131,38 @@ export class NavigationComponent implements OnInit {
       this.tabContents.tab3 = this.tabContents.tab3.filter(tab => !tab.authorization);
       this.tabContents.tab4 = this.tabContents.tab4.filter(tab => !tab.authorization);
     }
-    
-    if (this.headerService.user) this.selectRole()
+  }
+
+  showDialog() {
+    const dialogRef = this.matDialog.open(SelectRoleDialogComponent, {
+      data: {},
+    });
+
+    dialogRef.afterClosed().subscribe(role => {
+      if (role != undefined) this.setRole(parseInt(role))
+    });
+  }
+
+  setRole(role: number) {
+    this.curRole = role;
+    switch (role) {
+      case 0:
+        this.tabIndex = 0
+        break;
+      case 1:
+        this.tabIndex = 1
+        break;
+      case 2:
+        this.tabIndex = 1
+        break;
+      case 3:
+        this.tabIndex = 0
+        break;  
+      case 4:
+        this.tabIndex = 1;
+        break;
+      }
+      this.isOpen = false;
   }
 
   openDialog() {
@@ -1300,135 +1431,11 @@ export class NavigationComponent implements OnInit {
   }
 
   changeSubtab(tabIndex: number, subTabIndex: number) {
-    this.underTabs[tabIndex].subTabs[subTabIndex].active = true;
+    this.tabs[tabIndex].subTabs[subTabIndex].active = true;
 
-    this.underTabs[tabIndex].subTabs.forEach((subTab, index) => {
+    this.tabs[tabIndex].subTabs.forEach((subTab, index) => {
       if (index !== subTabIndex) subTab.active = false;
     });
-  }
-
-  async executeInitProcesses() {
-    const isUserAMerchant =
-      await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
-
-    if (this.headerService.user) this.loggedUser = true;
-
-    this.tabs.push(this.providerTab);
-    this.tabs.push(this.sellerTab);
-
-    if (this.headerService.user && isUserAMerchant)
-      await this.checkIfUserIsAProviderOrASeller();
-
-    //console.log('this.isCurrentUserASupplier', this.isCurrentUserASupplier);
-
-    if (this.headerService.navigationTabState)
-      this.tabs = this.headerService.navigationTabState;
-
-    let activeTabIndex = 0;
-
-    let urlAlreadyFound: Record<string, boolean> = {};
-
-    if (this.isCurrentUserASeller) {
-      this.quotationsService
-        .quotations({
-          findBy: {
-            merchant: this.merchantsService.merchantData._id,
-          },
-          options: { limit: -1 },
-        })
-        .then((quotations) => {
-          this.tabs = [];
-
-          if (quotations.length > 0) {
-            this.sellerTab.links[1].routerLink = ['/ecommerce/quotations'];
-          }
-
-          this.tabs.push(this.providerTab);
-          this.tabs.push(this.sellerTab);
-
-          if (
-            this.isCurrentUserAnAdmin &&
-            !this.tabs.find((tab) => tab.text === this.tabName['ADMIN'])
-          ) {
-            this.tabs.unshift(this.adminTab);
-          }
-        });
-    }
-
-    this.tabs.forEach((tab, tabIndex) => {
-      const isCurrentURLInCurrentTab = tab.links.find((link, linkIndex) => {
-        const doesCurrentURLHaveQueryParams = this.router.url.includes('?');
-
-        const doesRouterLinkMatchCurrentURL =
-          doesCurrentURLHaveQueryParams && link.queryParams && link.hardcodedURL
-            ? link.hardcodedURL === this.router.url
-            : !link.queryParams &&
-              JSON.stringify(link.routerLink.join('/')) ===
-                JSON.stringify(this.router.url);
-
-        const doesPossibleRedirectionRouterLinkMatchURL =
-          doesCurrentURLHaveQueryParams &&
-          link.possibleRedirectionQueryParams &&
-          link.hardcodedURL
-            ? link.hardcodedURL === this.router.url
-            : !link.possibleRedirectionQueryParams &&
-              link.possibleRedirection &&
-              JSON.stringify(link.possibleRedirection.join('/')) ===
-                JSON.stringify(this.router.url);
-
-        if (doesPossibleRedirectionRouterLinkMatchURL) {
-          this.tabs[tabIndex].links[linkIndex].routerLink =
-            link.possibleRedirection;
-
-          if (link.possibleRedirectionQueryParams && link.hardcodedURL) {
-            this.tabs[tabIndex].links[linkIndex].queryParams =
-              link.possibleRedirectionQueryParams;
-          }
-        }
-
-        if (!urlAlreadyFound[this.router.url]) {
-          return (
-            doesRouterLinkMatchCurrentURL ||
-            doesPossibleRedirectionRouterLinkMatchURL
-          );
-        }
-      });
-
-      if (isCurrentURLInCurrentTab) activeTabIndex = tabIndex;
-    });
-
-    this.tabs.forEach((tab, tabIndex) => {
-      if (tabIndex === activeTabIndex) {
-        this.tabs[tabIndex].active = true;
-        this.activeTabIndex = tabIndex;
-
-        if (this.tabByName[this.tabs[tabIndex].text] === 'FLORISTS') {
-          this.sellerTab.active = true;
-        } else if (this.tabByName[this.tabs[tabIndex].text] === 'PROVIDERS') {
-          this.providerTab.active = true;
-        } else if (this.tabByName[this.tabs[tabIndex].text] === 'ADMIN') {
-          this.adminTab.active = true;
-        }
-      } else {
-        this.tabs[tabIndex].active = false;
-
-        if (this.tabByName[this.tabs[tabIndex].text] === 'FLORISTS') {
-          this.sellerTab.active = false;
-        } else if (this.tabByName[this.tabs[tabIndex].text] === 'PROVIDERS') {
-          this.providerTab.active = false;
-        } else if (this.tabByName[this.tabs[tabIndex].text] === 'ADMIN') {
-          this.adminTab.active = false;
-        }
-      }
-    });
-
-
-    if (
-      this.isCurrentUserAnAdmin &&
-      !this.tabs.find((tab) => tab.text === this.tabName['ADMIN'])
-    ) {
-      this.tabs.unshift(this.adminTab);
-    }
   }
 
   async checkIfUserIsAProviderOrASeller() {
@@ -1546,14 +1553,12 @@ export class NavigationComponent implements OnInit {
   }
 
   changeTab(tabIndex: number) {
-    this.underTabs[tabIndex].active = true;
+    this.tabs[tabIndex].active = true;
     this.activeTabIndex = tabIndex;
 
-    this.underTabs.forEach((tab, index) => {
+    this.tabs.forEach((tab, index) => {
       if (index !== tabIndex) tab.active = false;
     });
-
-    this.headerService.navigationTabState = this.underTabs;
   }
 
   login() {
@@ -1599,42 +1604,5 @@ export class NavigationComponent implements OnInit {
 
   close() {
     this.sidenav.close();
-  }
-
-  selectRole() {
-    this.bottomSheet.open(OptionsMenuComponent, {
-      data: {
-        title: "Tipo de Comercio:",
-        options: [
-          {
-            value: `Tienda y decoradores, vendo al consumidor final`,
-            callback: async () => {
-              this.tabIndex = 0
-            },
-          },
-          {
-            value: `Proveedor, vendo a tiendas`,
-            callback: () => {
-              this.tabIndex = 1
-            },
-          },
-          {
-            value: `Productor, vendo a proveedores`,
-            callback: () => {
-              this.tabIndex = 1
-            },
-          },
-          {
-            value: `Abastecedor, vendo a productores`,
-            callback: () => {
-              this.tabIndex = 0
-            },
-          },
-        ],
-        styles: {
-          fullScreen: true,
-        },
-      },
-    });
   }
 }
