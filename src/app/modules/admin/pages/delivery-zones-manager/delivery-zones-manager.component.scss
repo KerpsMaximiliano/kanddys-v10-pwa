@@ -1,0 +1,89 @@
+.container {
+    min-height: 100vh;
+    background-color: #F6F6F6;
+    padding-bottom: 70px;
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 10px 17px;
+        .close {
+            color: #C4C5C3;
+            text-align: right;
+            font-family: InterRegular;
+            font-size: 24px;
+            font-style: normal;
+            font-weight: 300;
+            line-height: normal;
+            cursor: pointer;
+        }
+        .title {
+            margin-left: 5px;
+            color: #181D17;
+            font-family: InterBold;
+            font-size: 19px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: normal;
+        }
+        .plus {
+            color: #181D17;
+            font-family: InterBold;
+            font-size: 35px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: normal;
+            cursor: pointer;
+        }
+    }
+    .sub-title {
+        margin: 26px 17px;
+        padding: 13px 20px;
+        color: #181D17;
+        text-align: center;
+        font-family: InterBold;
+        font-size: 17px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+        border-radius: 9px;
+        border: 1px solid #7B7B7B;
+    }
+    .card {
+        background-color: white;
+        border-radius: 7px;
+        margin: 7px 15px;
+        padding: 14px 21px;
+        .id {
+            color: #181D17;
+            font-family: InterRegular;
+            font-size: 17px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+        }
+        .desc {
+            margin-top: 7px;
+            color: #7B7B7B;
+            font-family: Inter;
+            font-size: 13px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 105.023%;
+        }
+        .detail {
+            margin-top: 27px;
+            color: #7B7B7B;
+            font-family: InterBold;
+            font-size: 17px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: normal;
+            .price {
+                color: #2874AD;
+                cursor: pointer;
+            }
+        }
+    }
+
+}
