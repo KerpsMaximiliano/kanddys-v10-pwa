@@ -1,7 +1,7 @@
 <div class="container">
   <div class="flex-space-between" routerLink="../../ecommerce/cart">
     <mat-icon class="back-icon">chevron_left</mat-icon>
-    <div class="continue-text" routerLink="../../admin/user-entry">
+    <div class="continue-text" (click)="goToUserEntry()" routerLink="../../admin/user-entry">
       Adiciona el recipiente <mat-icon>add_circle_outlined</mat-icon>
     </div>
   </div>
@@ -13,7 +13,7 @@
     <input (keydown)="searchHandler($event)" />
   </div>
   <div *ngIf="orders;" class="items-container">
-    <div *ngFor="let order of orders" class="item">
+    <div *ngFor="let order of orders" class="item" (click)="selectUser(order.user)">
       <div class="flex-space-between">
         <p class="item-title">{{order.user.email ? order.user.email : order.user.phone}}</p>
         <p class="item-sold">${{order.totalAmount}} vendido</p>

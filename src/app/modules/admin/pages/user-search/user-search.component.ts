@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { UsersService } from 'src/app/core/services/users.service';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-user-search',
@@ -11,14 +12,37 @@ export class UserSearchComponent implements OnInit {
   timeout : ReturnType<typeof setTimeout>;
   id: string;
   orders: any[] | null = null;
+  manualOrderId: string;
+  returnTo: string;
   constructor(
     private MerchantsService : MerchantsService,
-    private UsersService : UsersService
+    private UsersService : UsersService,
+    private router : Router,
+    private route : ActivatedRoute
   ) {}
   ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      if(params.returnTo) {
+        this.returnTo = params.returnTo;
+      }
+      if(params.manualOrderId) {
+        this.manualOrderId = params.manualOrderId;
+      }
+    })
     this.MerchantsService.merchantDefault().then((data) => {
       this.id = data._id;
     });
+  }
+
+  goToUserEntry() {
+    let params = {};
+    if(this.returnTo) {
+      params['returnTo'] = this.returnTo;
+    }
+    if(this.manualOrderId) {
+      params['manualOrderId'] = this.manualOrderId;
+    }
+    this.router.navigate(['/admin/user-entry'], {queryParams: params});
   }
 
   async searchHandler(event: any) {
@@ -30,6 +54,13 @@ export class UserSearchComponent implements OnInit {
         });
       }
     }, 1000);
+  }
+
+  selectUser(user) {
+    console.log(user)
+    if(this.returnTo) {
+      this.router.navigate([`/ecommerce/manual-order-management/${this.manualOrderId}`], {queryParams: {userId: user._id}});
+    }
   }
 
   dateHandler(datestring: string) {

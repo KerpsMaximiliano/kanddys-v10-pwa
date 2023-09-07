@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 
@@ -11,15 +11,26 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 })
 export class UserEntryComponent implements OnInit {
   form: FormGroup;
+  returnTo: string;
+  manualOrderId: string;
 
   constructor(
     private formBuilder: FormBuilder,
     private authService: AuthService,
     private merchantsService: MerchantsService,
-    private router:Router
+    private router: Router,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      if(params.returnTo) {
+        this.returnTo = params.returnTo;
+      }
+      if(params.manualOrderId) {
+        this.manualOrderId = params.manualOrderId;
+      }
+    })
     this.form = this.formBuilder.group({
       phone: ['', Validators.required],
       name: ['', Validators.required],
@@ -44,7 +55,11 @@ export class UserEntryComponent implements OnInit {
       inputData.clientOfMerchants = [merchantDefault._id];
       
       const data = await this.authService.signup(inputData, '');
-      this.router.navigate(["/ecommerce/recipient-info-select"]);
+      if(this.returnTo === 'manual-order-management') {
+        this.router.navigate([`/ecommerce/manual-order-management/${this.manualOrderId}`], {queryParams: {userId: data._id}});
+      } else {
+        this.router.navigate(["/ecommerce/recipient-info-select"]);
+      }
       console.log(data);
     }
   }
