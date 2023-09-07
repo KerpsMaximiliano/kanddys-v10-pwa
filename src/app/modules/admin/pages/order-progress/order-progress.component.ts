@@ -346,20 +346,21 @@ export class OrderProgressComponent implements OnInit {
     });
   }
 
-  sendExternalOrder(sendAmount : boolean) {
+  async sendExternalOrder(sendAmount : boolean) {
     let orderData = {
       metadata: {
         files: this.externalOrderImages,
       },
       merchants: this.merchantId, //backend is merchants, if changed to merchant change this
-      user: this.userId,
     }
     if(sendAmount) {
       orderData["amount"] = this.externalOrderNumber;
     }
-    this.orderService.createOrderExternal(orderData)
+    await this.orderService.createOrderExternal(orderData)
+
     this.externalOrderImages = [];
     this.externalOrderNumber = undefined;
+    this.generate()
   }
 
   truncateString (word) {

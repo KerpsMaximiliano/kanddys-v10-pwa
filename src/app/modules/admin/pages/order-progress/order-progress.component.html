@@ -108,7 +108,7 @@
           <!-- <img [src]=" order.user.image?order.user.image:'https://cdn-icons-png.flaticon.com/512/149/149071.png'" width="66px"> -->
           <div class="content-card-info">
             <p class="content-card-title">{{ order.user != null ? (order.user.name || order.user.email ||
-              order.user.phone) : "Usuario borrado" }}</p>
+              order.user.phone) : "Sin nombre" }}</p>
             <p class="content-card-extra-info">
               <img
                 *ngIf="order.orderType === 'external'; else elseBlock"
