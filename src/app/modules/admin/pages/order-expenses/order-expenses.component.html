@@ -2,7 +2,7 @@
   <header class="header">
     <a
       mat-icon-button
-      [routerLink]="['/ecommerce/order-detail', order._id]"
+      (click)="returnEvent()"
       queryParamsHandling="merge"
     >
       <img

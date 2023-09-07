@@ -76,6 +76,7 @@ export const deliveryZones = gql`
   query deliveryZones($paginate: PaginationInput) {
     deliveryZones(paginate: $paginate) {
       _id
+      name
       zona
       type
       amount
