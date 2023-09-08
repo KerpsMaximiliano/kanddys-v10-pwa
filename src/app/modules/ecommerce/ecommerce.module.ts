@@ -73,6 +73,7 @@ import { MagicLinkSentComponent } from './pages/magic-link-sent/magic-link-sent.
 import { MerchantRegisterComponent } from './pages/merchant-register/merchant-register.component';
 import { LoginLandingComponent } from './pages/login-landing/login-landing.component';
 import { NotificationAccessScreenComponent } from './pages/notification-access-screen/notification-access-screen.component';
+import { ProviderItemsEditorComponent } from './pages/provider-items-editor/provider-items-editor.component';
 
 const routes: Routes = [
   {
@@ -275,6 +276,10 @@ const routes: Routes = [
     component: ProviderItemsComponent
   },
   {
+    path: 'provider-items-editor/:articleId',
+    component: ProviderItemsEditorComponent
+  },
+  {
     path: 'club-landing',
     component: ClubLandingComponent
   },
@@ -473,7 +478,8 @@ const routes: Routes = [
     MagicLinkSentComponent,
     MerchantRegisterComponent,
     LoginLandingComponent,
-    NotificationAccessScreenComponent
+    NotificationAccessScreenComponent,
+    ProviderItemsEditorComponent
   ],
   imports: [
     CommonModule,
