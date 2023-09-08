@@ -36,7 +36,13 @@
     </header>
 
     <div class="search-opened" *ngIf="searchOpened">
+      <header>
+        <button class="btn btn-close">
+          <img src="../../../../../assets/icons/close-button.svg" alt="" />
+        </button>
+      </header>
       <form class="search-bar-wrapper">
+        <mat-icon>search</mat-icon>
         <input
           type="text"
           name="item-search"
@@ -46,6 +52,12 @@
           [formControl]="itemSearchbar"
         />
       </form>
+
+      <div class="filtering-options card">
+        <p [ngClass]="{ active: true }">Exhibidos ({{ 3 }})</p>
+        <p>No Exhibidos ({{ 33 }})</p>
+        <p>Ocultos ({{ 33 }})</p>
+      </div>
 
       <!--
         <div class="filters-container">
@@ -100,9 +112,15 @@
           (click)="!searchTutorialsOpened ? showSearch() : null"
           name="item-search"
           class="input search-bar"
-          placeholder="Buscar..."
+          placeholder="Articulos exhibidos..."
           [formControl]="itemSearchbar"
         />
+
+        <div class="filters">
+          <div class="option">📦</div>
+          <div class="option">⏰</div>
+          <div class="option">💰</div>
+        </div>
       </form>
 
       <ng-container *ngTemplateOutlet="itemsTutorialOverlay"></ng-container>
