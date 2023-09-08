@@ -44,7 +44,8 @@ export class MerchantsEntryComponent implements OnInit {
     this.merchantForm = this.formBuilder.group({
       name: ['', Validators.required],
       slug: ['', Validators.required],
-      phone: ['', Validators.required],
+      phone: [''],
+      email: ['', Validators.required, Validators.email],
       password: ['', Validators.required]
     });
 
@@ -67,6 +68,7 @@ export class MerchantsEntryComponent implements OnInit {
 
     // Obtener los valores del formulario
     const storeName = this.merchantForm.value.name;
+    const email = this.merchantForm.value.email;
     const phone = this.merchantForm.value.phone;
     const password = this.merchantForm.value.password;
     const slug = this.merchantForm.value.slug;
@@ -78,6 +80,15 @@ export class MerchantsEntryComponent implements OnInit {
       return;
     }
 
+    const userInput = {
+      email: email,
+      phone: phone?.e164Number?.split('+')[1] ? phone?.e164Number?.split('+')[1] : null,
+      password: password,
+      name: storeName
+    }
+
+    if (!phone?.e164Number?.split('+')[1]) delete userInput.phone;
+
     try {
       const result = await this.merchantsService.entryMerchant(
         this.merchant._id,
@@ -85,11 +96,7 @@ export class MerchantsEntryComponent implements OnInit {
           name: storeName,
           slug
         },
-        {
-          phone: phone.e164Number.split('+')[1],
-          password: password,
-          name: storeName
-        }
+        userInput
       )
 
       if (result) {
@@ -107,14 +114,21 @@ export class MerchantsEntryComponent implements OnInit {
 
   private async checkIfUserExists(): Promise<boolean> {
     try {
-      const result = await this.authservice.checkUser(this.merchantForm.value.phone.e164Number.split('+')[1]);
-      if (result) {
+      const phone = await this.authservice.checkUser(this.merchantForm?.value?.phone?.e164Number?.split('+')[1]);
+      if (phone) {
         this.matSnackBar.open('Un usuario con ese teléfono ya existe', '', {
           duration: 2000,
           panelClass: 'snack-toast-error'
         });
-        return true;
       }
+      const email = await this.authservice.checkUser(this.merchantForm.value.email);
+      if (email) {
+        this.matSnackBar.open('Un usuario con ese correo ya existe', '', {
+          duration: 2000,
+          panelClass: 'snack-toast-error'
+        });
+      }
+      if (phone && email) return true;
       else return false;
     } catch (error) {
       console.log(error);

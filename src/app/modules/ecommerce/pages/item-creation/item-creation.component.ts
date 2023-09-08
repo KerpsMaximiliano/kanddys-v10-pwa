@@ -763,7 +763,7 @@ export class ItemCreationComponent implements OnInit {
 
   editHashtag(event: any) {
     const keyword = event.target.value
-    if(!keyword) {
+    if (!keyword) {
       this.hashtagSelected.keyword = ''
       this.isHashtagExist = false
     } else {
