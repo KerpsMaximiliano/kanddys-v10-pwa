@@ -1467,6 +1467,29 @@ table {
   }
 }
 
+.bottom-footer {
+  cursor: pointer;
+  position: fixed;
+  max-width: 500px;
+  bottom: 0;
+  width: 100%;
+  background-color: #6fcf97;
+  padding: 0 25px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 40px;
+  p {
+    color: #181d17;
+    text-align: right;
+    font-family: Inter, sans-serif;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  }
+}
+
 .inner-title {
   color: #7b7b7b;
   font-family: "InterMedium";

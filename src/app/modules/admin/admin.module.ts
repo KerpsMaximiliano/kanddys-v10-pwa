@@ -104,6 +104,7 @@ import { MerchantOffersComponent } from './pages/merchant-offers/merchant-offers
 import { AdminCartsComponent } from './pages/admin-carts/admin-carts.component';
 import { ItemsOffersComponent } from './pages/items-offers/items-offers.component';
 import { OrderImageLoadComponent } from './pages/order-image-load/order-image-load.component';
+import { DeliveryZonesManagerComponent } from './pages/delivery-zones-manager/delivery-zones-manager.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -373,6 +374,10 @@ const routes: Routes = [
       {
         path: 'delivery-zones',
         component: DeliveryZonesComponent,
+      },
+      {
+        path: 'delivery-zones-manager',
+        component: DeliveryZonesManagerComponent,
       },
       {
         path: 'orders-by-delivery/:deliveryId',
@@ -708,7 +713,8 @@ const routes: Routes = [
     MerchantOffersComponent,
     AdminCartsComponent,
     ItemsOffersComponent,
-    OrderImageLoadComponent
+    OrderImageLoadComponent,
+    DeliveryZonesManagerComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [
