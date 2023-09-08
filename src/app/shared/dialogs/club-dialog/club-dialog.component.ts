@@ -40,7 +40,12 @@ export interface DialogTemplate {
 export class ClubDialogComponent implements OnInit {
 
   list = [
-    "💰 Tiendas WeLike para guardar lo que te gusta en tu 💚 y recaudar fondos cuando lo compartes"
+    "✨ Recompensas y Premios que me he ganado de las tiendas WeLike",
+    "💰 Gestionar mis monetizaciones de lo que tengo guardado en mi 💚",
+    "📦 Artículos que he comprado",
+    "🛒 Artículos que estoy a punto de comprar",
+    "🔗 “144 enlaces QR Flash” <br>Pegas el enlace y descargas el QR",
+    "Colaboraciones haciendo videos tutoriales de las herramientas de www.floristerias.club"
   ]
 
   tabIndex = 0

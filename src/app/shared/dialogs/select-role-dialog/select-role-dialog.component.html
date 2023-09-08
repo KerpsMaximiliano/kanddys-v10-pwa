@@ -1,0 +1,26 @@
+<!-- <h1 mat-dialog-title>Hi {{data.name}}</h1>
+<div mat-dialog-content>
+  <p>What's your favorite animal?</p>
+  <mat-form-field>
+    <mat-label>Favorite Animal</mat-label>
+    <input matInput [(ngModel)]="data.animal">
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">No Thanks</button>
+  <button mat-button [mat-dialog-close]="data.animal" cdkFocusInitial>Ok</button>
+</div> -->
+<div class="container">
+    <div class="title">
+        ¿A quién le comrpras en la cadena de suministro?
+    </div>
+    <div class="role" mat-dialog-close="1">
+        A Proveedores que le venden a floristerias y decoradores
+    </div>
+    <div class="role" mat-dialog-close="2">
+        A Productores que le venden a los proveedores
+    </div>
+    <div class="role" mat-dialog-close="3">
+        A Abastecedores que le venden a productores
+    </div>
+</div>
