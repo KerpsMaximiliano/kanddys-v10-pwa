@@ -86,10 +86,7 @@ export class OrderImageLoadComponent implements OnInit {
     if(this.route.snapshot.queryParamMap.get('userId')) {
       this.userId = this.route.snapshot.queryParamMap.get('userId');
       console.log('userId', this.userId)
-      if(this.userId !== this.order.user._id) {
-        console.log(this.userId)
-        console.log(this.order.user._id)
-        console.log('update order')
+      if(!this.user || this.userId !== this.user._id) {
         this.updateOrder('user');
       }
     }
@@ -100,16 +97,16 @@ export class OrderImageLoadComponent implements OnInit {
     await this.orderService.order(this.orderId, false).then((res) => {
       console.log(res)
       this.order = res.order;
-      this.amount = res.order.subtotals.reduce((amount, currentSubtotal) => {
+      this.amount = this.order.subtotals.reduce((amount, currentSubtotal) => {
         return amount + currentSubtotal.amount*100;
       }, 0)/100;
-      this.notes = res.order.metadata.description;
-      this.image = res.order.metadata.files[0];
-      this.identification = res.order.identification;
-      this.orderId = res.order._id;
-      this.user = res.order.user;
+      this.notes = this.order.metadata.description;
+      this.image = this.order.metadata.files[0];
+      this.identification = this.order.identification;
+      this.orderId = this.order._id;
+      this.user = this.order.user;
+      this.isMerchant = this.order.merchants.findIndex((merchant) => merchant._id === this.merchantId) !== -1;
     })
-    this.isMerchant = this.order.merchants.findIndex((merchant) => merchant._id === this.merchantId) !== -1;
   }
 
   calcTotal(subtotals: any) {
