@@ -37,7 +37,7 @@
 
     <div class="search-opened" *ngIf="searchOpened">
       <header>
-        <button class="btn btn-close">
+        <button class="btn btn-close" (click)="onCloseSearchbar()">
           <img src="../../../../../assets/icons/close-button.svg" alt="" />
         </button>
       </header>
@@ -50,13 +50,18 @@
           class="input search-bar"
           placeholder="Buscar..."
           [formControl]="itemSearchbar"
+          (keyup)="onFilteringItemsBySearchbar($event)"
         />
       </form>
 
       <div class="filtering-options card">
-        <button [ngClass]="{ active: true }">Exhibidos ({{ 3 }})</button>
-        <button>No Exhibidos ({{ 33 }})</button>
-        <button>Ocultos ({{ 33 }})</button>
+        <button
+          *ngFor="let btn of buttonFiltering"
+          [ngClass]="{ active: btn.isActive }"
+          (click)="onChangeBtnFiltering(btn)"
+        >
+          {{ btn.label }} ({{ btn.total }})
+        </button>
       </div>
 
       <!--
@@ -125,7 +130,7 @@
 
       <ng-container *ngTemplateOutlet="itemsTutorialOverlay"></ng-container>
 
-      <section *ngIf="itemsISell?.length > 0">
+      <section *ngIf="itemsISell?.length > 0 && !searchOpened">
         <h3>ARTICULOS QUE ESTOY EXHIBIENDO A LOS MIEMBROS</h3>
 
         <div class="list-of-items">
@@ -148,13 +153,37 @@
         </div>
       </section>
 
-      <section *ngIf="itemsIDontSell?.length > 0">
+      <section *ngIf="itemsIDontSell?.length > 0 && !searchOpened">
         <h3>ARTICULOS QUE NECESITAN LAS FLORISTERIAS MIEMBROS</h3>
 
         <div class="list-of-items">
           <div
             class="item-wrapper"
             *ngFor="let item of itemsIDontSell; let itemIndex = index"
+          >
+            <ng-container
+              *ngTemplateOutlet="
+                itemCard;
+                context: {
+                  item: item,
+                  itemIndex: itemIndex,
+                  providedByMe: false,
+                  firstItem:
+                    itemIndex === 0 &&
+                    itemsISell.length === 0 &&
+                    itemsIDontSell.length > 0
+                }
+              "
+            ></ng-container>
+          </div>
+        </div>
+      </section>
+
+      <section *ngIf="searchOpened">
+        <div class="list-of-items">
+          <div
+            class="item-wrapper"
+            *ngFor="let item of itemsFiltering; let itemIndex = index"
           >
             <ng-container
               *ngTemplateOutlet="

@@ -36,6 +36,13 @@ import {
 } from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
 import { environment } from 'src/environments/environment';
 
+
+interface BtnFiltering {
+  label: string,
+  isActive: boolean,
+  total: number
+}
+
 @Component({
   selector: 'app-provider-items',
   templateUrl: './provider-items.component.html',
@@ -53,16 +60,37 @@ export class ProviderItemsComponent implements OnInit {
     label: string;
     key: string;
   }> = [
-    {
-      label: 'Los necesitan pero no tienen tus precios (78)',
-      key: 'neededButNotYours',
-    },
-    {
-      label: 'Articulos que estoy exhibiendo',
-      key: 'providedByMe',
-    },
-  ];
+      {
+        label: 'Los necesitan pero no tienen tus precios (78)',
+        key: 'neededButNotYours',
+      },
+      {
+        label: 'Articulos que estoy exhibiendo',
+        key: 'providedByMe',
+      },
+    ];
   activatedSearchFilters: Record<string, boolean> = {};
+
+  itemToSearch: string = ''
+  itemsFiltering = []
+  itemsFilteringByButton: any[] = []
+  buttonFiltering: BtnFiltering[] = [
+    {
+      label: "Exhibidos",
+      isActive: false,
+      total: 0
+    },
+    {
+      label: "No Exhibidos",
+      isActive: false,
+      total: 0
+    },
+    {
+      label: "Ocultos",
+      isActive: false,
+      total: 0
+    }
+  ]
 
   //Pagination-specific variables
   paginationState: {
@@ -70,10 +98,10 @@ export class ProviderItemsComponent implements OnInit {
     page: number;
     status: 'loading' | 'complete';
   } = {
-    page: 1,
-    pageSize: 15,
-    status: 'complete',
-  };
+      page: 1,
+      pageSize: 15,
+      status: 'complete',
+    };
   reachTheEndOfPagination: boolean = false;
 
   //Items variables
@@ -120,7 +148,7 @@ export class ProviderItemsComponent implements OnInit {
     private dialogService: DialogService,
     private authService: AuthService,
     private snackbar: MatSnackBar
-  ) {}
+  ) { }
 
   async ngOnInit() {
     if (localStorage.getItem('session-token')) {
@@ -170,6 +198,7 @@ export class ProviderItemsComponent implements OnInit {
           limit: -1,
         },
       });
+      console.log(this.merchantsService.merchantData?._id)
 
       this.numberOfItemsSold = sold?.total;
     }
@@ -723,8 +752,8 @@ export class ProviderItemsComponent implements OnInit {
             '¿Cuál es el precio de venta de' +
             (item.name
               ? ' ' +
-                item.name +
-                (item.description ? '(' + item.description + ')?' : '')
+              item.name +
+              (item.description ? '(' + item.description + ')?' : '')
               : 'l articulo?'),
           name: 'price',
           type: 'currency',
@@ -908,6 +937,7 @@ export class ProviderItemsComponent implements OnInit {
 
     if (this.merchantsService.merchantData) {
       itemInput.merchant = this.merchantsService.merchantData._id;
+      console.log(this.merchantsService.merchantData._id)
     }
 
     const slides: any[] = item.images
@@ -1365,17 +1395,17 @@ export class ProviderItemsComponent implements OnInit {
                 itemInput.parentItem
               );
 
-            if(toBeDone.operation === 'CREATE') {
+            if (toBeDone.operation === 'CREATE') {
               const createdItem = (await this.itemsService.createItem(itemInput))
                 ?.createItem;
-  
+
               await this.saleflowService.addItemToSaleFlow(
                 {
                   item: createdItem._id,
                 },
                 saleflowDefault._id
               );
-            } else if(toBeDone.operation === 'UPDATE') {
+            } else if (toBeDone.operation === 'UPDATE') {
               await this.itemsService.updateItem(itemInput, toBeDone.itemId)
             }
 
@@ -1515,5 +1545,76 @@ export class ProviderItemsComponent implements OnInit {
     )}`;
 
     window.location.href = whatsappLink;
+  }
+
+  onChangeBtnFiltering(btnActual: BtnFiltering) {
+    const index = this.buttonFiltering.findIndex(btn => btn.label === btnActual.label)
+    this.buttonFiltering[index].isActive = this.buttonFiltering[index].isActive
+      ? false
+      : true
+
+    if (this.itemToSearch) {
+      this.filteringItemsBySearchbar(this.itemToSearch)
+    }
+  }
+
+  onCloseSearchbar() {
+    this.searchOpened = false
+    this.getItemsISell();
+  }
+
+  onFilteringItemsBySearchbar(event: any) {
+    this.itemToSearch = event.target.value
+    this.filteringItemsBySearchbar(this.itemToSearch)
+  }
+
+  filteringItemsBySearchbar(itemToSearch: string) {
+    let conditionsInput = {}
+
+    // Button de items exhibidos
+    if (this.buttonFiltering[0].isActive) {
+      conditionsInput = {
+        _id: {
+          $nin: this.itemsISell.map((item) => item.parentItem),
+        },
+      }
+    }
+
+    // Button de items no exhibidos
+    if (this.buttonFiltering[1].isActive) {
+      conditionsInput = {
+        parentItem: {
+          $ne: null
+        }
+      }
+    }
+
+    // Si el boton de oculto está activo, será "disabled". Caso contrario "active"
+    const status = this.buttonFiltering[2].isActive ? "disabled" : "active"
+
+    const input: PaginationInput = {
+      findBy: {
+        ...conditionsInput,
+        status,
+        type: 'supplier',
+        // merchant: {
+        //   _id: "64adaf5ef20acf81162b82ba"
+        // }
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: this.paginationState.pageSize,
+        page: this.paginationState.page,
+      },
+    };
+
+    console.log(input, conditionsInput)
+
+    this.saleflowService
+      .listItems(input, false, itemToSearch)
+      .then(data => {
+        this.itemsFiltering = data.listItems
+        console.log(data)
+      })
   }
 }
