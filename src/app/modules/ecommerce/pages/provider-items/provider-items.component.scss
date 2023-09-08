@@ -447,7 +447,7 @@ section {
       position: absolute;
       top: 8px;
       left: 28px;
-      color: #7B7B7B;
+      color: #7b7b7b;
     }
   }
 
@@ -478,11 +478,17 @@ section {
       border-radius: 6px;
     }
 
-    p {
+    button {
+      appearance: none;
+      border: none;
+      background: none;
+      padding: 0;
+      width: max-content;
       color: #7b7b7b;
       font-family: Inter;
       font-size: 17px;
       letter-spacing: -1px;
+      cursor: pointer;
       &.active {
         color: #181d17;
         font-weight: 700;
