@@ -29,6 +29,8 @@ import {
 } from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 
+import { SelectRoleDialogComponent } from 'src/app/shared/dialogs/select-role-dialog/select-role-dialog.component';
+
 interface ReviewsSwiper {
   title: string;
   slides: Array<{
@@ -64,6 +66,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   isVendor = false;
   isProvider = false;
   mainTitle = "HERRAMIENTAS GRATIS  PARA PROVEEDORES"
+  isOpen = false;
+  curRole = 0;
 
   tabContents = {
     tab1: [
@@ -464,11 +468,94 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   tabServices = [
-    "💰 Adicionar mi primer artículo para venderlo online y por WhatsApp (CS*)",
-    "📢 Más alcance pagándoles comisiones a quienes venden por mi (CS*)",
-    "🎁 Incentivar con premios a quienes me mencionan en sus cuentas sociales (CS*)",
-    "✨ Recompensar a mis clientes según lo que facturaron (CS*)",
-    "Preparar un 🛒 con algunas cosas que vendo para cotizar o facturar (CS*)"
+    { 
+      text: "🌼 Vitrina Online para exhibir lo que vendo*",
+      routerLink: ["/ecommerce/provider-items"],
+      linkName: "",
+      queryParams: {},
+      authorization: false,
+      isDummy: false
+    },
+    { 
+      text: "🛟 Artículos que compro",
+      routerLink: ["/ecommerce/supplier-items-selector"],
+      linkName: "",
+      queryParams: {},
+      authorization: false,
+      isDummy: false
+    },
+    { 
+      text: "⚡️️ Ofertas flash para comprar",
+      routerLink: ["/admin/merchant-offers"],
+      linkName: "",
+      queryParams: {},
+      authorization: true,
+      isDummy: false
+    },
+    { 
+      text: "🧞‍♂️‍️️️ Crea ofertas flash para vender*",
+      routerLink: ["/admin/items-offers"],
+      linkName: "",
+      queryParams: {},
+      authorization: true,
+      isDummy: false
+    },
+    { 
+      text: "📦 Seguimiento de los pedidos",
+      routerLink: ["/admin/order-progress"],
+      linkName: "",
+      queryParams: {},
+      authorization: true,
+      isDummy: false
+    },
+    { 
+      text: "💸 Seguimiento del dinero por factura",
+      routerLink: ["/"],
+      linkName: "",
+      queryParams: {},
+      authorization: true,
+      isDummy: true
+    },
+    { 
+      text: "🛒 Comparte una cotización de lo que vendes",
+      routerLink: ["/"],
+      linkName: "",
+      queryParams: {},
+      authorization: true,
+      isDummy: true
+    },
+    { 
+      text: "✨ Fideliza a compradores con recompensas",
+      routerLink: ["/"],
+      linkName: "",
+      queryParams: {},
+      authorization: true,
+      isDummy: true
+    },
+    { 
+      text: "🎁 Premia a los seguidores que te mencionan",
+      routerLink: ["/"],
+      linkName: "",
+      queryParams: {},
+      authorization: true,
+      isDummy: true
+    },
+    { 
+      text: "✋ Analiza las opiniones de los compradores",
+      routerLink: ["/"],
+      linkName: "",
+      queryParams: {},
+      authorization: true,
+      isDummy: true
+    },
+    { 
+      text: "💚 Invita y monetiza cada mes",
+      routerLink: ["/"],
+      linkName: "",
+      queryParams: {},
+      authorization: true,
+      isDummy: true
+    },
   ]
 
   tabVendor = [
@@ -524,55 +611,146 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
   tabProvider = [
     {
-      text: "🌼 Lo que vendo",
+      text: "🌼 Vitrina Online",
+      routerLink: ["/ecommerce/supplier-items-selector"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: false,
+      isDummy: false,
+      isShowDialog: false
+    },
+    {
+      text: "🧾 Facturas",
+      routerLink: ["/admin/order-progress"],
+      linkName: "",
+      queryParams: {},
+      authorization: true,
+      isDummy: false,
+      isShowDialog: false
+    },
+    {
+      text: "📢 Comisiones de quienes venden por mi",
       routerLink: ["/admin/supplier-dashboard"],
       linkName: "",
       queryParams: {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false
+      isDummy: true,
+      isShowDialog: false
     },
     {
-      text: "📦 Control Flash",
+      text: "🛟 Artículos que compro",
+      routerLink: ["/admin/supplier-dashboard"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: true,
+      isDummy: false,
+      isShowDialog: true
+    },
+    {
+      text: "⚡️️ Ofertas flash para comprar",
+      routerLink: ["/admin/merchant-offers"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: true,
+      isDummy: false,
+      isShowDialog: false
+    },
+    {
+      text: "🧞‍♂️‍️️️ Crea ofertas flash para vender*",
+      routerLink: ["/admin/items-offers"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: true,
+      isDummy: false,
+      isShowDialog: false
+    },
+    {
+      text: "📦 Seguimiento de los pedidos",
       routerLink: ["/admin/order-progress"],
       linkName: "",
-      queryParams: {},
+      queryParams: {
+        supplierMode: true
+      },
       authorization: true,
-      isDummy: false
+      isDummy: false,
+      isShowDialog: false
     },
-    // {
-    //   text: "💰 Mis beneficios",
-    //   routerLink: ["/ecommerce/supplier-items-selector"],
-    //   linkName: "",
-    //   queryParams: {},
-    //   authorization: true,
-    //   isDummy: false
-    // },
-    // {
-    //   text: "🧾 Facturas Flash",
-    //   routerLink: ["/ecommerce/supplier-items-selector"],
-    //   linkName: "",
-    //   queryParams: {},
-    //   authorization: false,
-    //   isDummy: false
-    // },
-    // {
-    //   text: "📝 Cotizaciones Flash",
-    //   routerLink: ["/ecommerce/supplier-items-selector"],
-    //   linkName: "",
-    //   queryParams: {},
-    //   authorization: false,
-    //   isDummy: false
-    // },
-    // {
-    //   text: "📢 Comisiones de quienes venden por mi",
-    //   routerLink: ["/ecommerce/supplier-items-selector"],
-    //   linkName: "",
-    //   queryParams: {},
-    //   authorization: false,
-    //   isDummy: false
-    // },
+    {
+      text: "💸 Seguimiento del dinero por factura",
+      routerLink: ["/"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: true,
+      isDummy: true,
+      isShowDialog: false
+    },
+    {
+      text: "🛒 Comparte una cotización de lo que vendes",
+      routerLink: ["/"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: true,
+      isDummy: true,
+      isShowDialog: false
+    },
+    {
+      text: "✨ Recompensas de Compradores",
+      routerLink: ["/"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: true,
+      isDummy: true,
+      isShowDialog: false
+    },
+    {
+      text: "🎁 Premios de seguidores que te mencionan",
+      routerLink: ["/"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: true,
+      isDummy: true,
+      isShowDialog: false
+    },
+    {
+      text: "✋ Analiza las opiniones de los compradores",
+      routerLink: ["/"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: true,
+      isDummy: true,
+      isShowDialog: false
+    },
+    {
+      text: "💚 Invita y monetiza cada mes",
+      routerLink: ["/"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: true,
+      isDummy: true,
+      isShowDialog: false
+    },
   ]
 
   tabs: Array<Tabs> = [
@@ -778,6 +956,38 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       this.tabContents.tab4 = this.tabContents.tab4.filter(tab => !tab.authorization);
     }
     unlockUI()
+  }
+
+  setRole(role: number) {
+    this.curRole = role;
+    switch (role) {
+      case 0:
+        this.tabIndex = 0
+        break;
+      case 1:
+        this.tabIndex = 1
+        break;
+      case 2:
+        this.tabIndex = 1
+        break;
+      case 3:
+        this.tabIndex = 0
+        break;  
+      default:
+        this.tabIndex = 1;
+        break;
+      }
+      this.isOpen = false;
+  }
+
+  showDialog() {
+    const dialogRef = this.dialog.open(SelectRoleDialogComponent, {
+      data: {name: "king", animal: "tiger"},
+    });
+
+    dialogRef.afterClosed().subscribe(role => {
+      if (role != undefined) this.setRole(parseInt(role))
+    });
   }
 
   close() {
