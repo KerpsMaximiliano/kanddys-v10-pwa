@@ -130,7 +130,7 @@
 
       <ng-container *ngTemplateOutlet="itemsTutorialOverlay"></ng-container>
 
-      <section *ngIf="itemsISell?.length > 0 && !searchOpened">
+      <section *ngIf="itemsISell?.length > 0 && !hiddenDashboard">
         <h3>ARTICULOS QUE ESTOY EXHIBIENDO A LOS MIEMBROS</h3>
 
         <div class="list-of-items">
@@ -153,7 +153,7 @@
         </div>
       </section>
 
-      <section *ngIf="itemsIDontSell?.length > 0 && !searchOpened">
+      <section *ngIf="itemsIDontSell?.length > 0 && !hiddenDashboard">
         <h3>ARTICULOS QUE NECESITAN LAS FLORISTERIAS MIEMBROS</h3>
 
         <div class="list-of-items">

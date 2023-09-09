@@ -71,9 +71,9 @@ export class ProviderItemsComponent implements OnInit {
     ];
   activatedSearchFilters: Record<string, boolean> = {};
 
+  hiddenDashboard: boolean = false
   itemToSearch: string = ''
   itemsFiltering = []
-  itemsFilteringByButton: any[] = []
   buttonFiltering: BtnFiltering[] = [
     {
       label: "Exhibidos",
@@ -105,6 +105,7 @@ export class ProviderItemsComponent implements OnInit {
   reachTheEndOfPagination: boolean = false;
 
   //Items variables
+  totalItemsHidden: number = 0
   itemsISell: Array<Item> = [];
   itemsIDontSell: Array<Item> = [];
   renderItemsPromise: Promise<{ listItems: Item[] }>;
@@ -162,6 +163,8 @@ export class ProviderItemsComponent implements OnInit {
           });
       } else this.executeInitProcesses();
     } else this.executeInitProcesses();
+
+
   }
 
   async executeInitProcesses() {
@@ -198,8 +201,6 @@ export class ProviderItemsComponent implements OnInit {
           limit: -1,
         },
       });
-      console.log(this.merchantsService.merchantData?._id)
-
       this.numberOfItemsSold = sold?.total;
     }
   }
@@ -310,6 +311,7 @@ export class ProviderItemsComponent implements OnInit {
       )?.listItems;
 
       if (supplierSpecificItems) this.itemsISell = supplierSpecificItems;
+      this.buttonFiltering[0].total = this.itemsISell.length
     }
   }
 
@@ -462,6 +464,7 @@ export class ProviderItemsComponent implements OnInit {
       if (itemsQueryResult.length === 0 && !triggeredFromScroll) {
         this.itemsIDontSell = [];
       }
+      this.buttonFiltering[1].total = this.itemsIDontSell.length
     });
   }
 
@@ -558,6 +561,10 @@ export class ProviderItemsComponent implements OnInit {
         document.querySelector('#search-from-results-view') as HTMLInputElement
       )?.focus();
     }, 100);
+    this.itemsService
+      .itemsQuantityOfFilters(this.merchantsService.merchantData._id, "supplier")
+      .then(data => this.buttonFiltering[2].total = data.hidden)
+
   }
 
   urlIsVideo(url: string) {
@@ -937,7 +944,6 @@ export class ProviderItemsComponent implements OnInit {
 
     if (this.merchantsService.merchantData) {
       itemInput.merchant = this.merchantsService.merchantData._id;
-      console.log(this.merchantsService.merchantData._id)
     }
 
     const slides: any[] = item.images
@@ -1552,15 +1558,15 @@ export class ProviderItemsComponent implements OnInit {
     this.buttonFiltering[index].isActive = this.buttonFiltering[index].isActive
       ? false
       : true
-
-    if (this.itemToSearch) {
-      this.filteringItemsBySearchbar(this.itemToSearch)
-    }
+    this.filteringItemsBySearchbar(this.itemToSearch)
+    const isSomeBtnActive = this.buttonFiltering.some(btn => btn.isActive)
+    this.hiddenDashboard = isSomeBtnActive ? true : false
   }
 
   onCloseSearchbar() {
     this.searchOpened = false
     this.getItemsISell();
+    this.getNewPageOfItemsIDontSell()
   }
 
   onFilteringItemsBySearchbar(event: any) {
@@ -1568,38 +1574,20 @@ export class ProviderItemsComponent implements OnInit {
     this.filteringItemsBySearchbar(this.itemToSearch)
   }
 
-  filteringItemsBySearchbar(itemToSearch: string) {
-    let conditionsInput = {}
-
-    // Button de items exhibidos
-    if (this.buttonFiltering[0].isActive) {
-      conditionsInput = {
-        _id: {
-          $nin: this.itemsISell.map((item) => item.parentItem),
-        },
-      }
-    }
-
-    // Button de items no exhibidos
-    if (this.buttonFiltering[1].isActive) {
-      conditionsInput = {
-        parentItem: {
-          $ne: null
-        }
-      }
-    }
-
+  private filteringItemsBySearchbar(itemToSearch: string) {
     // Si el boton de oculto está activo, será "disabled". Caso contrario "active"
     const status = this.buttonFiltering[2].isActive ? "disabled" : "active"
 
     const input: PaginationInput = {
       findBy: {
-        ...conditionsInput,
         status,
         type: 'supplier',
-        // merchant: {
-        //   _id: "64adaf5ef20acf81162b82ba"
-        // }
+        merchant: {
+          _id: this.merchantsService.merchantData._id
+        },
+        _id: {
+          $nin: this.itemsISell.map((item) => item.parentItem),
+        },
       },
       options: {
         sortBy: 'createdAt:desc',
@@ -1608,7 +1596,13 @@ export class ProviderItemsComponent implements OnInit {
       },
     };
 
-    console.log(input, conditionsInput)
+    // Button de items no exhibidos
+    if (this.buttonFiltering[1].isActive) {
+      input.findBy = {
+        ...input.findBy,
+        parentItem: null
+      }
+    }
 
     this.saleflowService
       .listItems(input, false, itemToSearch)
