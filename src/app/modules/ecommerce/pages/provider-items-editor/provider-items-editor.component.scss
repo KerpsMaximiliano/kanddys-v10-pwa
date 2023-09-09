@@ -175,7 +175,28 @@
   text-align: center;
 }
 
-.modify-button-reduce,
+.modify-button-reduce{
+  width: 61px;
+  height: 61px;
+  background: #7B7B7B;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -khtml-border-radius: 50%;
+  border-radius: 50%;
+  color: #181d17;
+  font-size: 51.67px;
+  line-height: 56px; /* Ajusta la línea para centrar verticalmente el contenido */
+  font-weight: 400;
+  font-family: InterRegular;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  margin: 0 5px;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
 .modify-button-add {
   width: 61px;
   height: 61px;
@@ -186,7 +207,7 @@
   border-radius: 50%;
   color: #181d17;
   font-size: 51.67px;
-  line-height: 60px; /* Ajusta la línea para centrar verticalmente el contenido */
+  line-height: 54px; /* Ajusta la línea para centrar verticalmente el contenido */
   font-weight: 400;
   font-family: InterRegular;
   display: flex;
