@@ -166,7 +166,7 @@
 .input-stock {
   flex-grow: 1;
   display: block;
-  width: 56%;
+  width: 30%;
   padding: 5px;
   border: none !important;
   background: transparent;
@@ -177,9 +177,12 @@
 
 .modify-button-reduce,
 .modify-button-add {
-  width: 60px;
-  height: 60px;
+  width: 61px;
+  height: 61px;
   background: #7B7B7B;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -khtml-border-radius: 50%;
   border-radius: 50%;
   color: #181d17;
   font-size: 51.67px;
@@ -188,31 +191,38 @@
   font-family: InterRegular;
   display: flex;
   justify-content: center;
-  align-items: center;
+  text-align: center;
   margin: 0 5px;
   margin-bottom: 12px;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .modify-button-infinite{
   padding-left: 14px;
   margin-right: 10px;
-  width: 30px;
-  height: 30px;
+  width: 39px;
+  height: 39px;
   background: #ffffff;
   background-size: 30px;
   border-radius: 50%;
   color:#181d17;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-size: 51.67px;
   line-height: 62.53px;
   font-weight: 400;
   font-family: InterRegular;
   margin-bottom: 12px;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .modify-button-cero{
   margin-right: 10px;
-  width: 30px;
-  height: 30px;
+  width: 39px;
+  height: 39px;
   background-color: white;
   border-radius: 50%;
   display: flex;
@@ -243,7 +253,7 @@
 }
 
 .bottom-footer {
-  position: fixed;
+  position: absolute;
   bottom: 0;
   background-color: #6fcf97;
   padding: 0 25px;

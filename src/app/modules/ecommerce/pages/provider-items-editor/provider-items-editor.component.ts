@@ -17,7 +17,7 @@ import { environment } from 'src/environments/environment';
 export class ProviderItemsEditorComponent implements OnInit {
   
   currency:string = "$";
-  changePrice: FormControl = new FormControl('0.00');
+  changePrice: FormControl = new FormControl('');
   changeStock: FormControl = new FormControl('0');
   showCurrencyEditor: boolean = true;
   showStockEditor: boolean = false;
@@ -27,6 +27,7 @@ export class ProviderItemsEditorComponent implements OnInit {
   merchantId;
   infinite:boolean = false;
   saleFlowId;
+  stock:number = 0;
   constructor( private route: ActivatedRoute,
               private itemService: ItemsService,
               private merchant: MerchantsService,
@@ -37,8 +38,8 @@ export class ProviderItemsEditorComponent implements OnInit {
       const { articleId } = params;
       this.articleId = articleId;
     });
-    await this.getMerchantDefault();
     await this.getItemData();
+    await this.getMerchantDefault();
     await this.getSaleFlowDefault();
   }
 
@@ -47,7 +48,10 @@ export class ProviderItemsEditorComponent implements OnInit {
   }
 
   async getItemData(){
+    console.log("entro por aca");
+    
     this.itemData = await this.itemService.item(this.articleId);
+    console.log("🚀 ~ file: provider-items-editor.component.ts:51 ~ ProviderItemsEditorComponent ~ getItemData ~ this.itemData:", this.itemData)
   }
 
   async getMerchantDefault(){
@@ -79,12 +83,12 @@ export class ProviderItemsEditorComponent implements OnInit {
       this.changeStock.setValue(stock + 1); 
     }
     else if(this.infinite){
-      this.infinite = false;
-      this.changeStock.setValue(0); 
+      this.infinite = false; 
     }
   }
   setInfinite(){
     this.infinite = !this.infinite;
+    this.stock = this.changeStock.value;
   }
 
   async getSaleFlowDefault(){
@@ -96,20 +100,21 @@ export class ProviderItemsEditorComponent implements OnInit {
 
   async createItem(){
     let itemDataInput: ItemInput;
-      if(this.infinite){
+      if(!this.infinite){
         itemDataInput = {
           merchant:this.merchantId,
           pricing:parseInt(this.changePrice.value),
-          useStock: this.infinite,
+          useStock: true,
           stock: parseInt(this.changeStock.value),
           name: this.itemData.name,
-          description: this.itemData.description
+          description: this.itemData.description,
+          type:"supplier"
         }
       }else{
         itemDataInput = {
           merchant:this.merchantId,
           pricing:parseInt(this.changePrice.value),
-          useStock: this.infinite,
+          useStock: false,
           name: this.itemData.name,
           description: this.itemData.description,
           type:"supplier"
@@ -127,7 +132,7 @@ export class ProviderItemsEditorComponent implements OnInit {
         this.saleFlowId
       );
     }else{
-      const preItem = await this.itemService.createPreItem(itemDataInput);
+      await this.itemService.createPreItem(itemDataInput);
     }
   }
 }
