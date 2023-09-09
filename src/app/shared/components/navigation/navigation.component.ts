@@ -671,91 +671,91 @@ export class NavigationComponent implements OnInit {
   tabServices = [
     { 
       text: "🌼 Vitrina Online para exhibir lo que vendo*",
-      routerLink: ["/admin/dashboard"],
+      routerLink: ["/ecommerce/provider-items"],
       linkName: "",
       queryParams: {},
       authorization: false,
-        isDummy: false
+      isDummy: false
     },
     { 
       text: "🛟 Artículos que compro",
-      routerLink: ["/admin/dashboard"],
+      routerLink: ["/ecommerce/supplier-items-selector"],
       linkName: "",
       queryParams: {},
       authorization: false,
-        isDummy: false
+      isDummy: false
     },
     { 
       text: "⚡️️ Ofertas flash para comprar",
-      routerLink: ["/admin/dashboard"],
+      routerLink: ["/admin/merchant-offers"],
       linkName: "",
       queryParams: {},
-      authorization: false,
-        isDummy: false
+      authorization: true,
+      isDummy: false
     },
     { 
       text: "🧞‍♂️‍️️️ Crea ofertas flash para vender*",
-      routerLink: ["/admin/dashboard"],
+      routerLink: ["/admin/items-offers"],
       linkName: "",
       queryParams: {},
-      authorization: false,
-        isDummy: false
+      authorization: true,
+      isDummy: false
     },
     { 
       text: "📦 Seguimiento de los pedidos",
-      routerLink: ["/admin/dashboard"],
+      routerLink: ["/admin/order-progress"],
       linkName: "",
       queryParams: {},
-      authorization: false,
-        isDummy: false
+      authorization: true,
+      isDummy: false
     },
     { 
       text: "💸 Seguimiento del dinero por factura",
-      routerLink: ["/admin/dashboard"],
+      routerLink: ["/"],
       linkName: "",
       queryParams: {},
-      authorization: false,
-        isDummy: false
+      authorization: true,
+      isDummy: true
     },
     { 
       text: "🛒 Comparte una cotización de lo que vendes",
-      routerLink: ["/admin/dashboard"],
+      routerLink: ["/"],
       linkName: "",
       queryParams: {},
-      authorization: false,
-        isDummy: false
+      authorization: true,
+      isDummy: true
     },
     { 
       text: "✨ Fideliza a compradores con recompensas",
-      routerLink: ["/admin/dashboard"],
+      routerLink: ["/"],
       linkName: "",
       queryParams: {},
-      authorization: false,
-        isDummy: false
+      authorization: true,
+      isDummy: true
     },
     { 
       text: "🎁 Premia a los seguidores que te mencionan",
-      routerLink: ["/admin/dashboard"],
+      routerLink: ["/"],
       linkName: "",
       queryParams: {},
-      authorization: false,
-        isDummy: false
+      authorization: true,
+      isDummy: true
     },
     { 
       text: "✋ Analiza las opiniones de los compradores",
-      routerLink: ["/admin/dashboard"],
+      routerLink: ["/"],
       linkName: "",
       queryParams: {},
-      authorization: false,
-        isDummy: false
+      authorization: true,
+      isDummy: true
     },
     { 
       text: "💚 Invita y monetiza cada mes",
-      routerLink: ["/admin/dashboard"],
+      routerLink: ["/"],
       linkName: "",
       queryParams: {},
-      authorization: false,
-        isDummy: false
+      authorization: true,
+      isDummy: true
     },
   ]
 
@@ -813,12 +813,12 @@ export class NavigationComponent implements OnInit {
   tabProvider = [
     {
       text: "🌼 Vitrina Online",
-      routerLink: ["/admin/supplier-dashboard"],
+      routerLink: ["/ecommerce/supplier-items-selector"],
       linkName: "",
       queryParams: {
         supplierMode: true
       },
-      authorization: true,
+      authorization: false,
       isDummy: false,
       isShowDialog: false
     },
@@ -839,7 +839,7 @@ export class NavigationComponent implements OnInit {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false,
+      isDummy: true,
       isShowDialog: false
     },
     {
@@ -855,7 +855,7 @@ export class NavigationComponent implements OnInit {
     },
     {
       text: "⚡️️ Ofertas flash para comprar",
-      routerLink: ["/admin/supplier-dashboard"],
+      routerLink: ["/admin/merchant-offers"],
       linkName: "",
       queryParams: {
         supplierMode: true
@@ -866,7 +866,7 @@ export class NavigationComponent implements OnInit {
     },
     {
       text: "🧞‍♂️‍️️️ Crea ofertas flash para vender*",
-      routerLink: ["/admin/supplier-dashboard"],
+      routerLink: ["/admin/items-offers"],
       linkName: "",
       queryParams: {
         supplierMode: true
@@ -877,7 +877,7 @@ export class NavigationComponent implements OnInit {
     },
     {
       text: "📦 Seguimiento de los pedidos",
-      routerLink: ["/admin/supplier-dashboard"],
+      routerLink: ["/admin/order-progress"],
       linkName: "",
       queryParams: {
         supplierMode: true
@@ -888,68 +888,68 @@ export class NavigationComponent implements OnInit {
     },
     {
       text: "💸 Seguimiento del dinero por factura",
-      routerLink: ["/admin/supplier-dashboard"],
+      routerLink: ["/"],
       linkName: "",
       queryParams: {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false,
+      isDummy: true,
       isShowDialog: false
     },
     {
       text: "🛒 Comparte una cotización de lo que vendes",
-      routerLink: ["/admin/supplier-dashboard"],
+      routerLink: ["/"],
       linkName: "",
       queryParams: {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false,
+      isDummy: true,
       isShowDialog: false
     },
     {
       text: "✨ Recompensas de Compradores",
-      routerLink: ["/admin/supplier-dashboard"],
+      routerLink: ["/"],
       linkName: "",
       queryParams: {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false,
+      isDummy: true,
       isShowDialog: false
     },
     {
       text: "🎁 Premios de seguidores que te mencionan",
-      routerLink: ["/admin/supplier-dashboard"],
+      routerLink: ["/"],
       linkName: "",
       queryParams: {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false,
+      isDummy: true,
       isShowDialog: false
     },
     {
       text: "✋ Analiza las opiniones de los compradores",
-      routerLink: ["/admin/supplier-dashboard"],
+      routerLink: ["/"],
       linkName: "",
       queryParams: {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false,
+      isDummy: true,
       isShowDialog: false
     },
     {
       text: "💚 Invita y monetiza cada mes",
-      routerLink: ["/admin/supplier-dashboard"],
+      routerLink: ["/"],
       linkName: "",
       queryParams: {
         supplierMode: true
       },
       authorization: true,
-      isDummy: false,
+      isDummy: true,
       isShowDialog: false
     },
   ]
