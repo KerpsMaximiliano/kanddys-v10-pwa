@@ -1,6 +1,6 @@
 <div class="container">
   <div class="flex-space-between">
-    <mat-icon class="back-icon" routerLink="../user-search">chevron_left</mat-icon>
+    <mat-icon class="back-icon" (click)="goBack()">chevron_left</mat-icon>
     <div class="continue-text" (click)="sendForm()" *ngIf="!form.invalid">
       Continuar
     </div>

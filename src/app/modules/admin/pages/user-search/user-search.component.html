@@ -1,5 +1,5 @@
 <div class="container">
-  <div class="flex-space-between" routerLink="../../ecommerce/cart">
+  <div class="flex-space-between" (click)="goBack()">
     <mat-icon class="back-icon">chevron_left</mat-icon>
     <div class="continue-text" (click)="goToUserEntry()" routerLink="../../admin/user-entry">
       Adiciona el recipiente <mat-icon>add_circle_outlined</mat-icon>

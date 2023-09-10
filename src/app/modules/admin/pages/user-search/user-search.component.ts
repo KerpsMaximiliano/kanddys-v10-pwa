@@ -45,6 +45,14 @@ export class UserSearchComponent implements OnInit {
     this.router.navigate(['/admin/user-entry'], {queryParams: params});
   }
 
+  goBack() {
+    if(this.returnTo === 'manual-order-management') {
+      this.router.navigate([`/ecommerce/manual-order-management/${this.manualOrderId}`]);
+    } else {
+      this.router.navigate(['/ecommerce/cart'])
+    }
+  }
+
   async searchHandler(event: any) {
     clearTimeout(this.timeout);
     this.timeout = setTimeout(() => {
@@ -64,8 +72,14 @@ export class UserSearchComponent implements OnInit {
   }
 
   dateHandler(datestring: string) {
+    console.log(datestring)
     let date = new Date(datestring)
+    console.log(date)
     let time = Math.ceil((new Date().getTime() - date.getTime())/(1000*60));
+    console.log(time)
+    if(time <= 1) {
+      return '1 minuto';
+    }
     if(time < 60) {
       return time + ' minutos';
     }

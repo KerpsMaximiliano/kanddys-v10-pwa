@@ -259,6 +259,9 @@ export class OrderProgressComponent implements OnInit {
     datestring = datestring.slice(0, -5)
     let date = new Date(datestring)
     let time = Math.ceil((new Date().getTime() - date.getTime())/(1000*60));
+    if(time <= 1) {
+      return '1 minuto';
+    }
     if(time < 60) {
       return time + ' minutos';
     }

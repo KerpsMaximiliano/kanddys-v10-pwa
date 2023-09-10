@@ -63,4 +63,13 @@ export class UserEntryComponent implements OnInit {
       console.log(data);
     }
   }
+
+  goBack() {
+    this.router.navigate([`/admin/user-search`], {
+        queryParams: {
+        returnTo: 'manual-order-management',
+        manualOrderId: this.manualOrderId
+      }
+    });
+  }
 }
