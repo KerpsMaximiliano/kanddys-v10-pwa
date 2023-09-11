@@ -300,6 +300,7 @@ export const ordersByMerchant = gql`
           _id
         }
       }
+      orderType
       orderStatus
       orderStatusDelivery
       status {
