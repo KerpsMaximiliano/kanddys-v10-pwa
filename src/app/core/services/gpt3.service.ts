@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
+  feedFileToKnowledgeBase,
   generateCompletionForMerchant,
   generateResponseForTemplate,
   imageObjectRecognition,
@@ -24,6 +25,16 @@ export class Gpt3Service {
       variables: { templateObject, templateId },
     });
     return result.generateResponseForTemplate;
+  }
+
+  async feedFileToKnowledgeBase(uploadedFile: File): Promise<boolean> {
+    const result = await this.graphql.mutate({
+      mutation: feedFileToKnowledgeBase,
+      variables: { uploadedFile },
+      context: { useMultipart: true }
+    });
+    
+    return result?.feedFileToKnowledgeBase;
   }
 
   async requestQAResponse(

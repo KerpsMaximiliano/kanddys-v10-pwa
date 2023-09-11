@@ -18,26 +18,23 @@ export const requestQAResponse = gql`
   }
 `;
 
+export const feedFileToKnowledgeBase = gql`
+  mutation feedFileToKnowledgeBase($uploadedFile: Upload!) {
+    feedFileToKnowledgeBase(uploadedFile: $uploadedFile)
+  }
+`;
+
 export const generateCompletionForMerchant = gql`
   mutation generateCompletionForMerchant(
     $merchantID: ObjectID!
     $prompt: String!
   ) {
-    generateCompletionForMerchant(
-      merchantID: $merchantID
-      prompt: $prompt
-    )
+    generateCompletionForMerchant(merchantID: $merchantID, prompt: $prompt)
   }
 `;
 
 export const imageObjectRecognition = gql`
-  mutation imageObjectRecognition(
-    $merchantId: ObjectID!
-    $file: Upload
-  ) {
-    imageObjectRecognition(
-      merchantId: $merchantId
-      file: $file
-    )
+  mutation imageObjectRecognition($merchantId: ObjectID!, $file: Upload) {
+    imageObjectRecognition(merchantId: $merchantId, file: $file)
   }
 `;
