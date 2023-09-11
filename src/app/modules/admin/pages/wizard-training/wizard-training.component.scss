@@ -47,6 +47,10 @@
   }
 }
 
+.page-body {
+  padding: 0px 0.5rem;
+}
+
 section {
   display: flex;
   flex-direction: column;
@@ -55,6 +59,29 @@ section {
 
   h3 {
     font-family: InterLight;
+    text-align: center;
+  }
+
+  button {
+    background-color: #87cd9b;
+    border-radius: 10px;
+    border: none;
+    box-shadow: none;
+    padding: 16px;
+    font-family: InterRegular;
+    font-size: 1rem;
+    color: #181d17;
+    display: flex;
+    align-items: center;
+
+    mat-icon {
+      margin-left: 5px;
+    }
+
+    &:hover {
+      background-color: darken($color: #87cd9b, $amount: 5);
+      cursor: pointer;
+    }
   }
 }
 

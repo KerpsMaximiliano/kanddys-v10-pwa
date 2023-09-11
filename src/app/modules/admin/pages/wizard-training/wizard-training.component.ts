@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -15,7 +16,8 @@ export class WizardTrainingComponent implements OnInit {
 
   constructor(
     private gptService: Gpt3Service,
-    private headerService: HeaderService
+    private headerService: HeaderService,
+    private toastrService: ToastrService
   ) {}
 
   ngOnInit(): void {}
@@ -34,9 +36,32 @@ export class WizardTrainingComponent implements OnInit {
       }
 
       unlockUI();
+
+      this.toastrService.success(
+        'Se ha entrenado al mago exitosamente con la data proporcionada'
+      );
     } catch (error) {
       unlockUI();
-      
+
+      console.error(error);
+      this.headerService.showErrorToast();
+    }
+  }
+
+  async trainChatbotWithMyItems() {
+    try {
+      lockUI();
+
+      await this.gptService.createEmbeddingsForMyMerchantItems();
+
+      unlockUI();
+
+      this.toastrService.success(
+        'Se ha entrenado al mago exitosamente con los productos de tu tienda'
+      );
+    } catch (error) {
+      unlockUI();
+
       console.error(error);
       this.headerService.showErrorToast();
     }

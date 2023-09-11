@@ -6,7 +6,7 @@
         (click)="openNavigation = true"
         style="cursor: pointer; margin-left: auto"
       >
-        <p>Entrenamiento de asistente</p>
+        <p>🧙‍♂️ Entrenamiento de asistente</p>
         <mat-icon>menu</mat-icon>
       </div>
     </div>
@@ -31,6 +31,17 @@
           </div>
           <div class="label">Adiciona</div>
         </label>
+      </section>
+
+      <section>
+        <h3>Reentrenar al asistente con los productos de mi tienda</h3>
+
+        <button
+          (click)="trainChatbotWithMyItems()"
+        >
+          Reentrenar
+          <mat-icon>update</mat-icon>
+        </button>
       </section>
     </div>
   </div>

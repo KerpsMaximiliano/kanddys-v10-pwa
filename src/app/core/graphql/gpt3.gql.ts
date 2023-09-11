@@ -12,6 +12,15 @@ export const generateResponseForTemplate = gql`
   }
 `;
 
+export const requestResponseFromKnowledgeBase = gql`
+  query requestResponseFromKnowledgeBase(
+    $prompt: String!
+    $saleflowId: ObjectID!
+  ) {
+    requestResponseFromKnowledgeBase(prompt: $prompt, saleflowId: $saleflowId)
+  }
+`;
+
 export const requestQAResponse = gql`
   query requestQAResponse($saleflowId: String!, $prompt: String!) {
     requestQAResponse(saleflowId: $saleflowId, prompt: $prompt)
@@ -21,6 +30,12 @@ export const requestQAResponse = gql`
 export const feedFileToKnowledgeBase = gql`
   mutation feedFileToKnowledgeBase($uploadedFile: Upload!) {
     feedFileToKnowledgeBase(uploadedFile: $uploadedFile)
+  }
+`;
+
+export const createEmbeddingsForMyMerchantItems = gql`
+  mutation createEmbeddingsForMyMerchantItems {
+    createEmbeddingsForMyMerchantItems
   }
 `;
 
