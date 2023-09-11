@@ -18,10 +18,14 @@ export class CostsMetricsComponent implements OnInit {
   delivery_zone : any = {total: 0, count: 0};
   others : any = {total: 0, count: 0};
   taxes : any = null;
+  taxesLoading = false
   incomeMerchant = 0
+  incomeMerchantLoading = false
 
   ordersTotal : any = {total: 0, items: 0, length: 0};
+  ordersTotalLoading = false
   incomeTotal : any = {total: 0, count: 0}
+  incomeTotalLoading = false
 
   viewIndex = 2
 
@@ -52,15 +56,28 @@ export class CostsMetricsComponent implements OnInit {
     this.others = others.expendituresTotalById
     console.log("others", others)
 
+    unlockUI()
+
+    const incomeMerchant = await this.merchantService.incomeMerchant({
+      findBy: {
+        merchant: merchant._id,
+      },
+    });
+    this.incomeMerchant = incomeMerchant
+    this.incomeMerchantLoading = true
+    console.log("incomeMerchant", incomeMerchant)
+
     const ordersTotal = await this.orderService.ordersTotal(
       ['completed', 'to confirm'],
       this.merchant._id,
     );
     this.ordersTotal = ordersTotal
+    this.ordersTotalLoading = true
     console.log("ordersTotal", ordersTotal)
 
     const incomeTotal = await this.deliveryZonesService.incomeTotalDeliveryZoneByMerchant( this.merchant._id );
     this.incomeTotal = incomeTotal
+    this.incomeTotalLoading = true
     console.log("incomeTotal", incomeTotal)
 
     const taxes = await this.merchantService.taxesByMerchant({
@@ -69,16 +86,8 @@ export class CostsMetricsComponent implements OnInit {
       }
     })
     this.taxes = taxes.taxesByMerchant
+    this.taxesLoading = true
     console.log("taxes", taxes)
-
-    const incomeMerchant = await this.merchantService.incomeMerchant({
-      findBy: {
-        merchant: merchant._id,
-      },
-    });
-    this.incomeMerchant = incomeMerchant
-
-    unlockUI()
   }
 
   amountFormat(amount) {

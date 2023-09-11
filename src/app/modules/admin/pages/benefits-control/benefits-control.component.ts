@@ -16,20 +16,23 @@ export class BenefitsControlComponent implements OnInit {
 
   orders: Array<ItemOrder> = []
   isSearch = false
-  incomeMerchant = 0
   merchant: any | null = null
   isSearchToConf = false;
   searchStr = ""
+  incomeMerchant = 0
+  incomeMerchantLoading = false;
   toConfTotal: {
     total?: number;
     length?: number;
     items?: number;
   };
+  toConfTotalLoading = false;
   toConfComTotal: {
     total?: number;
     length?: number;
     items?: number;
   };
+  toConfComTotalLoading = false;
 
   constructor(
     private merchantsService: MerchantsService,
@@ -56,6 +59,8 @@ export class BenefitsControlComponent implements OnInit {
     const orders = data.orderPaginate;
     this.orders = orders;
     console.log("all orders", orders)
+
+    unlockUI()
     
     const incomeMerchant = await this.merchantsService.incomeMerchant({
       findBy: {
@@ -63,17 +68,19 @@ export class BenefitsControlComponent implements OnInit {
       },
     });
     this.incomeMerchant = incomeMerchant
+    this.incomeMerchantLoading = true
+    console.log(incomeMerchant)
 
     const toConfTotal = await this.orderService.ordersTotal(['to confirm'], this.merchant._id);
     this.toConfTotal = toConfTotal
+    this.toConfTotalLoading = true;
     console.log(toConfTotal)
 
     const toConfComTotal = await this.orderService.ordersTotal(['to confirm', 'completed'], this.merchant._id);
     this.toConfComTotal = toConfComTotal
+    this.toConfComTotalLoading = true;
     console.log(toConfComTotal)
-
-    console.log(incomeMerchant)
-    unlockUI()
+    
   }
 
   async getAllOrders() {
@@ -165,11 +172,10 @@ export class BenefitsControlComponent implements OnInit {
     );
   }
 
-  getYearMonth(index: number) {
+  getDateFormat(index: number) {
     const date = new Date(this.orders[index].createdAt);
-    const year = date.getFullYear().toString();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const dateString = `${year}-${month}`;
+    const options = { day: 'numeric' as const, month: 'short' as const, year: 'numeric' as const};
+    const dateString = date.toLocaleDateString('en-GB', options);
     return dateString;
   }
   amountFormat(amount) {

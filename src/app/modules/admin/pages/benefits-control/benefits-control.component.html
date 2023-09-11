@@ -20,11 +20,11 @@
         </div>
         <div class="search-list" *ngIf="isSearch">
             <div class="list-item" [ngClass]="{active: isSearchToConf}" (click)="getToConfOrders()">
-                Por confirmar el pago ({{toConfTotal.length}})</div>
-            <div class="list-item">Con crédito vencido (78)</div>
+                Por confirmar el pago ({{toConfTotalLoading ? toConfTotal.length : 'Loading'}})</div>
+            <!-- <div class="list-item">Con crédito vencido (78)</div> -->
             <div class="list-item" [ngClass]="{active: !isSearchToConf}" (click)="getAllOrders()">
-                Todas las facturas ({{toConfComTotal.length}}, ${{amountFormat(toConfComTotal.total)}})</div>
-            <div class="list-item">Beneficio (${{amountFormat(incomeMerchant)}})</div>
+                Todas las facturas ({{toConfComTotalLoading ? toConfComTotal.length + ', $' + amountFormat(toConfComTotal.total) : 'Loading'}})</div>
+            <div class="list-item">Beneficio {{incomeMerchantLoading ? ('$' + amountFormat(incomeMerchant)) : 'Loading'}}</div>
         </div>
     </div>
     <!-- <div class="month">
@@ -50,7 +50,7 @@
     </div> -->
     <div *ngFor="let order of filterOrders(); index as i">
         <div class="month" *ngIf="(i == 0 || !isSameYearAndMonth(i, i - 1)) && !isSearch">
-            {{getYearMonth(i)}}{{isCurYearMonth(i) && " (EN CURSO)"}}
+            {{getDateFormat(i)}}{{isCurYearMonth(i) ? " (EN CURSO)" : ''}}
         </div>
         <div class="card">
             <div class="flex space-between items-center">
@@ -74,5 +74,5 @@
 </div>
 <div class="footer flex space-between">
     <div class="id">FechaID a FechaID</div>
-    <div class="benefit">Beneficio: ${{amountFormat(incomeMerchant)}}</div>
+    <div class="benefit">Beneficio: {{incomeMerchantLoading ? ('$' + amountFormat(incomeMerchant)) : 'Loading'}}</div>
 </div>

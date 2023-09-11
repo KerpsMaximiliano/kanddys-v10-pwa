@@ -35,9 +35,9 @@
         <div class="list-item" (click)="viewIndex=2" [ngClass]="{active: viewIndex==2}">
             Egresos
         </div>
-        <div class="list-item">
+        <!-- <div class="list-item">
             Beneficios
-        </div>
+        </div> -->
     </div>
     <div class="card" *ngIf="viewIndex==2">
         <div class="flex space-between items-center">
@@ -118,7 +118,7 @@
                 Por artículos vendidos
             </div>
             <div class="amount">
-                ${{amountFormat(ordersTotal?.total)}}
+                {{ordersTotalLoading ? ('$' + amountFormat(ordersTotal?.total)) : 'Loading'}}
             </div>
         </div>
         <div class="flex space-between items-center">
@@ -126,7 +126,7 @@
                 <!-- N478, hace FechaID -->
             </div>
             <div class="count">
-                {{ordersTotal?.items}} artículos
+                {{ordersTotalLoading ? (ordersTotal?.items + ' artículos') : 'Loading'}}
             </div>
         </div>
     </div>
@@ -136,7 +136,7 @@
                 Por zonas de entrega
             </div>
             <div class="amount">
-                ${{amountFormat(incomeTotal?.total)}}
+                {{incomeTotalLoading ? ('$' + amountFormat(incomeTotal?.total)) : 'Loading'}}
             </div>
         </div>
         <div class="flex space-between items-center">
@@ -144,7 +144,7 @@
                 <!-- N478, hace FechaID -->
             </div>
             <div class="count">
-                {{incomeTotal?.count}} artículos
+                {{incomeTotalLoading ? (amountFormat(incomeTotal?.count) + ' artículos') : 'Loading'}}
             </div>
         </div>
     </div>
@@ -160,7 +160,7 @@
         </div>
         <div class="flex space-between items-center">
             <div class="date">
-                {{!taxes ? "Sin c" : "C"}}onfigurar
+                {{taxes ? (!taxes ? "Sin configurar" : "Configurations") : 'Loading'}}
             </div>
             <div class="count">
                 República Dominicana
@@ -178,5 +178,5 @@
 </div>
 <div class="footer flex space-between">
     <div class="id">FechaID a FechaID</div>
-    <div class="benefit">Total: ${{amountFormat(incomeMerchant)}}</div>
+    <div class="benefit">Total: {{incomeMerchantLoading ? ('$' + amountFormat(incomeMerchant)) : 'Loading'}}</div>
 </div>
