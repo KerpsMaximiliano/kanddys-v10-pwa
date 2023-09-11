@@ -1,0 +1,78 @@
+<div class="container">
+    <div [ngClass]="{'search-bar' : isSearch}">
+        <div class="header flex space-between items-center">
+            <div class="title flex">
+                <div class="icon flex items-center">
+                    <mat-icon *ngIf="!isSearch">arrow_back_ios</mat-icon>
+                    <mat-icon *ngIf="isSearch" (click)="cancelSearch()">close</mat-icon>
+                </div>
+                <div class="text" [ngClass]="{hidden: isSearch}">
+                    💰 Control, Beneficios e Impuestos
+                </div>
+            </div>
+            <div class="special flex" [ngClass]="{hidden: isSearch}">
+                <span class="plus_icon">+</span>
+                <img src="../../../../../assets/icons/info.svg" alt="">
+            </div>
+        </div>
+        <div class="input">
+            <input type="text" placeholder="Buscar.." (click)="isSearch=true" [(ngModel)]="searchStr">
+        </div>
+        <div class="search-list" *ngIf="isSearch">
+            <div class="list-item" [ngClass]="{active: isSearchToConf}" (click)="getToConfOrders()">
+                Por confirmar el pago ({{toConfTotal.length}})</div>
+            <div class="list-item">Con crédito vencido (78)</div>
+            <div class="list-item" [ngClass]="{active: !isSearchToConf}" (click)="getAllOrders()">
+                Todas las facturas ({{toConfComTotal.length}}, ${{amountFormat(toConfComTotal.total)}})</div>
+            <div class="list-item">Beneficio (${{amountFormat(incomeMerchant)}})</div>
+        </div>
+    </div>
+    <!-- <div class="month">
+        ESTEMESID (EN CURSO)
+    </div>
+    <div class="card">
+        <div class="flex space-between items-center">
+            <div class="id">
+                CompradorID
+            </div>
+            <div class="amount">
+                $14,452
+            </div>
+        </div>
+        <div class="flex space-between items-center">
+            <div class="date">
+                N478, hace FechaID
+            </div>
+            <div class="count">
+                4 artículos
+            </div>
+        </div>
+    </div> -->
+    <div *ngFor="let order of filterOrders(); index as i">
+        <div class="month" *ngIf="(i == 0 || !isSameYearAndMonth(i, i - 1)) && !isSearch">
+            {{getYearMonth(i)}}{{isCurYearMonth(i) && " (EN CURSO)"}}
+        </div>
+        <div class="card">
+            <div class="flex space-between items-center">
+                <div class="id">
+                    {{nameFormat(order.user)}}
+                </div>
+                <div class="amount" *ngIf="!isSearch">
+                    ${{calcTotal(order.subtotals)}}
+                </div>
+            </div>
+            <div class="flex space-between items-center">
+                <div class="date">
+                    {{formatID(order.dateId)}}, {{getTimeDifferenceString(i)}}
+                </div>
+                <div class="count">
+                    {{order.items.length}} artículos
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="footer flex space-between">
+    <div class="id">FechaID a FechaID</div>
+    <div class="benefit">Beneficio: ${{amountFormat(incomeMerchant)}}</div>
+</div>

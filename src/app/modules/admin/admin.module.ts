@@ -104,6 +104,8 @@ import { MerchantOffersComponent } from './pages/merchant-offers/merchant-offers
 import { AdminCartsComponent } from './pages/admin-carts/admin-carts.component';
 import { ItemsOffersComponent } from './pages/items-offers/items-offers.component';
 import { DeliveryZonesManagerComponent } from './pages/delivery-zones-manager/delivery-zones-manager.component';
+import { BenefitsControlComponent } from './pages/benefits-control/benefits-control.component';
+import { CostsMetricsComponent } from './pages/costs-metrics/costs-metrics.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -367,6 +369,10 @@ const routes: Routes = [
         component: FilteredBenefitsComponent,
       },
       {
+        path: 'benefits-control',
+        component: BenefitsControlComponent,
+      },
+      {
         path: 'order-expenses/:orderId',
         component: OrderExpensesComponent,
       },
@@ -622,6 +628,10 @@ const routes: Routes = [
   {
     path: 'monetizations',
     component: MonetizationsComponent
+  },
+  {
+    path: 'costs-metrics',
+    component: CostsMetricsComponent
   }
 ];
 
@@ -708,7 +718,9 @@ const routes: Routes = [
     MerchantOffersComponent,
     AdminCartsComponent,
     ItemsOffersComponent,
-    DeliveryZonesManagerComponent
+    DeliveryZonesManagerComponent,
+    BenefitsControlComponent,
+    CostsMetricsComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [

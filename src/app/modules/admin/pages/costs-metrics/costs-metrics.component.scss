@@ -1,0 +1,134 @@
+.flex {
+    display: flex;
+}
+.space-between {
+    justify-content: space-between;
+}
+.items-center {
+    align-items: center;
+}
+.container {
+    min-height: 100vh;
+    background-color: #f6f6f6;
+    padding-bottom: 50px;
+    .header {
+        box-shadow: 0px 4px 20px 0px rgba(123, 123, 123, 0.00);
+        padding: 10px 20px 10px 17px;
+        .title {
+            .icon {
+                color: #c4c5c3;
+            }
+            .text {
+                color: #181D17;
+                font-family: InterBold;
+                font-size: 19px;
+                font-style: normal;
+                font-weight: 600;
+                line-height: normal;
+                margin-left: 10px;
+            }
+        }
+        .special {
+            .plus_icon {
+                color: #181D17;
+                font-family: InterBold;
+                font-size: 30px;
+                font-style: normal;
+                font-weight: 600;
+                line-height: normal;
+                margin-right: 14px;
+                margin-bottom: 6px;
+            }
+            .search_icon {
+                margin-right: 10px;
+            }
+        }
+    }
+
+    .search-list {
+        margin: 15px 16px 23px 16px;
+        flex-wrap: wrap;
+        .list-item {
+            color: #171D16;
+            font-family: InterRegular;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+            padding: 3px 13px;
+            margin-right: 4px;
+            margin-top: 5px;
+            border-radius: 29px;
+            border: 1px solid rgba(146, 140, 139, 0.94);
+            transition: all 0.5s;
+        }
+        .list-item.active {
+            color: #181D17;
+            font-family: InterBold;
+            font-weight: 700;
+            background-color: #c4c5c3;
+            transition: all 0.5s;
+        }
+    }
+
+    .card {
+        margin: 0px 19px 7px 17px;
+        padding: 11px 21px 10px 18px;
+        background-color: white;
+        .id {
+            color: #272727;
+            font-family: InterBold;
+            font-size: 17px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: normal;
+        }
+        .amount {
+            color: #7B7B7B;
+            font-family: InterRegular;
+            font-size: 17px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+        }
+        .date, .count {
+            color: #7B7B7B;
+            font-family: InterRegular;
+            font-size: 15px;
+            font-style: italic;
+            font-weight: 400;
+            line-height: normal;
+            margin-top: 6px;
+        }
+    }
+}
+
+.footer {
+    position: sticky;
+    bottom: 0px;
+    width: 100%;
+    padding: 5px 20px;
+    background-color: #87CD9B;
+    .id {
+        color: #181D17;
+        font-family: InterBold;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+    }
+    .benefit {
+        color: #181D17;
+        text-align: right;
+        font-family: InterRegular;
+        font-size: 17px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+    }
+}
+.action-btn {
+    position: absolute;
+    bottom: 50px;
+    right: 20px;
+}
