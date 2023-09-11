@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { WalletService } from 'src/app/core/services/wallet.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { ExchangeData, PaymentReceiver } from 'src/app/core/models/wallet';
 import { CommunityCategoriesService } from 'src/app/core/services/community-categories.service';
 import { MerchantInput } from 'src/app/core/models/merchant';
@@ -27,6 +29,7 @@ export class MerchantEditorComponent implements OnInit {
   imageBase64: string | null = null;
   name: string | null = null;
   slug: string | null = null;
+  userId: string | null = null;
   merchantId: string | null = null;
   paymentReceivers: PaymentReceiver[];
   exchangeDataId: string | null = null;
@@ -35,12 +38,16 @@ export class MerchantEditorComponent implements OnInit {
   categoriesString: string = null;
   paymentMethods: Array<any> = [];
   paymentMethodsString: string = null;
+  pickupAddressString: string = null;
+  saleflowModuleId: string | null = null;
   itemFormData: FormGroup;
 
   constructor(
+    private router: Router,
     private fb: FormBuilder,
     private merchantsService: MerchantsService,
     private walletService: WalletService,
+    private saleflowService: SaleFlowService,
     private communityCategoriesService: CommunityCategoriesService,
     private authService: AuthService,
     private _DomSanitizer: DomSanitizer,
@@ -65,6 +72,7 @@ export class MerchantEditorComponent implements OnInit {
         const merchant = await this.merchantsService.merchantDefault(user._id);
         if (merchant && merchant?._id) {
           if (merchant?.owner?.email) this.email = merchant?.owner?.email;
+          this.userId = merchant?.owner?._id;
           this.merchantId = merchant._id;
           this.name = merchant.name;
           this.slug = merchant.slug;
@@ -96,11 +104,26 @@ export class MerchantEditorComponent implements OnInit {
               });
             }
           }
+          const saleflowDefault = await this.saleflowService.saleflowDefault(this.merchantId);
+          this.saleflowModuleId = saleflowDefault?.module?._id;
+          if (saleflowDefault?.module?.delivery?.pickUpLocations[0].nickName) this.pickupAddressString = saleflowDefault.module.delivery.pickUpLocations[0].nickName;
         }
       } catch (error) {
         console.error(error);
       }
     }
+  }
+
+  goViewConfigurationCards() {
+    this.router.navigate(['/admin/view-configuration-cards']);
+  }
+
+  goDeliveryZonesManager() {
+    this.router.navigate(['/admin/delivery-zones-manager']);
+  }
+
+  goLinksView() {
+    this.router.navigate([`/ecommerce/links-view/${this.userId}`]);
   }
 
   addField(field) {
@@ -176,6 +199,15 @@ export class MerchantEditorComponent implements OnInit {
         console.log(error)
       }
     }
+    if (this.pickupAddressString) {
+      const saleflowModuleResult = await this.saleflowService.updateSaleFlowModule({
+        delivery: {
+          pickUpLocations: [{
+            nickName: this.pickupAddressString
+          }]
+        }
+      }, this.saleflowModuleId);
+    }
   }
 
   formatImage(image: string): SafeStyle {
@@ -212,7 +244,7 @@ export class MerchantEditorComponent implements OnInit {
   }
 
   openFormForField = (
-    field: 'PAYMENT-METHODS' | 'PAYPAL-METHOD' | 'BANK-METHOD'
+    field: 'PAYMENT-METHODS' | 'PAYPAL-METHOD' | 'BANK-METHOD' | 'PICK-UP-ADDRESS'
   ) => {
     let fieldsToCreateForFormDialog: FormData = {
       fields: [],
@@ -328,6 +360,26 @@ export class MerchantEditorComponent implements OnInit {
           fieldTextDescription: 'Número de cuenta',
         });
         break;
+      case 'PICK-UP-ADDRESS':
+        fieldsToCreateForFormDialog.fields = [
+          {
+            label: 'Dirección de Pick-Up:',
+            placeholder: 'Escribe la dirección',
+            name: 'pickup-address',
+            type: 'text',
+            validators: [Validators.pattern(/[\S]/), Validators.required],
+          },
+        ];
+        fieldsToCreateForFormDialog.buttonsTexts = {
+          accept: 'Salvar',
+          cancel: 'Cancelar',
+        };
+        fieldsArrayForFieldValidation.push({
+          fieldName: 'pickup-address',
+          fieldKey: 'pickup-address',
+          fieldTextDescription: 'Dirección de Pick-Up',
+        });
+        break;
     }
 
     const dialogRef = this.dialog.open(FormComponent, {
@@ -344,28 +396,35 @@ export class MerchantEditorComponent implements OnInit {
             result?.value[field.fieldKey] &&
             result?.controls[field.fieldKey].valid
           ) {
+
             this.itemFormData.patchValue({
               [field.fieldName]: result?.value[field.fieldKey],
             });
-            if (field.fieldName === 'paypal-email') {
-              if (!this.paymentMethods.some(element => element.type === 'paypal')) this.paymentMethods.push({type: 'paypal'});
-              this.paymentMethods.filter(obj => obj.type === 'paypal')[0]['email'] = result?.value[field.fieldKey];
+
+            if (field.fieldName === 'pickup-address') {
+              this.pickupAddressString = result?.value[field.fieldKey];
             } else {
-              tempObj[field.fieldName] = result?.value[field.fieldKey];
-              if (tempObj.hasOwnProperty('bankName') && tempObj.hasOwnProperty('account')) {
-                this.paymentMethods.push({
-                  type: 'bank',
-                  ...tempObj
-                });
+              
+              if (field.fieldName === 'paypal-email') {
+                if (!this.paymentMethods.some(element => element.type === 'paypal')) this.paymentMethods.push({type: 'paypal'});
+                this.paymentMethods.filter(obj => obj.type === 'paypal')[0]['email'] = result?.value[field.fieldKey];
+              } else {
+                tempObj[field.fieldName] = result?.value[field.fieldKey];
+                if (tempObj.hasOwnProperty('bankName') && tempObj.hasOwnProperty('account')) {
+                  this.paymentMethods.push({
+                    type: 'bank',
+                    ...tempObj
+                  });
+                }
               }
-            }
-            this.paymentMethodsString = '';
-            for (let item of this.paymentMethods) {
-              if (item.type === 'paypal') {
-                this.paymentMethodsString = 'PayPal email: ' + item.email + (this.paymentMethodsString.length? ', ' + this.paymentMethodsString: '');
-              }
-              if (item.type === 'bank') {
-                this.paymentMethodsString += (this.paymentMethodsString.length? ', ': '') + item.bankName;
+              this.paymentMethodsString = '';
+              for (let item of this.paymentMethods) {
+                if (item.type === 'paypal') {
+                  this.paymentMethodsString = 'PayPal email: ' + item.email + (this.paymentMethodsString.length? ', ' + this.paymentMethodsString: '');
+                }
+                if (item.type === 'bank') {
+                  this.paymentMethodsString += (this.paymentMethodsString.length? ', ': '') + item.bankName;
+                }
               }
             }
           } else {
