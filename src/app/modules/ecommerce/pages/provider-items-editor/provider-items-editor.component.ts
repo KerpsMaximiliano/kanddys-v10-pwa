@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Item, ItemInput } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
@@ -17,8 +17,12 @@ import { environment } from 'src/environments/environment';
 export class ProviderItemsEditorComponent implements OnInit {
   
   currency:string = "$";
-  changePrice: FormControl = new FormControl('');
-  changeStock: FormControl = new FormControl('0');
+  changePrice: FormControl = new FormControl('', [
+    Validators.min(0.00),
+  ]);
+  changeStock: FormControl = new FormControl('0', [
+    Validators.min(0),
+  ]);
   showCurrencyEditor: boolean = true;
   showStockEditor: boolean = false;
   infiniteIcon: string = environment.assetsUrl+"/infinite.png"
@@ -59,8 +63,12 @@ export class ProviderItemsEditorComponent implements OnInit {
     this.merchantId = merchantDefault._id;
   }
 
-  searchItems($event){
-    this.currency = "$"+this.changePrice.value;
+  searchItems(event){
+    if (event.target.value < 0) {
+      event.target.value = 0;
+    }else{
+      this.currency = "$"+this.changePrice.value;
+    }
   }
 
  

@@ -34,12 +34,12 @@
         type="number" 
         (blur)="true" 
         inputmode="numeric" 
-        pattern="[0-9]*" 
         class="input-currency"
         [formControl]="changePrice"
+        pattern="[0-9]*"
         min="0"
         placeholder="0,00"
-        oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
+        onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 187 && event.keyCode !== 107 && event.keyCode !== 109 && event.keyCode !== 37 && event.keyCode !== 39 && event.keyCode !== 45 && event.keyCode !== 95 && event.keyCode !== 106 && event.keyCode !== 47 && event.keyCode !== 58 && event.keyCode !== 40 && event.keyCode !== 38"
         (input)="searchItems($event)">
       <!-- <app-currency-input
       [innerLabelStyles]="{
@@ -66,9 +66,9 @@
         pattern="[0-9]*"
         class="input-stock"
         [formControl]="changeStock"
-        (input)="searchItems($event)"
         min="0"
-        oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
+        placeholder="0"
+        onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 187 && event.keyCode !== 107 && event.keyCode !== 109 && event.keyCode !== 37 && event.keyCode !== 39 && event.keyCode !== 45 && event.keyCode !== 95 && event.keyCode !== 106 && event.keyCode !== 47 && event.keyCode !== 58 && event.keyCode !== 40 && event.keyCode !== 38"
       />
       <div
         *ngIf="infinite"
