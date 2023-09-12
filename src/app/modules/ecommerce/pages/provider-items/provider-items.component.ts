@@ -1558,33 +1558,41 @@ export class ProviderItemsComponent implements OnInit {
     this.buttonFiltering[index].isActive = this.buttonFiltering[index].isActive
       ? false
       : true
-    this.filteringItemsBySearchbar(this.itemToSearch)
     const isSomeBtnActive = this.buttonFiltering.some(btn => btn.isActive)
     this.hiddenDashboard = isSomeBtnActive ? true : false
+    this.filteringItemsBySearchbar(this.itemToSearch)
   }
 
   onCloseSearchbar() {
     this.searchOpened = false
-    this.getItemsISell();
-    this.getNewPageOfItemsIDontSell()
   }
 
   onFilteringItemsBySearchbar(event: any) {
     this.itemToSearch = event.target.value
-    this.filteringItemsBySearchbar(this.itemToSearch)
+    const isSomeBtnActive = this.buttonFiltering.some(btn => btn.isActive)
+
+    if (this.itemToSearch) {
+      this.hiddenDashboard = true
+      this.filteringItemsBySearchbar(this.itemToSearch)
+    }
+
+    if (!this.itemToSearch && !isSomeBtnActive) {
+      this.hiddenDashboard = false
+    }
   }
 
-  private filteringItemsBySearchbar(itemToSearch: string) {
-    // Si el boton de oculto está activo, será "disabled". Caso contrario "active"
+  /**
+   * Filtrado de items por la barra de búsqueda
+   * @param itemToSearch item a buscar
+   */
+  private filteringItemsBySearchbar(itemName: string) {
+    // Si el boton de "oculto" está activo, será "disabled". Caso contrario "active"
     const status = this.buttonFiltering[2].isActive ? "disabled" : "active"
 
     const input: PaginationInput = {
       findBy: {
         status,
         type: 'supplier',
-        merchant: {
-          _id: this.merchantsService.merchantData._id
-        },
         _id: {
           $nin: this.itemsISell.map((item) => item.parentItem),
         },
@@ -1596,19 +1604,28 @@ export class ProviderItemsComponent implements OnInit {
       },
     };
 
+    // Button de items exhibidos
+    if (this.buttonFiltering[0].isActive) {
+      input.findBy = {
+        ...input.findBy,
+        merchant: {
+          _id: this.merchantsService.merchantData._id
+        }
+      }
+    }
+
     // Button de items no exhibidos
     if (this.buttonFiltering[1].isActive) {
       input.findBy = {
         ...input.findBy,
-        parentItem: null
+        parentItem: {
+          $ne: null
+        }
       }
     }
 
     this.saleflowService
-      .listItems(input, false, itemToSearch)
-      .then(data => {
-        this.itemsFiltering = data.listItems
-        console.log(data)
-      })
+      .listItems(input, false, itemName)
+      .then(data => this.itemsFiltering = data.listItems)
   }
 }
