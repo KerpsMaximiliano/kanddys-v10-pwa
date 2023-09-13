@@ -105,6 +105,7 @@ import { AdminCartsComponent } from './pages/admin-carts/admin-carts.component';
 import { ItemsOffersComponent } from './pages/items-offers/items-offers.component';
 import { OrderImageLoadComponent } from './pages/order-image-load/order-image-load.component';
 import { DeliveryZonesManagerComponent } from './pages/delivery-zones-manager/delivery-zones-manager.component';
+import { WizardTrainingComponent } from './pages/wizard-training/wizard-training.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -454,6 +455,10 @@ const routes: Routes = [
         path: 'quotation-bids/:quotationId',
         component: QuotationBidsComponent,
       },*/
+      {
+        path: 'wizard-training',
+        component: WizardTrainingComponent
+      },
     ],
   },
   {
@@ -713,8 +718,9 @@ const routes: Routes = [
     MerchantOffersComponent,
     AdminCartsComponent,
     ItemsOffersComponent,
+    DeliveryZonesManagerComponent,
+    WizardTrainingComponent,
     OrderImageLoadComponent,
-    DeliveryZonesManagerComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [
