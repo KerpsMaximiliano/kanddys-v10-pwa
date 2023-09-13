@@ -105,6 +105,8 @@ import { AdminCartsComponent } from './pages/admin-carts/admin-carts.component';
 import { ItemsOffersComponent } from './pages/items-offers/items-offers.component';
 import { OrderImageLoadComponent } from './pages/order-image-load/order-image-load.component';
 import { DeliveryZonesManagerComponent } from './pages/delivery-zones-manager/delivery-zones-manager.component';
+import { TaxesComponent } from './pages/taxes/taxes.component';
+import { TaxEditionComponent } from './pages/tax-edition/tax-edition.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -627,7 +629,19 @@ const routes: Routes = [
   {
     path: 'monetizations',
     component: MonetizationsComponent
-  }
+  },
+  {
+    path: 'taxes',
+    component: TaxesComponent
+  },
+  {
+    path: 'tax-edition/:itemId',
+    component: TaxEditionComponent,
+  },
+  {
+    path: 'tax-edition',
+    component: TaxEditionComponent,
+  },
 ];
 
 @NgModule({
@@ -714,7 +728,9 @@ const routes: Routes = [
     AdminCartsComponent,
     ItemsOffersComponent,
     OrderImageLoadComponent,
-    DeliveryZonesManagerComponent
+    DeliveryZonesManagerComponent,
+    TaxesComponent,
+    TaxEditionComponent
   ],
   exports: [ArticleCreatorComponent],
   imports: [

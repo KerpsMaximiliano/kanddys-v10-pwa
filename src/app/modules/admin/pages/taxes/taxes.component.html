@@ -1,0 +1,115 @@
+<div class="container">
+  <header>
+    <div class="close" (click)="back()">X</div>
+    <h2>Impuestos Gubernamentales de RD</h2>
+  </header>
+
+  <main>
+    <div class="content">
+      <section *ngIf="finalCustomer">
+        <h2 class="section-title">COMPROBANTE FISCALES ACTIVOS</h2>
+
+        <div class="field-text" *ngFor="let tax of taxes">
+          <label for="">Consumidor final</label>
+          <p class="tax-voucher">{{tax.available}} Disponible. Fecha de expiración: {{tax.expirationDate === null ? 'No aplica': tax.expirationDate }}. Prefijo {{tax.prefix === null ? 'No aplica': tax.prefix}} </p>
+          <p class="edition-link" (click)="goToEditTax(tax)" *ngIf="tax.available < 1">Adiciona otro o edita este 👆</p>
+        </div>
+      </section>
+    </div>
+    <div class="disable-voucher-list">
+      <section>
+        <h2 class="section-title">COMPROBANTE FISCALES INACTIVOS</h2>
+
+        <ng-container *ngIf="!finalCustomer">
+          <ng-container
+          [ngTemplateOutlet]="addField"
+          [ngTemplateOutletContext]="{
+            fieldLabel: 'Consumidor final',
+            iconCallback: goToCreateFinalCustomer,
+            notRequired: false
+          }"
+          >
+          </ng-container>
+        </ng-container>
+
+        <ng-container>
+          <ng-container
+          [ngTemplateOutlet]="addField"
+          [ngTemplateOutletContext]="{
+            fieldLabel: 'Crédito Fiscal',
+            iconCallback: goToCreate,
+            notRequired: false
+          }"
+          >
+          </ng-container>
+        </ng-container>
+
+        <ng-container>
+          <ng-container
+          [ngTemplateOutlet]="addField"
+          [ngTemplateOutletContext]="{
+            fieldLabel: 'Gubernamental',
+            iconCallback: goToCreate,
+            notRequired: false
+          }"
+          >
+          </ng-container>
+        </ng-container>
+
+        <ng-container>
+          <ng-container
+          [ngTemplateOutlet]="addField"
+          [ngTemplateOutletContext]="{
+            fieldLabel: 'Especial',
+            iconCallback: goToCreate,
+            notRequired: false
+          }"
+          >
+          </ng-container>
+        </ng-container>
+
+        <ng-container>
+          <ng-container
+          [ngTemplateOutlet]="addField"
+          [ngTemplateOutletContext]="{
+            fieldLabel: 'Notas de crédito',
+            iconCallback: goToCreate,
+            notRequired: false
+          }"
+          >
+          </ng-container>
+        </ng-container>
+
+        <ng-container>
+          <ng-container
+          [ngTemplateOutlet]="addField"
+          [ngTemplateOutletContext]="{
+            fieldLabel: 'Gastos menores',
+            iconCallback: goToCreate,
+            notRequired: false
+          }"
+          >
+          </ng-container>
+        </ng-container>
+      </section>
+    </div>
+  </main>
+</div>
+
+<ng-template
+  #addField
+  let-fieldLabel="fieldLabel"
+  let-iconCallback="iconCallback"
+  let-fieldNameForCallback="fieldNameForCallback"
+  let-notRequired="notRequired"
+>
+  <div class="item-field" (click)="iconCallback()">
+    <div class="field-name">{{ fieldLabel }}</div>
+
+    <img
+      class="add-icon"
+      [src]="assetsFolder + '/add_button_circle.svg'"
+      alt="fill value"
+    />
+  </div>
+</ng-template>
