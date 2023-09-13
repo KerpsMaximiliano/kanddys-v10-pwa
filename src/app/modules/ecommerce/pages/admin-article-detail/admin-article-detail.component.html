@@ -1,0 +1,124 @@
+<div class="main-container">
+  <nav>
+    <div class="subnav">
+      <a class="exit"> X </a>
+    </div>
+    <div class="subnav">
+      <mat-slide-toggle
+        class="toggle"
+        [checked]="active"
+        (change)="active = !active"
+      >
+      </mat-slide-toggle>
+      <img class="icon" title="icon" [src]="dropdown ?  env +'/info-icon.svg' :  env +'/dropdown-icon.svg'" />
+    </div>
+  </nav>
+  <div class="article-info">
+    <img alt="" class="article-img" [src]="item.images[0]" />
+    <p class="article-name">{{item.name}}</p>
+    <p class="article-description">{{item.description}}</p>
+  </div>
+  <div  class="info-card">
+    <p class="card-title">Texto principal y centralizado</p>
+    <input
+      aria-label="titulo"
+      type="text"
+      class="display-text"
+    />
+  </div>
+  <div class="container">
+    <p class="data-title">
+      🌼 VITRINA
+    </p>
+    <div class="input-card">
+      <p class="input-text"># ¿Te convendría publicar un hashtag en tus redes sociales para que cuando lo escriban en el buscador lleguen directo a comprarlo?</p>
+      <button class="input-button" (click)="openDialog('hashtag')">
+        <img
+          src="../../../../../assets/icons/add-button.svg"
+          alt="add item"
+        />
+      </button>
+    </div>
+    <div class="input-card">
+      <p class="input-text">🖇️ ¿Lo quieres incluir en una sub-vitrina para que se exhibirlo junto a otros de tus artículos?</p>
+      <button class="input-button">
+        <img
+          src="../../../../../assets/icons/add-button.svg"
+          alt="add item"
+        />
+      </button>
+    </div>
+    <div class="input-card">
+      <p class="input-text">🏷️️ ¿Lo quieres incluir en la Vitrina Global dedicada a TipodeCompradorID junto a otros artículos relacionados de otras tiendas?</p>
+      <button class="input-button">
+        <img
+          src="../../../../../assets/icons/add-button.svg"
+          alt="add item"
+        />
+      </button>
+    </div>
+    <div class="input-card">
+      <p class="input-text">📢 Si lo incluyes en el Mercado de Referencias, los Embajadores lo promocionarán y lo venderán (mira mas).</p>
+      <button class="input-button">
+        <img
+          src="../../../../../assets/icons/add-button.svg"
+          alt="add item"
+        />
+      </button>
+    </div>
+  </div>
+  <div class="container">
+    <p class="data-title">
+      OPCIONAL- DATOS QUE LOS COMPRADORES CONSIDERAN IMPORTANTES
+    </p>
+    <div class="input-card">
+      <p class="input-text">⏰ Tiempo aproximado de entrega</p>
+      <button class="input-button" (click)="openDialog('deliverytime')">
+        <img
+          src="../../../../../assets/icons/add-button.svg"
+          alt="add item"
+        />
+      </button>
+    </div>
+  </div>
+  <div class="container">
+    <p class="data-title">
+      FUNCIONALIDADES OPCIONALES
+    </p>
+    <div class="input-card">
+      <p class="input-text">¿Te tiene que responder algo el comprador antes de pagarte por este artículo?</p>
+      <button class="input-button">
+        <img
+          src="../../../../../assets/icons/add-button.svg"
+          alt="add item"
+        />
+      </button>
+    </div>
+    <div class="input-card">
+      <p class="input-text">¿Quieres incluir el costo de vender este artículo en tu reporte de los beneficios?</p>
+      <button class="input-button">
+        <img
+          src="../../../../../assets/icons/add-button.svg"
+          alt="add item"
+        />
+      </button>
+    </div>
+  </div>
+  <div class="bubble-button-wrapper">
+    <div
+      class="bubble-button"
+      *ngIf="dropdown === true"
+      (click)="dropdown = false"
+    >
+      <img [src]="env + '/dropdown_icon.png'" alt="wizard" />
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <p class="preview">
+      Preview
+    </p>
+    <p class="share">
+      Comparte con Compradores
+    </p>
+  </div>
+</div>
