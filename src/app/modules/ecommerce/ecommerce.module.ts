@@ -73,6 +73,7 @@ import { MagicLinkSentComponent } from './pages/magic-link-sent/magic-link-sent.
 import { MerchantRegisterComponent } from './pages/merchant-register/merchant-register.component';
 import { LoginLandingComponent } from './pages/login-landing/login-landing.component';
 import { NotificationAccessScreenComponent } from './pages/notification-access-screen/notification-access-screen.component';
+import { AdminArticleDetailComponent } from './pages/admin-article-detail/admin-article-detail.component';
 
 const routes: Routes = [
   {
@@ -415,6 +416,10 @@ const routes: Routes = [
       {
         path: 'giftcard-details',
         component: GiftcardDetailsComponent,
+      },
+      {
+        path: 'admin-article-detail/:itemId',
+        component: AdminArticleDetailComponent,
       }
     ],
   },
@@ -473,7 +478,8 @@ const routes: Routes = [
     MagicLinkSentComponent,
     MerchantRegisterComponent,
     LoginLandingComponent,
-    NotificationAccessScreenComponent
+    NotificationAccessScreenComponent,
+    AdminArticleDetailComponent
   ],
   imports: [
     CommonModule,
