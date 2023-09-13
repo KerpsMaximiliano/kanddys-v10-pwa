@@ -1077,12 +1077,159 @@ export class CartComponent implements OnInit {
     // this.itemsAmount = itemsInCart.length > 0 ? itemsInCart.length + '' : null;
   }
 
-  openSubmitDialog() {
+  async openSubmitDialog() {
+    const queryParams: Record<string, any> = {};
+
+    if (this.quotationsService.quotationInCart) {
+      (queryParams.items =
+        this.quotationsService.quotationInCart.items.join('-')),
+        (queryParams.quotationName =
+          this.quotationsService.quotationInCart.name);
+
+      if (this.merchantsService.merchantData?._id) {
+        queryParams.requesterId = this.merchantsService.merchantData?._id;
+      }
+    } else if (this.quotationsService.selectedTemporalQuotation) {
+      queryParams.items =
+        this.quotationsService.selectedTemporalQuotation.items.join('-');
+      queryParams.quotationName =
+        this.quotationsService.selectedTemporalQuotation.name;
+      queryParams.temporalQuotation = true;
+
+      if (this.merchantsService.merchantData?._id) {
+        queryParams.requesterId = this.merchantsService.merchantData?._id;
+      }
+
+      queryParams.itemsForTemporalQuotation =
+        this.quotationsService.selectedTemporalQuotation.items;
+    }
+
+    const link = (
+      await this.authService.generateMagicLinkNoAuth(
+        null,
+        `ecommerce/supplier-register`,
+        this.quotationsService.quotationInCart &&
+          !this.quotationsService.selectedTemporalQuotation
+          ? this.quotationsService.quotationInCart._id
+          : '',
+        'QuotationAccess',
+        {
+          jsondata: JSON.stringify(queryParams),
+        },
+        [],
+        true
+      )
+    )?.generateMagicLinkNoAuth;
+    let options = [
+      {
+        value: `Seguir a comprar`,
+        callback: () => {
+          this.showMessages();
+        },
+      },
+      {
+        value: `Compartir carrito con ${
+          this.headerService.saleflow?.merchant?.name.length < 26
+            ?this.headerService.saleflow?.merchant?.name
+            : (this.headerService.saleflow?.merchant?.name.slice(0, 26) + ".." ||
+                "Tienda")
+        } (cotización)`,
+        callback: () => {
+          let options = []
+          if(this.headerService.saleflow.merchant.owner.phone) {
+            options.push({
+              value: `WhatsApp`,
+              callback: () => {
+                let whatsappLink = `https://api.whatsapp.com/send?phone=${this.headerService.saleflow.merchant.owner.phone}&text=${
+                  link
+                }`;
+
+                window.location.href = whatsappLink;
+              },
+            })
+          }
+          if(this.headerService.saleflow.merchant.owner.email) {
+            options.push({
+              value: `Correo electrónico`,
+              callback: () => {
+                let emailLink = `mailto:${this.headerService.saleflow.merchant.owner.email}?subject=CompartirCarrito&body=${link}`;
+                window.location.href = emailLink;
+              },
+            })
+          }
+          this._bottomSheet.open(OptionsMenuComponent, {
+            data: {
+              title: `Compartir con ${this.headerService.saleflow?.merchant?.name} por:`,
+              options: options
+            }
+          })
+        }
+      },
+      {
+        value: 'Guardar para ver o comprar luego',
+        callback: () => {
+          this._bottomSheet.open(OptionsMenuComponent, {
+            data: {
+              title: 'Guardar en mi',
+              options: [
+                {
+                  value: 'WhatsApp',
+                  callback: () => {
+                    let whatsappLink = `https://api.whatsapp.com/send?text=Carrito:${link}`;
+
+                    window.location.href = whatsappLink;
+                  }
+                },
+                {
+                  value: 'Correo electrónico',
+                  callback: () => {
+                    let emailLink = `mailto:?subject=GuardarCarrito&body=${link}`;
+                    window.location.href = emailLink;
+                  }
+                }
+              ]
+            }
+          })
+        }
+      },
+      {
+        value: 'Compartir',
+        callback: () => {
+          this.ngNavigatorShareService.share({
+            title: '',
+            url: link,
+          });
+        }
+      }
+    ]
+    if (
+      !this.isSuppliersBuyerFlow(this.items) &&
+      this.headerService.saleflow?.module?.post &&
+      this.headerService.saleflow?.module?.post?.post &&
+      this.headerService.saleflow?.module?.post?.isActive
+    ) {
+      options = [
+        {
+          value: `Seguir a comprar`,
+          callback: () => {
+            this.showMessages();
+          },
+        },
+      ]
+    }
+    this._bottomSheet.open(OptionsMenuComponent, {
+      data: {
+        options: options
+      }
+    })
     if (this.progress === 'checkout') {
       return this.router.navigate([
         `/ecommerce/${this.headerService.saleflow.merchant.slug}/checkout`,
       ]);
     }
+  }
+
+  showMessages() {
     if (
       !this.isSuppliersBuyerFlow(this.items) &&
       this.headerService.saleflow?.module?.post &&
@@ -1249,132 +1396,6 @@ export class CartComponent implements OnInit {
 
   urlIsVideo(url: string) {
     return isVideo(url);
-  }
-
-  async shareQuotation() {
-    const queryParams: Record<string, any> = {};
-
-    if (this.quotationsService.quotationInCart) {
-      (queryParams.items =
-        this.quotationsService.quotationInCart.items.join('-')),
-        (queryParams.quotationName =
-          this.quotationsService.quotationInCart.name);
-
-      if (this.merchantsService.merchantData?._id) {
-        queryParams.requesterId = this.merchantsService.merchantData?._id;
-      }
-    } else if (this.quotationsService.selectedTemporalQuotation) {
-      queryParams.items =
-        this.quotationsService.selectedTemporalQuotation.items.join('-');
-      queryParams.quotationName =
-        this.quotationsService.selectedTemporalQuotation.name;
-      queryParams.temporalQuotation = true;
-
-      if (this.merchantsService.merchantData?._id) {
-        queryParams.requesterId = this.merchantsService.merchantData?._id;
-      }
-
-      queryParams.itemsForTemporalQuotation =
-        this.quotationsService.selectedTemporalQuotation.items;
-    }
-
-    lockUI();
-
-    const link = (
-      await this.authService.generateMagicLinkNoAuth(
-        null,
-        `ecommerce/supplier-register`,
-        this.quotationsService.quotationInCart &&
-          !this.quotationsService.selectedTemporalQuotation
-          ? this.quotationsService.quotationInCart._id
-          : '',
-        'QuotationAccess',
-        {
-          jsondata: JSON.stringify(queryParams),
-        },
-        [],
-        true
-      )
-    )?.generateMagicLinkNoAuth;
-
-    unlockUI();
-
-    this._bottomSheet.open(OptionsMenuComponent, {
-      data: {
-        title: `Comparte el carrito en tus redes sociales, Youtube o DM (el proveedor te paga una comisión)`,
-        options: [
-          {
-            value: `Copia el enlace`,
-            callback: () => {
-              this.clipboard.copy(link);
-
-              this.matSnackBar.open(
-                'Se ha copiado el enlace al portapapeles',
-                'Cerrar',
-                {
-                  duration: 3000,
-                }
-              );
-            },
-          },
-          {
-            value: `Comparte el enlace`,
-            callback: () => {
-              this.ngNavigatorShareService.share({
-                title: '',
-                url: link,
-              });
-            },
-          },
-          {
-            value: `Compártelo por WhatsApp`,
-            callback: () => {
-              const listOfItemNames = this.items
-                .concat(this.quotationItemsNotAvailableOrNotInSaleflow)
-                .map((item) => `-${item.name || 'Producto sin nombre'}\n`)
-                .join('');
-              let bodyMessage = `Hola, pudieras confirmame la disponibilidad y precios de estos artículos 🙏? \n${listOfItemNames} en este enlace te los muestro y lo puedes ajustar bien fácil 👉${encodeURIComponent(
-                link
-              )}`;
-
-              let whatsappLink = `https://api.whatsapp.com/send?text=${
-                bodyMessage
-              }`;
-
-              window.location.href = whatsappLink;
-            },
-          },
-          {
-            value: `Compártelo por correo electrónico`,
-            callback: () => {
-              const listOfItemNames = this.items
-                .concat(this.quotationItemsNotAvailableOrNotInSaleflow)
-                .map((item) => `-${item.name || 'Producto sin nombre'}%0D%0A`)
-                .join('');
-              let bodyMessage = `Hola, pudieras confirmame la disponibilidad y precios de estos artículos 🙏?: %0D%0A${listOfItemNames} en este enlace te los muestro y lo puedes ajustar bien fácil 👉${encodeURIComponent(
-                link
-              )}`;
-
-              const subject = encodeURIComponent(
-                'Amplía tu Alcance con www.floristerias.club, conecta a floristerías con proveedores'
-              );
-
-              const mailtoLink = `mailto:?subject=${subject}&body=${bodyMessage}`;
-              window.location.href = mailtoLink;
-            },
-          },
-          {
-            value: `Descarga el QR`,
-            callback: () => {
-              this.downloadQr();
-            },
-          },
-        ],
-        styles: {
-          fullScreen: true,
-        },
-      },
-    });
   }
 
   downloadQr() {
