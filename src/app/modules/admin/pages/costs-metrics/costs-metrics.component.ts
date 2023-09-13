@@ -4,6 +4,11 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { CostsDialogComponent } from 'src/app/shared/dialogs/costs-dialog/costs-dialog.component';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { FormData, FormComponent } from 'src/app/shared/dialogs/form/form.component';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { HeaderService } from 'src/app/core/services/header.service';
 
 @Component({
   selector: 'app-costs-metrics',
@@ -32,7 +37,9 @@ export class CostsMetricsComponent implements OnInit {
   constructor(
     private merchantService: MerchantsService,
     private orderService: OrderService,
-    private deliveryZonesService: DeliveryZonesService
+    private deliveryZonesService: DeliveryZonesService,
+    private dialog: MatDialog,
+    private headerService: HeaderService,
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -93,6 +100,89 @@ export class CostsMetricsComponent implements OnInit {
   amountFormat(amount) {
     const formattedAmount = Number(amount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     return formattedAmount;
+  }
+
+  showDialog() {
+    const dialogRef = this.dialog.open(CostsDialogComponent, {});
+
+    dialogRef.afterClosed().subscribe(type => {
+      console.log(type)
+      if (type) this.createZone(type)
+    });
+  }
+  createZone(type_item: string) {
+    let fieldsToCreateForFormDialog: FormData = {
+      fields: [],
+    };
+    const fieldsArrayForFieldValidation: Array<{
+      fieldName: string;
+      fieldKey: string;
+      fieldTextDescription: string;
+    }> = [];
+    fieldsToCreateForFormDialog.fields = [
+      {
+        label: 'Nombra',
+        name: 'nombra',
+        type: 'text',
+        validators: [Validators.pattern(/[\S]/)],
+      },
+      {
+        label: 'Cantidad',
+        name: 'cantidad',
+        type: 'number',
+        validators: [Validators.pattern(/[\S]/)],
+      },
+    ];
+    fieldsArrayForFieldValidation.push({
+      fieldName: 'stock',
+      fieldKey: 'nombra',
+      fieldTextDescription: 'Nombra',
+    });
+    fieldsArrayForFieldValidation.push({
+      fieldName: 'cantidad',
+      fieldKey: 'cantidad',
+      fieldTextDescription: 'Cantidad',
+    });
+    const dialogRef = this.dialog.open(FormComponent, {
+      data: fieldsToCreateForFormDialog,
+    });
+
+    dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+      let isError = false;
+      fieldsArrayForFieldValidation.forEach((field) => {
+        let error = `${field.fieldTextDescription} invalido`;
+
+        try {
+          if (
+            result?.value[field.fieldKey] &&
+            result?.controls[field.fieldKey].valid
+          ) {
+          } else {
+            isError = true;
+            this.headerService.showErrorToast(error);
+          }
+        } catch (error) {
+          console.error(error);
+          this.headerService.showErrorToast(error);
+        }
+      });
+      if (!isError) {
+        lockUI()
+        const merchant = await this.merchantService.merchantDefault();
+        console.log(result?.value)
+        const {nombra, cantidad} = result?.value;
+        const expenditure = await this.deliveryZonesService.createExpenditure(
+          merchant._id,
+          {
+            name:nombra,
+            amount:Number(cantidad),
+            type: type_item
+          }
+        );
+        console.log(expenditure)
+        unlockUI()
+      }
+    });
   }
 
 }

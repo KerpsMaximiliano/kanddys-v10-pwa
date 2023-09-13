@@ -19,10 +19,10 @@
             <input type="text" placeholder="Buscar.." (click)="isSearch=true" [(ngModel)]="searchStr">
         </div>
         <div class="search-list" *ngIf="isSearch">
-            <div class="list-item" [ngClass]="{active: isSearchToConf}" (click)="getToConfOrders()">
+            <div class="list-item" [ngClass]="{active: isSearchToConf}" (click)="clickToConfOrders()">
                 Por confirmar el pago ({{toConfTotalLoading ? toConfTotal.length : 'Loading'}})</div>
             <!-- <div class="list-item">Con crédito vencido (78)</div> -->
-            <div class="list-item" [ngClass]="{active: !isSearchToConf}" (click)="getAllOrders()">
+            <div class="list-item" [ngClass]="{active: !isSearchToConf}" (click)="clickAllOrders()">
                 Todas las facturas ({{toConfComTotalLoading ? toConfComTotal.length + ', $' + amountFormat(toConfComTotal.total) : 'Loading'}})</div>
             <div class="list-item">Beneficio {{incomeMerchantLoading ? ('$' + amountFormat(incomeMerchant)) : 'Loading'}}</div>
         </div>
@@ -73,6 +73,33 @@
     </div>
 </div>
 <div class="footer flex space-between">
-    <div class="id">FechaID a FechaID</div>
+    <div class="relative">
+        <div class="id" (click)="picker.open()">
+            {{ 
+                range.get('start').value
+                    ? (range.get('start').value | date) + 
+                    (
+                        range.get('end').value
+                        ? ' to ' + (range.get('end').value | date)
+                        : ''
+                    )
+                    : 'Rango de fechas'
+                }}
+        </div>
+        <mat-form-field appearance="fill" style="position: fixed!important;">
+            <mat-label>Enter a date range</mat-label>
+            <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+                <input matStartDate formControlName="start" (dateChange)="change_start($event)" placeholder="Start date" />
+                <input
+                matEndDate
+                formControlName="end"
+                placeholder="End date"
+                (dateChange)="change_end($event)"
+                />
+            </mat-date-range-input>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+            </mat-form-field>
+    </div>
     <div class="benefit">Beneficio: {{incomeMerchantLoading ? ('$' + amountFormat(incomeMerchant)) : 'Loading'}}</div>
 </div>

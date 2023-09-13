@@ -6,6 +6,7 @@ import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { shortFormatID } from 'src/app/core/helpers/strings.helpers';
 import { ItemOrder } from 'src/app/core/models/order';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-benefits-control',
@@ -39,6 +40,23 @@ export class BenefitsControlComponent implements OnInit {
     private orderService: OrderService,
   ) { }
 
+  range = new FormGroup({
+    start: new FormControl(''),
+    end: new FormControl(''),
+  });
+  change_start(event:any) {
+    console.log('Start date changed:', event.target.value);
+  }
+  async change_end(event:any) {
+    console.log('End date changed:', event.target.value);
+    if(this.range.get('start')?.value && this.range.get('end')?.value) {
+      if (this.isSearchToConf) {
+
+        await this.getToConfOrders()
+      }
+      else await this.getAllOrders()
+    }
+  }
   async ngOnInit(): Promise<void> {
     lockUI()
 
@@ -84,7 +102,6 @@ export class BenefitsControlComponent implements OnInit {
   }
 
   async getAllOrders() {
-    if (this.isSearchToConf) {
       lockUI()
       this.isSearchToConf = false;
       const pagination: PaginationInput = {
@@ -96,16 +113,27 @@ export class BenefitsControlComponent implements OnInit {
           limit: 50
         }
       }
+      pagination.options.range = {}
+      if (this.range.get('start')?.value)
+        pagination.options.range.from = new Date(this.range.get('start').value).toISOString()
+      if (this.range.get('end')?.value)
+        pagination.options.range.to = new Date(this.range.get('end').value).toISOString()
+
       const data = await this.orderService.orderPaginate(pagination);
       const orders = data.orderPaginate;
       this.orders = orders;
       console.log("all orders", orders)
       unlockUI()
-    }
+  }
+
+  clickAllOrders() {
+    if (this.isSearchToConf) this.getAllOrders()
+  }
+  clickToConfOrders() {
+    if (!this.isSearchToConf) this.getToConfOrders()
   }
 
   async getToConfOrders() {
-    if (!this.isSearchToConf) {
       lockUI()
       this.isSearchToConf = true;
       const pagination: PaginationInput = {
@@ -118,12 +146,17 @@ export class BenefitsControlComponent implements OnInit {
           limit: 50
         }
       }
+      pagination.options.range = {}
+      if (this.range.get('start')?.value)
+        pagination.options.range.from = this.range.get('start').value
+      if (this.range.get('end')?.value)
+        pagination.options.range.to = this.range.get('end').value
+
       const data = await this.orderService.orderPaginate(pagination);
       const orders = data.orderPaginate;
       this.orders = orders;
       console.log("to confirm", orders)
       unlockUI()
-    }
   }
 
   filterOrders() {
