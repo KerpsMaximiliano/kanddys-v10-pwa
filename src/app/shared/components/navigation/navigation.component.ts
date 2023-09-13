@@ -6,7 +6,7 @@ import {
   Output,
   EventEmitter,
 } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSidenav } from '@angular/material/sidenav';
 import { Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -40,7 +40,7 @@ import {
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { SelectRoleDialogComponent } from '../../dialogs/select-role-dialog/select-role-dialog.component';
-
+import { MessageDialogComponent } from '../../dialogs/message-dialog/message-dialog.component';
 interface NavigationTab {
   headerText: string;
   text: string;
@@ -1039,6 +1039,8 @@ export class NavigationComponent implements OnInit {
   curRole = 0;
   isOpen = false;
 
+  emailDialogRef: MatDialogRef<FormComponent, any> = null;
+
   footerSwiperConfig: SwiperOptions = {
     slidesPerView: 1,
     freeMode: false,
@@ -1060,9 +1062,10 @@ export class NavigationComponent implements OnInit {
     private router: Router,
     private matDialog: MatDialog,
     private translate: TranslateService,
-    private matSnackBar: MatSnackBar,
+    private snackbar: MatSnackBar,
     private bottomSheet: MatBottomSheet,
     private dialogService: DialogService,
+    private dialog: MatDialog,
     ) {
     translate.setDefaultLang('en');
     translate.use('en');
@@ -1132,6 +1135,20 @@ export class NavigationComponent implements OnInit {
       this.tabContents.tab4 = this.tabContents.tab4.filter(tab => !tab.authorization);
     }
   }
+  openClubDialog() {
+    this.bottomSheet.open(ClubDialogComponent, {
+      data: {
+        title: "",
+        styles: {
+          fullScreen: true,
+        },
+        tabIndex: this.tabIndex,
+        callback: (e: number) => {
+          this.tabIndex = e;
+        }
+      },
+    });
+  }
 
   showDialog() {
     const dialogRef = this.matDialog.open(SelectRoleDialogComponent, {
@@ -1180,6 +1197,16 @@ export class NavigationComponent implements OnInit {
     });
   }
 
+  openMsgDialog() {
+    this.bottomSheet.open(MessageDialogComponent, {});
+  }
+
+  share() {
+    if (!this.headerService.user) {
+      this.openMagicLinkDialog()
+    }
+  }
+
   filterData () {
     if (this.headerService.user) {
       if (this.tabIndex==1) return this.tabContents.tab4
@@ -1195,33 +1222,13 @@ export class NavigationComponent implements OnInit {
   }
 
   enterClub() {
-    this.bottomSheet.open(OptionsMenuComponent, {
-      data: {
-        options: [
-          {
-            value: `Soy miembro`,
-            callback: async () => {
-              await this.openMagicLinkDialog();
-            },
-          },
-          {
-            value: `Quiero entrar como invitado`,
-            callback: () => {
-              // this.openNavigation = true;
-            },
-          },
-        ],
-        styles: {
-          fullScreen: true,
-        },
-      },
-    });
+    if(!this.headerService.user) this.openMagicLinkDialog();
   }
 
   async openMagicLinkDialog() {
     let fieldsToCreateInEmailDialog: FormData = {
       title: {
-        text: 'Acceso al Club:',
+        text: 'Correo Electrónico:',
       },
       buttonsTexts: {
         accept: 'Recibir el enlace con acceso',
@@ -1240,6 +1247,24 @@ export class NavigationComponent implements OnInit {
           inputStyles: {
             padding: '11px 1px',
           },
+          styles: {
+            gap: '0px',
+          },
+          bottomTexts: [
+            {
+              text: 'Este correo también sirve para accesar al Club y aprovechar todas las herramientas que se están creando.',
+              styles: {
+                color: '#FFF',
+                fontFamily: 'InterLight',
+                fontSize: '19px',
+                fontStyle: 'normal',
+                fontWeight: '300',
+                lineHeight: 'normal',
+                marginBottom: '28px',
+                marginTop: '36px',
+              },
+            },
+          ],
           submitButton: {
             text: '>',
             styles: {
@@ -1262,172 +1287,31 @@ export class NavigationComponent implements OnInit {
       ],
     };
 
-    const emailDialogRef = this.matDialog.open(FormComponent, {
+    this.emailDialogRef = this.dialog.open(FormComponent, {
       data: fieldsToCreateInEmailDialog,
-      disableClose: true,
+      disableClose: false,
     });
 
-    emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+    this.emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
       if (result?.controls?.magicLinkEmailOrPhone.valid) {
-        const emailOrPhone = result?.value['magicLinkEmailOrPhone'];
-
-        let optionsDialogTemplate: OptionsDialogTemplate = {
-          options: [
-            {
-              value: 'Accederé con la clave',
-              callback: async () => {
-                await addPassword(emailOrPhone);
-              },
-            },
-            {
-              value: 'Prefiero recibir el enlace de acceso en mi correo',
-              callback: async () => {
-                if (result?.controls?.magicLinkEmailOrPhone.valid) {
-                  const validEmail = new RegExp(
-                    /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gim
-                  );
-
-                  let emailOrPhone = null;
-
-                  if (
-                    typeof result?.value['magicLinkEmailOrPhone'] ===
-                      'string' &&
-                    validEmail.test(result?.value['magicLinkEmailOrPhone'])
-                  ) {
-                    emailOrPhone = result?.value['magicLinkEmailOrPhone'];
-                  } else {
-                    emailOrPhone =
-                      result?.value['magicLinkEmailOrPhone'].e164Number.split(
-                        '+'
-                      )[1];
-                  }
-
-                  // lockUI();
-
-                  await this.authService.generateMagicLink(
-                    emailOrPhone,
-                    '/ecommerce/club-landing',
-                    null,
-                    'MerchantAccess',
-                    {
-                      jsondata: JSON.stringify({
-                        openNavigation: true,
-                      }),
-                    },
-                    []
-                  );
-
-                  unlockUI();
-
-                  this.dialogService.open(
-                    GeneralFormSubmissionDialogComponent,
-                    {
-                      type: 'centralized-fullscreen',
-                      props: {
-                        icon: 'check-circle.svg',
-                        showCloseButton: false,
-                        message:
-                          'Se ha enviado un link mágico a tu correo electrónico',
-                      },
-                      customClass: 'app-dialog',
-                      flags: ['no-header'],
-                    }
-                  );
-                } else if (
-                  result?.controls?.magicLinkEmailOrPhone.valid === false
-                ) {
-                  unlockUI();
-                  this.matSnackBar.open('Datos invalidos', 'Cerrar', {
-                    duration: 3000,
-                  });
-                }
-              },
-            },
-          ],
-        };
-
-        this.matDialog.open(OptionsDialogComponent, {
-          data: optionsDialogTemplate,
-          disableClose: true,
-        });
+        // const exists = await this.checkIfUserExists(result?.controls?.magicLinkEmailOrPhone.value);
+        // if (exists) {
+        //   await this.existingUserLoginFlow(
+        //     result?.controls?.magicLinkEmailOrPhone.value,
+        //     result?.controls?.magicLinkEmailOrPhone.valid
+        //   );
+        // } else {
+        //   await this.nonExistingUserLoginFlow(
+        //     result?.controls?.magicLinkEmailOrPhone.value,
+        //     result?.controls?.magicLinkEmailOrPhone.valid
+        //   );
+        // }
       } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
-        unlockUI();
-        this.matSnackBar.open('Datos invalidos', 'Cerrar', {
+        this.snackbar.open('Datos invalidos', 'Cerrar', {
           duration: 3000,
         });
       }
     });
-
-    const addPassword = async (emailOrPhone: string) => {
-      emailDialogRef.close();
-
-      let fieldsToCreate: FormData = {
-        title: {
-          text: 'Clave de Acceso:',
-        },
-        buttonsTexts: {
-          accept: 'Accesar al Club',
-          cancel: 'Cancelar',
-        },
-        fields: [
-          {
-            name: 'password',
-            type: 'password',
-            placeholder: 'Escribe la contraseña',
-            validators: [Validators.pattern(/[\S]/)],
-            bottomButton: {
-              text: 'Prefiero recibir el correo con el enlace de acceso',
-              callback: () => {
-                //Cerrar 2do dialog
-
-                return switchToMagicLinkDialog();
-              },
-            },
-          },
-        ],
-      };
-
-      const dialog2Ref = this.matDialog.open(FormComponent, {
-        data: fieldsToCreate,
-        disableClose: true,
-      });
-
-      dialog2Ref.afterClosed().subscribe(async (result: FormGroup) => {
-        try {
-          if (result?.controls?.password.valid) {
-            let password = result?.value['password'];
-
-            lockUI();
-
-            const session = await this.authService.signin(
-              emailOrPhone,
-              password,
-              true
-            );
-
-            if (!session) throw new Error('invalid credentials');
-
-            // if (session) this.openNavigation = true;
-
-            unlockUI();
-          } else if (result?.controls?.password.valid === false) {
-            unlockUI();
-            this.matSnackBar.open('Datos invalidos', 'Cerrar', {
-              duration: 3000,
-            });
-          }
-        } catch (error) {
-          unlockUI();
-          console.error(error);
-          this.headerService.showErrorToast();
-        }
-      });
-
-      const switchToMagicLinkDialog = () => {
-        dialog2Ref.close();
-        return this.openMagicLinkDialog();
-      };
-    };
   }
 
   changeSubtab(tabIndex: number, subTabIndex: number) {

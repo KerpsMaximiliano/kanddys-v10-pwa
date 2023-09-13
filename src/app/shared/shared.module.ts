@@ -234,6 +234,8 @@ import { ConfirmationSimpleComponent } from './dialogs/confirmation-simple/confi
 import { OptionsDialogComponent } from './dialogs/options-dialog/options-dialog.component';
 import { ClubDialogComponent } from './dialogs/club-dialog/club-dialog.component';
 import { SelectRoleDialogComponent } from './dialogs/select-role-dialog/select-role-dialog.component';
+import { MessageDialogComponent } from './dialogs/message-dialog/message-dialog.component';
+import { SpecialDialogComponent } from './dialogs/special-dialog/special-dialog.component';
 
 const imports = [
   CommonModule,
@@ -479,7 +481,9 @@ const declarations = [
   CardImageComponent,
   OptionsDialogComponent,
   ClubDialogComponent,
-  SelectRoleDialogComponent
+  SelectRoleDialogComponent,
+  MessageDialogComponent,
+  SpecialDialogComponent
 ];
 
 @NgModule({
@@ -487,6 +491,6 @@ const declarations = [
   imports: [...imports, RouterModule],
   exports: [...declarations, ...imports],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: [],
+  providers: []
 })
 export class SharedModule {}

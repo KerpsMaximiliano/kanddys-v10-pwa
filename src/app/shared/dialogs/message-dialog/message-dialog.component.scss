@@ -1,0 +1,39 @@
+* {
+  margin: 0;
+}
+
+.bg-white {
+    background-color: white;
+}
+::ng-deep .cdk-overlay-pane {
+  width: 100%;
+  max-width: 500px !important;
+}
+
+::ng-deep .mat-list-base {
+  padding: 20px;
+  min-height: 100vh;
+}
+
+::ng-deep.mat-bottom-sheet-container {
+  padding: 0px;
+  min-width: 100%;
+  min-height: 100vh;
+  .close {
+    margin-top: 20px;
+  }
+  main {
+    .msg {
+      padding: 28px;
+      color: #FFF;
+      font-family: InterRegular;
+      font-size: 17px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: normal;
+      background-color: #181D17;
+      border-radius: 12px;
+      margin-top: 26px;
+    }
+  }
+}
