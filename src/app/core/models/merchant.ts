@@ -1,7 +1,7 @@
 import { Model } from '../objects/model';
 import { AirtableConfiguration, AirtableConfigurationInput } from './airtable';
 import { SocialMediaModel, SocialMediaModelInput } from './saleflow';
-import { User } from './user';
+import { Role, User } from './user';
 
 export class Category {
   _id: string;
@@ -47,6 +47,8 @@ export class Merchant extends Model<Merchant> {
   receiveNotificationsMainPhone?: boolean;
   secondaryContacts?: string[];
   default?: boolean;
+  createdAt: string;
+  roles:Role[];
 }
 
 export class EmployeeContract extends Model<EmployeeContract> {

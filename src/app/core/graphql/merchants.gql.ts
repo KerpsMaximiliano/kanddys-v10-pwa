@@ -33,6 +33,7 @@ export const body = `
   active
   showItems
   address
+  createdAt
   owner { 
     phone
     email
@@ -42,6 +43,10 @@ export const body = `
   social {
     name
     url
+  }
+  roles{
+    code
+    name
   }
 `;
 

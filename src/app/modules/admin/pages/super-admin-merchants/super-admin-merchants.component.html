@@ -1,0 +1,26 @@
+<div class="container">
+  <div class="header">
+    <div class="flex">
+      <mat-icon>chevron_left</mat-icon>
+      <p>Comerciantes de la Industria Floral</p>
+    </div>
+    <img src="../../../../../assets/icons/info.svg" />
+  </div>
+  <div class="content">
+    <input placeholder="Todos los Comerciantes ({{ merchants.length }}) .." />
+    <div *ngFor="let i of months; let k = index">
+      <p class="month-title">DESDE {{ i }}</p>
+      <div class="month-card" *ngFor="let m of getMerchantsMonth(k+1)">
+        <div class="flex-space-between">
+          <p class="month-card-title">{{ m._id }}</p>
+          <p class="month-card-country">PaisId</p>
+        </div>
+        <p class="month-card-country">Le vende a {{saleToText(m)}}</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer-page">
+  <p class="date-text">FechaID a FechaID</p>
+  <p class="total">Total: {{ merchants.length }}</p>
+</div>

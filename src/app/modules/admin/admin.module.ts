@@ -106,6 +106,7 @@ import { ItemsOffersComponent } from './pages/items-offers/items-offers.componen
 import { OrderImageLoadComponent } from './pages/order-image-load/order-image-load.component';
 import { DeliveryZonesManagerComponent } from './pages/delivery-zones-manager/delivery-zones-manager.component';
 import { WizardTrainingComponent } from './pages/wizard-training/wizard-training.component';
+import { SuperAdminMerchantsComponent } from './pages/super-admin-merchants/super-admin-merchants.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -632,6 +633,10 @@ const routes: Routes = [
   {
     path: 'monetizations',
     component: MonetizationsComponent
+  },
+  {
+    path:'super-admin-merchants',
+    component:SuperAdminMerchantsComponent
   }
 ];
 
@@ -721,6 +726,7 @@ const routes: Routes = [
     DeliveryZonesManagerComponent,
     WizardTrainingComponent,
     OrderImageLoadComponent,
+    SuperAdminMerchantsComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [
