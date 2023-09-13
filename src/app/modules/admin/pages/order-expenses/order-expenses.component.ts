@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { getDaysAgo } from 'src/app/core/helpers/strings.helpers';
 import { Expenditure, ItemOrder } from 'src/app/core/models/order';
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -45,8 +45,10 @@ export class OrderExpensesComponent implements OnInit {
   }
 
   private orderId = '';
+  private redirectTo: string = null;
 
   constructor(
+    private router: Router,
     private route: ActivatedRoute,
     private dialog: MatDialog,
     private _formBuilder: FormBuilder,
@@ -57,6 +59,10 @@ export class OrderExpensesComponent implements OnInit {
   ) { }
 
   async ngOnInit() {
+
+    const redirectTo = this.route.snapshot.queryParamMap.get('redirectTo');
+    if (redirectTo) this.redirectTo = redirectTo;
+
     const orderId = this.route.snapshot.paramMap.get('orderId');
     this.order = (await this.orderService.order(orderId))?.order;
     if (!this.order) throw new Error('No hay orden');
@@ -329,6 +335,27 @@ export class OrderExpensesComponent implements OnInit {
         this.headerService.showErrorToast("Monto invalido");
       }
 
+    });
+  }
+
+  returnEvent() {
+    if (!this.redirectTo) {
+      return this.router.navigate([`/ecommerce/order-detail/${this.order._id}`]);
+    }
+  
+    let queryParams = {};
+    if (this.redirectTo.includes('?')) {
+      const urlParts = this.redirectTo.split('?');
+      this.redirectTo = urlParts[0];
+      const queryString = urlParts[1];
+      const params = new URLSearchParams(queryString);
+      params.forEach((value, key) => {
+        queryParams[key] = value;
+      });
+    }
+  
+    this.router.navigate([this.redirectTo], {
+      queryParams,
     });
   }
 }

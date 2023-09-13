@@ -1,0 +1,66 @@
+<div class="container">
+    <div class="header">
+        <div>
+            <span class="close">X</span>
+            <span class="title">
+                📦 Zonas de Entrega por Delivery
+            </span>
+        </div>
+        <div class="plus" (click)="createZone()">+</div>
+    </div>
+    <div class="sub-title">
+        El comprador seleccionará una de las zonas en cada factura
+    </div>
+    <!-- <div class="card">
+        <div class="id">
+            ZonaID
+        </div>
+        <div class="desc">
+            Opcional: puede adicionar la descripcion.
+        </div>
+        <div class="detail">
+            Cobrar extra 
+            <span class="price">Delivery No está Disponible</span><br>
+            cuando la factura es menor a 
+            <span class="price">$NA</span>
+        </div>
+    </div>
+    <div class="card">
+        <div class="id">
+            ZonaID
+        </div>
+        <div class="desc">
+            Descripción en pequeño iria aqui. como mucho serian tres lineas y acabaria en..
+        </div>
+        <div class="detail">
+            Cobrar extra 
+            <span class="price">$0.00</span><br>
+            cuando la factura es menor a 
+            <span class="price">$iempre</span><br><br>
+            Mi costo para el control de beneficios es
+            <span class="price">$0.00</span>
+        </div>
+    </div> -->
+    <div class="card" *ngFor="let zone of deliveryzones">
+        <div class="id">
+            {{zone?.zona ? capitalize(zone?.zona) : 'Sin nombre'}}
+        </div>
+        <div class="desc">
+            {{zone.name ? zone.name: "Opcional: puede adicionar la descripcion."}}
+        </div>
+        <div class="detail">
+            Cobrar extra 
+            <span class="price" (click)="editExtra(0, zone)">${{priceFormat(zone.amount)}}</span><br>
+            cuando la factura es menor a 
+            <span class="price" (click)="editExtra(1, zone)">{{zone.lesserAmount ? "$" + priceFormat(zone.lesserAmount) : "Siempre"}}</span><br><br>
+            Mi costo para el control de beneficios es
+            <span class="price" (click)="editExtra(2, zone)">${{formatExpPrice(zone)}}</span>
+        </div>
+        <!-- <div class="detail" *ngIf="zone.amount == 100">
+            Cobrar extra 
+            <span class="price" (click)="editExtra(0, zone)">Delivery No está Disponible</span><br>
+            cuando la factura es menor a 
+            <span class="price" (click)="editExtra(1, zone)">$NA</span>
+        </div> -->
+    </div>
+</div>

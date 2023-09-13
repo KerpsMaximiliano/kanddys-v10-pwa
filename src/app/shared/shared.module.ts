@@ -233,6 +233,8 @@ import { CardImageComponent } from './components/card-image/card-image.component
 import { ConfirmationSimpleComponent } from './dialogs/confirmation-simple/confirmation-simple.component';
 import { OptionsDialogComponent } from './dialogs/options-dialog/options-dialog.component';
 import { ClubDialogComponent } from './dialogs/club-dialog/club-dialog.component';
+import { SelectRoleDialogComponent } from './dialogs/select-role-dialog/select-role-dialog.component';
+import { WizardChatbotComponent } from './components/wizard-chatbot/wizard-chatbot.component';
 
 const imports = [
   CommonModule,
@@ -477,7 +479,9 @@ const declarations = [
   ProgressBarComponent,
   CardImageComponent,
   OptionsDialogComponent,
-  ClubDialogComponent
+  ClubDialogComponent,
+  SelectRoleDialogComponent,
+  WizardChatbotComponent
 ];
 
 @NgModule({

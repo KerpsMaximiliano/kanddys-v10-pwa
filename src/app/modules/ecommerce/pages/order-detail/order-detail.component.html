@@ -567,7 +567,7 @@
     <a
       id="mailLink"
       [style.display]="'none'"
-      href="mailto:{{order.user.email}}"
+      href="mailto:{{ order?.user?.email }}"
     ></a>
 
     <footer class="bottom-footer" *ngIf="isMerchant" (click)="goToBenefits()">

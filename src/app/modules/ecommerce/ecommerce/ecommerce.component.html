@@ -20,7 +20,7 @@
     activePath !== 'receiver-form' &&
     activePath !== 'store' &&
     activePath !== 'new-symbol' &&
-    activePath !== 'giftcard-details' && 
+    activePath !== 'giftcard-details' &&
     activePath !== 'terms-of-use/:viewsMerchantId' &&
     activePath !== 'webform/:itemId' &&
     activePath !== 'post-slide-editor'
@@ -36,7 +36,7 @@
   (click)="goToCheckout()"
 ></app-bubble-button>
 
-<!-- <app-store-chatbot
+<app-wizard-chatbot
   *ngIf="
     activePath !== 'checkout' &&
     activePath !== 'article-detail/:entity/:entityId' &&
@@ -58,4 +58,4 @@
     activePath !== 'payments/:orderId' &&
     activePath !== 'webform/:itemId'
   "
-></app-store-chatbot> -->
+></app-wizard-chatbot>

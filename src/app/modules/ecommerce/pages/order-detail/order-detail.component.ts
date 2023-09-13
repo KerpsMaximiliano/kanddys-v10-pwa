@@ -649,7 +649,14 @@ export class OrderDetailComponent implements OnInit {
   }
 
   goToBenefits() {
-    return this.router.navigate([`/admin/order-expenses/${this.order._id}`]);
+    return this.router.navigate(
+      [`/admin/order-expenses/${this.order._id}`],
+      {
+        queryParams: {
+          redirectTo: this.router.url,
+        }
+      }
+    );
   }
 
   async addTag(tagId: string) {

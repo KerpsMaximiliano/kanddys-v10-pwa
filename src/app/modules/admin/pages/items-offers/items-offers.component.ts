@@ -90,6 +90,8 @@ async getListItems(searchName = ""){
       _id: {
         __in: ids
       },
+      type: "supplier",
+      status: "active"
     },
     options: {
       sortBy: 'createdAt:desc',
