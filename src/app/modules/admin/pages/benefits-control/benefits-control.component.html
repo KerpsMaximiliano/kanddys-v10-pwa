@@ -63,7 +63,7 @@
             </div>
             <div class="flex space-between items-center">
                 <div class="date">
-                    {{formatID(order.dateId)}}, {{getTimeDifferenceString(i)}}
+                    {{formatID(order.dateId)}}, hace {{dateHandler(order.dateId)}}
                 </div>
                 <div class="count">
                     {{order.items.length}} artículos
