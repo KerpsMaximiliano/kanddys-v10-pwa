@@ -24,6 +24,10 @@ nav {
   align-items: center;
 }
 
+.subnav.right {
+  margin-left:auto;
+}
+
 .exit {
   font-family: InterLight;
   font-size: 24px;
@@ -93,7 +97,8 @@ nav {
   background-color: #FFF;
   display: flex;
   flex-direction: column;
-  width: 100%;
+  align-items: center;
+  width: 90%;
   margin: 12px;
   padding: 24px;
 }
@@ -126,6 +131,18 @@ nav {
   border-radius: 4px;
   background: #FFF;
   padding: 0 13px 0 13px;
+  input {
+        border: none;
+        font-size: 17px;
+        font-family: InterBold;
+        &::placeholder {
+          color: #7b7b7b;
+        }
+        &:read-only {
+          background-color: #fff;
+          color: #7b7b7b;
+        }
+    }
 }
 
 .card-title {
@@ -156,13 +173,10 @@ nav {
 
 .input-card {
   background: white;
-  height: 48px;
   display: flex;
   border-radius: 4px;
-  align-items: center;
   margin: 4px 21px 5px 21px;
-  padding-left: 18px;
-  padding-right: 13px;
+  padding: 12px;
   display: flex;
   justify-content: space-between;
 }
@@ -172,9 +186,11 @@ nav {
   font-family: InterLight;
   font-style: italic;
   font-size: 17px;
+  margin: 0;
 }
 
 .input-button {
+  margin-left: 16px;
   border-radius: 100%;
   padding: 0;
   background: transparent;
@@ -186,6 +202,34 @@ nav {
 .container {
   width: 100%;
   margin-top: 21px;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  padding: 13px;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 6px;
+  background: #fff;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+
+  h4 {
+    color: #7b7b7b;
+    font-size: 17px;
+    font-family: InterBold;
+    font-weight: 600;
+    margin: 0px;
+  }
+
+  p {
+    margin-top: 15px;
+    color: #7b7b7b;
+    font-size: 17px;
+    font-family: InterRegular;
+    font-weight: 400;
+    margin: 0px;
+  }
 }
 
 .bubble-button-wrapper {
@@ -227,14 +271,13 @@ nav {
   justify-content: space-between;
   margin-top: auto;
   background: #FFF;
-  padding: 20px 0;
+  padding: 0 20px;
   height: 28px;
   width: 100%;
   background-color: var(--El-verdecito, #87CD9B);
 }
 
 .preview {
-  width: 100%;
   font-family: InterMedium;
   font-size: 17px;
   cursor: pointer;

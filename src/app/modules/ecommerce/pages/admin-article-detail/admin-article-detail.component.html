@@ -1,32 +1,57 @@
 <div class="main-container">
   <nav>
-    <div class="subnav">
+    <div *ngIf="!dropdown" class="subnav">
       <a class="exit"> X </a>
     </div>
-    <div class="subnav">
+    <div class="subnav right">
       <mat-slide-toggle
+        *ngIf="!dropdown"
         class="toggle"
         [checked]="active"
-        (change)="active = !active"
+        (change)="updateItem('toggle')"
       >
       </mat-slide-toggle>
-      <img class="icon" title="icon" [src]="dropdown ?  env +'/info-icon.svg' :  env +'/dropdown-icon.svg'" />
+      <img 
+        class="icon" 
+        title="icon" 
+        [src]="!dropdown ?  env +'/info-icon.svg' :  env +'/dropdown-icon.png'" 
+        (click)="dropdown = !dropdown"
+      />
     </div>
   </nav>
-  <div class="article-info">
-    <img alt="" class="article-img" [src]="item.images[0]" />
+  <div *ngIf="!dropdown" class="article-info">
+    <img alt="" class="article-img" [src]="item.images[0].value" />
     <p class="article-name">{{item.name}}</p>
     <p class="article-description">{{item.description}}</p>
   </div>
-  <div  class="info-card">
-    <p class="card-title">Texto principal y centralizado</p>
-    <input
-      aria-label="titulo"
-      type="text"
-      class="display-text"
-    />
+  <div *ngIf="!dropdown" class="container">
+    <div class="info-card">
+      <p class="card-title">Precio normal exhibido en MerchantID</p>
+      <p class="display-text">{{item.pricing | currency}}</p>
+    </div>
+    <div *ngIf="isHashtagExist && hashtagSelected?.keyword" class="info-card">
+      <p class="card-title">Hashtag</p>
+      <input
+        type="text"
+        [formControl]="itemHashtagInput"
+        [value]="itemHashtagInput.value"
+        (keyup)="editHashtag($event)"
+      />
+    </div>
+    <div *ngIf="deliveryTimeStart || deliveryTimeEnd" class="info-card">
+      <p class="card-title">Tiempo de Entrega</p>
+      <p *ngIf="deliveryTimeStart && deliveryTimeEnd" class="display-text">
+        Desde {{deliveryTimeStart}} horas hasta {{deliveryTimeEnd}} horas
+      </p>
+      <p *ngIf="deliveryTimeStart && !deliveryTimeEnd" class="display-text">
+        {{deliveryTimeStart}} horas
+      </p>
+      <p *ngIf="deliveryTimeEnd && !deliveryTimeStart" class="display-text">
+        {{deliveryTimeEnd}} horas
+      </p>
+    </div>
   </div>
-  <div class="container">
+  <div *ngIf="!dropdown" class="container">
     <p class="data-title">
       🌼 VITRINA
     </p>
@@ -67,7 +92,7 @@
       </button>
     </div>
   </div>
-  <div class="container">
+  <div *ngIf="!dropdown" class="container">
     <p class="data-title">
       OPCIONAL- DATOS QUE LOS COMPRADORES CONSIDERAN IMPORTANTES
     </p>
@@ -81,7 +106,7 @@
       </button>
     </div>
   </div>
-  <div class="container">
+  <div *ngIf="!dropdown" class="container">
     <p class="data-title">
       FUNCIONALIDADES OPCIONALES
     </p>
@@ -104,7 +129,31 @@
       </button>
     </div>
   </div>
-  <div class="bubble-button-wrapper">
+  <div *ngIf="dropdown" class="container">
+    <div class="metric">
+      <h4>Cantidad de veces Vendido</h4>
+      <p>{{ totalSells }} veces, ${{ totalIncome }}</p>
+    </div>
+    <div class="metric">
+      <h4>Cantidad de compradores diferentes</h4>
+      <p></p>
+    </div>
+    <div class="metric">
+      <h4>Comprador que mas lo ha comprado</h4>
+      <p></p>
+    </div>
+    <div class="metric">
+      <h4>Posicion segun las ventas</h4>
+      <p>
+        {{
+          salesPositionInStore > 0
+            ? salesPositionInStore + " de " + totalItemsOfMerchant
+            : "No se ha vendido todavía"
+        }}
+      </p>
+    </div>
+  </div>
+  <div *ngIf="dropdown" class="bubble-button-wrapper">
     <div
       class="bubble-button"
       *ngIf="dropdown === true"
@@ -113,7 +162,7 @@
       <img [src]="env + '/dropdown_icon.png'" alt="wizard" />
     </div>
   </div>
-  <div class="bottom-bar">
+  <div *ngIf="!dropdown" class="bottom-bar">
     <p class="preview">
       Preview
     </p>
