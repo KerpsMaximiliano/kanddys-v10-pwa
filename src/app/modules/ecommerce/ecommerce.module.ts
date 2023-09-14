@@ -280,6 +280,10 @@ const routes: Routes = [
     component: ClubLandingComponent
   },
   {
+    path: 'admin-article-detail/:itemId',
+    component: AdminArticleDetailComponent,
+  },
+  {
     path: ':merchantSlug',
     component: EcommerceComponent,
     children: [
@@ -417,10 +421,6 @@ const routes: Routes = [
         path: 'giftcard-details',
         component: GiftcardDetailsComponent,
       },
-      {
-        path: 'admin-article-detail/:itemId',
-        component: AdminArticleDetailComponent,
-      }
     ],
   },
 ];
