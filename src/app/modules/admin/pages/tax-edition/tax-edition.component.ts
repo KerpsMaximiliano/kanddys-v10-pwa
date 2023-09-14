@@ -46,9 +46,7 @@ export class TaxEditionComponent implements OnInit {
   async ngOnInit() {
     await this.getCountries();
    this.route.params.subscribe((data) => {
-    console.log("🚀 ~ file: tax-edition.component.ts:47 ~ TaxEditionComponent ~ this.route.params.subscribe ~ data:", data)
     this.taxId = data.itemId;
-    console.log("🚀 ~ file: tax-edition.component.ts:53 ~ TaxEditionComponent ~ this.route.params.subscribe ~ this.taxId:", this.taxId)
    	});
    
 
@@ -77,19 +75,26 @@ export class TaxEditionComponent implements OnInit {
   }
 
   async goBack(){
-    lockUI();
-    if (!this.form.invalid) {
-      if(this.taxId){
-        await this.editTax();
-        unlockUI();
-        this.router.navigateByUrl('/admin/taxes');
-      }else{
-        await this.createTax();
-        unlockUI();
-        this.router.navigateByUrl('/admin/taxes');
-      }
+    const dateValidation = this.dateFromatted ? moment(this.dateFromatted).format('DD/MM/YYYY') : "";
+    console.log((dateValidation.length) > 0);
+    
+    if(!this.form.dirty && !((dateValidation.length) > 0)){
+      this.router.navigateByUrl('/admin/taxes');
     }else{
-      unlockUI();
+      lockUI();
+      if (!this.form.invalid) {
+        if(this.taxId){
+          await this.editTax();
+          unlockUI();
+          this.router.navigateByUrl('/admin/taxes');
+        }else{
+          await this.createTax();
+          unlockUI();
+          this.router.navigateByUrl('/admin/taxes');
+        }
+      }else{
+        unlockUI();
+      }
     }
   }
 
@@ -109,7 +114,9 @@ export class TaxEditionComponent implements OnInit {
       nextTax: this.form.controls["nextTax"].value,
       finalSequence: this.form.controls["sequence"].value,
     }
-    await this.taxesService.createTax(type, this.country, merchantId, input);
+    await this.taxesService.createTax(type, this.country, merchantId, input).catch(e => {
+      unlockUI();
+    });
   }
 
   async editTax(){
@@ -120,7 +127,9 @@ export class TaxEditionComponent implements OnInit {
       nextTax: this.form.controls["nextTax"].value,
       finalSequence: this.form.controls["sequence"].value,
     }
-    await this.taxesService.updateTax(this.taxId, input);
+    await this.taxesService.updateTax(this.taxId, input).catch(e => {
+      unlockUI();
+    });;
   }
 
   formatDate(date){
