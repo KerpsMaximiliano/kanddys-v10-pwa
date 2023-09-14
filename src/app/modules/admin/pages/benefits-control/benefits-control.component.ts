@@ -233,18 +233,17 @@ export class BenefitsControlComponent implements OnInit {
     const years = Math.floor(months / 12);
     
     if (years > 0) {
-      return years + ((years === 1) ? ' year ago' : ' years ago');
+      return years + ((years === 1) ? ' año atrás' : ' Hace años');
     } else if (months > 0) {
-      return months + ((months === 1) ? ' month ago' : ' months ago');
+      return months + ((months === 1) ? ' hace un mes' : ' meses atrás');
     } else if (days > 0) {
-      return days + ((days === 1) ? ' day ago' : ' days ago');
+      return days + ((days === 1) ? ' hace un dia' : ' hace días');
     } else if (hours > 0) {
-      return hours + ((hours === 1) ? ' hour ago' : ' hours ago');
+      return hours + ((hours === 1) ? ' hace una hora' : ' hace horas');
     } else if (minutes > 0) {
-      return minutes + ((minutes === 1) ? ' minute ago' : ' minutes ago');
+      return minutes + ((minutes === 1) ? ' hace un minuto' : ' Hace minutos');
     } else {
-      return seconds + ((seconds === 1) ? ' second ago' : ' seconds ago');
+      return seconds + ((seconds === 1) ? ' Hace segunda' : ' hace segundos');
     }
-}
-
+  }
 }

@@ -159,7 +159,7 @@ export class CostsMetricsComponent implements OnInit {
           ) {
           } else {
             isError = true;
-            this.headerService.showErrorToast(error);
+            this.headerService.showErrorToast(error, 1000);
           }
         } catch (error) {
           console.error(error);
