@@ -27,10 +27,13 @@
   align-items: end;
   justify-content: center;
   position: absolute;
-  left: 45.3%;
+  left: 215px;
   top: -30px;
   span.icon {
     margin-bottom: 7px;
+  }
+  @media (max-width: 500px) {
+    left: calc(50vw - 35px);
   }
 }
 
@@ -166,9 +169,16 @@
       
     }
   }
-  @media (max-width: 380px) {
+  @media (max-width: 500px) {
     .close *{
-      width: calc(100vw - 267px);
+      width: calc(50vw - 85px);
+      font-size: 17px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap !important;
+    }
+    .left-part .title {
+      width: calc(50vw - 85px);
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap !important;

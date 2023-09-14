@@ -1018,7 +1018,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
   showDialog() {
     const dialogRef = this.dialog.open(SpecialDialogComponent, {});
-    const link = `${this.URI}/admin/dashboard`;
+    const link = `${this.URI}/ecommerce/club-landing`;
 
     dialogRef.afterClosed().subscribe(role => {
       if (!role) {

@@ -5,7 +5,7 @@
 
 .special {
   // margin: 0px auto;
-  margin-left: 45.3%;
+  margin-left: 215px;
   width: 69px;
   height: 69px;
   background-color: #6FCF97;
@@ -18,8 +18,8 @@
   span.icon {
     margin-bottom: 7px;
   }
-  @media (max-width: 385px) {
-    margin-left: 172px;
+  @media (max-width: 500px) {
+    margin-left: calc(50vw - 35px);
   }
 }
 
@@ -44,10 +44,6 @@
     font-weight: 400;
     line-height: normal;
     margin-left: 14.72px;
-
-    @media (max-width: 420px) {
-      font-size: 15.495px;
-    }
   }
 
   .info-button {
@@ -56,25 +52,6 @@
     flex-shrink: 0;
     filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(307deg)
       brightness(102%) contrast(102%);
-  }
-
-  .member {
-    margin-right: 13px;
-    display: flex;
-  }
-
-  .user-button {
-    color: var(--plomito, #c4c5c3);
-    font-family: InterRegular;
-    font-size: 17px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-
-    @media (max-width: 420px) {
-      max-width: 65px;
-      font-size: 15.495px;
-    }
   }
 
   .close {
@@ -94,9 +71,16 @@
       
     }
   }
-  @media (max-width: 380px) {
+  @media (max-width: 500px) {
     .close *{
-      width: calc(100vw - 267px);
+      width: calc(50vw - 60px);
+      font-size: 17px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap !important;
+    }
+    .left-part .title {
+      width: calc(50vw - 90px);
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap !important;

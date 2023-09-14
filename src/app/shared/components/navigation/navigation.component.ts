@@ -1157,7 +1157,7 @@ export class NavigationComponent implements OnInit {
   showDialog() {
     console.log("dafdsasdf")
     const dialogRef = this.dialog.open(SpecialDialogComponent, {});
-    const link = `${this.URI}/admin/dashboard`;
+    const link = `${this.URI}/ecommerce/club-landing`;
 
     dialogRef.afterClosed().subscribe(role => {
       if (!role) {
