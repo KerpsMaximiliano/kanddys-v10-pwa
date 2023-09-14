@@ -26,14 +26,14 @@
           </div> -->
     
           <div class="close">
-            <span *ngIf="headerService.user" (click)="showRoleDialog()">{{userID}}</span>
-            <span *ngIf="!headerService.user" (click)="enterClub()">Soy Miembro</span>
+            <div *ngIf="headerService.user" (click)="showRoleDialog()">{{userID}}</div>
+            <div *ngIf="!headerService.user" (click)="enterClub()">Soy Miembro</div>
           </div>
-          <div class="close" style="cursor: pointer" *ngIf="headerService.user">
+          <!-- <div class="close" style="cursor: pointer" *ngIf="headerService.user">
             <span (click)="close()">
               <mat-icon>menu</mat-icon>
             </span>
-          </div>
+          </div> -->
         </div>
       </div>
     

@@ -1018,24 +1018,25 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
   showDialog() {
     const dialogRef = this.dialog.open(SpecialDialogComponent, {});
-    const link = `${this.URI}/ecommerce/club-landing`;
+    const link = `${this.URI}/admin/dashboard`;
 
     dialogRef.afterClosed().subscribe(role => {
-      if (role != undefined) {
-        this.setRole(parseInt(role))
+      if (!role) {
+        // this.setRole(parseInt(role))
         return
       }
+      console.log(role)
       switch (role) {
         case "0":
           this.ngNavigatorShareService.share({
             title: '',
-            url: `${link}?view=assistant`,
+            url: `${link}`,
           });
           break;
         case "1":
           this.ngNavigatorShareService.share({
             title: '',
-            url: `${link}?view=delivery`,
+            url: `${link}`,
           });
           break;
         case "2":
@@ -1046,13 +1047,6 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         case "3":
           window.location.href = "mailto:"
           break;
-        case "4":
-        
-          break;
-        case "5":
-        
-          break;
-      
         default:
           break;
       }
@@ -1079,7 +1073,15 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     });
   }
   openMsgDialog() {
-    this.bottomSheet.open(MessageDialogComponent, {});
+    const dialogRef = this.dialog.open(MessageDialogComponent, {});
+
+    dialogRef.afterClosed().subscribe(role => {
+      if (!role) {
+        // this.setRole(parseInt(role))
+        return
+      }
+      console.log(role)
+    });
   }
 
   filterData () {

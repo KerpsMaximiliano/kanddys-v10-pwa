@@ -18,6 +18,9 @@
   span.icon {
     margin-bottom: 7px;
   }
+  @media (max-width: 385px) {
+    margin-left: 172px;
+  }
 }
 
 .header-wrapper {
@@ -80,19 +83,26 @@
     color: #c4c5c3;
     padding-right: 10px;
 
-    span {
+    * {
       font-size: 19px;
       font-family: InterRegular;
       color: #87CD9B;
-      display: flex;
 
       &::hover {
         cursor: pointer;
       }
+      
+    }
+  }
+  @media (max-width: 380px) {
+    .close *{
+      width: calc(100vw - 267px);
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap !important;
     }
   }
 }
-
 .close-content {
   height: 50px;
   background-color: #7B7B7B;

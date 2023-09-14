@@ -19,6 +19,7 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { QuotationsService } from 'src/app/core/services/quotations.service';
+import { NgNavigatorShareService } from 'ng-navigator-share';
 import {
   LoginDialogComponent,
   LoginDialogData,
@@ -41,6 +42,7 @@ import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/gen
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { SelectRoleDialogComponent } from '../../dialogs/select-role-dialog/select-role-dialog.component';
 import { MessageDialogComponent } from '../../dialogs/message-dialog/message-dialog.component';
+import { SpecialDialogComponent } from '../../dialogs/special-dialog/special-dialog.component';
 interface NavigationTab {
   headerText: string;
   text: string;
@@ -109,6 +111,7 @@ export class NavigationComponent implements OnInit {
   isCurrentUserAnAdmin: boolean = false;
   activeTabIndex: number = 0;
   assetsFolder: string = environment.assetsUrl;
+  URI: string = environment.uri;
 
   tabName = {
     CLUB: 'El Club',
@@ -1066,6 +1069,7 @@ export class NavigationComponent implements OnInit {
     private bottomSheet: MatBottomSheet,
     private dialogService: DialogService,
     private dialog: MatDialog,
+    private ngNavigatorShareService: NgNavigatorShareService
     ) {
     translate.setDefaultLang('en');
     translate.use('en');
@@ -1151,14 +1155,43 @@ export class NavigationComponent implements OnInit {
   }
 
   showDialog() {
-    const dialogRef = this.matDialog.open(SelectRoleDialogComponent, {
-      data: {},
-    });
+    console.log("dafdsasdf")
+    const dialogRef = this.dialog.open(SpecialDialogComponent, {});
+    const link = `${this.URI}/admin/dashboard`;
 
     dialogRef.afterClosed().subscribe(role => {
-      if (role != undefined) this.setRole(parseInt(role))
+      if (!role) {
+        // this.setRole(parseInt(role))
+        return
+      }
+      console.log(role)
+      switch (role) {
+        case "0":
+          this.ngNavigatorShareService.share({
+            title: '',
+            url: `${link}`,
+          });
+          break;
+        case "1":
+          this.ngNavigatorShareService.share({
+            title: '',
+            url: `${link}`,
+          });
+          break;
+        case "2":
+          const message = `Hola, me interesa esta funcionalidad: `;
+          const phone = '19188156444';
+          window.location.href = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
+          break;
+        case "3":
+          window.location.href = "mailto:"
+          break;
+        default:
+          break;
+      }
     });
   }
+
 
   setRole(role: number) {
     this.curRole = role;

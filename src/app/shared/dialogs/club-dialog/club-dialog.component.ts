@@ -13,14 +13,22 @@ import {
 import { environment } from 'src/environments/environment';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { SwiperOptions } from 'swiper';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import {
+  OptionsDialogComponent,
+  OptionsDialogTemplate,
+} from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
+import { GeneralFormSubmissionDialogComponent } from '../general-form-submission-dialog/general-form-submission-dialog.component';
+import {
   FormComponent,
   FormData,
 } from 'src/app/shared/dialogs/form/form.component';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { FormGroup, Validators } from '@angular/forms';
 export interface DialogOptions {
   title: string;
@@ -60,6 +68,7 @@ interface Tabs {
 export class ClubDialogComponent implements OnInit {
 
   tabIndex = 0
+  openNavigation = false
   tabProvider = [
     {
       text: "🌼 Vitrina Online",
@@ -299,7 +308,9 @@ export class ClubDialogComponent implements OnInit {
     public headerService: HeaderService,
     private router: Router,
     private dialog: MatDialog,
-    private snackbar: MatSnackBar
+    private snackbar: MatSnackBar,
+    private authService: AuthService,
+    private dialogService: DialogService
   ) {}
 
   env: string = environment.assetsUrl;
@@ -441,23 +452,275 @@ export class ClubDialogComponent implements OnInit {
 
     this.emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
       if (result?.controls?.magicLinkEmailOrPhone.valid) {
-        // const exists = await this.checkIfUserExists(result?.controls?.magicLinkEmailOrPhone.value);
-        // if (exists) {
-        //   await this.existingUserLoginFlow(
-        //     result?.controls?.magicLinkEmailOrPhone.value,
-        //     result?.controls?.magicLinkEmailOrPhone.valid
-        //   );
-        // } else {
-        //   await this.nonExistingUserLoginFlow(
-        //     result?.controls?.magicLinkEmailOrPhone.value,
-        //     result?.controls?.magicLinkEmailOrPhone.valid
-        //   );
-        // }
+        const exists = await this.checkIfUserExists(result?.controls?.magicLinkEmailOrPhone.value);
+        if (exists) {
+          await this.existingUserLoginFlow(
+            result?.controls?.magicLinkEmailOrPhone.value,
+            result?.controls?.magicLinkEmailOrPhone.valid
+          );
+        } else {
+          await this.nonExistingUserLoginFlow(
+            result?.controls?.magicLinkEmailOrPhone.value,
+            result?.controls?.magicLinkEmailOrPhone.valid
+          );
+        }
       } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
         this.snackbar.open('Datos invalidos', 'Cerrar', {
           duration: 3000,
         });
       }
+    });
+  }
+  private async checkIfUserExists(emailOrPhone: string) {
+    try {
+      lockUI();
+      const exists = await this.authService.checkUser(emailOrPhone);
+      unlockUI();
+      return exists;
+    } catch (error) {
+      console.log(error);
+      unlockUI();
+    }
+  }
+  private async existingUserLoginFlow(credentials: any, isFormValid: boolean) {
+    const emailOrPhone = credentials;
+
+    let optionsDialogTemplate: OptionsDialogTemplate = {
+      // TODO - Validar si es correo o telefono (actualmente se da por entendido que es solo correo)
+      title: `Bienvenido de vuelta ${credentials}, prefieres:`,
+      options: [
+        {
+          value: 'Prefiero acceder con la clave',
+          callback: async () => {
+            await this.addPassword(emailOrPhone);
+          },
+        },
+        {
+          value: 'Prefiero recibir el enlace de acceso en mi correo',
+          callback: async () => {
+            if (isFormValid) {
+              const validEmail = new RegExp(
+                /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gim
+              );
+
+              let emailOrPhone = null;
+
+              if (
+                typeof credentials ===
+                  'string' &&
+                validEmail.test(credentials)
+              ) {
+                emailOrPhone = credentials;
+              } else {
+                emailOrPhone =
+                  credentials.e164Number.split(
+                    '+'
+                  )[1];
+              }
+
+              // lockUI();
+
+              await this.authService.generateMagicLink(
+                emailOrPhone,
+                '/ecommerce/club-landing',
+                null,
+                'MerchantAccess',
+                {
+                  jsondata: JSON.stringify({
+                    openNavigation: true,
+                  }),
+                },
+                []
+              );
+
+              unlockUI();
+
+              this.dialogService.open(
+                GeneralFormSubmissionDialogComponent,
+                {
+                  type: 'centralized-fullscreen',
+                  props: {
+                    icon: 'check-circle.svg',
+                    showCloseButton: false,
+                    message:
+                      'Se ha enviado un link mágico a tu correo electrónico',
+                  },
+                  customClass: 'app-dialog',
+                  flags: ['no-header'],
+                }
+              );
+            } else if (
+              isFormValid === false
+            ) {
+              unlockUI();
+              this.snackbar.open('Datos invalidos', 'Cerrar', {
+                duration: 3000,
+              });
+            }
+          },
+        },
+        {
+          value: 'Algo anda mal porque es la primera vez que trato de acceder con este correo',
+          callback: () => {
+            const phone = '19188156444';
+            const message = 'Algo anda mal porque es la primera vez que trato de acceder con este correo';
+            window.location.href = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
+          }
+        }
+      ],
+    };
+
+    this.dialog.open(OptionsDialogComponent, {
+      data: optionsDialogTemplate,
+      disableClose: true,
+    });
+  }
+  private async addPassword (emailOrPhone: string) {
+    this.emailDialogRef.close();
+
+
+    let fieldsToCreate: FormData = {
+      title: {
+        text: 'Clave de Acceso:',
+      },
+      buttonsTexts: {
+        accept: 'Accesar al Club',
+        cancel: 'Cancelar',
+      },
+      fields: [
+        {
+          name: 'password',
+          type: 'password',
+          placeholder: 'Escribe la contraseña',
+          validators: [Validators.pattern(/[\S]/)],
+          bottomButton: {
+            text: 'Prefiero recibir el correo con el enlace de acceso',
+            callback: () => {
+              //Cerrar 2do dialog
+
+              return switchToMagicLinkDialog();
+            },
+          },
+        },
+      ],
+    };
+
+    const dialog2Ref = this.dialog.open(FormComponent, {
+      data: fieldsToCreate,
+      disableClose: true,
+    });
+
+    dialog2Ref.afterClosed().subscribe(async (result: FormGroup) => {
+      try {
+        if (result?.controls?.password.valid) {
+          let password = result?.value['password'];
+
+          lockUI();
+
+          const session = await this.authService.signin(
+            emailOrPhone,
+            password,
+            true
+          );
+
+          if (!session) throw new Error('invalid credentials');
+
+          this.openNavigation = true;
+
+          unlockUI();
+        } else if (result?.controls?.password.valid === false) {
+          unlockUI();
+          this.snackbar.open('Datos invalidos', 'Cerrar', {
+            duration: 3000,
+          });
+        }
+      } catch (error) {
+        unlockUI();
+        console.error(error);
+        this.headerService.showErrorToast();
+      }
+    });
+
+    const switchToMagicLinkDialog = () => {
+      dialog2Ref.close();
+      return this.openMagicLinkDialog();
+    };
+  }
+
+  private async nonExistingUserLoginFlow(credentials: any, isFormValid: boolean) {
+    const emailOrPhone = credentials;
+
+    let optionsDialogTemplate: OptionsDialogTemplate = {
+      title: `Notamos que es la primera vez que intentas acceder con este correo, prefieres:`,
+      options: [
+        {
+          value: 'Empezar mi Membresía al Club con este correo electrónico',
+          callback: async () => {
+            this.typeOfMerchantFlow(credentials);
+          },
+        },
+        {
+          value: 'Intentar con otro correo electrónico.',
+          callback: async () => {
+            await this.openMagicLinkDialog();
+          },
+        },
+        {
+          value: 'Algo anda mal porque no es la primera vez que trato de acceder con este correo',
+          callback: () => {
+            const phone = '19188156444';
+            const message = 'Algo anda mal porque no es la primera vez que trato de acceder con este correo';
+            window.location.href = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
+          }
+        }
+      ],
+    };
+
+    this.dialog.open(OptionsDialogComponent, {
+      data: optionsDialogTemplate,
+      disableClose: true,
+    });
+  }
+  private typeOfMerchantFlow(credentials: any) {
+    let optionsDialogTemplate: OptionsDialogTemplate = {
+      title: `¿Qué tipo de comercio tienes?`,
+      options: [
+        {
+          value: 'Soy tienda, vendo al consumidor final',
+          callback: async () => {
+            return this.router.navigate(
+              ['/ecommerce/merchant-register'],
+              {
+                queryParams: {
+                  credentials: credentials,
+                  type: 'vendor',
+                }
+              }
+            );
+            // await this.registeringUserFlow(credentials);
+          },
+        },
+        {
+          value: 'Soy proveedor, le vendo a tiendas',
+          callback: async () => {
+            return this.router.navigate(
+              ['/ecommerce/merchant-register'],
+              {
+                queryParams: {
+                  credentials: credentials,
+                  type: 'supplier',
+                }
+              }
+            );
+            // await this.registeringUserFlow(credentials);
+          },
+        },
+      ],
+    };
+
+    this.dialog.open(OptionsDialogComponent, {
+      data: optionsDialogTemplate,
+      disableClose: true,
     });
   }
 

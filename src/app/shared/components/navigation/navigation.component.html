@@ -7,11 +7,7 @@
     (keydown.escape)="close()"
     disableClose
   >
-  <div class="special" (click)="showDialog()">
-    <span class="icon">
-      <mat-icon>ios_share</mat-icon>
-    </span>
-  </div>
+  
     <div class="navigation-main-container">
       <!-- <div class="close-btn" style="cursor: pointer;" (click)="close()">
         <span>X</span>
@@ -37,14 +33,19 @@
               (Invitado)
             </div> -->
           </div>
-          <div class="user">
-            <span *ngIf="headerService.user" (click)="openDialog()">{{userID}}</span>
-            <span *ngIf="!headerService.user" (click)="enterClub()">Soy Miembro</span>
+          <div class="close">
+            <div *ngIf="headerService.user" (click)="openDialog()">{{userID}}</div>
+            <div *ngIf="!headerService.user" (click)="enterClub()">Soy Miembro</div>
           </div>
           <div class="close" style="cursor: pointer;">
             <span (click)="close()">X</span>
           </div>
         </div>
+      </div>
+      <div class="special" (click)="showDialog()">
+        <span class="icon">
+          <mat-icon>ios_share</mat-icon>
+        </span>
       </div>
 
       <ng-container>
@@ -54,7 +55,7 @@
             Conoce la experiencia de los diversos participantes de la cadena de suministro floral para enriquecer tus propias estrategias y operaciones
           </div>
         </div>
-        <div class="link-desc" (click)="openClubDialog()">>
+        <div class="link-desc" (click)="openClubDialog()">
           <div class="title">Herramientas para automatizar procesos hasta desde el celular</div>
           <div class="link">
             Cotiza. Compra. Vende. Controla. Fideliza. Colabora.

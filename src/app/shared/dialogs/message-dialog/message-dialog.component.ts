@@ -1,8 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  MatBottomSheetRef,
-  MAT_BOTTOM_SHEET_DATA,
-} from '@angular/material/bottom-sheet';
+import {MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-message-dialog',
@@ -11,15 +8,9 @@ import {
 })
 export class MessageDialogComponent implements OnInit {
 
-  constructor(
-    private bottomSheetRef: MatBottomSheetRef
-  ) { }
+  constructor() { }
 
   ngOnInit(): void {
-  }
-
-  close() {
-    this.bottomSheetRef.dismiss()
   }
 
 }
