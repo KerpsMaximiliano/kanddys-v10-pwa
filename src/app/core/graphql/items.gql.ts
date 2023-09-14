@@ -15,6 +15,10 @@ const body = `
     image
     bio
   }
+  estimatedDeliveryTime {
+    from
+    until
+  }
   category { name, description }
   createdAt
   updatedAt
@@ -140,6 +144,10 @@ const fullItem = `
     _id
     name
     description
+  }
+  estimatedDeliveryTime {
+    from
+    until
   }
   layout
   ctaText
