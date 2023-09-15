@@ -7,13 +7,24 @@
     <img src="../../../../../assets/icons/info.svg" />
   </div>
   <div class="content">
-    <input placeholder="Todos los Comerciantes ({{ merchants.length }}) .." />
+    <input placeholder="Todos los Comerciantes ({{ totalMerchants }}) .." />
+    <div class="filters-container">
+        <p [ngClass]="{'selected':everyRoleSelected}" (click)="selectRole(true)">Todos los comerciantes ({{ totalMerchants }})</p>
+        <p (click)="selectRole('STORE')" [ngClass]="{'selected':isRoleSelected('STORE')}" >Tiendas ({{merchantsQuantityStore()}})</p>
+        <p (click)="selectRole('PROVIDER')" [ngClass]="{'selected':isRoleSelected('PROVIDER')}">Proveedores ({{merchantsQuantityProvider()}})</p>
+        <p>Productores (0)</p>
+        <p>Abastecedores (0)</p>
+    </div>
+    <div class="filters-container">
+        <p (click)="selectCountry(true)" [ngClass]="{'selected':everyCountrySelected}">De cualquier país ({{ totalMerchants }})</p>
+        <p *ngFor="let i of countries" (click)="selectCountry(i._id)" [ngClass]="{'selected':isCountrySelected(i._id)}">{{i.value}} ({{getQuantityOfCountry(i)}})</p>
+    </div>
     <div *ngFor="let i of months; let k = index">
       <p class="month-title">DESDE {{ i }}</p>
       <div class="month-card" *ngFor="let m of getMerchantsMonth(k+1)">
         <div class="flex-space-between">
-          <p class="month-card-title">{{ m._id }}</p>
-          <p class="month-card-country">PaisId</p>
+          <p class="month-card-title">{{ m.name || 'Sin nombre' }}</p>
+          <p class="month-card-country country-align-right">{{getCountry(m)}}</p>
         </div>
         <p class="month-card-country">Le vende a {{saleToText(m)}}</p>
       </div>
@@ -22,5 +33,5 @@
 </div>
 <div class="footer-page">
   <p class="date-text">FechaID a FechaID</p>
-  <p class="total">Total: {{ merchants.length }}</p>
+  <p class="total">Total: {{ totalMerchants }}</p>
 </div>

@@ -63,6 +63,34 @@ input::placeholder {
   color: #7b7b7b;
 }
 
+.filters-container {
+  margin-top: 15px;
+  border-radius: 8px;
+  background: #d9d9d9;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 22px;
+  padding-bottom: 10px;
+  display:flex;
+  flex-wrap: wrap;
+
+  p {
+    color: #7b7b7b;
+    font-family: InterMedium;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    margin: 0;
+    margin-right: 15px;
+    margin-bottom: 10px;
+  }
+
+  .selected{
+    color:#181D17;
+  }
+}
+
 .month-title {
   color: #000;
   font-family: InterMedium;
@@ -116,6 +144,10 @@ input::placeholder {
 .flex {
   display: flex;
   align-items: center;
+}
+
+.country-align-right{
+    text-align: right;
 }
 
 .footer-page {

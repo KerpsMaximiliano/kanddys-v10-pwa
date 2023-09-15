@@ -48,6 +48,11 @@ export const body = `
     code
     name
   }
+  deliveryLocations{
+    country{
+      _id
+    }
+  }
 `;
 
 export const bodyWithoutShowItems = `
@@ -649,4 +654,24 @@ query merchantGroupFiltersQuantity($merchantId: ObjectID!, $type: String){
     type: $type
     merchantId: $merchantId
   )
+}`;
+
+
+export const dataCountries = gql`
+query dataCountries{
+  dataCountries
+  {
+    _id
+    value
+  }
+}`;
+
+export const merchantQuantityOfFiltersRole = gql`
+query merchantQuantityOfFiltersRole{
+  merchantQuantityOfFiltersRole
+}`;
+
+export const merchantQuantityOfFiltersCountry = gql`
+query merchantQuantityOfFiltersCountry{
+  merchantQuantityOfFiltersCountry
 }`;

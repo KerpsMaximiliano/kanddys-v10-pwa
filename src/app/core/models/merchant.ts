@@ -49,6 +49,7 @@ export class Merchant extends Model<Merchant> {
   default?: boolean;
   createdAt: string;
   roles:Role[];
+  deliveryLocations:DeliveryLocation[];
 }
 
 export class EmployeeContract extends Model<EmployeeContract> {
@@ -87,4 +88,12 @@ export class MerchantInput {
   address?: string;
   slug?: string;
   categories?: string[];
+}
+
+export class DeliveryLocation{
+  country?:Country;
+}
+
+export class  Country {
+  _id:string;
 }
