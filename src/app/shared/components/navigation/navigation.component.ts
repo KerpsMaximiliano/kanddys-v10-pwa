@@ -843,12 +843,12 @@ export class NavigationComponent implements OnInit {
   tabProvider = [
     {
       text: '🌼 Vitrina Online',
-      routerLink: ['/ecommerce/supplier-items-selector'],
+      routerLink: ["/ecommerce/provider-items"],
       linkName: '',
       queryParams: {
         supplierMode: true,
       },
-      authorization: false,
+      authorization: true,
       isDummy: false,
       isShowDialog: false,
     },
