@@ -181,18 +181,7 @@ export class AdminArticleDetailComponent implements OnInit {
           })
       }
   }
-
-  editHashtag(event: any) {
-    const keyword = event.target.value
-    if (!keyword) {
-      this.hashtagSelected.keyword = ''
-      this.isHashtagExist = false
-    } else {
-      this.hashtagSelected.keyword = keyword
-      this.itemHashtagInput.setValue(keyword)
-    }
-  }
-
+  
 async getSalesData() {
   const sellsPagination = {
     options: { sortBy: 'count:asc', limit: 10, page: 1, range: {} },

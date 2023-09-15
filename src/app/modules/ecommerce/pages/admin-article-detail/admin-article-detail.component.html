@@ -1,5 +1,5 @@
 <div class="main-container">
-  <nav>
+  <nav [ngStyle]="{'max-width': dropdown ? '500px' : '482px'}">
     <div *ngIf="!dropdown" class="subnav">
       <a class="exit"> X </a>
     </div>
@@ -29,18 +29,13 @@
       <p class="card-title">Precio normal exhibido en MerchantID</p>
       <p class="display-text">{{item.pricing | currency}}</p>
     </div>
-    <div *ngIf="isHashtagExist && hashtagSelected?.keyword" class="info-card">
+    <div *ngIf="isHashtagExist && hashtagSelected?.keyword" class="info-card"(click)="openDialog('hashtag')">
       <p class="card-title">Hashtag</p>
-      <input
-        type="text"
-        [formControl]="itemHashtagInput"
-        [value]="itemHashtagInput.value"
-        (keyup)="editHashtag($event)"
-      />
+      <p class="display-text">{{itemHashtagInput.value}}</p>
     </div>
-    <div *ngIf="deliveryTimeStart || deliveryTimeEnd" class="info-card">
+    <div *ngIf="deliveryTimeStart || deliveryTimeEnd" class="info-card"(click)="openDialog('deliverytime')">
       <p class="card-title">Tiempo de Entrega</p>
-      <p *ngIf="deliveryTimeStart && deliveryTimeEnd" class="display-text">
+      <p *ngIf="deliveryTimeStart && deliveryTimeEnd" class="display-text" >
         Desde {{deliveryTimeStart}} horas hasta {{deliveryTimeEnd}} horas
       </p>
       <p *ngIf="deliveryTimeStart && !deliveryTimeEnd" class="display-text">
@@ -129,18 +124,18 @@
       </button>
     </div>
   </div>
-  <div *ngIf="dropdown" class="container">
+  <div *ngIf="dropdown" class="container dropdown">
     <div class="metric">
       <h4>Cantidad de veces Vendido</h4>
       <p>{{ totalSells }} veces, ${{ totalIncome }}</p>
     </div>
     <div class="metric">
       <h4>Cantidad de compradores diferentes</h4>
-      <p></p>
+      <p>4</p>
     </div>
     <div class="metric">
       <h4>Comprador que mas lo ha comprado</h4>
-      <p></p>
+      <p>CompradorID</p>
     </div>
     <div class="metric">
       <h4>Posicion segun las ventas</h4>
@@ -162,12 +157,22 @@
       <img [src]="env + '/dropdown_icon.png'" alt="wizard" />
     </div>
   </div>
-  <div *ngIf="!dropdown" class="bottom-bar">
-    <p class="preview">
+  <div 
+    *ngIf="!dropdown" 
+    class="bottom-bar"
+    [ngStyle]="{'background-color': active ? 'var(--El-verdecito, #87CD9B)' : 'var(--MoKito, #936105)'}"
+  >
+    <p 
+      class="preview"
+      [ngStyle]="{'color': active ? '#181D17' : '#FFF'}"
+    >
       Preview
     </p>
-    <p class="share">
-      Comparte con Compradores
+    <p 
+      class="share"
+      [ngStyle]="{'color': active ? '#181D17' : '#FFF'}"
+    >
+      {{active ? 'Comparte con Compradores' : 'Oculto en todas las Vitrinas'}}
     </p>
   </div>
 </div>
