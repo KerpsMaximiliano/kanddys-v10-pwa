@@ -15,25 +15,38 @@
       <div class="close-button" (click)="chatBoxOpened = false">X</div>
 
       <ng-container *ngFor="let historyEntry of history">
-        <div *ngIf="historyEntry.type === 'QUESTION'" class="question-box">
-          <h3>Preguntaste:</h3>
-          <p class="content">{{ historyEntry.value }}</p>
+        <div *ngIf="historyEntry.type === 'USER'" class="question-box">
+          <div class="message-container">
+            <div
+              class="avatar-wrapper"
+              [ngStyle]="{
+                backgroundImage: headerService.user?.image
+                  ? 'url(' +
+                    headerService.user?.image +
+                    '), url(' +
+                    assetsURL +
+                    '/spinner2.gif)'
+                  : 'url(https://www.gravatar.com/avatar/0?s=250&d=mp)'
+              }"
+            ></div>
+            <p class="content">{{ historyEntry.value }}</p>
+          </div>
         </div>
 
-        <div *ngIf="historyEntry.type === 'ANSWER'" class="answer-box">
-          <p>{{ historyEntry.label }}</p>
+        <div *ngIf="historyEntry.type === 'WIZARD'" class="answer-box">
+          <div class="message-container darker">
+            <p class="content">{{ historyEntry.value }}</p>
 
-          <ng-container *ngIf="historyEntry.links">
-            <ul>
-              <ng-container *ngFor="let link of historyEntry.links">
-                <li>
-                  <a class="btn" [routerLink]="[link.route]">
-                    {{ link.label }}
-                  </a>
-                </li>
-              </ng-container>
-            </ul>
-          </ng-container>
+            <div
+              class="avatar-wrapper"
+              [ngStyle]="{
+                backgroundImage:
+                  'url(' + assetsURL + '/hat-wizard-solid-white.svg)',
+                backgroundSize: '30px',
+                backgroundColor: '#C5C5C5'
+              }"
+            ></div>
+          </div>
         </div>
 
         <div *ngIf="historyEntry.type === 'ERROR'" class="error-box">
@@ -41,13 +54,14 @@
         </div>
       </ng-container>
 
-      <ng-container *ngIf="history.length === 0">
+      <ng-container *ngIf="loadingAnswer">
+        <ng-container *ngTemplateOutlet="loader"></ng-container>
+      </ng-container>
+
+      <ng-container *ngIf="history.length === 0 && !loadingAnswer">
         <div class="empty">
           <div class="empty-icon">
-            <img
-              src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/hat-wizard-solid.svg"
-              alt="wizard"
-            />
+            <img [src]="assetsURL + '/hat-wizard-solid.svg'" alt="wizard" />
           </div>
 
           <p>
@@ -64,7 +78,11 @@
         placeholder="Escribe algo..."
         formControlName="input"
       ></textarea>
-      <button class="submit-button" (click)="sendQuestion()">
+      <button
+        class="submit-button"
+        (click)="sendQuestion()"
+        [disabled]="loadingAnswer"
+      >
         <img
           src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fsend_black.svg"
           alt="send"
@@ -73,3 +91,18 @@
     </form>
   </div>
 </div>
+
+<ng-template #loader>
+  <div
+    [ngStyle]="{
+      width: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      height: '80px',
+      justifyContent: 'center'
+    }"
+    *ngIf="loadingAnswer"
+  >
+    <app-dot-loader></app-dot-loader>
+  </div>
+</ng-template>

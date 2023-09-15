@@ -53,6 +53,7 @@ import {
   orderQuantityOfFiltersDeliveryZone,
   orderQuantityOfFiltersShippingType,
   orderPaginate,
+  updateOrderExternal,
 } from '../graphql/order.gql';
 import {
   ItemOrder,
@@ -702,5 +703,24 @@ export class OrderService {
       fetchPolicy: 'no-cache',
     });
     return result?.orderQuantityOfFiltersShippingType;
+  }
+
+  // async orderPaginate(pagination: PaginationInput) {
+  //   const result = await this.graphql.query({
+  //     query: orderPaginate,
+  //     variables: { pagination },
+  //     fetchPolicy: 'no-cache',
+  //   });
+  //   return result?.orderPaginate;
+  // }
+
+  async updateOrderExternal(input : ItemOrderExternalInput, id: string) {
+    const result = await this.graphql.mutate({
+      mutation: updateOrderExternal,
+      variables: { input, id },
+      fetchPolicy: 'no-cache',
+      context:{ useMultipart: true }
+    });
+    return result?.updateOrderExternal;
   }
 }
