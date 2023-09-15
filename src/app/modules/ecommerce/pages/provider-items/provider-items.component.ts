@@ -175,8 +175,6 @@ export class ProviderItemsComponent implements OnInit {
           });
       } else this.executeInitProcesses();
     } else this.executeInitProcesses();
-
-
   }
 
   async executeInitProcesses() {
@@ -189,6 +187,9 @@ export class ProviderItemsComponent implements OnInit {
         }
         await this.getItemsISell();
         await this.getNumberOfItemsSold();
+
+        const merchantDefault = await this.merchantsService.merchantDefault()
+        this.isSupplier = merchantDefault?.roles?.name === 'PROVIDER' ? true : false
 
         this.checkIfPresentationWasClosedBefore();
 
