@@ -1,0 +1,27 @@
+<div class="container">
+    <div class="icon" (click)="close()">
+        <mat-icon>close</mat-icon>
+    </div>
+    <div class="title">
+      Herramientas para Automatizar Procesos
+    </div>
+    <div class="tabs-container">
+        <div class="tab-content">
+          <ul>
+            <li class="tab-content-item" [routerLinkActive]="!link.isDummy ? 'active' : ''" *ngFor="let link of tabProvider">
+              <a
+                  [routerLink]="!link.isDummy ? link.routerLink : null"
+                  style="padding: 0px"
+                  *ngIf="!link.isShowDialog"
+              >
+                <span class="text">{{link.text}}</span><br>
+              </a>
+              <!-- <p class="text">{{link.text}}</p> -->
+            </li>
+          </ul>
+        </div>
+    </div>
+</div>
+<div class="footer">
+    Empieza, juntos es mejor!!
+</div>

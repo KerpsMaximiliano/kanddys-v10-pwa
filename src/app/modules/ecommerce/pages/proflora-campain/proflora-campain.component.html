@@ -1,0 +1,74 @@
+<app-navigation>
+    <div class="container">
+      <div class="header-wrapper">
+        <div class="left-part">
+          <img
+            [src]="assetsFolder + '/icon_info.png'"
+            class="info-button"
+            alt="open internal information"
+            (click)="(null)"
+          />
+          <div class="title">www.flores.club</div>
+        </div>
+    
+        <div class="right-part">
+          <div class="dialog-bottom">
+            <span >Invitación de {{name}}</span>
+          </div>
+          <div class="close" style="cursor: pointer">
+            <mat-icon>ios_share</mat-icon>
+          </div>
+        </div>
+      </div>
+    
+      <main>
+        <div class="content">
+            <div class="text-title">
+                EMPIEZA A GANAR DINERO MENSUAL POR CADA INVITADO DIRECTO Y TODOS SUS INDIRECTOS
+            </div>
+            <div class="text-content" (click)="openDescDialog()">
+                Mira la oferta para nuevos Embajadores durante ProFlora 2023
+            </div>
+        </div>
+        <div class="content">
+            <div class="text-title">
+                TUS INVITADOS USARAN HERRAMIENTAS QUE LE AYUDAN A AUTOMATIZAR SUS PROCESOS
+            </div>
+            <div class="text-content" (click)="openDialog()">
+                Cotizan. Compran. Venden. Controlan. Fidelizan. Colaboran.
+            </div>
+        </div>
+        <div class="border-line"></div>
+        <div class="slide">
+            <div class="title">
+                MIRA COMO LAS FLORISTERIAS Y DECORADORES VALORAN LAS HERRAMIENTAS
+            </div>
+            <div class="footer-swiper">
+                <div class="swiper-custom-container">
+                  <swiper [config]="swiperConfig">
+                    <div class="slide-item" *ngFor="let item of list">
+                      <div class="sub-slide-item">
+                        <div class="slide-content">{{ item.text }}</div>
+                        <div class="video">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="49" viewBox="0 0 48 49" fill="none">
+                                    <path d="M24 45.8438C19.8466 45.8438 15.7865 44.6121 12.333 42.3046C8.87959 39.9971 6.18797 36.7174 4.59853 32.8801C3.00909 29.0429 2.59322 24.8205 3.40351 20.7469C4.2138 16.6733 6.21385 12.9314 9.15076 9.99452C12.0877 7.05762 15.8295 5.05756 19.9031 4.24727C23.9767 3.43698 28.1991 3.85285 32.0364 5.44229C35.8736 7.03173 39.1534 9.72335 41.4609 13.1768C43.7684 16.6302 45 20.6904 45 24.8438C45 30.4133 42.7875 35.7547 38.8492 39.693C34.911 43.6313 29.5695 45.8438 24 45.8438ZM24 48.8438C28.7468 48.8438 33.3869 47.4362 37.3337 44.799C41.2805 42.1619 44.3566 38.4136 46.1731 34.0282C47.9896 29.6427 48.4649 24.8171 47.5388 20.1616C46.6128 15.5061 44.327 11.2297 40.9706 7.8732C37.6141 4.51674 33.3377 2.23096 28.6822 1.30491C24.0266 0.378869 19.201 0.854149 14.8156 2.67065C10.4302 4.48716 6.68188 7.56329 4.04473 11.5101C1.40758 15.4569 0 20.097 0 24.8438C0 31.209 2.52856 37.3134 7.02944 41.8143C11.5303 46.3152 17.6348 48.8438 24 48.8438Z" fill="#7B7B7B"/>
+                                    <path d="M18.813 16.0082C19.0584 15.8819 19.3338 15.8257 19.609 15.8458C19.8843 15.8659 20.1486 15.9616 20.373 16.1222L30.873 23.6222C31.0674 23.761 31.2259 23.9442 31.3353 24.1565C31.4447 24.3689 31.5017 24.6043 31.5017 24.8432C31.5017 25.0821 31.4447 25.3175 31.3353 25.5299C31.2259 25.7423 31.0674 25.9255 30.873 26.0642L20.373 33.5642C20.1487 33.7248 19.8845 33.8203 19.6094 33.8404C19.3343 33.8606 19.059 33.8044 18.8137 33.6782C18.5684 33.552 18.3627 33.3606 18.2192 33.1251C18.0756 32.8896 17.9998 32.619 18 32.3432V17.3432C17.9997 17.0675 18.0754 16.797 18.2189 16.5615C18.3623 16.3259 18.5679 16.1345 18.813 16.0082Z" fill="#7B7B7B"/>
+                                </svg>
+                                <!-- <video width="320" height="240" autoplay>
+                                    <source src="movie.mp4" type="video/mp4">
+                                    <source src="movie.ogg" type="video/ogg">
+                                Your browser does not support the video tag.
+                                </video> -->
+                        </div>
+                        <div class="slide-footer">{{item.footer}}</div>
+                        </div>
+                    </div>
+                  </swiper>
+                </div>
+            </div>
+        </div>  
+      </main>
+    
+      <footer class="footer green" (click)="openEmailDialog()">Empieza, juntos es mejor!</footer>
+    </div>
+</app-navigation>
