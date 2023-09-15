@@ -11,9 +11,13 @@
       </div>
 
       <div class="btn-container">
-        <button mat-icon-button>
+        <button mat-icon-button (click)="isSwitchActive = !isSwitchActive">
           <img
-            src="../../../../../assets/icons/switch-green.svg"
+            [src]="
+              isSwitchActive
+                ? '../../../../../assets/icons/switch-green.svg'
+                : '../../../../../assets/icons/switch-red.svg'
+            "
             class="info-button"
             alt="open internal information"
             style="filter: none"
@@ -54,11 +58,21 @@
         />
       </form>
 
-      <div class="filtering-options card">
+      <div *ngIf="isSupplier" class="filtering-options card">
         <button
           *ngFor="let btn of buttonFiltering"
           [ngClass]="{ active: btn.isActive }"
           (click)="onChangeBtnFiltering(btn)"
+        >
+          {{ btn.label }} ({{ btn.total }})
+        </button>
+      </div>
+
+      <div *ngIf="!isSupplier" class="filtering-options card card-store">
+        <button
+          *ngFor="let btn of buttonFilteringNoSupplier"
+          [ngClass]="{ active: btn.isActive }"
+          (click)="onChangeBtnFilteringNotSupplier(btn)"
         >
           {{ btn.label }} ({{ btn.total }})
         </button>
@@ -153,7 +167,9 @@
         </div>
       </section>
 
-      <section *ngIf="itemsIDontSell?.length > 0 && !hiddenDashboard">
+      <section
+        *ngIf="itemsIDontSell?.length > 0 && !hiddenDashboard && isSupplier"
+      >
         <h3>ARTICULOS QUE NECESITAN LAS FLORISTERIAS MIEMBROS</h3>
 
         <div class="list-of-items">
@@ -204,9 +220,15 @@
       </section>
     </main>
 
-    <footer *ngIf="!searchOpened && itemsIDontSell?.length > 0">
+    <footer *ngIf="!searchOpened && itemsIDontSell?.length > 0 && isSupplier">
       <p>Preview</p>
       <p>Comparte</p>
+    </footer>
+
+    <footer *ngIf="!searchOpened && !isSupplier" [ngClass]="{'off': !isSwitchActive}">
+      <p>Preview</p>
+      <p *ngIf="isSwitchActive">Comparte</p>
+      <p *ngIf="!isSwitchActive">Tu vitrina está apagada</p>
     </footer>
   </div>
 </app-navigation>

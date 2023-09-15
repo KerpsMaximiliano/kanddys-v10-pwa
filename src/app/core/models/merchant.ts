@@ -47,6 +47,13 @@ export class Merchant extends Model<Merchant> {
   receiveNotificationsMainPhone?: boolean;
   secondaryContacts?: string[];
   default?: boolean;
+  roles?: Roles
+}
+
+interface Roles {
+  _id: string
+  code: 'STORE' | 'PROVIDERS' | 'DEFAULT'
+  name: string
 }
 
 export class EmployeeContract extends Model<EmployeeContract> {

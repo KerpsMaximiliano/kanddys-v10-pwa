@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Route, Router } from '@angular/router';
@@ -8,10 +7,7 @@ import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { AppService } from 'src/app/app.service';
 import { urltoFile } from 'src/app/core/helpers/files.helpers';
-import {
-  completeImageURL,
-  isVideo,
-} from 'src/app/core/helpers/strings.helpers';
+import { completeImageURL, isVideo } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item, ItemImageInput, ItemInput } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
@@ -24,16 +20,8 @@ import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { QuotationItem } from 'src/app/core/services/quotations.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import {
-  FormComponent,
-  FormData,
-} from 'src/app/shared/dialogs/form/form.component';
-import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
-import {
-  OptionsDialogComponent,
-  OptionsDialogTemplate,
-} from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
+import { FormComponent, FormData } from 'src/app/shared/dialogs/form/form.component';
+import { OptionsDialogComponent, OptionsDialogTemplate } from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
 import { environment } from 'src/environments/environment';
 
 
@@ -42,6 +30,8 @@ interface BtnFiltering {
   isActive: boolean,
   total: number
 }
+
+type TypeItem = 'supplier' | 'default' | ['default', null]
 
 @Component({
   selector: 'app-provider-items',
@@ -70,7 +60,9 @@ export class ProviderItemsComponent implements OnInit {
       },
     ];
   activatedSearchFilters: Record<string, boolean> = {};
+  isSwitchActive: boolean = true;
 
+  isSupplier: boolean = false;
   hiddenDashboard: boolean = false
   itemToSearch: string = ''
   itemsFiltering = []
@@ -87,6 +79,28 @@ export class ProviderItemsComponent implements OnInit {
     },
     {
       label: "Ocultos",
+      isActive: false,
+      total: 0
+    }
+  ]
+  buttonFilteringNoSupplier: BtnFiltering[] = [
+    {
+      label: "Todos los exhibidos",
+      isActive: false,
+      total: 0
+    },
+    {
+      label: "Los ocultos",
+      isActive: false,
+      total: 0
+    },
+    {
+      label: "Los que pagan comisión",
+      isActive: false,
+      total: 0
+    },
+    {
+      label: "Menos de 10 disponibles para vender",
       isActive: false,
       total: 0
     }
@@ -145,8 +159,6 @@ export class ProviderItemsComponent implements OnInit {
     private dialog: MatDialog,
     private router: Router,
     private route: ActivatedRoute,
-    private bottomSheet: MatBottomSheet,
-    private dialogService: DialogService,
     private authService: AuthService,
     private snackbar: MatSnackBar
   ) { }
@@ -180,11 +192,15 @@ export class ProviderItemsComponent implements OnInit {
 
         this.checkIfPresentationWasClosedBefore();
 
-        await this.getNewPageOfItemsIDontSell(true, false);
+        if (this.isSupplier) {
+          await this.getNewPageOfItemsIDontSell(true, false);
+        }
 
         this.itemSearchbar.valueChanges.subscribe(async (change) => {
           await this.getItemsISell();
-          await this.getNewPageOfItemsIDontSell(true, false);
+          if (this.isSupplier) {
+            await this.getNewPageOfItemsIDontSell(true, false);
+          }
         });
       }
     );
@@ -563,7 +579,20 @@ export class ProviderItemsComponent implements OnInit {
     }, 100);
     this.itemsService
       .itemsQuantityOfFilters(this.merchantsService.merchantData._id, "supplier")
-      .then(data => this.buttonFiltering[2].total = data.hidden)
+      .then(data => {
+        if (this.isSupplier) {
+          this.buttonFiltering[2].total = data.hidden
+        } else {
+          // btn para todos los items
+          this.buttonFilteringNoSupplier[0].total = data.all
+          // btn para items ocultos
+          this.buttonFilteringNoSupplier[1].total = data.hidden
+          // btn para items con comisiones
+          this.buttonFilteringNoSupplier[2].total = data.commissionable
+          // btn para menos de 10 items para vender
+          this.buttonFilteringNoSupplier[3].total = data.lowStock
+        }
+      })
 
   }
 
@@ -1563,6 +1592,16 @@ export class ProviderItemsComponent implements OnInit {
     this.filteringItemsBySearchbar(this.itemToSearch)
   }
 
+  onChangeBtnFilteringNotSupplier(btnActual: BtnFiltering) {
+    const i = this.buttonFilteringNoSupplier.findIndex(btn => btn.label === btnActual.label)
+    this.buttonFilteringNoSupplier[i].isActive = this.buttonFilteringNoSupplier[i].isActive
+      ? false
+      : true
+    const isSomeBtnActive = this.buttonFilteringNoSupplier.some(btn => btn.isActive)
+    this.hiddenDashboard = isSomeBtnActive ? true : false
+    this.filteringItemsBySearchbarNotSupplier(this.itemToSearch)
+  }
+
   onCloseSearchbar() {
     this.searchOpened = false
   }
@@ -1592,7 +1631,7 @@ export class ProviderItemsComponent implements OnInit {
     const input: PaginationInput = {
       findBy: {
         status,
-        type: 'supplier',
+        type: "supplier",
         _id: {
           $nin: this.itemsISell.map((item) => item.parentItem),
         },
@@ -1621,6 +1660,49 @@ export class ProviderItemsComponent implements OnInit {
         parentItem: {
           $ne: null
         }
+      }
+    }
+
+    this.saleflowService
+      .listItems(input, false, itemName)
+      .then(data => this.itemsFiltering = data.listItems)
+  }
+
+  private filteringItemsBySearchbarNotSupplier(itemName: string) {
+    // Si el boton de "oculto" está activo, será "disabled". Caso contrario "active"
+    const status = this.buttonFilteringNoSupplier[1].isActive ? "disabled" : "active"
+
+    const input: PaginationInput = {
+      findBy: {
+        status,
+        type: ['default', null],
+        _id: {
+          $nin: this.itemsISell.map((item) => item.parentItem),
+        },
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: this.paginationState.pageSize,
+        page: this.paginationState.page,
+      },
+    };
+
+    // Button de items exhibidos
+    if (this.buttonFilteringNoSupplier[0].isActive) {
+      input.findBy = {
+        ...input.findBy,
+        merchant: {
+          _id: this.merchantsService.merchantData._id
+        }
+      }
+    }
+
+    // Button de items para filtrar por comisiones
+    if (this.buttonFilteringNoSupplier[2].isActive) {
+      input.findBy = {
+        ...input.findBy,
+        type: ["default", null],
+        allowCommission: true
       }
     }
 
