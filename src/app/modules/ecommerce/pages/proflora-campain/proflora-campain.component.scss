@@ -177,8 +177,8 @@ footer {
     left: 0px;
     right: 0px;
     bottom: 0px;
-    padding-top: 9px;
-    padding-bottom: 3px;
+    padding-top: 6px;
+    padding-bottom: 6px;
     color: #181d17;
     text-align: center;
     font-family: InterBold;
@@ -189,4 +189,14 @@ footer {
     text-align: center;
     background-color: #87cd9b;
 }
-  
+
+@media (max-width: 420px) {
+    .dialog-bottom {
+        width: calc(100vw - 240px);
+        div {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+    }
+}
