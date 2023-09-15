@@ -1,39 +1,48 @@
 <app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
   <div class="dashboard-page container" (scroll)="infinitePagination()">
     <header class="header" *ngIf="!searchOpened">
-      <button mat-icon-button style="margin-right: 25px" (click)="(null)">
-        <img
-          [src]="assetsFolder + '/icon_info.png'"
-          class="info-button"
-          alt="open internal information"
-          (click)="(null)"
-        />
-      </button>
+      <div class="btn-container principal">
+        <button type="button" mat-icon-button>
+          <mat-icon>keyboard_arrow_left</mat-icon>
+        </button>
+        <button class="title" (click)="drawerOpened = true">
+          🌻 Vitrina Online
+        </button>
+      </div>
 
-      <button
-        mat-icon-button
-        style="margin-right: 25px"
-        (click)="sendWhatsappToAppOwner()"
-      >
-        <mat-icon [ngStyle]="{ color: 'white' }">add</mat-icon>
-      </button>
+      <div class="btn-container">
+        <button mat-icon-button>
+          <img
+            src="../../../../../assets/icons/switch-green.svg"
+            class="info-button"
+            alt="open internal information"
+            style="filter: none"
+          />
+        </button>
 
-      <button
-        style="
-          color: #87cd9b;
-          font-size: 17px;
-          font-family: InterBold;
-          margin-left: auto;
-        "
-        (click)="drawerOpened = true"
-      >
-        Artículos & Ventas 💰
-        <mat-icon style="color: #6fcf97; margin-left: 8px">menu</mat-icon>
-      </button>
+        <button mat-icon-button (click)="sendWhatsappToAppOwner()">
+          <mat-icon [ngStyle]="{ color: 'white' }">add</mat-icon>
+        </button>
+
+        <button mat-icon-button class="info" (click)="(null)">
+          <img
+            [src]="assetsFolder + '/icon_info.png'"
+            class="info-button"
+            alt="open internal information"
+            (click)="(null)"
+          />
+        </button>
+      </div>
     </header>
 
     <div class="search-opened" *ngIf="searchOpened">
+      <header>
+        <button class="btn btn-close" (click)="onCloseSearchbar()">
+          <img src="../../../../../assets/icons/close-button.svg" alt="" />
+        </button>
+      </header>
       <form class="search-bar-wrapper">
+        <mat-icon>search</mat-icon>
         <input
           type="text"
           name="item-search"
@@ -41,8 +50,19 @@
           class="input search-bar"
           placeholder="Buscar..."
           [formControl]="itemSearchbar"
+          (keyup)="onFilteringItemsBySearchbar($event)"
         />
       </form>
+
+      <div class="filtering-options card">
+        <button
+          *ngFor="let btn of buttonFiltering"
+          [ngClass]="{ active: btn.isActive }"
+          (click)="onChangeBtnFiltering(btn)"
+        >
+          {{ btn.label }} ({{ btn.total }})
+        </button>
+      </div>
 
       <!--
         <div class="filters-container">
@@ -97,14 +117,20 @@
           (click)="!searchTutorialsOpened ? showSearch() : null"
           name="item-search"
           class="input search-bar"
-          placeholder="Buscar..."
+          placeholder="Articulos exhibidos..."
           [formControl]="itemSearchbar"
         />
+
+        <div class="filters">
+          <div class="option">📦</div>
+          <div class="option">⏰</div>
+          <div class="option">💰</div>
+        </div>
       </form>
 
       <ng-container *ngTemplateOutlet="itemsTutorialOverlay"></ng-container>
 
-      <section *ngIf="itemsISell?.length > 0">
+      <section *ngIf="itemsISell?.length > 0 && !hiddenDashboard">
         <h3>ARTICULOS QUE ESTOY EXHIBIENDO A LOS MIEMBROS</h3>
 
         <div class="list-of-items">
@@ -127,7 +153,7 @@
         </div>
       </section>
 
-      <section *ngIf="itemsIDontSell?.length > 0">
+      <section *ngIf="itemsIDontSell?.length > 0 && !hiddenDashboard">
         <h3>ARTICULOS QUE NECESITAN LAS FLORISTERIAS MIEMBROS</h3>
 
         <div class="list-of-items">
@@ -152,10 +178,35 @@
           </div>
         </div>
       </section>
+
+      <section *ngIf="searchOpened">
+        <div class="list-of-items">
+          <div
+            class="item-wrapper"
+            *ngFor="let item of itemsFiltering; let itemIndex = index"
+          >
+            <ng-container
+              *ngTemplateOutlet="
+                itemCard;
+                context: {
+                  item: item,
+                  itemIndex: itemIndex,
+                  providedByMe: false,
+                  firstItem:
+                    itemIndex === 0 &&
+                    itemsISell.length === 0 &&
+                    itemsIDontSell.length > 0
+                }
+              "
+            ></ng-container>
+          </div>
+        </div>
+      </section>
     </main>
 
     <footer *ngIf="!searchOpened && itemsIDontSell?.length > 0">
-      Adiciona el precio para empezar a vender
+      <p>Preview</p>
+      <p>Comparte</p>
     </footer>
   </div>
 </app-navigation>
@@ -223,9 +274,7 @@
           <ng-container *ngIf="item.stock === 0">
             <img
               class="infinite-units small"
-              (click)="
-                changeAmount(item, 'infinite', itemIndex, providedByMe)
-              "
+              (click)="changeAmount(item, 'infinite', itemIndex, providedByMe)"
               [src]="assetsFolder + '/infinity2.png'"
               alt="infinite stock"
             />
