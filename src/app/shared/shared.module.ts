@@ -237,6 +237,8 @@ import { SelectRoleDialogComponent } from './dialogs/select-role-dialog/select-r
 import { MessageDialogComponent } from './dialogs/message-dialog/message-dialog.component';
 import { SpecialDialogComponent } from './dialogs/special-dialog/special-dialog.component';
 import { WizardChatbotComponent } from './components/wizard-chatbot/wizard-chatbot.component';
+import { ProfloraLinkDialogComponent } from './dialogs/proflora-link-dialog/proflora-link-dialog.component';
+import { ProfloraDescDialogComponent } from './dialogs/proflora-desc-dialog/proflora-desc-dialog.component';
 
 const imports = [
   CommonModule,
@@ -483,9 +485,11 @@ const declarations = [
   OptionsDialogComponent,
   ClubDialogComponent,
   SelectRoleDialogComponent,
+  WizardChatbotComponent,
+  ProfloraLinkDialogComponent,
+  ProfloraDescDialogComponent,
   MessageDialogComponent,
   SpecialDialogComponent,
-  WizardChatbotComponent
 ];
 
 @NgModule({
