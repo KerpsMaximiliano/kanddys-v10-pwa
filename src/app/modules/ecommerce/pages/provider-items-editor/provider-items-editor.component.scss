@@ -40,7 +40,7 @@
   margin-top: 11px;
   margin-left: 16px;
   margin-right: 16px;
-  padding: 89px 20px 26px 15px;
+  padding: 89px 20px 0px 15px;
   background: #FFFFFF;
 }
 
@@ -64,11 +64,17 @@
   line-height: 105%;
   font-style: normal;
   width: 100%;
+  padding-bottom: 26px;
+
 }
 
 .article-content .context {
   margin-top: 10px;
   color: #7b7b7b;
+}
+
+.input-container{
+    display: block;
 }
 
 .article p {
@@ -81,14 +87,36 @@
   font-size: 17px;
   font-weight: 400;
   line-height: 20.57px;
+  text-align: center;
+  color: #181D17;
+  border: none;
+  width: 100%;
+  padding: 5px;
+  
 }
 
-.context{
+.context {
   font-family: InterRegular;
   font-size: 17px;
   font-weight: 400;
   line-height: 17.85px;
+  text-align: center;
+  color: #181D17;
+  border: none;
+  width: 100%;
+  padding: 5px;
+  
 }
+
+// .context{
+//   font-family: InterRegular;
+//   font-size: 17px;
+//   font-weight: 400;
+//   line-height: 17.85px;
+//   text-align: center;
+//   color: #181D17;
+//   border: none;
+// }
 
 .edition-message{
   margin-top: 5px;

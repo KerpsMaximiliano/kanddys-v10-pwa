@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item, ItemInput } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
 import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
@@ -16,10 +17,11 @@ import { environment } from 'src/environments/environment';
 })
 export class ProviderItemsEditorComponent implements OnInit {
   
-  currency:string = "$";
-  changePrice: FormControl = new FormControl('', [
-    Validators.min(0.00),
-  ]);
+  currency:number;
+  pricing:number;
+  placeholder:string = "0.00"
+  articleName: FormControl = new FormControl('');
+  articleDescription: FormControl = new FormControl('');
   changeStock: FormControl = new FormControl('0', [
     Validators.min(0),
   ]);
@@ -32,6 +34,7 @@ export class ProviderItemsEditorComponent implements OnInit {
   infinite:boolean = false;
   saleFlowId;
   stock:number = 0;
+  useStock:boolean;
   constructor( private route: ActivatedRoute,
               private itemService: ItemsService,
               private merchant: MerchantsService,
@@ -42,7 +45,18 @@ export class ProviderItemsEditorComponent implements OnInit {
       const { articleId } = params;
       this.articleId = articleId;
     });
-    await this.getItemData();
+
+    if(this.articleId){      
+      await this.getItemData();
+      this.articleName.setValue(this.itemData.name);
+      this.articleDescription.setValue(this.itemData.description);
+      this.changeStock.setValue(this.itemData.stock);
+      this.pricing = this.itemData.pricing;
+      console.log("🚀 ~ file: provider-items-editor.component.ts:55 ~ ProviderItemsEditorComponent ~ ngOnInit ~ this.pricing:", this.pricing)
+      this.currency = this.pricing;
+      this.placeholder = String(this.itemData.pricing);
+      this.useStock = this.itemData.useStock;
+    }
     await this.getMerchantDefault();
     await this.getSaleFlowDefault();
   }
@@ -52,10 +66,7 @@ export class ProviderItemsEditorComponent implements OnInit {
   }
 
   async getItemData(){
-    console.log("entro por aca");
-    
     this.itemData = await this.itemService.item(this.articleId);
-    console.log("🚀 ~ file: provider-items-editor.component.ts:51 ~ ProviderItemsEditorComponent ~ getItemData ~ this.itemData:", this.itemData)
   }
 
   async getMerchantDefault(){
@@ -63,12 +74,10 @@ export class ProviderItemsEditorComponent implements OnInit {
     this.merchantId = merchantDefault._id;
   }
 
-  searchItems(event){
-    if (event.target.value < 0) {
-      event.target.value = 0;
-    }else{
-      this.currency = "$"+this.changePrice.value;
-    }
+  
+
+  updateItemPrice(newPrice: number) {
+    this.currency = newPrice;
   }
 
  
@@ -92,11 +101,13 @@ export class ProviderItemsEditorComponent implements OnInit {
     }
     else if(this.infinite){
       this.infinite = false; 
+      this.useStock = this.infinite;
     }
   }
   setInfinite(){
     this.infinite = !this.infinite;
     this.stock = this.changeStock.value;
+    this.useStock = this.infinite ? true : false;
   }
 
   async getSaleFlowDefault(){
@@ -106,26 +117,33 @@ export class ProviderItemsEditorComponent implements OnInit {
     this.saleFlowId = saleflowDefault._id;
   }
 
+  async toDoTask(){
+    if(this.articleId){
+      await this.updateItem();
+    }else{
+      await this.createItem();
+    }
+  }
+
   async createItem(){
+    lockUI();
     let itemDataInput: ItemInput;
       if(!this.infinite){
         itemDataInput = {
           merchant:this.merchantId,
-          pricing:parseInt(this.changePrice.value),
+          pricing:this.currency,
           useStock: true,
           stock: parseInt(this.changeStock.value),
-          name: this.itemData.name,
-          description: this.itemData.description,
-          type:"supplier"
+          name: this.articleName.value,
+          description: this.articleDescription.value
         }
       }else{
         itemDataInput = {
           merchant:this.merchantId,
-          pricing:parseInt(this.changePrice.value),
+          pricing:this.currency,
           useStock: false,
-          name: this.itemData.name,
-          description: this.itemData.description,
-          type:"supplier"
+          name: this.articleName.value,
+          description: this.articleDescription.value
         }
       }
 
@@ -139,8 +157,33 @@ export class ProviderItemsEditorComponent implements OnInit {
         },
         this.saleFlowId
       );
+      unlockUI();
     }else{
       await this.itemService.createPreItem(itemDataInput);
+      unlockUI();
     }
+  }
+
+  async updateItem(){
+    lockUI();    
+    let itemDataInput: ItemInput;
+      if(!this.infinite){
+        itemDataInput = {
+          pricing:this.currency,
+          useStock: true,
+          stock: parseInt(this.changeStock.value),
+          name: this.articleName.value,
+          description: this.articleDescription.value
+        }
+      }else{
+        itemDataInput = {
+          pricing:this.currency,
+          useStock: false,
+          name: this.articleName.value,
+          description: this.articleDescription.value
+        }
+      }
+      await this.itemService.updateItem(itemDataInput, this.articleId);
+      unlockUI();
   }
 }

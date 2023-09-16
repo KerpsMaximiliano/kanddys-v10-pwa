@@ -18,6 +18,14 @@
   font-family: RobotoMedium;
   font-size: 1rem;
 }
+
+.formatted-price-large {
+  display: flex;
+  font-family: InterBold;
+  font-size: 46px;
+  background: transparent;
+}
+
 .formatted-input {
   background-color: transparent;
   color: transparent;

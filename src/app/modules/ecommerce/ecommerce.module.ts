@@ -280,6 +280,10 @@ const routes: Routes = [
     component: ProviderItemsEditorComponent
   },
   {
+    path: 'provider-items-editor',
+    component: ProviderItemsEditorComponent
+  },
+  {
     path: 'club-landing',
     component: ClubLandingComponent
   },

@@ -146,6 +146,7 @@ const fullItem = `
   ctaBehavior
   active
   approvedByAdmin
+  useStock
 `;
 
 export const items = gql`

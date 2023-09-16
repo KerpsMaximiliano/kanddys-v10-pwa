@@ -18,7 +18,7 @@ import { DialogFlowService } from 'src/app/core/services/dialog-flow.service';
 export class CurrencyInputComponent implements OnInit {
   @ViewChild('input') currencyInput: ElementRef<HTMLInputElement>;
   curencyFocused = false;
-  formattedPricing = '$0.00';
+  @Input() formattedPricing = '0.00';
   @Input() initialValue: number;
   @Input() currencyLabel: string;
   @Input() fieldStyles: Record<string, any> = null;
@@ -32,6 +32,7 @@ export class CurrencyInputComponent implements OnInit {
   @Input() innerLabel: string;
   @Input() innerLabelStyles: Record<string, any> = null;
   @Input() required: boolean = true;
+  @Input() labelLarge: boolean = false;
   @Input() blockKeyboardNavigation: boolean = false;
   @Input() dialogId: string;
   @Output() onInputEvent = new EventEmitter<number>();
@@ -96,7 +97,7 @@ export class CurrencyInputComponent implements OnInit {
         input.value = this.formattedPricing.replace(/\$|,/g, '');
         return;
       }
-      this.formattedPricing = '$' + formatted;
+      this.formattedPricing = formatted;
     } else {
       const formatted =
         plainNumber.length > 2
@@ -115,7 +116,7 @@ export class CurrencyInputComponent implements OnInit {
         input.value = this.formattedPricing.replace(/\$|,/g, '');
         return;
       }
-      this.formattedPricing = '$' + formatted;
+      this.formattedPricing = formatted;
     }
     if (!emit) return;
     const num = parseFloat(this.formattedPricing.replace(/\$|,/g, ''));

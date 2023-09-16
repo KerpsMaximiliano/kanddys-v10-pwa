@@ -9,16 +9,27 @@
           class="image"
           [ngStyle]="{
             backgroundImage:
-              itemData && itemData.images[0].value
+              itemData && itemData.images[0]?.value
                 ? 'url(' + itemData.images[0].value + ')'
                 : 'url(/assets/images/noimage.png)'
           }"
         ></div>
         <div class="article">
-          <div class="flex-space-between">
-            <p class="article-id">{{ itemData ? itemData.name : "" }}</p>
+          <div class="input-container">
+            <input 
+              type="text" 
+              class="article-id"
+              [formControl]="articleName"
+              placeholder="Sin nombre">
           </div>
-          <p class="context">{{ itemData ? itemData.description : "" }}</p>
+          <div class="input-container">
+            <textarea 
+              rows="3" 
+              cols="33"
+              class="context"
+              [formControl]="articleDescription"
+              placeholder="Opcional, adiciona una descripción"></textarea>
+          </div>
         </div>
       </div>
     </div>
@@ -29,32 +40,24 @@
       <p class="message">Adiciona la cantidad que tienes disponible:</p>
     </div>
     <div class="number-space" *ngIf="showCurrencyEditor">
-      <label class="label-currency">$</label>
-        <input 
-        type="number" 
-        (blur)="true" 
-        inputmode="numeric" 
-        class="input-currency"
-        [formControl]="changePrice"
-        pattern="[0-9]*"
-        min="0"
-        placeholder="0,00"
-        onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 187 && event.keyCode !== 107 && event.keyCode !== 109 && event.keyCode !== 37 && event.keyCode !== 39 && event.keyCode !== 45 && event.keyCode !== 95 && event.keyCode !== 106 && event.keyCode !== 47 && event.keyCode !== 58 && event.keyCode !== 40 && event.keyCode !== 38"
-        (input)="searchItems($event)">
-      <!-- <app-currency-input
-      [innerLabelStyles]="{
-        fontFamily: 'InterLight',
-        fontStyle: 'italic',
-        fontSize: '46px',
-        color: 'white'
-      }"
-        [fieldStyles]="{
-          backgroundColor: '#fff',
-          height: '73px',
-          justifyContent: 'center',
-          fontSize: '46px'
+        <app-currency-input
+        [innerLabelStyles]="{
+          fontFamily: 'InterLight',
+          fontStyle: 'italic',
+          fontSize: '13px'
         }"
-      ></app-currency-input> -->
+        [fieldStyles]="{
+          boxShadow: 'none',
+          backgroundColor: 'transparent',
+          borderRadius: '6px',
+          padding: '8px 0px'
+        }"
+        [initialValue]="pricing"
+        [formattedPricing]="placeholder"
+        placeholderColor="#7B7B7B"
+        (onInputEvent)="updateItemPrice($event)"
+        [labelLarge]="true"
+      ></app-currency-input>
     </div>
     <div class="stock-space" *ngIf="showStockEditor">
       <div class="modify-button-reduce" (click)="reduceStock()">-</div>
@@ -91,7 +94,7 @@
     <footer class="bottom-footer" *ngIf="showCurrencyEditor" (click)="stockEditor()">
       <p>Incluir mi precio</p>
     </footer>
-    <footer class="bottom-footer" *ngIf="showStockEditor" (click)="createItem()">
+    <footer class="bottom-footer" *ngIf="showStockEditor" (click)="toDoTask()">
       <p>Incluir mi disponibilidad</p>
     </footer>
   </div>
