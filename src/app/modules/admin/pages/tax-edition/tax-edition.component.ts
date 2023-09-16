@@ -106,7 +106,7 @@ export class TaxEditionComponent implements OnInit {
 
   async createTax(){
     const type = "consumer";
-    const merchantId = "63209c58d09b8976076bf209";
+    const merchantId = this.merchantId;
     const input: TaxInput = {
       expirationDate: this.dateFromatted,
       prefix: this.form.controls["prefix"].value,
