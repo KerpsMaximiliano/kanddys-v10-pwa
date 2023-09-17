@@ -1,105 +1,127 @@
-<div class="container">
-    <div [ngClass]="{'search-bar' : isSearch}">
-        <div class="header flex space-between items-center">
-            <div class="title flex">
-                <div class="icon flex items-center">
-                    <mat-icon *ngIf="!isSearch">arrow_back_ios</mat-icon>
-                    <mat-icon *ngIf="isSearch" (click)="cancelSearch()">close</mat-icon>
+<app-costs-metrics-navigation [opened]="openNavigation" (closed)="openNavigation = false">
+    <div class="container">
+        <div [ngClass]="{'search-bar' : isSearch}">
+            <div class="header flex space-between items-center">
+                <div class="title flex">
+                    <div class="icon flex items-center">
+                        <mat-icon *ngIf="!isSearch">arrow_back_ios</mat-icon>
+                        <mat-icon *ngIf="isSearch" (click)="cancelSearch()">close</mat-icon>
+                    </div>
+                    <div class="text" [ngClass]="{hidden: isSearch}">
+                        💰 Control, Beneficios e Impuestos
+                    </div>
                 </div>
-                <div class="text" [ngClass]="{hidden: isSearch}">
-                    💰 Control, Beneficios e Impuestos
+                <div class="special flex" [ngClass]="{hidden: isSearch}">
+                    <span class="plus_icon" (click)="showCreateExpDialog()">+</span>
+                    <img src="../../../../../assets/icons/info.svg" alt="" (click)="openNavigation=true">
                 </div>
             </div>
-            <div class="special flex" [ngClass]="{hidden: isSearch}">
-                <span class="plus_icon">+</span>
-                <img src="../../../../../assets/icons/info.svg" alt="">
+            <div class="input">
+                <input type="text" placeholder="Buscar.." (click)="isSearch=true" [(ngModel)]="searchStr">
+            </div>
+            <div class="search-list" *ngIf="isSearch">
+                <div class="list-item" [ngClass]="{active: isSearchToConf}" (click)="clickToConfOrders()">
+                    Por confirmar el pago ({{toConfTotalLoading ? toConfTotal.length : 'Loading'}})</div>
+                <!-- <div class="list-item">Con crédito vencido (78)</div> -->
+                <div class="list-item" [ngClass]="{active: !isSearchToConf}" (click)="clickAllOrders()">
+                    Todas las facturas ({{toConfComTotalLoading ? toConfComTotal.length + ', $' + amountFormat(toConfComTotal.total) : 'Loading'}})</div>
+                <div class="list-item">Beneficio {{incomeMerchantLoading ? ('$' + amountFormat(incomeMerchant)) : 'Loading'}}</div>
             </div>
         </div>
-        <div class="input">
-            <input type="text" placeholder="Buscar.." (click)="isSearch=true" [(ngModel)]="searchStr">
-        </div>
-        <div class="search-list" *ngIf="isSearch">
-            <div class="list-item" [ngClass]="{active: isSearchToConf}" (click)="clickToConfOrders()">
-                Por confirmar el pago ({{toConfTotalLoading ? toConfTotal.length : 'Loading'}})</div>
-            <!-- <div class="list-item">Con crédito vencido (78)</div> -->
-            <div class="list-item" [ngClass]="{active: !isSearchToConf}" (click)="clickAllOrders()">
-                Todas las facturas ({{toConfComTotalLoading ? toConfComTotal.length + ', $' + amountFormat(toConfComTotal.total) : 'Loading'}})</div>
-            <div class="list-item">Beneficio {{incomeMerchantLoading ? ('$' + amountFormat(incomeMerchant)) : 'Loading'}}</div>
-        </div>
-    </div>
-    <!-- <div class="month">
-        ESTEMESID (EN CURSO)
-    </div>
-    <div class="card">
-        <div class="flex space-between items-center">
-            <div class="id">
-                CompradorID
-            </div>
-            <div class="amount">
-                $14,452
-            </div>
-        </div>
-        <div class="flex space-between items-center">
-            <div class="date">
-                N478, hace FechaID
-            </div>
-            <div class="count">
-                4 artículos
-            </div>
-        </div>
-    </div> -->
-    <div *ngFor="let order of filterOrders(); index as i">
-        <div class="month" *ngIf="(i == 0 || !isSameYearAndMonth(i, i - 1)) && !isSearch">
-            {{getDateFormat(i)}}{{isCurYearMonth(i) ? " (EN CURSO)" : ''}}
+        <!-- <div class="month">
+            ESTEMESID (EN CURSO)
         </div>
         <div class="card">
             <div class="flex space-between items-center">
                 <div class="id">
-                    {{nameFormat(order.user)}}
+                    CompradorID
                 </div>
-                <div class="amount" *ngIf="!isSearch">
-                    ${{calcTotal(order.subtotals)}}
+                <div class="amount">
+                    $14,452
                 </div>
             </div>
             <div class="flex space-between items-center">
                 <div class="date">
-                    {{formatID(order.dateId)}}, hace {{dateHandler(order.dateId)}}
+                    N478, hace FechaID
                 </div>
                 <div class="count">
-                    {{order.items.length}} artículos
+                    4 artículos
+                </div>
+            </div>
+        </div> -->
+        <div *ngFor="let order of filterOrders(); index as i">
+            <div class="month" *ngIf="(i == 0 || !isSameYearAndMonth(i, i - 1)) && !isSearch">
+                {{getDateFormat(i)}}{{isCurYearMonth(i) ? " (EN CURSO)" : ''}}
+            </div>
+            <div *ngIf="(i == 0 || !isSameYearAndMonth(i, i - 1))">
+                <div class="card" *ngFor="let exp of filterExpenditure(order.createdAt)">
+                    <div class="flex space-between items-center">
+                        <div class="id">
+                            {{exp.name ? exp.name: "NULL"}}
+                        </div>
+                        <div class="amount" *ngIf="!isSearch">
+                            ${{amountFormat(exp.amount)}}
+                        </div>
+                    </div>
+                    <div class="flex space-between items-center">
+                        <div class="date">
+                            Hace {{dateHandler(exp.createdAt)}}
+                        </div>
+                        <div class="count">
+                            <!-- {{order.items.length}} artículos -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="flex space-between items-center">
+                    <div class="id">
+                        {{nameFormat(order.user)}}
+                    </div>
+                    <div class="amount" *ngIf="!isSearch">
+                        ${{calcTotal(order.subtotals)}}
+                    </div>
+                </div>
+                <div class="flex space-between items-center">
+                    <div class="date">
+                        {{formatID(order.dateId)}}, hace {{dateHandler(order.dateId)}}
+                    </div>
+                    <div class="count">
+                        {{order.items.length}} artículos
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<div class="footer flex space-between">
-    <div class="relative">
-        <div class="id" (click)="picker.open()">
-            {{ 
-                range.get('start').value
-                    ? (range.get('start').value | date) + 
-                    (
-                        range.get('end').value
-                        ? ' to ' + (range.get('end').value | date)
-                        : ''
-                    )
-                    : 'Rango de fechas'
-                }}
+    <div class="footer flex space-between">
+        <div class="relative">
+            <div class="id" (click)="picker.open()">
+                {{ 
+                    range.get('start').value
+                        ? (range.get('start').value | date) + 
+                        (
+                            range.get('end').value
+                            ? ' to ' + (range.get('end').value | date)
+                            : ''
+                        )
+                        : 'Rango de fechas'
+                    }}
+            </div>
+            <mat-form-field appearance="fill" style="position: fixed!important;">
+                <mat-label>Enter a date range</mat-label>
+                <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+                    <input matStartDate formControlName="start" (dateChange)="change_start($event)" placeholder="Start date" />
+                    <input
+                    matEndDate
+                    formControlName="end"
+                    placeholder="End date"
+                    (dateChange)="change_end($event)"
+                    />
+                </mat-date-range-input>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker></mat-date-range-picker>
+                </mat-form-field>
         </div>
-        <mat-form-field appearance="fill" style="position: fixed!important;">
-            <mat-label>Enter a date range</mat-label>
-            <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
-                <input matStartDate formControlName="start" (dateChange)="change_start($event)" placeholder="Start date" />
-                <input
-                matEndDate
-                formControlName="end"
-                placeholder="End date"
-                (dateChange)="change_end($event)"
-                />
-            </mat-date-range-input>
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-date-range-picker #picker></mat-date-range-picker>
-            </mat-form-field>
+        <div class="benefit">Beneficio: {{incomeMerchantLoading ? ('$' + amountFormat(incomeMerchant)) : 'Loading'}}</div>
     </div>
-    <div class="benefit">Beneficio: {{incomeMerchantLoading ? ('$' + amountFormat(incomeMerchant)) : 'Loading'}}</div>
-</div>
+</app-costs-metrics-navigation>

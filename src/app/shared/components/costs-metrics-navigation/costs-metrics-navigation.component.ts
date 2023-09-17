@@ -1,5 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  Input,
+  Output,
+  EventEmitter,
+} from '@angular/core';
+import { MatSidenav } from '@angular/material/sidenav';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
@@ -9,15 +16,20 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { FormData, FormComponent } from 'src/app/shared/dialogs/form/form.component';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { HeaderService } from 'src/app/core/services/header.service';
-import { CreateExpenditureDialogComponent } from 'src/app/shared/dialogs/create-expenditure-dialog/create-expenditure-dialog.component';
+import { TranslateService } from '@ngx-translate/core';
 import { Expenditure } from 'src/app/core/models/order';
+import { CreateExpenditureDialogComponent } from '../../dialogs/create-expenditure-dialog/create-expenditure-dialog.component';
+
 
 @Component({
-  selector: 'app-costs-metrics',
-  templateUrl: './costs-metrics.component.html',
-  styleUrls: ['./costs-metrics.component.scss']
+  selector: 'app-costs-metrics-navigation',
+  templateUrl: './costs-metrics-navigation.component.html',
+  styleUrls: ['./costs-metrics-navigation.component.scss']
 })
-export class CostsMetricsComponent implements OnInit {
+export class CostsMetricsNavigationComponent implements OnInit {
+
+  @Input() opened: boolean;
+  @Output() closed = new EventEmitter();
 
   merchant: any = null;
   only_day : any = {total: 0, count: 0};
@@ -28,6 +40,7 @@ export class CostsMetricsComponent implements OnInit {
   taxesLoading = false
   incomeMerchant = 0
   incomeMerchantLoading = false
+  expenditures : Array<Expenditure> = []
 
   ordersTotal : any = {total: 0, items: 0, length: 0};
   ordersTotalLoading = false
@@ -37,15 +50,20 @@ export class CostsMetricsComponent implements OnInit {
   viewIndex = 2
 
   constructor(
+    public merchantsService: MerchantsService,
+    public headerService: HeaderService,
+    private translate: TranslateService,
     private merchantService: MerchantsService,
     private orderService: OrderService,
     private deliveryZonesService: DeliveryZonesService,
     private dialog: MatDialog,
-    private headerService: HeaderService,
-  ) { }
+    ) {
+    translate.setDefaultLang('en');
+    translate.use('en');
+  }
 
   async ngOnInit(): Promise<void> {
-    lockUI()
+    // lockUI()
     const merchant = await this.merchantService.merchantDefault();
     this.merchant = merchant
 
@@ -65,7 +83,7 @@ export class CostsMetricsComponent implements OnInit {
     this.others = others.expendituresTotalById
     console.log("others", others)
 
-    unlockUI()
+    // unlockUI()
 
     const incomeMerchant = await this.merchantService.incomeMerchant({
       findBy: {
@@ -98,7 +116,6 @@ export class CostsMetricsComponent implements OnInit {
     this.taxesLoading = true
     console.log("taxes", taxes)
   }
-
   amountFormat(amount) {
     const formattedAmount = Number(amount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     return formattedAmount;
@@ -204,10 +221,16 @@ export class CostsMetricsComponent implements OnInit {
             this.merchant._id,
             inputExpenditure
           )
-          if (newExpenditure) console.log("success create expenditure")
+          this.expenditures = [newExpenditure, ...this.expenditures]
         }
       }
     })
+  }
+
+  @ViewChild('sidenav') sidenav: MatSidenav;
+
+  close() {
+    this.sidenav.close();
   }
 
 }

@@ -235,6 +235,9 @@ import { OptionsDialogComponent } from './dialogs/options-dialog/options-dialog.
 import { ClubDialogComponent } from './dialogs/club-dialog/club-dialog.component';
 import { SelectRoleDialogComponent } from './dialogs/select-role-dialog/select-role-dialog.component';
 import { CostsDialogComponent } from './dialogs/costs-dialog/costs-dialog.component';
+import { CreateExpenditureDialogComponent } from './dialogs/create-expenditure-dialog/create-expenditure-dialog.component';
+import { CostsMetricsNavigationComponent } from './components/costs-metrics-navigation/costs-metrics-navigation.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 const imports = [
   CommonModule,
@@ -273,6 +276,7 @@ const imports = [
   MatSidenavModule,
   MatSlideToggleModule,
   TranslateModule,
+  MatDatepickerModule
 ];
 const declarations = [
   // Pages
@@ -481,7 +485,9 @@ const declarations = [
   OptionsDialogComponent,
   ClubDialogComponent,
   SelectRoleDialogComponent,
-  CostsDialogComponent
+  CostsDialogComponent,
+  CreateExpenditureDialogComponent,
+  CostsMetricsNavigationComponent
 ];
 
 @NgModule({
