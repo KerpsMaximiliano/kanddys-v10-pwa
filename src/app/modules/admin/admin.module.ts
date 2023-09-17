@@ -103,6 +103,7 @@ import { CurrencyFormatPipe } from 'src/app/core/pipes/currency-format.pipe';
 import { MerchantOffersComponent } from './pages/merchant-offers/merchant-offers.component';
 import { AdminCartsComponent } from './pages/admin-carts/admin-carts.component';
 import { ItemsOffersComponent } from './pages/items-offers/items-offers.component';
+import { OrderImageLoadComponent } from './pages/order-image-load/order-image-load.component';
 import { DeliveryZonesManagerComponent } from './pages/delivery-zones-manager/delivery-zones-manager.component';
 import { WizardTrainingComponent } from './pages/wizard-training/wizard-training.component';
 
@@ -577,6 +578,10 @@ const routes: Routes = [
     component: OrderProgressComponent,
   },
   {
+    path: 'manual-order-management/:orderId',
+    component: OrderImageLoadComponent,
+  },
+  {
     path: 'order-filtering',
     component: OrderFilteringComponent,
   },
@@ -714,7 +719,8 @@ const routes: Routes = [
     AdminCartsComponent,
     ItemsOffersComponent,
     DeliveryZonesManagerComponent,
-    WizardTrainingComponent
+    WizardTrainingComponent,
+    OrderImageLoadComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [
