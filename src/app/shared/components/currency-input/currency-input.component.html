@@ -8,9 +8,9 @@
       {{ currencyLabel }} ${{ formattedPricing }}
       <div
         class="cursor blinking-cursor"
-        [ngClass]="{ 'blinking-cursor': curencyFocused }"
+        [ngClass]="{ 'blinking-cursor': curencyFocused, 'large-cursor': labelLarge }"
         [ngStyle]="cursorStyles"
-        style="width: 1px; height: 1rem"
+        style="width: 1px;"
       ></div>
     </div>
   </div>

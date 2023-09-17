@@ -42,6 +42,10 @@
   margin-right: 16px;
   padding: 89px 20px 0px 15px;
   background: #FFFFFF;
+
+  textarea {
+    resize: none;
+  }
 }
 
 .article-content {

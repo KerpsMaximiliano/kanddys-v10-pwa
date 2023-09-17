@@ -51,11 +51,13 @@ export class ProviderItemsEditorComponent implements OnInit {
       this.articleName.setValue(this.itemData.name);
       this.articleDescription.setValue(this.itemData.description);
       this.changeStock.setValue(this.itemData.stock);
+      this.stock = this.itemData.stock;
       this.pricing = this.itemData.pricing;
       console.log("🚀 ~ file: provider-items-editor.component.ts:55 ~ ProviderItemsEditorComponent ~ ngOnInit ~ this.pricing:", this.pricing)
       this.currency = this.pricing;
       this.placeholder = String(this.itemData.pricing);
       this.useStock = this.itemData.useStock;
+      this.infinite = !this.useStock;
     }
     await this.getMerchantDefault();
     await this.getSaleFlowDefault();
