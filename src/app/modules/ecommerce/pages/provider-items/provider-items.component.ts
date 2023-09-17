@@ -153,6 +153,7 @@ export class ProviderItemsComponent implements OnInit {
 
   private keyPresentationState = 'providersPresentationClosed'
   private keyTutorialState = 'tutorialClosed'
+  private saleFlowId = null;
 
   constructor(
     private headerService: HeaderService,
@@ -198,6 +199,15 @@ export class ProviderItemsComponent implements OnInit {
         const merchantDefault = await this.merchantsService.merchantDefault()
         this.isSupplier = merchantDefault?.roles?.name === 'PROVIDER' ? true : false
 
+        this.saleflowService
+          .saleflowDefault(this.merchantsService.merchantData._id)
+          .then(saleflow => {
+            this.isSwitchActive = !saleflow.status || saleflow.status === 'open'
+              ? true
+              : false;
+            this.saleFlowId = saleflow._id
+          })
+
         this.checkIfPresentationWasClosedBefore();
         this.checkIfTutorialWasOpen()
 
@@ -215,6 +225,9 @@ export class ProviderItemsComponent implements OnInit {
     );
   }
 
+  /**
+   * Obtiene el numero de items vendidos
+   */
   async getNumberOfItemsSold() {
     if (this.isTheUserAMerchant) {
       const sold = await this.itemsService.itemsQuantitySoldTotal({
@@ -247,15 +260,28 @@ export class ProviderItemsComponent implements OnInit {
     }
   }
 
-    /**
-   * Revisa si el tutorial fue abierta.y lo abre si no lo estaba
-   */
-    checkIfTutorialWasOpen = () => {
-      const tutorialState = localStorage.getItem(this.keyTutorialState);
-      if (!tutorialState) {
-        this.showTutorialModal();
-      }
-    };
+  openTutorials = () => {
+    this.presentationOpened = false;
+    localStorage.setItem(this.keyTutorialState, 'true');
+
+    if (
+      this.headerService.user &&
+      this.merchantsService.merchantData &&
+      this.numberOfItemsSold > 0
+    ) {
+      this.searchTutorialsOpened = true;
+    }
+  };
+
+  /**
+ * Revisa si el tutorial fue abierta.y lo abre si no lo estaba
+ */
+  checkIfTutorialWasOpen = () => {
+    const tutorialState = localStorage.getItem(this.keyTutorialState);
+    if (!tutorialState) {
+      this.showTutorialModal();
+    }
+  };
 
   /**
    * Revisa si la presentación fue abierta.
@@ -267,9 +293,6 @@ export class ProviderItemsComponent implements OnInit {
     if (!tutorialStateParsed && !this.headerService.user) {
       this.presentationOpened = true;
     }
-    //  else {
-    //   this.openTutorials();
-    // }
   };
 
   /**
@@ -297,22 +320,6 @@ export class ProviderItemsComponent implements OnInit {
   }
 
   /**
-   * Guarda el estado y activa los modales del tutorial
-   */
-  openTutorials = () => {
-    this.presentationOpened = false;
-    localStorage.setItem(this.keyTutorialState, 'true');
-
-    if (
-      this.headerService.user &&
-      this.merchantsService.merchantData &&
-      this.numberOfItemsSold > 0
-    ) {
-      this.searchTutorialsOpened = true;
-    }
-  };
-
-  /**
    * Cierra el tutorial de busqueda. Si las cartas han sido cerradas,
    * almacena el estado en el localstorage y l
    * @param cardName nombre de la carta que se cerró
@@ -336,6 +343,33 @@ export class ProviderItemsComponent implements OnInit {
       this.itemsTutorialOpened = false;
     }
   };
+
+  switchHiddenStore() {
+    const input = {
+      status: this.isSwitchActive ? "open" : "closed"
+    }
+    this.saleflowService.updateSaleflow(input, this.saleFlowId)
+      .then(data => {
+        console.log(data)
+        this.isSwitchActive = !this.isSwitchActive
+      })
+  }
+
+  toggleStoreVisibility() {
+    const input = {
+      status: this.isSwitchActive ?  "closed" : "open"
+    }
+
+    this.saleflowService
+      .updateSaleflow(input, this.saleFlowId)
+      .then(() => this.isSwitchActive = !this.isSwitchActive)
+      .catch(error => {
+        console.error(error);
+        const message = 'Ocurrió un error al intentar cambiar la visibilidad de tu tienda, intenta más tarde'
+        this.headerService.showErrorToast(message);
+      })
+
+  }
 
   activateOrDeactivateFilters(filterKey: string) {
     this.activatedSearchFilters[filterKey] =
