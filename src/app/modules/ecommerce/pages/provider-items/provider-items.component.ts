@@ -18,6 +18,7 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { OrderService } from 'src/app/core/services/order.service';
 import { QuotationItem } from 'src/app/core/services/quotations.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { FormComponent, FormData } from 'src/app/shared/dialogs/form/form.component';
@@ -150,6 +151,9 @@ export class ProviderItemsComponent implements OnInit {
   };
   numberOfItemsSold: number = 0;
 
+  private keyPresentationState = 'providersPresentationClosed'
+  private keyTutorialState = 'tutorialClosed'
+
   constructor(
     private headerService: HeaderService,
     private itemsService: ItemsService,
@@ -160,7 +164,8 @@ export class ProviderItemsComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private authService: AuthService,
-    private snackbar: MatSnackBar
+    private snackbar: MatSnackBar,
+    private orderService: OrderService
   ) { }
 
   async ngOnInit() {
@@ -170,7 +175,6 @@ export class ProviderItemsComponent implements OnInit {
           .pipe(filter((e) => e.type === 'auth'))
           .subscribe((e) => {
             this.executeInitProcesses();
-
             sub.unsubscribe();
           });
       } else this.executeInitProcesses();
@@ -185,6 +189,9 @@ export class ProviderItemsComponent implements OnInit {
         if (this.encodedJSONData) {
           this.parseMagicLinkData();
         }
+
+        // this.showTutorialModal()
+
         await this.getItemsISell();
         await this.getNumberOfItemsSold();
 
@@ -192,6 +199,7 @@ export class ProviderItemsComponent implements OnInit {
         this.isSupplier = merchantDefault?.roles?.name === 'PROVIDER' ? true : false
 
         this.checkIfPresentationWasClosedBefore();
+        this.checkIfTutorialWasOpen()
 
         if (this.isSupplier) {
           await this.getNewPageOfItemsIDontSell(true, false);
@@ -239,24 +247,61 @@ export class ProviderItemsComponent implements OnInit {
     }
   }
 
-  checkIfPresentationWasClosedBefore = () => {
-    let providersPresentationClosed = localStorage.getItem(
-      'providersPresentationClosed'
-    );
-    providersPresentationClosed = providersPresentationClosed
-      ? JSON.parse(providersPresentationClosed)
-      : false;
+    /**
+   * Revisa si el tutorial fue abierta.y lo abre si no lo estaba
+   */
+    checkIfTutorialWasOpen = () => {
+      const tutorialState = localStorage.getItem(this.keyTutorialState);
+      if (!tutorialState) {
+        this.showTutorialModal();
+      }
+    };
 
-    if (!providersPresentationClosed && !this.headerService.user) {
+  /**
+   * Revisa si la presentación fue abierta.
+   */
+  checkIfPresentationWasClosedBefore = () => {
+    const tutorialState = localStorage.getItem(this.keyPresentationState);
+    const tutorialStateParsed = tutorialState ? JSON.parse(tutorialState) : false;
+
+    if (!tutorialStateParsed && !this.headerService.user) {
       this.presentationOpened = true;
-    } else {
-      this.openTutorials();
     }
+    //  else {
+    //   this.openTutorials();
+    // }
   };
 
+  /**
+   * Verifica si el merchant ha tenido una orden y muestra el tutorial
+   */
+  showTutorialModal() {
+    this.merchantsService.merchantDefault().then(merchant => {
+      const pagination: PaginationInput = {
+        findBy: {
+          merchant: merchant._id,
+        },
+        options: {
+          sortBy: 'createdAt:desc',
+          limit: 1,
+        }
+      }
+      this.orderService.orderPaginate(pagination)
+        .then(orders => {
+          if (orders.length) {
+            localStorage.setItem(this.keyTutorialState, 'true')
+            this.searchTutorialsOpened = true
+          }
+        })
+    })
+  }
+
+  /**
+   * Guarda el estado y activa los modales del tutorial
+   */
   openTutorials = () => {
     this.presentationOpened = false;
-    localStorage.setItem('providersPresentationClosed', 'true');
+    localStorage.setItem(this.keyTutorialState, 'true');
 
     if (
       this.headerService.user &&
@@ -264,6 +309,31 @@ export class ProviderItemsComponent implements OnInit {
       this.numberOfItemsSold > 0
     ) {
       this.searchTutorialsOpened = true;
+    }
+  };
+
+  /**
+   * Cierra el tutorial de busqueda. Si las cartas han sido cerradas,
+   * almacena el estado en el localstorage y l
+   * @param cardName nombre de la carta que se cerró
+   */
+  closeSearchTutorial = (cardName: string) => {
+    this.searchTutorialCardsOpened[cardName] = false;
+
+    if (
+      !this.searchTutorialCardsOpened['sold'] &&
+      !this.searchTutorialCardsOpened['orders']
+    ) {
+      this.searchTutorialsOpened = false;
+      localStorage.setItem(this.keyTutorialState, 'true')
+    }
+  };
+
+  closeItemsTutorial = (cardName: string) => {
+    this.itemsTutorialCardsOpened[cardName] = false;
+
+    if (!this.itemsTutorialCardsOpened['price']) {
+      this.itemsTutorialOpened = false;
     }
   };
 
@@ -1470,25 +1540,6 @@ export class ProviderItemsComponent implements OnInit {
     };
   }
 
-  closeSearchTutorial = (cardName: string) => {
-    this.searchTutorialCardsOpened[cardName] = false;
-
-    if (
-      !this.searchTutorialCardsOpened['sold'] &&
-      !this.searchTutorialCardsOpened['orders']
-    ) {
-      this.searchTutorialsOpened = false;
-    }
-  };
-
-  closeItemsTutorial = (cardName: string) => {
-    this.itemsTutorialCardsOpened[cardName] = false;
-
-    if (!this.itemsTutorialCardsOpened['price']) {
-      this.itemsTutorialOpened = false;
-    }
-  };
-
   async getDefaultMerchantAndSaleflows(user: User): Promise<{
     merchantDefault: Merchant;
     saleflowDefault: SaleFlow;
@@ -1702,9 +1753,13 @@ export class ProviderItemsComponent implements OnInit {
     if (this.buttonFilteringNoSupplier[2].isActive) {
       input.findBy = {
         ...input.findBy,
-        type: ["default", null],
         allowCommission: true
       }
+    }
+
+    // Button de items para filtrar por comisiones
+    if (this.buttonFilteringNoSupplier[3].isActive) {
+      input.filter = { maxStock: 10 }
     }
 
     this.saleflowService

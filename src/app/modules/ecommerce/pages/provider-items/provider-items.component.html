@@ -77,30 +77,13 @@
           {{ btn.label }} ({{ btn.total }})
         </button>
       </div>
-
-      <!--
-        <div class="filters-container">
-          <div
-            class="filter"
-            *ngFor="let filter of searchFilters; let filterIndex = index"
-            [ngClass]="{
-              selected: activatedSearchFilters[filter.key]
-            }"
-            (click)="activateOrDeactivateFilters(filter.key)"
-          >
-            {{ filter.label }}
-          </div>
-        </div>
-      -->
     </div>
 
     <main>
       <ng-container
         *ngTemplateOutlet="
           presentation;
-          context: {
-            presentationOpened: presentationOpened
-          }
+          context: { presentationOpened: presentationOpened }
         "
       ></ng-container>
 
@@ -120,15 +103,12 @@
 
       <form
         class="search-bar-wrapper"
-        [ngClass]="{
-          tutorial: searchTutorialsOpened
-        }"
         style="margin-bottom: 21px"
         *ngIf="!searchOpened"
       >
         <input
           type="text"
-          (click)="!searchTutorialsOpened ? showSearch() : null"
+          (click)="showSearch()"
           name="item-search"
           class="input search-bar"
           placeholder="Articulos exhibidos..."
@@ -136,9 +116,9 @@
         />
 
         <div class="filters">
-          <div class="option">📦</div>
-          <div class="option">⏰</div>
-          <div class="option">💰</div>
+          <div class="option" [routerLink]="'/admin/order-progress'">📦</div>
+          <div class="option" [routerLink]="'/admin/order-filtering'">⏰</div>
+          <div class="option" [routerLink]="'/admin/benefits-control'">💰</div>
         </div>
       </form>
 
@@ -225,7 +205,10 @@
       <p>Comparte</p>
     </footer>
 
-    <footer *ngIf="!searchOpened && !isSupplier" [ngClass]="{'off': !isSwitchActive}">
+    <footer
+      *ngIf="!searchOpened && !isSupplier"
+      [ngClass]="{ off: !isSwitchActive }"
+    >
       <p>Preview</p>
       <p *ngIf="isSwitchActive">Comparte</p>
       <p *ngIf="!isSwitchActive">Tu vitrina está apagada</p>
@@ -359,12 +342,7 @@
 </ng-template>
 
 <ng-template #presentation let-presentationOpened="presentationOpened">
-  <div
-    class="tutorial-wrapper"
-    [ngClass]="{
-      opened: presentationOpened
-    }"
-  >
+  <div class="tutorial-wrapper" [ngClass]="{ opened: presentationOpened }">
     <div class="presentation-cards-wrapper" *ngIf="presentationOpened">
       <ng-container
         *ngTemplateOutlet="
@@ -449,13 +427,28 @@
 </ng-template>
 
 <ng-template #searchTutorial let-tutorialOpened="tutorialOpened">
-  <div
-    class="tutorial-wrapper"
-    [ngClass]="{
-      opened: tutorialOpened
-    }"
-  >
+  <div class="tutorial-wrapper" [ngClass]="{ opened: tutorialOpened }">
     <div class="cards-wrapper" *ngIf="tutorialOpened">
+      <form
+        class="search-bar-wrapper"
+        [ngClass]="{ tutorial: searchTutorialsOpened }"
+        style="margin-bottom: 21px"
+        *ngIf="!searchOpened"
+      >
+        <input
+          type="text"
+          name="item-search"
+          class="input search-bar"
+          placeholder="Buscar..."
+          [formControl]="itemSearchbar"
+        />
+
+        <div class="filters">
+          <div class="option">📦</div>
+          <div class="option">⏰</div>
+          <div class="option">💰</div>
+        </div>
+      </form>
       <ng-container
         *ngTemplateOutlet="
           helpCard;
