@@ -77,15 +77,16 @@ export class TaxEditionComponent implements OnInit {
   async goBack(){
     const dateValidation = this.dateFromatted ? moment(this.dateFromatted).format('DD/MM/YYYY') : "";
     console.log((dateValidation.length) > 0);
+    console.log(!this.form.dirty && !((dateValidation.length) > 0))
     
     if(!this.form.dirty && !((dateValidation.length) > 0)){
       this.router.navigateByUrl('/admin/taxes');
     }else{
+      
       lockUI();
       if (!this.form.invalid) {
         if(this.taxId){
           await this.editTax();
-          unlockUI();
           this.router.navigateByUrl('/admin/taxes');
         }else{
           await this.createTax();

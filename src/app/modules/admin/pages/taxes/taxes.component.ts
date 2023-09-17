@@ -38,7 +38,7 @@ export class TaxesComponent implements OnInit {
 
   async getTaxesbyMerchant() {
 
-    const taxesByMerchant = await this.taxesService.getTaxesByMerchant({
+    const taxesByMerchant = await this.taxesService.getTaxes({
       findBy: {
         merchant: this.merchantId
       },

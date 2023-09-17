@@ -12,7 +12,7 @@
         <div class="field-text" *ngFor="let tax of taxes">
           <label for="">Consumidor final</label>
           <p class="tax-voucher">{{tax.available}} Disponible. Fecha de expiración: {{tax.expirationDate === null ? 'No aplica': tax.expirationDate }}. Prefijo {{tax.prefix === null ? 'No aplica': tax.prefix}} </p>
-          <p class="edition-link" (click)="goToEditTax(tax)" *ngIf="tax.available < 1">Adiciona otro o edita este 👆</p>
+          <p class="edition-link" (click)="goToEditTax(tax)" *ngIf="tax.available > 0">Adiciona otro o edita este 👆</p>
         </div>
       </section>
     </div>

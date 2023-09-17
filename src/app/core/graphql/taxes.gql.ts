@@ -16,6 +16,22 @@ query taxesByMerchant($paginate: PaginationInput) {
 }
 `;
 
+export const taxs = gql`
+query taxs($paginate: PaginationInput) {
+  taxs(paginate: $paginate){
+    _id
+    type
+    percentage
+    available
+    expirationDate
+    status
+    prefix
+    finalSequence
+    nextTax
+  }
+}
+`;
+
 export const dataCountries = gql`
 query dataCountries{
   dataCountries{
