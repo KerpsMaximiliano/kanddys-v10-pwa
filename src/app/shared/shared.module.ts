@@ -159,7 +159,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle'; 
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
@@ -235,6 +235,8 @@ import { OptionsDialogComponent } from './dialogs/options-dialog/options-dialog.
 import { ClubDialogComponent } from './dialogs/club-dialog/club-dialog.component';
 import { SelectRoleDialogComponent } from './dialogs/select-role-dialog/select-role-dialog.component';
 import { WizardChatbotComponent } from './components/wizard-chatbot/wizard-chatbot.component';
+import { NewlineToBrPipe } from '../core/pipes/newline.pipe';
+import { LinkifyPipe } from '../core/pipes/linkify.pipe';
 
 const imports = [
   CommonModule,
@@ -481,7 +483,9 @@ const declarations = [
   OptionsDialogComponent,
   ClubDialogComponent,
   SelectRoleDialogComponent,
-  WizardChatbotComponent
+  WizardChatbotComponent,
+  NewlineToBrPipe,
+  LinkifyPipe,
 ];
 
 @NgModule({

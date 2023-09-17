@@ -1,12 +1,16 @@
 import { Injectable } from '@angular/core';
 import {
   createEmbeddingsForMyMerchantItems,
+  deleteVectorInKnowledgeBase,
   feedFileToKnowledgeBase,
+  feedKnowledgeBaseWithTextData,
+  fetchAllDataInVectorDatabaseNamespace,
   generateCompletionForMerchant,
   generateResponseForTemplate,
   imageObjectRecognition,
   requestQAResponse,
   requestResponseFromKnowledgeBase,
+  updateVectorInKnowledgeBase,
 } from '../graphql/gpt3.gql';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 
@@ -39,6 +43,44 @@ export class Gpt3Service {
     return result?.feedFileToKnowledgeBase;
   }
 
+  async feedKnowledgeBaseWithTextData(text: string): Promise<{
+    namespace: string;
+    vector: any;
+  }> {
+    const result = await this.graphql.mutate({
+      mutation: feedKnowledgeBaseWithTextData,
+      variables: { text },
+    });
+
+    return result?.feedKnowledgeBaseWithTextData;
+  }
+
+  async updateVectorInKnowledgeBase(
+    id: string,
+    text: string
+  ): Promise<{
+    namespace: string;
+    vector: any;
+  }> {
+    const result = await this.graphql.mutate({
+      mutation: updateVectorInKnowledgeBase,
+      variables: { id, text },
+    });
+
+    return result?.updateVectorInKnowledgeBase;
+  }
+
+  async deleteVectorInKnowledgeBase(
+    id: string
+  ): Promise<boolean> {
+    const result = await this.graphql.mutate({
+      mutation: deleteVectorInKnowledgeBase,
+      variables: { id },
+    });
+
+    return result?.deleteVectorInKnowledgeBase;
+  }
+
   async createEmbeddingsForMyMerchantItems() {
     try {
       const result = await this.graphql.mutate({
@@ -50,13 +92,25 @@ export class Gpt3Service {
     }
   }
 
-  async requestResponseFromKnowledgeBase(prompt: string, saleflowId: string) {
+  async requestResponseFromKnowledgeBase(prompt: string, saleflowId: string, conversationId: string) {
     try {
       const result = await this.graphql.query({
         query: requestResponseFromKnowledgeBase,
-        variables: { prompt, saleflowId },
+        variables: { prompt, saleflowId, conversationId },
       });
       return result?.requestResponseFromKnowledgeBase;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async fetchAllDataInVectorDatabaseNamespace(saleflowId: string) {
+    try {
+      const result = await this.graphql.query({
+        query: fetchAllDataInVectorDatabaseNamespace,
+        variables: { prompt, saleflowId },
+      });
+      return result?.fetchAllDataInVectorDatabaseNamespace;
     } catch (error) {
       console.error(error);
     }
