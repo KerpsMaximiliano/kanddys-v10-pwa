@@ -36,6 +36,13 @@ import {
 } from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
 import { environment } from 'src/environments/environment';
 
+
+interface BtnFiltering {
+  label: string,
+  isActive: boolean,
+  total: number
+}
+
 @Component({
   selector: 'app-provider-items',
   templateUrl: './provider-items.component.html',
@@ -53,16 +60,37 @@ export class ProviderItemsComponent implements OnInit {
     label: string;
     key: string;
   }> = [
-    {
-      label: 'Los necesitan pero no tienen tus precios (78)',
-      key: 'neededButNotYours',
-    },
-    {
-      label: 'Articulos que estoy exhibiendo',
-      key: 'providedByMe',
-    },
-  ];
+      {
+        label: 'Los necesitan pero no tienen tus precios (78)',
+        key: 'neededButNotYours',
+      },
+      {
+        label: 'Articulos que estoy exhibiendo',
+        key: 'providedByMe',
+      },
+    ];
   activatedSearchFilters: Record<string, boolean> = {};
+
+  hiddenDashboard: boolean = false
+  itemToSearch: string = ''
+  itemsFiltering = []
+  buttonFiltering: BtnFiltering[] = [
+    {
+      label: "Exhibidos",
+      isActive: false,
+      total: 0
+    },
+    {
+      label: "No Exhibidos",
+      isActive: false,
+      total: 0
+    },
+    {
+      label: "Ocultos",
+      isActive: false,
+      total: 0
+    }
+  ]
 
   //Pagination-specific variables
   paginationState: {
@@ -70,13 +98,14 @@ export class ProviderItemsComponent implements OnInit {
     page: number;
     status: 'loading' | 'complete';
   } = {
-    page: 1,
-    pageSize: 15,
-    status: 'complete',
-  };
+      page: 1,
+      pageSize: 15,
+      status: 'complete',
+    };
   reachTheEndOfPagination: boolean = false;
 
   //Items variables
+  totalItemsHidden: number = 0
   itemsISell: Array<Item> = [];
   itemsIDontSell: Array<Item> = [];
   renderItemsPromise: Promise<{ listItems: Item[] }>;
@@ -120,7 +149,7 @@ export class ProviderItemsComponent implements OnInit {
     private dialogService: DialogService,
     private authService: AuthService,
     private snackbar: MatSnackBar
-  ) {}
+  ) { }
 
   async ngOnInit() {
     if (localStorage.getItem('session-token')) {
@@ -134,6 +163,8 @@ export class ProviderItemsComponent implements OnInit {
           });
       } else this.executeInitProcesses();
     } else this.executeInitProcesses();
+
+
   }
 
   async executeInitProcesses() {
@@ -170,7 +201,6 @@ export class ProviderItemsComponent implements OnInit {
           limit: -1,
         },
       });
-
       this.numberOfItemsSold = sold?.total;
     }
   }
@@ -281,6 +311,7 @@ export class ProviderItemsComponent implements OnInit {
       )?.listItems;
 
       if (supplierSpecificItems) this.itemsISell = supplierSpecificItems;
+      this.buttonFiltering[0].total = this.itemsISell.length
     }
   }
 
@@ -433,6 +464,7 @@ export class ProviderItemsComponent implements OnInit {
       if (itemsQueryResult.length === 0 && !triggeredFromScroll) {
         this.itemsIDontSell = [];
       }
+      this.buttonFiltering[1].total = this.itemsIDontSell.length
     });
   }
 
@@ -529,6 +561,10 @@ export class ProviderItemsComponent implements OnInit {
         document.querySelector('#search-from-results-view') as HTMLInputElement
       )?.focus();
     }, 100);
+    this.itemsService
+      .itemsQuantityOfFilters(this.merchantsService.merchantData._id, "supplier")
+      .then(data => this.buttonFiltering[2].total = data.hidden)
+
   }
 
   urlIsVideo(url: string) {
@@ -723,8 +759,8 @@ export class ProviderItemsComponent implements OnInit {
             '¿Cuál es el precio de venta de' +
             (item.name
               ? ' ' +
-                item.name +
-                (item.description ? '(' + item.description + ')?' : '')
+              item.name +
+              (item.description ? '(' + item.description + ')?' : '')
               : 'l articulo?'),
           name: 'price',
           type: 'currency',
@@ -1365,17 +1401,17 @@ export class ProviderItemsComponent implements OnInit {
                 itemInput.parentItem
               );
 
-            if(toBeDone.operation === 'CREATE') {
+            if (toBeDone.operation === 'CREATE') {
               const createdItem = (await this.itemsService.createItem(itemInput))
                 ?.createItem;
-  
+
               await this.saleflowService.addItemToSaleFlow(
                 {
                   item: createdItem._id,
                 },
                 saleflowDefault._id
               );
-            } else if(toBeDone.operation === 'UPDATE') {
+            } else if (toBeDone.operation === 'UPDATE') {
               await this.itemsService.updateItem(itemInput, toBeDone.itemId)
             }
 
@@ -1515,5 +1551,81 @@ export class ProviderItemsComponent implements OnInit {
     )}`;
 
     window.location.href = whatsappLink;
+  }
+
+  onChangeBtnFiltering(btnActual: BtnFiltering) {
+    const index = this.buttonFiltering.findIndex(btn => btn.label === btnActual.label)
+    this.buttonFiltering[index].isActive = this.buttonFiltering[index].isActive
+      ? false
+      : true
+    const isSomeBtnActive = this.buttonFiltering.some(btn => btn.isActive)
+    this.hiddenDashboard = isSomeBtnActive ? true : false
+    this.filteringItemsBySearchbar(this.itemToSearch)
+  }
+
+  onCloseSearchbar() {
+    this.searchOpened = false
+  }
+
+  onFilteringItemsBySearchbar(event: any) {
+    this.itemToSearch = event.target.value
+    const isSomeBtnActive = this.buttonFiltering.some(btn => btn.isActive)
+
+    if (this.itemToSearch) {
+      this.hiddenDashboard = true
+      this.filteringItemsBySearchbar(this.itemToSearch)
+    }
+
+    if (!this.itemToSearch && !isSomeBtnActive) {
+      this.hiddenDashboard = false
+    }
+  }
+
+  /**
+   * Filtrado de items por la barra de búsqueda
+   * @param itemToSearch item a buscar
+   */
+  private filteringItemsBySearchbar(itemName: string) {
+    // Si el boton de "oculto" está activo, será "disabled". Caso contrario "active"
+    const status = this.buttonFiltering[2].isActive ? "disabled" : "active"
+
+    const input: PaginationInput = {
+      findBy: {
+        status,
+        type: 'supplier',
+        _id: {
+          $nin: this.itemsISell.map((item) => item.parentItem),
+        },
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: this.paginationState.pageSize,
+        page: this.paginationState.page,
+      },
+    };
+
+    // Button de items exhibidos
+    if (this.buttonFiltering[0].isActive) {
+      input.findBy = {
+        ...input.findBy,
+        merchant: {
+          _id: this.merchantsService.merchantData._id
+        }
+      }
+    }
+
+    // Button de items no exhibidos
+    if (this.buttonFiltering[1].isActive) {
+      input.findBy = {
+        ...input.findBy,
+        parentItem: {
+          $ne: null
+        }
+      }
+    }
+
+    this.saleflowService
+      .listItems(input, false, itemName)
+      .then(data => this.itemsFiltering = data.listItems)
   }
 }
