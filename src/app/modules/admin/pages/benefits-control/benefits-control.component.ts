@@ -374,6 +374,22 @@ export class BenefitsControlComponent implements OnInit {
             this.merchant._id,
             inputExpenditure
           )
+          const newexp: Expenditure = {
+            _id: "adfasdfas",
+            createdAt: "2023-09-18T19:22:33.742Z",
+            amount: 1.3,
+            name: "New",
+            type: 'only-day',
+            merchant: '',
+            description: '',
+            useDate: undefined,
+            activeDate: {
+              from: '',
+              month: 0
+            },
+            updatedAt: ''
+          }
+          console.log([newExpenditure, ...this.expenditures])
           this.expenditures = [newExpenditure, ...this.expenditures]
           unlockUI()
         }
@@ -387,5 +403,8 @@ export class BenefitsControlComponent implements OnInit {
       const date = new Date(exp.createdAt)
       return (latest.getFullYear() > date.getFullYear()) || (latest.getFullYear() == date.getFullYear() && latest.getMonth() > date.getMonth()) 
     })
+  }
+  toCostsMetrics() {
+    window.location.href = "/admin/costs-metrics"
   }
 }

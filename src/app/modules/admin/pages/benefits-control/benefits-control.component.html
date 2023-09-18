@@ -1,4 +1,4 @@
-<app-costs-metrics-navigation [opened]="openNavigation" (closed)="openNavigation = false">
+<!-- <app-costs-metrics-navigation [opened]="openNavigation" (closed)="openNavigation = false"> -->
     <div class="container">
         <div [ngClass]="{'search-bar' : isSearch}">
             <div class="header flex space-between items-center">
@@ -13,7 +13,7 @@
                 </div>
                 <div class="special flex" [ngClass]="{hidden: isSearch}">
                     <span class="plus_icon" (click)="showCreateExpDialog()">+</span>
-                    <img src="../../../../../assets/icons/info.svg" alt="" (click)="openNavigation=true">
+                    <img src="../../../../../assets/icons/info.svg" alt="" (click)="toCostsMetrics()">
                 </div>
             </div>
             <div class="input">
@@ -125,4 +125,4 @@
         </div>
         <div class="benefit">Beneficio: {{incomeMerchantLoading ? ('$' + amountFormat(incomeMerchant)) : 'Loading'}}</div>
     </div>
-</app-costs-metrics-navigation>
+<!-- </app-costs-metrics-navigation> -->

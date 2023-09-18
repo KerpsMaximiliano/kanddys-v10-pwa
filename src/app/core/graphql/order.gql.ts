@@ -580,6 +580,7 @@ export const createExpenditure = gql`
         from
         month
       }
+      createdAt
     }
   }
 `;
