@@ -153,11 +153,12 @@
 }
 
 .footer {
-    position: sticky;
+    position: fixed;
     bottom: 0px;
     width: 100%;
-    padding: 5px 20px;
+    padding: 6px 20px;
     background-color: #87CD9B;
+    max-width: 500px;
     .id {
         color: #181D17;
         font-family: InterBold;
