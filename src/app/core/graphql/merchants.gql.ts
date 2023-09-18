@@ -675,3 +675,16 @@ export const merchantQuantityOfFiltersCountry = gql`
 query merchantQuantityOfFiltersCountry{
   merchantQuantityOfFiltersCountry
 }`;
+
+export const campaigns = gql`
+query campaigns($paginate:PaginationInput){
+  campaigns(paginate:$paginate)
+}`;
+
+
+export const merchantQuantityOfFiltersCampaign = gql`
+query merchantQuantityOfFiltersCampaign{
+  merchantQuantityOfFiltersCampaign
+}`;
+
+

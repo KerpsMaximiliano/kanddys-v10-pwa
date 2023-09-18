@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 
@@ -31,7 +32,11 @@ export class SuperAdminMerchantsComponent implements OnInit {
   everyCountrySelected = true;
   everyRoleSelected = true;
   totalMerchants = 0;
-
+  campaigns: any = [];
+  selectedCampaigns: any = [];
+  everyCampaignSelected = true;
+  startDate = '';
+  endDate = '';
   constructor(private merchantService: MerchantsService) {}
 
   ngOnInit(): void {
@@ -40,6 +45,7 @@ export class SuperAdminMerchantsComponent implements OnInit {
     this.getDataCountries();
     this.getMerchantsType();
     this.getMerchantsCountries();
+    this.getCampaigns();
   }
 
   async getMerchants() {
@@ -61,10 +67,27 @@ export class SuperAdminMerchantsComponent implements OnInit {
     }
     if (this.selectedRoles.length > 0) {
       input.findBy = input.findBy || {};
-      input.findBy.roles = this.selectedRoles
+      input.findBy.roles = this.selectedRoles;
 
       isTotal = false;
     }
+    if (this.selectedCampaigns.length > 0) {
+      input.findBy = input.findBy || {};
+      input.findBy.campaign = this.selectedCampaigns;
+
+      isTotal = false;
+    }
+
+    if (this.startDate != null) {
+      input.options.range = input.options.range || {};
+      input.options.range.from = this.startDate;
+    }
+
+    if (this.endDate != null) {
+      input.options.range = input.options.range || {};
+      input.options.range.to = this.endDate;
+    }
+
     let result = await this.merchantService.merchants(input);
     if (result != undefined) {
       this.merchants = result;
@@ -182,10 +205,34 @@ export class SuperAdminMerchantsComponent implements OnInit {
   isCountrySelected = (countryId) =>
     this.selectedCountries.some((e) => e == countryId);
 
-    isRoleSelected(roleName){
-      let roleId = this.merchantTypes.find(
-        (e) => e.role?.code?.toUpperCase() == roleName
-      )?.role?._id;
-      return this.selectedRoles.some(e=>e==roleId);
+  isRoleSelected(roleName) {
+    let roleId = this.merchantTypes.find(
+      (e) => e.role?.code?.toUpperCase() == roleName
+    )?.role?._id;
+    return this.selectedRoles.some((e) => e == roleId);
+  }
+
+  async getCampaigns() {
+    let result = await this.merchantService.merchantQuantityOfFiltersCampaign();
+    if (result != undefined) this.campaigns = result;
+  }
+
+  selectCampaign(campaignId) {
+    if (campaignId == true) {
+      this.everyCampaignSelected = true;
+      this.selectedCampaigns = [];
+    } else {
+      this.everyCampaignSelected = false;
+      if (this.selectedCampaigns.some((e) => e == campaignId))
+        this.selectedCampaigns = this.selectedCampaigns.filter(
+          (e) => e != campaignId
+        );
+      else this.selectedCampaigns.push(campaignId);
     }
+
+    this.getMerchants();
+  }
+
+  isCampaignSelected = (campaignId) =>
+    this.selectedCampaigns.some((e) => e == campaignId);
 }

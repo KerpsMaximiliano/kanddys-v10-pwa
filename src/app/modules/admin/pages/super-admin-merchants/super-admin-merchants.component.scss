@@ -182,4 +182,29 @@ input::placeholder {
     line-height: normal;
     margin: 0;
   }
+
+  input{
+    background-color: transparent;
+    height: 29px;
+  }
+
+  // mat-form-field{
+  //   height: 29px;
+  //   display: flex !important;
+  //   flex-wrap: nowrap;
+  // }
+}
+
+
+// ::ng-deep mat-form-field, .mat-form-field-type-mat-date-range-input, .mat-form-field-infix{
+//   display:flex !important;
+// }
+
+// ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-wrapper{
+//   display:flex !important;
+// } 
+.mat-start-date-input {
+  font-size: 14px;
+  padding: 8px;
+  margin-right: 10px; /* Add margin to separate it from the second input */
 }

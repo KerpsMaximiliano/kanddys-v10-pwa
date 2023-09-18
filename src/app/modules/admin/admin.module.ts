@@ -55,7 +55,6 @@ import { BuyerDataComponent } from './pages/buyer-data/buyer-data.component';
 import { ReportsComponent } from './pages/reports/reports.component';
 import { FilterPipeSearchPipe } from 'src/app/core/pipes/filter-pipe-search.pipe';
 import { MatNativeDateModule } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { AutofocusDirective } from 'src/app/core/directives/autofocus.directive';
 import { ExpendituresComponent } from './pages/expenditures/expenditures.component';
 import { IncomesComponent } from './pages/incomes/incomes.component';
@@ -107,6 +106,9 @@ import { OrderImageLoadComponent } from './pages/order-image-load/order-image-lo
 import { DeliveryZonesManagerComponent } from './pages/delivery-zones-manager/delivery-zones-manager.component';
 import { WizardTrainingComponent } from './pages/wizard-training/wizard-training.component';
 import { SuperAdminMerchantsComponent } from './pages/super-admin-merchants/super-admin-merchants.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -734,8 +736,10 @@ const routes: Routes = [
     SharedModule,
     MatCheckboxModule,
     // MatDaterangepickerModule,
-    MatDatepickerModule,
+    MatFormFieldModule,
     MatNativeDateModule,
+    MatDatepickerModule,
+    MatInputModule,
     RouterModule.forChild(routes),
     TranslateModule.forRoot({
       loader: {
