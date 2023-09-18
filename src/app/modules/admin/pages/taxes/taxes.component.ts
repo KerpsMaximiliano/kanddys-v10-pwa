@@ -6,7 +6,7 @@ import { Taxes } from 'src/app/core/models/taxes';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { TaxesService } from 'src/app/core/services/taxes.service';
 import { environment } from 'src/environments/environment';
-
+import * as moment from 'moment';
 
 
 @Component({
@@ -45,7 +45,6 @@ export class TaxesComponent implements OnInit {
     });
 
     this.taxes = taxesByMerchant;
-    console.log("🚀 ~ file: taxes.component.ts:48 ~ TaxesComponent ~ getTaxesbyMerchant ~ this.taxes:", this.taxes);
     (this.taxes.find(tax => tax.type === "consumer")) ? this.finalCustomer = true : this.finalCustomer = false;
   }
 
@@ -60,11 +59,16 @@ export class TaxesComponent implements OnInit {
   }
 
   async createFiscalCredit() {
-    await this.router.navigateByUrl('/admin/tax-edition');
+    const navigationData : NavigationExtras = {
+      replaceUrl: true,
+      queryParams : {
+        merchant: this.merchantId,
+      }
+    }
+    await this.router.navigate(['/admin/tax-edition'],  navigationData);
   }
 
   async goToEditTax(tax: any) {
-    console.log("🚀 ~ file: taxes.component.ts:67 ~ TaxesComponent ~ goToEditTax ~ tax:", tax)
     const navigationData : NavigationExtras = {
       replaceUrl: true,
       queryParams : {
@@ -78,5 +82,11 @@ export class TaxesComponent implements OnInit {
       }
     }
     await this.router.navigate([`/admin/tax-edition/${tax._id}`], navigationData);
+  }
+
+  isAvailableToEdition(tax){
+    const currentDate =  moment();
+    const isafter = moment(tax.expirationDate).isAfter(currentDate);
+    return isafter === true && (tax.available > 0) ? true : false;
   }
 }

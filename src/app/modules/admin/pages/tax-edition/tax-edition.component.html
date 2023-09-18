@@ -1,6 +1,6 @@
 <div class="container">
     <div class="flex-space-between">
-      <mat-icon class="back-icon" (click)="goBack()">chevron_left</mat-icon>
+      <mat-icon class="back-icon" (click)="saveAndExit()">chevron_left</mat-icon>
     </div>
     <form [formGroup]="form">
         <p class="title">Comprobante fiscal del consumidor final:</p>
@@ -37,7 +37,7 @@
           type="number"
           formControlName="nextTax"
           placeholder="Escribe..."
-          pattern="[0-9]*"
+          pattern="[0-9]+([\.,][0-9]+)?"
           onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 187 && event.keyCode !== 107 && event.keyCode !== 109 && event.keyCode !== 37 && event.keyCode !== 39 && event.keyCode !== 45 && event.keyCode !== 95 && event.keyCode !== 106 && event.keyCode !== 47 && event.keyCode !== 58 && event.keyCode !== 40 && event.keyCode !== 38"
         />
       </div>
@@ -47,7 +47,7 @@
           type="number"
           formControlName="sequence"
           placeholder="Escribe..."
-          pattern="[0-9]*"
+          pattern="[0-9]+([\.,][0-9]+)?"
           onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 187 && event.keyCode !== 107 && event.keyCode !== 109 && event.keyCode !== 37 && event.keyCode !== 39 && event.keyCode !== 45 && event.keyCode !== 95 && event.keyCode !== 106 && event.keyCode !== 47 && event.keyCode !== 58 && event.keyCode !== 40 && event.keyCode !== 38"
         />
       </div>
@@ -57,7 +57,7 @@
           type="number"
           formControlName="percentage"
           placeholder="Escribe..."
-          pattern="[0-9]*"
+          pattern="[0-9]+([\.,][0-9]+)?"
           onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 187 && event.keyCode !== 107 && event.keyCode !== 109 && event.keyCode !== 37 && event.keyCode !== 39 && event.keyCode !== 45 && event.keyCode !== 95 && event.keyCode !== 106 && event.keyCode !== 47 && event.keyCode !== 58 && event.keyCode !== 40 && event.keyCode !== 38"
         />
       </div>

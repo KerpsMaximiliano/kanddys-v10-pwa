@@ -8,6 +8,8 @@ import { TaxesService } from 'src/app/core/services/taxes.service';
 import { environment } from 'src/environments/environment';
 import * as moment from 'moment';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { ConfirmationDialogComponent } from 'src/app/shared/dialogs/confirmation-dialog/confirmation-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 
 
@@ -33,6 +35,7 @@ export class TaxEditionComponent implements OnInit {
     private taxesService: TaxesService,
     private router: Router,
     private route: ActivatedRoute,
+    private matDialog: MatDialog,
   ) { 
     this.form = this.formBuilder.group({
       expirationDate: ['', Validators.required],
@@ -48,8 +51,6 @@ export class TaxEditionComponent implements OnInit {
    this.route.params.subscribe((data) => {
     this.taxId = data.itemId;
    	});
-   
-
    await this.getQueryParams();
   }
 
@@ -74,35 +75,39 @@ export class TaxEditionComponent implements OnInit {
     this.country = countriesData.find(country => country.value === 'república dominicana')._id;
   }
 
-  async goBack(){
-    const dateValidation = this.dateFromatted ? moment(this.dateFromatted).format('DD/MM/YYYY') : "";
-    console.log((dateValidation.length) > 0);
-    console.log(!this.form.dirty && !((dateValidation.length) > 0))
-    
-    if(!this.form.dirty && !((dateValidation.length) > 0)){
-      this.router.navigateByUrl('/admin/taxes');
-    }else{
-      
-      lockUI();
-      if (!this.form.invalid) {
-        if(this.taxId){
-          await this.editTax();
-          this.router.navigateByUrl('/admin/taxes');
-        }else{
-          await this.createTax();
-          unlockUI();
-          this.router.navigateByUrl('/admin/taxes');
-        }
+  async saveAndExit(){
+    console.log(this.form.invalid);
+    console.log(this.findInvalidControls());
+    if(this.form.dirty && this.form.invalid){
+      this.goBack();
       }else{
-        unlockUI();
+        console.log("entro por aca");
+        
+        lockUI();
+        if (!this.form.invalid) {
+          if(this.taxId){
+            await this.editTax();
+            unlockUI();
+            this.router.navigateByUrl('/admin/taxes');
+          }else{
+            await this.createTax();
+            unlockUI();
+            this.router.navigateByUrl('/admin/taxes');
+          }
+        }else{
+          this.goBack();
+          unlockUI();
+        }
       }
-    }
+    
+    
   }
 
   change_start_date(event){
     const date = moment(event.value).format('DD/MM/YYYY');
     this.dateFromatted = event.value;
     this.form.controls["expirationDate"].setValue(date);
+    this.form.controls["expirationDate"].markAsDirty();
   }
 
   async createTax(){
@@ -111,8 +116,8 @@ export class TaxEditionComponent implements OnInit {
     const input: TaxInput = {
       expirationDate: this.dateFromatted,
       prefix: this.form.controls["prefix"].value,
-      percentage: this.form.controls["percentage"].value,
-      nextTax: this.form.controls["nextTax"].value,
+      percentage: Number(this.form.controls["percentage"].value),
+      nextTax: Number(this.form.controls["nextTax"].value),
       finalSequence: this.form.controls["sequence"].value,
     }
     await this.taxesService.createTax(type, this.country, merchantId, input).catch(e => {
@@ -124,8 +129,8 @@ export class TaxEditionComponent implements OnInit {
     const input: TaxInput = {
       expirationDate: this.dateFromatted,
       prefix: this.form.controls["prefix"].value,
-      percentage: this.form.controls["percentage"].value,
-      nextTax: this.form.controls["nextTax"].value,
+      percentage: Number(this.form.controls["percentage"].value),
+      nextTax: Number(this.form.controls["nextTax"].value),
       finalSequence: this.form.controls["sequence"].value,
     }
     await this.taxesService.updateTax(this.taxId, input).catch(e => {
@@ -137,5 +142,39 @@ export class TaxEditionComponent implements OnInit {
     const formatted = moment(date).format('DD/MM/YYYY');
     return formatted;
   }
+
+  async goBack() {
+    let dialogRef = this.matDialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: `Salir`,
+        description: `¿Estás seguro que deseas salir sin guardar cambios?`,
+      },
+      panelClass: 'confirmation-dialog',
+    });
+    dialogRef.afterClosed().subscribe(async (result) => {
+      if (result === 'confirm') {
+        console.log("Entró por aca.");
+        
+        try {
+          lockUI();
+            this.router.navigate(['/admin/taxes']);
+          unlockUI();
+        } catch (error) {
+          unlockUI();
+        }
+      }
+    });
+  }
+
+  public findInvalidControls() {
+    const invalid = [];
+    const controls = this.form.controls;
+    for (const name in controls) {
+        if (controls[name].invalid) {
+            invalid.push(name);
+        }
+    }
+    return invalid;
+}
  
 }
