@@ -1,4 +1,4 @@
-<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
+h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
   <div class="dashboard-page container" (scroll)="infinitePagination()">
     <header class="header" *ngIf="!searchOpened">
       <div class="btn-container principal">
@@ -149,9 +149,7 @@
       </section>
 
       <!-- Articulos no exhibidos -->
-      <section
-        *ngIf="itemsIDontSell?.length > 0 && !hiddenDashboard"
-      >
+      <section *ngIf="itemsIDontSell?.length > 0 && !hiddenDashboard">
         <h3>ARTICULOS QUE NECESITAN LAS FLORISTERIAS MIEMBROS</h3>
 
         <div class="list-of-items">
@@ -256,15 +254,17 @@
         <ng-container *ngIf="item.pricing !== null && providedByMe">
           ${{ item.pricing | number : "1.2-2" }}
         </ng-container>
+        <ng-container *ngIf="item.pricing !== null && !providedByMe">
+          ${{ item.pricing | number : "1.2-2" }}
+        </ng-container>
       </div>
 
       <div
         class="item-add-price"
-        *ngIf="!providedByMe"
+        *ngIf="!providedByMe && item.pricing === null"
         (click)="addPrice(item)"
       >
         Mi precio
-
         <img
           class="price-tutorial-img"
           *ngIf="firstItem && itemsTutorialOpened"

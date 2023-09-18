@@ -1687,7 +1687,11 @@ export class ProviderItemsComponent implements OnInit {
 
     if (this.itemToSearch) {
       this.hiddenDashboard = true
-      this.filteringItemsBySearchbar(this.itemToSearch)
+      if (this.isSupplier) {
+        this.filteringItemsBySearchbar(this.itemToSearch)
+      } else {
+        this.filteringItemsBySearchbarNotSupplier(this.itemToSearch)
+      }
     }
 
     if (!this.itemToSearch && !isSomeBtnActive) {
@@ -1743,8 +1747,12 @@ export class ProviderItemsComponent implements OnInit {
       .then(data => this.itemsFiltering = data.listItems)
   }
 
+  /**
+   *
+   * @param itemName nombre
+   */
   private filteringItemsBySearchbarNotSupplier(itemName: string) {
-    // Si el boton de "oculto" está activo, será "disabled". Caso contrario "active"
+    // Estado del boton para mostrar los items ocultos o activos
     const status = this.buttonFilteringNoSupplier[1].isActive ? "disabled" : "active"
 
     const input: PaginationInput = {
@@ -1762,13 +1770,13 @@ export class ProviderItemsComponent implements OnInit {
       },
     };
 
-    // Button de items exhibidos
+    // Button de todos items exhibidos
     if (this.buttonFilteringNoSupplier[0].isActive) {
       input.findBy = {
         ...input.findBy,
         merchant: {
           _id: this.merchantsService.merchantData._id
-        }
+        },
       }
     }
 
@@ -1780,7 +1788,7 @@ export class ProviderItemsComponent implements OnInit {
       }
     }
 
-    // Button de items para filtrar por comisiones
+    // Button de items para filtrar los items por menos de 10 stock
     if (this.buttonFilteringNoSupplier[3].isActive) {
       input.filter = { maxStock: 10 }
     }
