@@ -1,0 +1,27 @@
+::ng-deep .cdk-global-overlay-wrapper {
+  background-color: rgba($color: white, $alpha: 0.7);
+}
+::ng-deep .cdk-overlay-pane {
+  max-width: 500px;
+  width: 95vw !important;
+  height: fit-content !important;
+}
+::ng-deep .mat-dialog-container {
+  padding: 0px;
+  background-color: #181D17;
+  max-width: 480px !important;
+  margin: auto;
+}
+.container {
+  padding: 39px 42px 39px 26px;
+  .msg {
+      color: #FFF;
+      font-family: InterRegular;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      margin-bottom: 7px;
+      max-width: 310px;
+  }
+}

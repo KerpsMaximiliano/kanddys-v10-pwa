@@ -29,13 +29,13 @@
                   : 'url(https://www.gravatar.com/avatar/0?s=250&d=mp)'
               }"
             ></div>
-            <p class="content">{{ historyEntry.value }}</p>
+            <p class="content" [innerHTML]="historyEntry.value"></p>
           </div>
         </div>
 
         <div *ngIf="historyEntry.type === 'WIZARD'" class="answer-box">
           <div class="message-container darker">
-            <p class="content">{{ historyEntry.value }}</p>
+            <p class="content" [innerHTML]="historyEntry.value"></p>
 
             <div
               class="avatar-wrapper"

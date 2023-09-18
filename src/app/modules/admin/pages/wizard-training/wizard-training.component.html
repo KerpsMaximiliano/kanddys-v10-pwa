@@ -13,35 +13,99 @@
 
     <div class="page-body">
       <section>
-        <h3>Carga tu archivo de entrenamiento(.txt)</h3>
+        <h3>Entrenar al asistente con los productos de mi tienda</h3>
 
-        <input
-          type="file"
-          id="file"
-          [style.display]="'none'"
-          (change)="loadFile($event)"
-          multiple
-          [accept]="['.txt']"
-        />
-
-        <label for="file" class="itemContainer add" [style.cursor]="'pointer'">
-          <div class="labelBox"></div>
-          <div class="imgBox">
-            <p>+</p>
-          </div>
-          <div class="label">Adiciona</div>
-        </label>
-      </section>
-
-      <section>
-        <h3>Reentrenar al asistente con los productos de mi tienda</h3>
-
-        <button
-          (click)="trainChatbotWithMyItems()"
-        >
-          Reentrenar
+        <button (click)="trainChatbotWithMyItems()">
+          Entrenar
           <mat-icon>update</mat-icon>
         </button>
+      </section>
+
+      <!--
+        <section>
+          <h3>Carga tu archivo de entrenamiento(.txt)</h3>
+  
+          <input
+            type="file"
+            id="file"
+            [style.display]="'none'"
+            (change)="loadFile($event)"
+            multiple
+            [accept]="['.txt']"
+          />
+  
+          <label for="file" class="itemContainer add" [style.cursor]="'pointer'">
+            <div class="labelBox"></div>
+            <div class="imgBox">
+              <p>+</p>
+            </div>
+            <div class="label">Adiciona</div>
+          </label>
+        </section>
+      -->
+
+      <section>
+        <h3>
+          Entrena al asistente con "Recuerdos", añade cada recuerdo para que tu
+          asistente responda en base a ellos
+        </h3>
+
+        <button
+          mat-fab
+          class="add-button"
+          (click)="addALineToKnowledgeBase()"
+          aria-label="Add a memory for the assitant's brain"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+
+        <div class="knowledge-base-memories" *ngIf="!loadingKnowledge">
+          <ng-container
+            *ngFor="let field of embeddingsLines?.controls; let i = index"
+          >
+            <div class="input-flex">
+              <div class="close-button" (click)="deleteKnowledgeData(i)">
+                <mat-icon>close</mat-icon>
+              </div>
+              <input
+                [formControl]="getFormControl(embeddingsLines?.controls[i])"
+                tabindex="-1"
+                [type]="'text'"
+                [placeholder]="
+                  'Escribe lo que deseas que recuerde tu asistente...'
+                "
+                class="input-knowledge-base"
+                id="knowledge-{{ i }}"
+              />
+              <button
+                class="accept-button"
+                [disabled]="field.status !== 'VALID'"
+                (click)="
+                  !vectorsIdByLineIndex[i]
+                    ? saveChangesInKnowledgeBaseData(i)
+                    : updateChangesInKnowledgeBaseData(i)
+                "
+              >
+                <mat-icon *ngIf="!vectorsIdByLineIndex[i]">check</mat-icon>
+                <mat-icon *ngIf="vectorsIdByLineIndex[i]">update</mat-icon>
+              </button>
+            </div>
+          </ng-container>
+        </div>
+
+        <ng-container *ngIf="loadingKnowledge">
+          <div
+            [ngStyle]="{
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              height: '80px',
+              justifyContent: 'center'
+            }"
+          >
+            <app-dot-loader></app-dot-loader>
+          </div>
+        </ng-container>
       </section>
     </div>
   </div>
