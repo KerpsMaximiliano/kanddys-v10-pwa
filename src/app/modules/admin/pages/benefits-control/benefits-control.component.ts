@@ -85,8 +85,6 @@ export class BenefitsControlComponent implements OnInit {
     this.orders = orders;
     console.log("all orders", orders)
 
-    const latest = this.getYearMonth(orders[orders.length - 1].createdAt)
-    console.log(latest)
     const expenditures = await this.orderService.expenditures({
       findBy: {
         merchant: this.merchant._id,
@@ -94,10 +92,7 @@ export class BenefitsControlComponent implements OnInit {
       },
       options: {
         limit: -1,
-        sortBy: 'createdAt:desc',
-        range: {
-          from: latest + "-01"
-        }
+        sortBy: 'createdAt:desc'
       },
     });
     this.expenditures = expenditures
@@ -238,6 +233,14 @@ export class BenefitsControlComponent implements OnInit {
       date1.getMonth() === date2.getMonth()
     );
   }
+  isSameExpYearAndMonth(index1: number, index2: number) {
+    const date1 = new Date(this.getRestExps()[index1].createdAt)
+    const date2 = new Date(this.getRestExps()[index2].createdAt)
+    return (
+      date1.getFullYear() === date2.getFullYear() &&
+      date1.getMonth() === date2.getMonth()
+    );
+  }
 
   isCurYearMonth(index) {
     const now = new Date()
@@ -247,9 +250,29 @@ export class BenefitsControlComponent implements OnInit {
       now.getMonth() === date.getMonth()
     );
   }
+  isExpCurYearMonth(index) {
+    const now = new Date()
+    const date = new Date(this.getRestExps()[index].createdAt)
+    return (
+      now.getFullYear() === date.getFullYear() &&
+      now.getMonth() === date.getMonth()
+    );
+  }
   
   getDateFormat(index: number) {
     const date = new Date(this.orders[index].createdAt);
+    const options = { day: 'numeric' as const, month: 'short' as const, year: 'numeric' as const};
+    const dateString = date.toLocaleDateString('en-GB', options);
+    return dateString;
+  }
+  getExpDateFormat(index: number) {
+    const date = new Date(this.getRestExps()[index].createdAt);
+    const options = { day: 'numeric' as const, month: 'short' as const, year: 'numeric' as const};
+    const dateString = date.toLocaleDateString('en-GB', options);
+    return dateString;
+  }
+  getCurDate() {
+    const date = new Date();
     const options = { day: 'numeric' as const, month: 'short' as const, year: 'numeric' as const};
     const dateString = date.toLocaleDateString('en-GB', options);
     return dateString;
@@ -292,7 +315,7 @@ export class BenefitsControlComponent implements OnInit {
   dateHandler(datestring: string) {
     datestring = datestring.slice(0, -5)
     let date = new Date(datestring)
-    let time = Math.ceil((new Date().getTime() - date.getTime())/(1000*60));
+    let time = Math.ceil((new Date().getTime() - date.getTime())/(1000*60)) + 240;
     if(time < 60) {
       return time + ' minutos';
     }
@@ -346,14 +369,23 @@ export class BenefitsControlComponent implements OnInit {
               from: result.date
             }
           } as Expenditure;
-  
+          lockUI()
           const newExpenditure = await this.orderService.createExpenditure(
             this.merchant._id,
             inputExpenditure
           )
           this.expenditures = [newExpenditure, ...this.expenditures]
+          unlockUI()
         }
       }
+    })
+  }
+  getRestExps() {
+    if (!this.orders.length || !this.expenditures.length) return []
+    const latest = new Date(this.orders[this.orders.length - 1].createdAt)
+    return this.expenditures.filter(exp => {
+      const date = new Date(exp.createdAt)
+      return (latest.getFullYear() > date.getFullYear()) || (latest.getFullYear() == date.getFullYear() && latest.getMonth() > date.getMonth()) 
     })
   }
 }

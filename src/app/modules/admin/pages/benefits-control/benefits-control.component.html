@@ -28,30 +28,9 @@
                 <div class="list-item">Beneficio {{incomeMerchantLoading ? ('$' + amountFormat(incomeMerchant)) : 'Loading'}}</div>
             </div>
         </div>
-        <!-- <div class="month">
-            ESTEMESID (EN CURSO)
-        </div>
-        <div class="card">
-            <div class="flex space-between items-center">
-                <div class="id">
-                    CompradorID
-                </div>
-                <div class="amount">
-                    $14,452
-                </div>
-            </div>
-            <div class="flex space-between items-center">
-                <div class="date">
-                    N478, hace FechaID
-                </div>
-                <div class="count">
-                    4 artículos
-                </div>
-            </div>
-        </div> -->
         <div *ngFor="let order of filterOrders(); index as i">
             <div class="month" *ngIf="(i == 0 || !isSameYearAndMonth(i, i - 1)) && !isSearch">
-                {{getDateFormat(i)}}{{isCurYearMonth(i) ? " (EN CURSO)" : ''}}
+                {{isCurYearMonth(i) ? getCurDate() : getDateFormat(i)}}{{isCurYearMonth(i) ? " (EN CURSO)" : ''}}
             </div>
             <div *ngIf="(i == 0 || !isSameYearAndMonth(i, i - 1))">
                 <div class="card" *ngFor="let exp of filterExpenditure(order.createdAt)">
@@ -78,7 +57,7 @@
                     <div class="id">
                         {{nameFormat(order.user)}}
                     </div>
-                    <div class="amount" *ngIf="!isSearch">
+                    <div class="amount">
                         ${{calcTotal(order.subtotals)}}
                     </div>
                 </div>
@@ -88,6 +67,28 @@
                     </div>
                     <div class="count">
                         {{order.items.length}} artículos
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div *ngFor="let exp of getRestExps(); index as i">
+            <div class="month" *ngIf="(i == 0 || !isSameExpYearAndMonth(i, i - 1)) && !isSearch">
+                {{isExpCurYearMonth(i) ? getCurDate() : getExpDateFormat(i)}}{{isExpCurYearMonth(i) ? " (EN CURSO)" : ''}}
+            </div>
+            <div class="card">
+                <div class="flex space-between items-center">
+                    <div class="id">
+                        {{exp.name ? exp.name: "NULL"}}
+                    </div>
+                    <div class="amount">
+                        ${{amountFormat(exp.amount)}}
+                    </div>
+                </div>
+                <div class="flex space-between items-center">
+                    <div class="date">
+                        Hace {{dateHandler(exp.createdAt)}}
+                    </div>
+                    <div class="count">
                     </div>
                 </div>
             </div>
