@@ -100,7 +100,7 @@ nav {
   flex-direction: column;
   align-items: center;
   width: 90%;
-  margin: 12px;
+  margin: 64px 12px 12px 12px;
   padding: 24px;
 }
 
@@ -180,6 +180,10 @@ nav {
   padding: 12px;
   display: flex;
   justify-content: space-between;
+}
+
+.input-card.last {
+  margin-bottom: 40px;
 }
 
 .input-text {
@@ -282,12 +286,14 @@ nav {
   background: #FFF;
   padding: 0 20px;
   height: 28px;
+  p {
+    cursor: pointer;
+  }
 }
 
 .preview {
   font-family: InterMedium;
   font-size: 17px;
-  cursor: pointer;
 }
 
 .share {
