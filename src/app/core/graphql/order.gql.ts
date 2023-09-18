@@ -156,7 +156,7 @@ const orderData = `
     image
   }
   metadata {
-    files
+    #files
     description
   }
   identification
@@ -874,70 +874,70 @@ export const orderQuantityOfFiltersShippingType = gql`
   }
 `;
 
-export const orderPaginate = gql`
-   query orderPaginate($pagination: PaginationInput) {
-    orderPaginate(pagination: $pagination) {
-      _id
-      subtotals {
-        amount
-      }
-      answers {
-        reference
-      }
-      user {
-        phone
-        email
-        name
-        image
-        username
-      }
-      ocr {
-        _id
-        platform
-      }
-      items {
-        item {
-          _id
-          name
-          images {
-            value
-            index
-            active
-          }
-          pricing
-          tags
-          params {
-            _id
-            name
-            values {
-              _id
-              name
-              price
-            }
-          }
-        }
-        params {
-          param
-          paramValue
-        }
-        reservation {
-          _id
-        }
-      }
-      orderType
-      orderStatus
-      orderStatusDelivery
-      status {
-        status
-        access
-      }
-      expenditures
-      dateId
-      createdAt
-      tags
-    }
-  }
-`;
+// export const orderPaginate = gql`
+//    query orderPaginate($pagination: PaginationInput) {
+//     orderPaginate(pagination: $pagination) {
+//       _id
+//       subtotals {
+//         amount
+//       }
+//       answers {
+//         reference
+//       }
+//       user {
+//         phone
+//         email
+//         name
+//         image
+//         username
+//       }
+//       ocr {
+//         _id
+//         platform
+//       }
+//       items {
+//         item {
+//           _id
+//           name
+//           images {
+//             value
+//             index
+//             active
+//           }
+//           pricing
+//           tags
+//           params {
+//             _id
+//             name
+//             values {
+//               _id
+//               name
+//               price
+//             }
+//           }
+//         }
+//         params {
+//           param
+//           paramValue
+//         }
+//         reservation {
+//           _id
+//         }
+//       }
+//       orderType
+//       orderStatus
+//       orderStatusDelivery
+//       status {
+//         status
+//         access
+//       }
+//       expenditures
+//       dateId
+//       createdAt
+//       tags
+//     }
+//   }
+// `;
 
 export const updateOrderExternal = gql`
   mutation updateOrderExternal($input: ItemOrderExternalInput!, $id: ObjectID!) {
