@@ -48,7 +48,7 @@
 }
 
 .page-body {
-  padding: 0px 0.5rem;
+  padding: 0px 1.5rem;
 }
 
 section {
@@ -82,6 +82,28 @@ section {
       background-color: darken($color: #87cd9b, $amount: 5);
       cursor: pointer;
     }
+  }
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  h3 {
+    font-family: InterLight;
+    text-align: center;
+  }
+
+  textarea {
+    width: 100%;
+    border-radius: 10px;
+    resize: none;
+    border: none;
+    padding: 5px;
+    min-height: 200px;
+    height: fit-content;
   }
 }
 
@@ -233,4 +255,78 @@ section {
   box-shadow: 0 0.3rem 0.5rem rgb(0 0 0 / 15%) !important;
   font-family: InterLight;
   font-size: 30px;
+}
+
+.example-button-container {
+  display: flex;
+  justify-content: center;
+  width: 120px;
+}
+
+.add-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50% !important;
+  margin-bottom: 20px;
+
+  mat-icon {
+    margin: 0px !important;
+  }
+}
+
+.knowledge-base-memories {
+  width: 100%;
+
+  .input-flex {
+    display: flex;
+    margin-bottom: 10px;
+
+    .close-button {
+      background-color: orangered;
+      border-radius: 5px 0px 0px 5px;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    .accept-button {
+      background-color: #87cd9b;
+      border-radius: 0px 5px 5px 0px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px 0px;
+
+      mat-icon {
+        margin-left: 0px;
+      }
+
+      &:disabled {
+        background-color: lighten($color: #5c5e71, $amount: 30);
+
+        &:hover {
+          background-color: lighten($color: #5c5e71, $amount: 50);
+          cursor: not-allowed;
+        }
+      }
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    .input-knowledge-base {
+      flex: 1;
+      border: none;
+      background-color: white;
+      font-family: InterLight;
+      font-size: 14px;
+    }
+  }
 }
