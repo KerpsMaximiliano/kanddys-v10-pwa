@@ -1080,10 +1080,30 @@ export class NavigationComponent implements OnInit {
   mainTitle = 'HERRAMIENTAS GRATIS  PARA PROVEEDORES';
   curRole = 0;
   isOpen = false;
+  list = [
+    {
+      text: '\"Daliah, nos impulsa a avanzar para no quedarnos atrás\"',
+      avatar: '',
+      name: 'José Miguel Caffaro',
+      role: 'Proveedor de flores frescas, follajes y bases'
+    },
+    {
+      text: '\"Daliah, nos impulsa a avanzar para no quedarnos atrás\"',
+      avatar: '',
+      name: 'José Miguel Caffaro',
+      role: 'Proveedor de flores frescas, follajes y bases'
+    },
+    {
+      text: '\"Daliah, nos impulsa a avanzar para no quedarnos atrás\"',
+      avatar: '',
+      name: 'José Miguel Caffaro',
+      role: 'Proveedor de flores frescas, follajes y bases'
+    }
+  ]
 
   emailDialogRef: MatDialogRef<FormComponent, any> = null;
 
-  footerSwiperConfig: SwiperOptions = {
+  swiperConfig: SwiperOptions = {
     slidesPerView: 1,
     freeMode: false,
     spaceBetween: 0,
@@ -1280,13 +1300,22 @@ export class NavigationComponent implements OnInit {
   }
 
   openMsgDialog() {
-    this.bottomSheet.open(MessageDialogComponent, {});
+    const dialogRef = this.dialog.open(MessageDialogComponent, {});
+
+    dialogRef.afterClosed().subscribe(role => {
+      if (!role) {
+        // this.setRole(parseInt(role))
+        return
+      }
+      console.log(role)
+    });
   }
 
   share() {
     if (!this.headerService.user) {
       this.openMagicLinkDialog()
     }
+    else this.showDialog()
   }
 
   filterData () {
@@ -1306,6 +1335,7 @@ export class NavigationComponent implements OnInit {
 
   enterClub() {
     if(!this.headerService.user) this.openMagicLinkDialog();
+    else this.showDialog()
   }
 
   async openMagicLinkDialog() {
@@ -1567,6 +1597,38 @@ export class NavigationComponent implements OnInit {
     });
 
     this.close();
+  }
+  showRoleDialog() {
+    const dialogRef = this.dialog.open(SelectRoleDialogComponent, {});
+    dialogRef.afterClosed().subscribe(role => {
+      if (role != undefined) {
+        this.setRole(parseInt(role))
+        return
+      }
+      switch (role) {
+        case "0":
+          
+          break;
+        case "1":
+          
+          break;
+        case "2":
+          
+          break;
+        case "3":
+          
+          break;
+        case "4":
+        
+          break;
+        case "5":
+        
+          break;
+      
+        default:
+          break;
+      }
+    });
   }
 
   @ViewChild('sidenav') sidenav: MatSidenav;

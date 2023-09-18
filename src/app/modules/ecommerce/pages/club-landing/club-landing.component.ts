@@ -833,6 +833,27 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     },
   ];
 
+  list = [
+    {
+      text: '\"Daliah, nos impulsa a avanzar para no quedarnos atrás\"',
+      avatar: '',
+      name: 'José Miguel Caffaro',
+      role: 'Proveedor de flores frescas, follajes y bases'
+    },
+    {
+      text: '\"Daliah, nos impulsa a avanzar para no quedarnos atrás\"',
+      avatar: '',
+      name: 'José Miguel Caffaro',
+      role: 'Proveedor de flores frescas, follajes y bases'
+    },
+    {
+      text: '\"Daliah, nos impulsa a avanzar para no quedarnos atrás\"',
+      avatar: '',
+      name: 'José Miguel Caffaro',
+      role: 'Proveedor de flores frescas, follajes y bases'
+    }
+  ]
+
   activeTabIndex: number = 0;
 
   swipers: Array<ReviewsSwiper> = [
@@ -1124,10 +1145,12 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     if (!this.headerService.user) {
       this.openMagicLinkDialog()
     }
+    else this.showDialog()
   }
 
   enterClub() {
     if(!this.headerService.user) this.openMagicLinkDialog();
+    else this.showDialog()
   }
 
   ngOnDestroy(): void {

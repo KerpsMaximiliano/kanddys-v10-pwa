@@ -3,11 +3,6 @@
       <!-- <div class="close-content" *ngIf="!isFlag">
         <span (click)="isFlag=true">X</span>
       </div> -->
-      <div class="special" (click)="showDialog()">
-        <span class="icon">
-          <mat-icon>ios_share</mat-icon>
-        </span>
-      </div>
       <div class="header-wrapper">
         <div class="left-part">
           <img
@@ -38,80 +33,71 @@
       </div>
     
       <main>
-        <div class="link-desc" (click)="enterClub()">
-          <div class="title">Capacitación para crecer</div>
-          <div class="link">
-            Conoce la experiencia de los diversos participantes de la cadena de suministro floral para enriquecer tus propias estrategias y operaciones
+        
+        <div class="banner" (click)="openClubDialog()"></div>
+
+        <div class="action-part">
+          <div class="flex">
+            <div class="icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="42" height="41" viewBox="0 0 42 41" fill="none">
+                <circle cx="20.687" cy="20.1069" r="8.10105" fill="white"/>
+                <circle cx="10.305" cy="32.5804" r="5.09408" fill="#F7D455"/>
+                <circle cx="5.09408" cy="23.0316" r="5.09408" fill="#F7D455"/>
+                <circle cx="20.5003" cy="35.9066" r="5.09408" fill="#F7D455"/>
+                <circle cx="30.9925" cy="32.4359" r="5.09408" fill="#F7D455"/>
+                <circle cx="36.3363" cy="22.8871" r="5.09408" fill="#F7D455"/>
+                <circle cx="34.6097" cy="12.182" r="5.09408" fill="#F7D455"/>
+                <circle cx="26.0628" cy="5.09408" r="5.09408" fill="#F7D455"/>
+                <circle cx="14.93" cy="5.23861" r="5.09408" fill="#F7D455"/>
+                <circle cx="6.54721" cy="12.3265" r="5.09408" fill="#F7D455"/>
+                <line x1="24.5913" y1="10.3246" x2="23.697" y2="12.4111" stroke="#F7D455" stroke-width="0.963582"/>
+                <line x1="16.9572" y1="9.88226" x2="18.1495" y2="11.8198" stroke="#F7D455" stroke-width="0.963582"/>
+                <line x1="11.235" y1="14.6161" x2="13.4706" y2="15.6594" stroke="#F7D455" stroke-width="0.963582"/>
+                <line x1="10.0731" y1="21.729" x2="12.4577" y2="21.4309" stroke="#F7D455" stroke-width="0.963582"/>
+                <line x1="13.3321" y1="28.466" x2="14.9716" y2="26.3794" stroke="#F7D455" stroke-width="0.963582"/>
+                <line x1="20.237" y1="30.8496" x2="20.237" y2="28.1668" stroke="#F7D455" stroke-width="0.963582"/>
+                <line x1="27.3588" y1="28.4811" x2="25.7193" y2="26.5436" stroke="#F7D455" stroke-width="0.963582"/>
+                <line x1="30.9112" y1="22.831" x2="28.5265" y2="22.3838" stroke="#F7D455" stroke-width="0.963582"/>
+                <line x1="30.4733" y1="15.4837" x2="28.3867" y2="16.527" stroke="#F7D455" stroke-width="0.963582"/>
+              </svg>
+            </div>
+            <div class="info">
+              Programa de 
+              <br>Referencia$ Multi-Nivel
+            </div>
+          </div>
+          <div class="actions">
+            <div class="action" (click)="enterClub()">Comparte tu invitación</div>
+            <div class="action" *ngIf="headerService.user">💚 Mira tus referidos directos e indirectos</div>
+            <div class="action">Mira como funciona</div>
           </div>
         </div>
-        <div class="link-desc" (click)="openClubDialog()">>
-          <div class="title">Herramientas para automatizar procesos hasta desde el celular</div>
-          <div class="link">
-            Cotiza. Compra. Vende. Controla. Fideliza. Colabora.
-          </div>
+        <div class="desc" *ngIf="!headerService.user">
+          MerchantID, seguimos educando a Dal<span>ia</span>h, te mantendremos informado del progreso.
         </div>
 
         <div class="header-border" *ngIf="!headerService.user"></div>
 
-        <!-- <div class="common" *ngIf="!headerService.user">
-          *Exponer es gratis, vender es opcional.
-          <br><br>Colaboradores venden desde su 🌼 Vitrina Online y pueden comisionar a quienes vendieron por ellos.
-          <br><br>Los miembros colaboran US$0.30 por venta (máximo US$250 mensual).
-        </div> -->
-
-
         <ng-container *ngIf="!headerService.user">
           <div class="tabs-container">
             <!-- TABS -->
-            <h3 class="footer-swiper-title">TESTIMONIOS</h3>
-            <h3 class="footer-swiper-sub-title" (click)="showDialog()">A los Miembros le encanta el Club</h3>
-            <div class="tabs">
-              <div
-                class="tab"
-                (click)="changeTab(i)"
-                *ngFor="let tab of tabs; index as i"
-                [ngClass]="{ active: tab.active }"
-              >
-                {{ tab.text }}
+            <h3 class="footer-swiper-title">TESTIMONIOS DE QUIENES ESTAN USANDO LA VERSION BETA DE DAL<span>IA</span>H</h3>
+            <div class="footer-swiper">
+              <div class="swiper-custom-container">
+                <swiper [config]="swiperConfig">
+                  <div *ngFor="let item of list">
+                    <div class="slide-item">
+                      <div class="slide-content">{{ item.text }}</div>
+                      <div class="image">
+                        <img src="../../../../../assets/images/avatar.svg" alt="">
+                      </div>
+                      <div class="name">{{item.name}}</div>
+                      <div class="role">{{item.role}}</div>
+                    </div>
+                  </div>
+                </swiper>
               </div>
             </div>
-  
-            <!-- SUBTABS -->
-            <div
-              class="subtabs"
-              *ngFor="let tab of tabs; index as i"
-              [ngClass]="{ active: tab.active }"
-            >
-              <ng-container *ngIf="tab.active">
-                <div
-                  class="subtab"
-                  *ngFor="let subtab of tab.subTabs; index as j"
-                  (click)="changeSubtab(i, j)"
-                  [ngClass]="{ active: subtab.active }"
-                >
-                  {{ subtab.text }}
-                </div>
-              </ng-container>
-            </div>
-            <!-- CONTENIDO DE SUBTABS -->
-            <ng-container *ngFor="let tab of tabs; index as i">
-              <ng-container *ngIf="tab.active">
-                <ng-container *ngFor="let subtab of tab.subTabs; index as j">
-                  <ng-container *ngIf="subtab.active">
-                    <div class="footer-swiper">
-                      <div class="swiper-custom-container">
-                        <!-- <swiper [config]="swiperConfig"> -->
-                          <div *ngFor="let content of subtab.content">
-                            <div class="slide-content">{{ content }}</div>
-                            <!-- <div class="blank-space"></div> -->
-                          </div>
-                        <!-- </swiper> -->
-                      </div>
-                    </div>
-                  </ng-container>
-                </ng-container>
-              </ng-container>
-            </ng-container>
           </div>
         </ng-container>
 
