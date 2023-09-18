@@ -72,6 +72,7 @@ const fullItem = `
   createdAt
   amountMerchantCoin
   stock
+  expenditures
   notificationStock
   notificationStockLimit
   notificationStockPhoneOrEmail
@@ -237,9 +238,8 @@ export const salesPositionOfItemByMerchant = gql`
 export const buyersByItemInMerchantStore = gql`
   query buyersByItemInMerchantStore(
     $itemID: ObjectID!
-    $paginate: PaginationInput!
   ) {
-    buyersByItemInMerchantStore(itemID: $itemID, paginate: $paginate)
+    buyersByItemInMerchantStore(itemID: $itemID)
   }
 `;
 
@@ -772,3 +772,11 @@ export const itemsSuppliersPaginate = gql`
     itemsSuppliersPaginate(paginate: $paginate)
   }
 `;
+
+export const itemAddExpenditure = gql`
+  mutation itemAddExpenditure($webformId: ObjectID!, $id: ObjectID!) {
+    itemAddExpenditure(webformId: $webformId, id: $id) {
+      _id
+    }
+  }
+`;//webformId should be expenditureId, is misnamed in backend, correct when fixed

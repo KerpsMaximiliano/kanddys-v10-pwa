@@ -45,6 +45,7 @@ import {
   itemsQuantitySold,
   itemsQuantitySoldTotal,
   itemsSuppliersPaginate,
+  itemAddExpenditure
 } from '../graphql/items.gql';
 import {
   Item,
@@ -304,7 +305,7 @@ export class ItemsService {
 
   async buyersByItemInMerchantStore(
     itemID: string,
-    paginate: PaginationInput
+    paginate?: PaginationInput
   ): Promise<number> {
     try {
       const response = await this.graphql.query({
@@ -655,6 +656,15 @@ export class ItemsService {
       fetchPolicy: 'no-cache',
     });
     if (!result) return;
+    return result;
+  }
+
+  async itemAddExpenditure(webformId: string, id: string) { //webformId should be expenditureId, is misnamed in backend, correct when fixed
+    const result = await this.graphql.mutate({
+      mutation: itemAddExpenditure,
+      variables: { webformId, id },
+    });
+    if (!result || result?.errors) return undefined;
     return result;
   }
 }
