@@ -197,7 +197,7 @@ export class ProviderItemsComponent implements OnInit {
         await this.getNumberOfItemsSold();
 
         const merchantDefault = await this.merchantsService.merchantDefault()
-        this.isSupplier = merchantDefault?.roles?.name === 'PROVIDER' ? true : false
+        this.isSupplier = merchantDefault.roles.code === 'PROVIDERS' ? true : false
 
         this.saleflowService
           .saleflowDefault(this.merchantsService.merchantData._id)
@@ -210,16 +210,13 @@ export class ProviderItemsComponent implements OnInit {
 
         this.checkIfPresentationWasClosedBefore();
         this.checkIfTutorialWasOpen()
+        await this.getNewPageOfItemsIDontSell(true, false);
 
-        if (this.isSupplier) {
-          await this.getNewPageOfItemsIDontSell(true, false);
-        }
 
-        this.itemSearchbar.valueChanges.subscribe(async (change) => {
+        this.itemSearchbar.valueChanges.subscribe(async () => {
           await this.getItemsISell();
-          if (this.isSupplier) {
-            await this.getNewPageOfItemsIDontSell(true, false);
-          }
+          await this.getNewPageOfItemsIDontSell(true, false);
+
         });
       }
     );
@@ -229,10 +226,11 @@ export class ProviderItemsComponent implements OnInit {
    * Obtiene el numero de items vendidos
    */
   async getNumberOfItemsSold() {
+    const type: TypeItem = this.isSupplier ? 'supplier' : ['default', null]
     if (this.isTheUserAMerchant) {
       const sold = await this.itemsService.itemsQuantitySoldTotal({
         findBy: {
-          type: 'supplier',
+          type,
           merchant: this.merchantsService.merchantData._id,
         },
         options: {
@@ -344,20 +342,9 @@ export class ProviderItemsComponent implements OnInit {
     }
   };
 
-  switchHiddenStore() {
-    const input = {
-      status: this.isSwitchActive ? "open" : "closed"
-    }
-    this.saleflowService.updateSaleflow(input, this.saleFlowId)
-      .then(data => {
-        console.log(data)
-        this.isSwitchActive = !this.isSwitchActive
-      })
-  }
-
   toggleStoreVisibility() {
     const input = {
-      status: this.isSwitchActive ?  "closed" : "open"
+      status: this.isSwitchActive ? "closed" : "open"
     }
 
     this.saleflowService
@@ -452,9 +439,10 @@ export class ProviderItemsComponent implements OnInit {
       this.paginationState.page++;
     }
 
+    const type: TypeItem = this.isSupplier ? 'supplier' : ['default', null]
     const pagination: PaginationInput = {
       findBy: {
-        type: 'supplier',
+        type,
         parentItem: null,
         _id: {
           $nin: this.itemsISell.map((item) => item.parentItem),
@@ -678,12 +666,12 @@ export class ProviderItemsComponent implements OnInit {
   async showSearch() {
     this.searchOpened = true;
     setTimeout(() => {
-      (
-        document.querySelector('#search-from-results-view') as HTMLInputElement
-      )?.focus();
+      (document
+        .querySelector('#search-from-results-view') as HTMLInputElement)
+        ?.focus();
     }, 100);
     this.itemsService
-      .itemsQuantityOfFilters(this.merchantsService.merchantData._id, "supplier")
+      .itemsQuantityOfFilters(this.merchantsService.merchantData._id, 'supplier')
       .then(data => {
         if (this.isSupplier) {
           this.buttonFiltering[2].total = data.hidden
@@ -1061,6 +1049,7 @@ export class ProviderItemsComponent implements OnInit {
     price: number,
     item: Item
   ): Promise<ItemInput> => {
+    const type: TypeItem = this.isSupplier ? 'supplier' : 'default'
     const itemInput: ItemInput = {
       name: item.name,
       layout: item.layout,
@@ -1073,7 +1062,7 @@ export class ProviderItemsComponent implements OnInit {
       notificationStock: true,
       notificationStockLimit: item.notificationStockLimit,
       useStock: item.useStock,
-      type: 'supplier',
+      type,
     };
 
     if (this.merchantsService.merchantData) {

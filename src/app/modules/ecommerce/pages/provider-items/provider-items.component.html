@@ -124,6 +124,7 @@
 
       <ng-container *ngTemplateOutlet="itemsTutorialOverlay"></ng-container>
 
+      <!-- Articulos exhibidos -->
       <section *ngIf="itemsISell?.length > 0 && !hiddenDashboard">
         <h3>ARTICULOS QUE ESTOY EXHIBIENDO A LOS MIEMBROS</h3>
 
@@ -147,8 +148,9 @@
         </div>
       </section>
 
+      <!-- Articulos no exhibidos -->
       <section
-        *ngIf="itemsIDontSell?.length > 0 && !hiddenDashboard && isSupplier"
+        *ngIf="itemsIDontSell?.length > 0 && !hiddenDashboard"
       >
         <h3>ARTICULOS QUE NECESITAN LAS FLORISTERIAS MIEMBROS</h3>
 
@@ -175,6 +177,7 @@
         </div>
       </section>
 
+      <!-- Articulos filtrados -->
       <section *ngIf="searchOpened">
         <div class="list-of-items">
           <div
