@@ -320,22 +320,23 @@ footer {
   width: 100%;
   max-width: 500px;
   margin: 0px auto;
-  bottom: 50px;
-  padding: 0px 20px;
+  bottom: 32px;
+  padding: 10px;
   display: flex;
+  background-color: #181D17;
   input {
     height: 39px;
     color: white;
-    font-family: Inter;
+    font-family: InterRegular;
     font-size: 16px;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
     padding: 10px 19px;
-    background: none;
+    background-color: #181D17;
     border-radius: 300px;
     border: 2px solid #7B7B7B;
-    width: calc(100% - 48px);
+    width: calc(100% - 28px);
   }
   button {
     margin-left: 8px;
@@ -345,6 +346,9 @@ footer {
     border-radius: 50%;
     padding: 0px;
     height: 39px;
+  }
+  @media (max-width: 296px) {
+    bottom: 52px;
   }
 }
 
