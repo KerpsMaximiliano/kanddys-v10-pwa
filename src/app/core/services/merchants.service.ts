@@ -67,7 +67,7 @@ import {
   MerchantInput,
 } from './../models/merchant';
 import { Contact } from '../models/contact';
-import { carts, getMe } from '../graphql/cart.gql';
+import { carts, getMe, taxesByMerchant } from '../graphql/cart.gql';
 
 @Injectable({ providedIn: 'root' })
 export class MerchantsService {
@@ -174,6 +174,18 @@ export class MerchantsService {
     try {
       const response = await this.graphql.query({
         query: carts,
+        variables: { paginate },
+        fetchPolicy: 'no-cache',
+      });
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  async taxesByMerchant(paginate: PaginationInput) {
+    try {
+      const response = await this.graphql.query({
+        query: taxesByMerchant,
         variables: { paginate },
         fetchPolicy: 'no-cache',
       });

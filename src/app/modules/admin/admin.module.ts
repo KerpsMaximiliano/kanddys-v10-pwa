@@ -104,6 +104,8 @@ import { AdminCartsComponent } from './pages/admin-carts/admin-carts.component';
 import { ItemsOffersComponent } from './pages/items-offers/items-offers.component';
 import { OrderImageLoadComponent } from './pages/order-image-load/order-image-load.component';
 import { DeliveryZonesManagerComponent } from './pages/delivery-zones-manager/delivery-zones-manager.component';
+import { BenefitsControlComponent } from './pages/benefits-control/benefits-control.component';
+import { CostsMetricsComponent } from './pages/costs-metrics/costs-metrics.component';
 import { WizardTrainingComponent } from './pages/wizard-training/wizard-training.component';
 import { SuperAdminMerchantsComponent } from './pages/super-admin-merchants/super-admin-merchants.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -372,6 +374,10 @@ const routes: Routes = [
         component: FilteredBenefitsComponent,
       },
       {
+        path: 'benefits-control',
+        component: BenefitsControlComponent,
+      },
+      {
         path: 'order-expenses/:orderId',
         component: OrderExpensesComponent,
       },
@@ -637,6 +643,10 @@ const routes: Routes = [
     component: MonetizationsComponent
   },
   {
+    path: 'costs-metrics',
+    component: CostsMetricsComponent
+  },
+  {
     path:'super-admin-merchants',
     component:SuperAdminMerchantsComponent
   }
@@ -726,6 +736,8 @@ const routes: Routes = [
     AdminCartsComponent,
     ItemsOffersComponent,
     DeliveryZonesManagerComponent,
+    BenefitsControlComponent,
+    CostsMetricsComponent,
     WizardTrainingComponent,
     OrderImageLoadComponent,
     SuperAdminMerchantsComponent,
