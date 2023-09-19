@@ -10,6 +10,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { Expenditure } from 'src/app/core/models/order';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateExpenditureDialogComponent } from 'src/app/shared/dialogs/create-expenditure-dialog/create-expenditure-dialog.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-benefits-control',
@@ -43,7 +44,8 @@ export class BenefitsControlComponent implements OnInit {
   constructor(
     private merchantsService: MerchantsService,
     private orderService: OrderService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private router: Router
   ) { }
 
   range = new FormGroup({
@@ -374,21 +376,6 @@ export class BenefitsControlComponent implements OnInit {
             this.merchant._id,
             inputExpenditure
           )
-          const newexp: Expenditure = {
-            _id: "adfasdfas",
-            createdAt: "2023-09-18T19:22:33.742Z",
-            amount: 1.3,
-            name: "New",
-            type: 'only-day',
-            merchant: '',
-            description: '',
-            useDate: undefined,
-            activeDate: {
-              from: '',
-              month: 0
-            },
-            updatedAt: ''
-          }
           console.log([newExpenditure, ...this.expenditures])
           this.expenditures = [newExpenditure, ...this.expenditures]
           unlockUI()
@@ -405,6 +392,6 @@ export class BenefitsControlComponent implements OnInit {
     })
   }
   toCostsMetrics() {
-    window.location.href = "/admin/costs-metrics"
+    return this.router.navigate(['/admin/costs-metrics']);
   }
 }

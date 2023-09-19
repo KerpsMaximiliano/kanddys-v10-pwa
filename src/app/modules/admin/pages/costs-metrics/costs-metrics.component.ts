@@ -11,6 +11,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { HeaderService } from 'src/app/core/services/header.service';
 import { CreateExpenditureDialogComponent } from 'src/app/shared/dialogs/create-expenditure-dialog/create-expenditure-dialog.component';
 import { Expenditure } from 'src/app/core/models/order';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-costs-metrics',
@@ -42,6 +43,7 @@ export class CostsMetricsComponent implements OnInit {
     private deliveryZonesService: DeliveryZonesService,
     private dialog: MatDialog,
     private headerService: HeaderService,
+    private router: Router
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -211,7 +213,7 @@ export class CostsMetricsComponent implements OnInit {
   }
 
   toBenefitsControl() {
-    window.location.href = '/admin/benefits-control'
+    return this.router.navigate(['/admin/benefits-control']);
   }
 
 }
