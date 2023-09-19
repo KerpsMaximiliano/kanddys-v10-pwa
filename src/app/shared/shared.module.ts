@@ -159,7 +159,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle'; 
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
@@ -238,6 +238,10 @@ import { MessageDialogComponent } from './dialogs/message-dialog/message-dialog.
 import { SpecialDialogComponent } from './dialogs/special-dialog/special-dialog.component';
 import { WizardChatbotComponent } from './components/wizard-chatbot/wizard-chatbot.component';
 import { CompareDialogComponent } from './dialogs/compare-dialog/compare-dialog.component';
+import { NewlineToBrPipe } from '../core/pipes/newline.pipe';
+import { LinkifyPipe } from '../core/pipes/linkify.pipe';
+import { ProfloraLinkDialogComponent } from './dialogs/proflora-link-dialog/proflora-link-dialog.component';
+import { ProfloraDescDialogComponent } from './dialogs/proflora-desc-dialog/proflora-desc-dialog.component';
 
 const imports = [
   CommonModule,
@@ -484,6 +488,11 @@ const declarations = [
   OptionsDialogComponent,
   ClubDialogComponent,
   SelectRoleDialogComponent,
+  WizardChatbotComponent,
+  NewlineToBrPipe,
+  LinkifyPipe,
+  ProfloraLinkDialogComponent,
+  ProfloraDescDialogComponent,
   MessageDialogComponent,
   SpecialDialogComponent,
   WizardChatbotComponent,
