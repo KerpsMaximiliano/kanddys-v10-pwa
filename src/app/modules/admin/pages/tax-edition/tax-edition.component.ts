@@ -116,7 +116,7 @@ export class TaxEditionComponent implements OnInit {
     const input: TaxInput = {
       expirationDate: this.dateFromatted,
       prefix: this.form.controls["prefix"].value,
-      percentage: Number(this.form.controls["percentage"].value),
+      percentage: Number(this.form.controls["percentage"].value) / 100,
       nextTax: Number(this.form.controls["nextTax"].value),
       finalSequence: this.form.controls["sequence"].value,
     }
@@ -129,7 +129,7 @@ export class TaxEditionComponent implements OnInit {
     const input: TaxInput = {
       expirationDate: this.dateFromatted,
       prefix: this.form.controls["prefix"].value,
-      percentage: Number(this.form.controls["percentage"].value),
+      percentage: Number(this.form.controls["percentage"].value) / 100,
       nextTax: Number(this.form.controls["nextTax"].value),
       finalSequence: this.form.controls["sequence"].value,
     }
