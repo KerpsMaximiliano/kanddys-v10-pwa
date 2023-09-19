@@ -74,6 +74,7 @@ export class MerchantsService {
   loadedMerchantData = new Subject();
   constructor(private graphql: GraphQLWrapper) {}
   merchantData: Merchant;
+  temporalMerchantInput: any | null = null;
   merchantContact: Contact;
   merchantIncome: {
     orderAmount: number;

@@ -2,7 +2,9 @@
     background-color: rgba($color: white, $alpha: 0.7);
 }
 ::ng-deep .cdk-overlay-pane {
-    max-width: 95vw !important;
+    max-width: 500px;
+    width: 95vw !important;
+    height: fit-content !important;
 }
 ::ng-deep .mat-dialog-container {
     padding: 0px;
@@ -14,10 +16,10 @@
     padding: 39px 42px 39px 26px;
     .title {
         color: #FFF;
-        font-family: InterBold;
-        font-size: 19px;
+        font-family: InterRegular;
+        font-size: 16px;
         font-style: normal;
-        font-weight: 600;
+        font-weight: 400;
         line-height: normal;
         margin-bottom: 7px;
         max-width: 310px;
@@ -33,28 +35,5 @@
         max-width: 322px;
         padding-left: 12px;
         border-left: 3px solid #87CD9B;
-    }
-    .flex {
-        display: flex;
-        margin-top: 25px;
-    }
-    .space-between {
-        justify-content: space-between;
-    }
-    .cancel {
-        color: #C4C5C3;
-        font-family: InterRegular;
-        font-size: 15px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: normal;
-    }
-    .signout {
-        color: #C4C5C3;
-        font-family: InterRegular;
-        font-size: 17px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: normal;
     }
 }

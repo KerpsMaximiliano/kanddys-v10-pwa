@@ -5,8 +5,10 @@ import { environment } from 'src/environments/environment';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { Location } from '@angular/common';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { MatIcon } from '@angular/material/icon';
 import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
 import { ClubDialogComponent } from 'src/app/shared/dialogs/club-dialog/club-dialog.component';
+import { MessageDialogComponent } from 'src/app/shared/dialogs/message-dialog/message-dialog.component';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ItemsService } from 'src/app/core/services/items.service';
@@ -30,6 +32,7 @@ import {
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 
 import { SelectRoleDialogComponent } from 'src/app/shared/dialogs/select-role-dialog/select-role-dialog.component';
+import { SpecialDialogComponent } from 'src/app/shared/dialogs/special-dialog/special-dialog.component';
 
 interface ReviewsSwiper {
   title: string;
@@ -885,9 +888,9 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     private itemsService: ItemsService,
     private dialogService: DialogService,
     private dialog: MatDialog,
+    private snackbar: MatSnackBar,
     private authService: AuthService,
     private merchantsService: MerchantsService,
-    private snackbar: MatSnackBar,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -958,6 +961,39 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     unlockUI()
   }
 
+  showRoleDialog() {
+    const dialogRef = this.dialog.open(SelectRoleDialogComponent, {});
+    dialogRef.afterClosed().subscribe(role => {
+      if (role != undefined) {
+        this.setRole(parseInt(role))
+        return
+      }
+      switch (role) {
+        case "0":
+          
+          break;
+        case "1":
+          
+          break;
+        case "2":
+          
+          break;
+        case "3":
+          
+          break;
+        case "4":
+        
+          break;
+        case "5":
+        
+          break;
+      
+        default:
+          break;
+      }
+    });
+  }
+
   setRole(role: number) {
     this.curRole = role;
     switch (role) {
@@ -981,12 +1017,39 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   showDialog() {
-    const dialogRef = this.dialog.open(SelectRoleDialogComponent, {
-      data: {name: "king", animal: "tiger"},
-    });
+    const dialogRef = this.dialog.open(SpecialDialogComponent, {});
+    const link = `${this.URI}/ecommerce/club-landing`;
 
     dialogRef.afterClosed().subscribe(role => {
-      if (role != undefined) this.setRole(parseInt(role))
+      if (!role) {
+        // this.setRole(parseInt(role))
+        return
+      }
+      console.log(role)
+      switch (role) {
+        case "0":
+          this.ngNavigatorShareService.share({
+            title: '',
+            url: `${link}`,
+          });
+          break;
+        case "1":
+          this.ngNavigatorShareService.share({
+            title: '',
+            url: `${link}`,
+          });
+          break;
+        case "2":
+          const message = `Hola, me interesa esta funcionalidad: `;
+          const phone = '19188156444';
+          window.location.href = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
+          break;
+        case "3":
+          window.location.href = "mailto:"
+          break;
+        default:
+          break;
+      }
     });
   }
 
@@ -995,10 +1058,10 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     this.openNavigation = true;
   }
 
-  openDialog() {
+  openClubDialog() {
     this.bottomSheet.open(ClubDialogComponent, {
       data: {
-        title: "SELECCION DE HERRAMIENTAS",
+        title: "",
         styles: {
           fullScreen: true,
         },
@@ -1007,6 +1070,17 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
           this.tabIndex = e;
         }
       },
+    });
+  }
+  openMsgDialog() {
+    const dialogRef = this.dialog.open(MessageDialogComponent, {});
+
+    dialogRef.afterClosed().subscribe(role => {
+      if (!role) {
+        // this.setRole(parseInt(role))
+        return
+      }
+      console.log(role)
     });
   }
 
@@ -1047,34 +1121,13 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   share() {
-    this.ngNavigatorShareService.share({
-      title: '',
-      url: this.link,
-    });
+    if (!this.headerService.user) {
+      this.openMagicLinkDialog()
+    }
   }
 
   enterClub() {
-    this.bottomSheet.open(OptionsMenuComponent, {
-      data: {
-        options: [
-          {
-            value: `Soy miembro`,
-            callback: async () => {
-              await this.openMagicLinkDialog();
-            },
-          },
-          {
-            value: `Quiero entrar como invitado`,
-            callback: () => {
-              this.openNavigation = true;
-            },
-          },
-        ],
-        styles: {
-          fullScreen: true,
-        },
-      },
-    });
+    if(!this.headerService.user) this.openMagicLinkDialog();
   }
 
   ngOnDestroy(): void {
@@ -1084,7 +1137,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   async openMagicLinkDialog() {
     let fieldsToCreateInEmailDialog: FormData = {
       title: {
-        text: 'Correo Electrónico para guardarlo:',
+        text: 'Correo Electrónico:',
       },
       buttonsTexts: {
         accept: 'Recibir el enlace con acceso',
@@ -1120,19 +1173,6 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
                 marginTop: '36px',
               },
             },
-            {
-              text: 'La promesa del Club es desarrollar funcionalidades que necesites.',
-              styles: {
-                color: '#FFF',
-                fontFamily: 'InterLight',
-                fontSize: '19px',
-                fontStyle: 'normal',
-                fontWeight: '300',
-                lineHeight: 'normal',
-                margin: '0px',
-                padding: '0px',
-              },
-            },
           ],
           submitButton: {
             text: '>',
@@ -1158,7 +1198,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
     this.emailDialogRef = this.dialog.open(FormComponent, {
       data: fieldsToCreateInEmailDialog,
-      disableClose: true,
+      disableClose: false,
     });
 
     this.emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
@@ -1176,7 +1216,6 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
           );
         }
       } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
-        unlockUI();
         this.snackbar.open('Datos invalidos', 'Cerrar', {
           duration: 3000,
         });

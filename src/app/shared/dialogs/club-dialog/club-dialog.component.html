@@ -5,60 +5,86 @@
   }"
 >
   <p class="close">
-    <button mat-icon-button (click)="openLink()">
-      <mat-icon *ngIf="!data[0]?.styles?.fullScreen">close</mat-icon>
-      <mat-icon *ngIf="data[0]?.styles?.fullScreen" style="color: #fff; transform: scale(0.8); margin-left: -18px;">
-        arrow_back_ios
-      </mat-icon>
-    </button>
+    <!-- <button mat-icon-button (click)="openLink()"> -->
+    <mat-icon *ngIf="!data[0]?.styles?.fullScreen"(click)="openLink()">arrow_back_ios</mat-icon>
+    <mat-icon *ngIf="data[0]?.styles?.fullScreen" style="color: #fff; transform: scale(0.8); margin-left: -18px;">
+      arrow_back_ios
+    </mat-icon>
+    <!-- </button> -->
+    Herramientas para automatizar procesos
   </p>
-  <section style="margin-bottom: 16px" class="club-dialog">
-    <div class="list">
-      <div class="list-item" *ngFor="let item of list">
-        {{item}}
-      </div>
-    </div>
-    <div>
-      <div class="title">{{ data.title }}</div>
-      <div class="list-item" [ngClass]="{'green': tabIndex == 0}" (click)="onClick(0)">
-        De tienda y decoradores
-      </div>
-      <div class="list-item" [ngClass]="{'green': tabIndex == 1}" (click)="onClick(1)">
-        De proveedor, para venderle a tiendas
-      </div>
-      <div class="list-item" [ngClass]="{'green': tabIndex == 2}" (click)="onClick(2)">
-        De proveedor, para venderle a tiendas
-      </div>
-      <div class="list-item" [ngClass]="{'green': tabIndex == 3}" (click)="onClick(3)">
-        De proveedor, para venderle a tiendas
-      </div>
-      <div class="list-item" [ngClass]="{'green': tabIndex == 4}" (click)="onClick(4)">
-        Súper Admin
-      </div>
-      <!-- <div class="list-item" routerLink="/ecommerce/club-landing" routerLinkActive="active">
-        <a routerLink="/ecommerce/club-landing">Floristerias y Tiendas de Regalos</a>
-      </div>
-      <div class="list-item" routerLink="/admin/provider-items-management" routerLinkActive="active">
-        <a routerLink="/admin/povider-items-management">Proveedores de Floristerías y Tiendas de Regalos</a>
-      </div>
-      <div class="list-item" routerLink="/admin/dashboard" routerLinkActive="active">
-        <a routerLink="/admin/dashboard">Súper Admin</a>
+  <main>
+
+    <div class="tabs-container">
+      <!-- TABS -->
+      <!-- <div class="tab-question" >
+        Gestión Comercial de {{tabIndex?"proveedor":"floristería"}}.
       </div> -->
-      <div class="header-border"></div>
-      <div class="user-info">
-        <div class="info">
-          Iniciar como Daviel
-        </div>
-        <div class="info">
-          Iniciar como Merchant Admin en la Arepera
-        </div>
-        <div class="info">
-          Iniciar como Comprador en la Arepera
-        </div>
-        <div class="info">
-          Sign out
-        </div>
+      <div class="tab-content">
+        <!-- <div class="tab-content-item" *ngFor="let item of tabProvider">
+          {{ item }}
+        </div> -->
+        <ul>
+          <li class="tab-content-item" [routerLinkActive]="!link.isDummy ? 'active' : ''" *ngFor="let link of tabProvider">
+            <a
+                [routerLink]="!link.isDummy ? link.routerLink : null"
+                (click)="redirectToLink(link)"
+                style="padding: 0px"
+                *ngIf="!link.isShowDialog"
+            >
+              <span class="text">{{link.text}}</span><br>
+            </a>
+            <!-- <p class="text" *ngIf="link.isShowDialog" (click)="showDialog()">{{link.text}}</p> -->
+          </li>
+        </ul>
       </div>
     </div>
-  </section>
+
+    <div class="header-border" *ngIf="headerService.user"></div>
+
+    <div class="description" *ngIf="headerService.user">
+      <div class="title">
+        💚 Programa de Referencias Multi-Nivel
+      </div>
+      <div class="content">
+        Este programa te brinda una posibilidad de incrementar tus ingresos mensuales pasivamente según los miembros que refieras.
+      </div>
+      <div class="flex">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="67" height="67" viewBox="0 0 67 67" fill="none">
+            <circle cx="33.451" cy="32.5135" r="13.0994" fill="white"/>
+            <circle cx="16.659" cy="52.6824" r="8.23714" fill="#F7D455"/>
+            <circle cx="8.23714" cy="37.243" r="8.23714" fill="#F7D455"/>
+            <circle cx="33.1512" cy="58.0614" r="8.23714" fill="#F7D455"/>
+            <circle cx="50.1121" cy="52.4481" r="8.23714" fill="#F7D455"/>
+            <circle cx="58.7606" cy="37.0086" r="8.23714" fill="#F7D455"/>
+            <circle cx="55.9559" cy="19.7" r="8.23714" fill="#F7D455"/>
+            <circle cx="42.1512" cy="8.23714" r="8.23714" fill="#F7D455"/>
+            <circle cx="24.1434" cy="8.47151" r="8.23714" fill="#F7D455"/>
+            <circle cx="10.5809" cy="19.9324" r="8.23714" fill="#F7D455"/>
+            <line x1="39.5284" y1="16.5984" x2="38.0824" y2="19.9724" stroke="#F7D455" stroke-width="1.06473"/>
+            <line x1="27.2034" y1="16.1097" x2="29.1314" y2="19.2427" stroke="#F7D455" stroke-width="1.06473"/>
+            <line x1="18.0611" y1="23.8594" x2="21.6761" y2="25.5464" stroke="#F7D455" stroke-width="1.06473"/>
+            <line x1="16.3246" y1="35.3819" x2="20.1806" y2="34.8999" stroke="#F7D455" stroke-width="1.06473"/>
+            <line x1="21.7533" y1="46.1848" x2="24.4043" y2="42.8107" stroke="#F7D455" stroke-width="1.06473"/>
+            <line x1="32.9676" y1="49.8867" x2="32.9676" y2="45.5487" stroke="#F7D455" stroke-width="1.06473"/>
+            <line x1="44.4217" y1="45.8927" x2="41.7707" y2="42.7597" stroke="#F7D455" stroke-width="1.06473"/>
+            <line x1="50.0347" y1="36.6736" x2="46.1787" y2="35.9506" stroke="#F7D455" stroke-width="1.06473"/>
+            <line x1="49.16" y1="24.818" x2="45.7859" y2="26.505" stroke="#F7D455" stroke-width="1.06473"/>
+          </svg>
+        </div>
+        <div>
+          Monetizas el 15% de la colaboración de tus referidos directos y de los indirectos (referidos de quienes invitaste).
+        </div>
+      </div>
+      <div class="content">
+        <br>Al referir a comerciantes ganas sobre el pago que realizan para mantener la plataforma. Los comerciantes no necesariamente tienen que ser de la industria de flores para monetizar la referencia.
+        <br><br>Si los referidos son personas ganas sobre el pago que reciben de las comisiones al venderse desde su 🌼 Vitrina Online de Artículos con 💚. 
+      </div>
+    </div>
+
+  </main>
 </mat-action-list>
+<footer class="footer" [ngClass]="{'no-green': headerService.user}" (click)="share()">
+  {{headerService.user?"💚 Trae invitados y gana $ cada mes":"Empieza con tu correo electrónico"}}
+</footer>
