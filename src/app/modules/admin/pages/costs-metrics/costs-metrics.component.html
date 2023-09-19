@@ -1,7 +1,7 @@
 <div class="container">
     <div class="header flex space-between items-center">
         <div class="title flex">
-            <div class="icon flex items-center">
+            <div class="icon flex items-center" (click)="toBenefitsControl()">
                 <img src="../../../../../assets/icons/icon-close.svg" alt="">
             </div>
             <div class="text">
@@ -22,7 +22,7 @@
                 </svg>
             </span>
             <span class="plus_icon" (click)="showCreateExpDialog()">+</span>
-            <img src="../../../../../assets/icons/triangle-black.svg" alt="">
+            <img src="../../../../../assets/icons/triangle-black.svg" alt="" (click)="toBenefitsControl()">
         </div>
     </div>
     <div class="search-list flex">
@@ -169,7 +169,7 @@
     </div>
 
 </div>
-<div class="action-btn">
+<div class="action-btn" (click)="toBenefitsControl()">
     <svg xmlns="http://www.w3.org/2000/svg" width="63" height="64" viewBox="0 0 63 64" fill="none">
         <circle cx="31.5" cy="32.209" r="31.5" fill="#87CD9B"/>
         <path d="M18 19.7102H43.28V44.9902H18V19.7102ZM19.6853 43.3049H41.5947V21.3956H19.6853V43.3049Z" fill="#181D17"/>

@@ -210,4 +210,8 @@ export class CostsMetricsComponent implements OnInit {
     })
   }
 
+  toBenefitsControl() {
+    window.location.href = '/admin/benefits-control'
+  }
+
 }
