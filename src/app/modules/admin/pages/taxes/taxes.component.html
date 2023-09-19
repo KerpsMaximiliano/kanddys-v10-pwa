@@ -20,7 +20,7 @@
       <section>
         <h2 class="section-title">COMPROBANTE FISCALES INACTIVOS</h2>
 
-        <ng-container *ngIf="finalCustomer">
+        <ng-container *ngIf="!finalCustomer">
           <ng-container
           [ngTemplateOutlet]="addField"
           [ngTemplateOutletContext]="{
