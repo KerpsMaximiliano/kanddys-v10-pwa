@@ -78,7 +78,7 @@ export class OrderImageLoadComponent implements OnInit {
           limit: 25,
           sortBy: 'createdAt:desc'
         },
-      }))
+      })).orderPaginate;
       orders.forEach(order => {
         this.profit += this.calcTotal(order.subtotals);
       });

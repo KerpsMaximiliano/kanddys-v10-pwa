@@ -1,18 +1,18 @@
-<app-navigation [opened]="openNavigation" (closed)="openNavigation = false">
+<!-- <app-navigation [opened]="openNavigation" (closed)="openNavigation = false"> -->
     <div class="container">
       <!-- <div class="close-content" *ngIf="!isFlag">
         <span (click)="isFlag=true">X</span>
       </div> -->
       <div class="header-wrapper">
         <div class="left-part">
-          <img
+          <!-- <img
             [src]="assetsFolder + '/icon_info.png'"
             class="info-button"
             alt="open internal information"
-            (click)="(null)"
-          />
+            (click)="openMsgDialog()"
+          /> -->
     
-          <div class="title">www.floristerias.club</div>
+          <div class="title" (click)="openMsgDialog()">www.flores.club</div>
         </div>
     
         <div class="right-part">
@@ -21,193 +21,144 @@
           </div> -->
     
           <div class="close">
-            <span *ngIf="headerService.user" (click)="openDialog()">{{userID}}</span>
-            <span *ngIf="!headerService.user" (click)="enterClub()">Ingresa al Club</span>
+            <div *ngIf="headerService.user" (click)="showRoleDialog()">{{userID}}</div>
+            <!-- <div *ngIf="!headerService.user" (click)="enterClub()">Soy Miembro</div> -->
           </div>
-          <div class="close" style="cursor: pointer" *ngIf="headerService.user">
-            <span (click)="close()">
-              <mat-icon>menu</mat-icon>
+          <div class="icon" style="color: #C4C5C3" (click)="openNavigation=true">
+            <span>
+              <mat-icon>ios_share</mat-icon>
             </span>
           </div>
         </div>
       </div>
     
       <main>
-        <div class="landing-title" *ngIf="!headerService.user">
-          Apps para la industria de las flores que se usan para crecer
+        
+        <div class="tab-bar flex">
+          <div class="tab" (click)="tabarIndex=0" [ngClass]="{active: !tabarIndex}">
+            <div class="text">Dal<span>ia</span>h</div>
+            <div class="icon" *ngIf="!tabarIndex">
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="7" viewBox="0 0 10 7" fill="none">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M10 1.25313L5 6.25312L-1.00845e-06 1.25312L1.25 -3.82475e-07L5 3.75313L8.75 -5.46392e-08L10 1.25313Z" fill="#7B7B7B"/>
+              </svg>
+            </div>
+          </div>
+          <div class="tab" (click)="tabarIndex=1" [ngClass]="{active: tabarIndex}">
+            <div class="text">Invitacione$</div>
+            <div class="icon" *ngIf="tabarIndex">
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="7" viewBox="0 0 10 7" fill="none">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M10 1.25313L5 6.25312L-1.00845e-06 1.25312L1.25 -3.82475e-07L5 3.75313L8.75 -5.46392e-08L10 1.25313Z" fill="#7B7B7B"/>
+              </svg>
+            </div>
+          </div>
         </div>
 
-        <div class="dropdown" [ngClass]="{'open': isOpen}" *ngIf="headerService.user">
-          <div class="header" (click)="isOpen=!isOpen">
+        <div class="tab-header">
+          <div class="subject" *ngIf="!tabarIndex">
+            Dal<span>ia</span>hChat
+          </div>
+          <div class="subject" *ngIf="tabarIndex">
+            Invitacione<span>$</span>
+          </div>
+          <div class="info" *ngIf="!tabarIndex">
+            Tu asistente con <span>I</span>nteligencia <span>A</span>rtificial percibida para la Industria Floral
+          </div>
+          <div class="info" *ngIf="tabarIndex">
+            El programa que te genera un ingreso mensual, recurrente y sin límites!!
+          </div>
+        </div>
+
+        <div class="tools" *ngIf="!tabarIndex">
+          <div class="tool" (click)="openClubDialog()">
+            <div class="icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="30" viewBox="0 0 28 30" fill="none">
+                <path d="M23.5004 30.0011C23.0406 30.0025 22.5852 29.9126 22.1604 29.7367C21.7356 29.5608 21.3499 29.3024 21.0257 28.9765L16.8977 24.8484C15.7262 25.1073 14.5058 25.0367 13.372 24.6444C12.2381 24.2521 11.235 23.5534 10.474 22.6259C9.71298 21.6983 9.2237 20.5781 9.06043 19.3894C8.89716 18.2008 9.06627 16.9902 9.54902 15.8918L10.137 14.5517L14.293 18.7078C14.4834 18.8893 14.7363 18.9906 14.9994 18.9906C15.2624 18.9906 15.5154 18.8893 15.7057 18.7078C15.8932 18.5202 15.9985 18.2659 15.9985 18.0008C15.9985 17.7356 15.8932 17.4813 15.7057 17.2938L11.551 13.1344L12.891 12.5464C13.9897 12.0639 15.2005 11.8951 16.3892 12.0587C17.5779 12.2223 18.6981 12.7118 19.6257 13.4731C20.5532 14.2344 21.2518 15.2376 21.644 16.3716C22.0362 17.5056 22.1067 18.7261 21.8477 19.8978L25.9757 24.0258C26.4654 24.5153 26.7989 25.139 26.934 25.818C27.0692 26.4971 26.9998 27.201 26.7349 27.8406C26.4699 28.4803 26.0211 29.027 25.4454 29.4116C24.8696 29.7961 24.1928 30.0013 23.5004 30.0011ZM17.467 22.5918L22.4371 27.5618C22.7224 27.8348 23.1021 27.9872 23.4971 27.9872C23.892 27.9872 24.2717 27.8348 24.5571 27.5618C24.6966 27.4226 24.8073 27.2573 24.8828 27.0753C24.9584 26.8933 24.9972 26.6982 24.9972 26.5011C24.9972 26.3041 24.9584 26.1089 24.8828 25.9269C24.8073 25.7449 24.6966 25.5796 24.5571 25.4405L19.5911 20.4678L19.7791 19.8844C19.998 19.2095 20.0541 18.4924 19.9428 17.7917C19.8315 17.091 19.5559 16.4265 19.1386 15.8527C18.7213 15.2789 18.1741 14.812 17.5417 14.4902C16.9094 14.1684 16.2099 14.0008 15.5004 14.0011C15.4164 14.0011 15.333 14.0033 15.2504 14.0077L17.1224 15.8798C17.6848 16.4423 18.0007 17.2053 18.0007 18.0008C18.0007 18.7963 17.6848 19.5592 17.1224 20.1218C16.5509 20.6676 15.791 20.9721 15.0007 20.9721C14.2104 20.9721 13.4506 20.6676 12.879 20.1218L11.007 18.2504C11.0021 18.334 10.9999 18.4175 11.0004 18.5011C10.9999 19.2112 11.1675 19.9113 11.4896 20.5441C11.8117 21.1769 12.279 21.7245 12.8534 22.142C13.4277 22.5595 14.0928 22.8351 14.7941 22.9461C15.4954 23.0572 16.2131 23.0007 16.8884 22.7811L17.467 22.5918Z" fill="#F6F6F6"/>
+                <path d="M20.0001 3.00001H17.0001V2.00001C16.9985 1.47006 16.7872 0.962268 16.4125 0.587537C16.0378 0.212805 15.53 0.00158273 15 0H7.00002C6.47007 0.00158273 5.96228 0.212805 5.58755 0.587537C5.21282 0.962268 5.0016 1.47006 5.00002 2.00001V3.00001H2.00001C1.47006 3.00159 0.962268 3.21281 0.587536 3.58755C0.212805 3.96228 0.00158273 4.47007 0 5.00002V26.0001C0.00158273 26.53 0.212805 27.0378 0.587536 27.4126C0.962268 27.7873 1.47006 27.9985 2.00001 28.0001H9.00003V26.0001H2.00001V5.00002H5.00002V8.00002H17.0001V5.00002H20.0001V10H22.0001V5.00002C21.9985 4.47007 21.7873 3.96228 21.4125 3.58755C21.0378 3.21281 20.53 3.00159 20.0001 3.00001ZM15 6.00002H7.00002V2.00001H15V6.00002Z" fill="#F6F6F6"/>
+              </svg>
+            </div>
             <div class="text">
-              {{isOpen ? "Selecciona el rol de la gestión" : "Role de " + (tabIndex ? "Proveedor" : "Floristería") }}
+              Mira las herramientas para comprar, vender, organizar y más.
             </div>
+          </div>
+          <div class="tool">
             <div class="icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="16" viewBox="0 0 12 16" fill="none">
-                <path d="M0.428807 0.0911617C0.299447 0.158921 0.1911 0.260795 0.115511 0.385741C0.0399225 0.510689 -2.47252e-05 0.653943 -6.53547e-07 0.799975L-2.40913e-08 15.2003C4.9239e-05 15.3462 0.0400254 15.4894 0.1156 15.6142C0.191174 15.7391 0.299467 15.8409 0.428752 15.9086C0.558037 15.9764 0.703388 16.0074 0.849067 15.9985C0.994746 15.9895 1.1352 15.9409 1.25522 15.8579L11.6554 8.65773C11.7617 8.5841 11.8485 8.48582 11.9085 8.37129C11.9685 8.25676 11.9998 8.1294 11.9998 8.00011C11.9998 7.87083 11.9685 7.74347 11.9085 7.62894C11.8485 7.51441 11.7617 7.41613 11.6554 7.3425L1.25522 0.142363C1.13525 0.0592575 0.994823 0.0105562 0.849155 0.00153156C0.703486 -0.007494 0.558124 0.0235023 0.428807 0.0911617ZM9.79459 8.00011L1.60003 13.6738L1.60003 2.32641L9.79459 8.00011Z" fill="#7B7B7B"/>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="30" viewBox="0 0 24 30" fill="none">
+                <path d="M0 3V27C0 27.7957 0.31607 28.5587 0.87868 29.1213C1.44129 29.6839 2.20435 30 3 30H21C21.7956 30 22.5587 29.6839 23.1213 29.1213C23.6839 28.5587 24 27.7957 24 27V9C24.0002 8.803 23.9615 8.60789 23.8861 8.4259C23.8106 8.24391 23.7 8.07861 23.5605 7.9395L16.0605 0.439502C15.9214 0.299938 15.7562 0.189256 15.5741 0.113828C15.3921 0.0384002 15.197 -0.000284174 15 1.57151e-06H3C2.20435 1.57151e-06 1.44129 0.316072 0.87868 0.878681C0.31607 1.44129 0 2.20435 0 3ZM21 9.621V27H3V3H14.379L21 9.621Z" fill="#F6F6F6"/>
+                <path d="M6 6H9V12H6V6ZM12 6H15V12H12V6Z" fill="#F6F6F6"/>
               </svg>
             </div>
+            <div class="text">
+              Adiciona las informaciones que usualmente te preguntan. Crea Ofertas . Cotiza. 
+            </div>
           </div>
-          <div class="list" *ngIf="isOpen">
-            <div class="list-item" [ngClass]="{'active' : curRole == 0}" (click)="setRole(0)">De tienda y decoradores que le vende al consumidor final</div>
-            <div class="list-item" [ngClass]="{'active' : curRole == 1}" (click)="setRole(1)">De proveedor que le vende a tiendas</div>
-            <div class="list-item" [ngClass]="{'active' : curRole == 2}" (click)="setRole(2)">De productor que le vende a proveedores</div>
-            <div class="list-item" [ngClass]="{'active' : curRole == 3}" (click)="setRole(3)">De abastecedor que le vende a productores</div>
-            <div class="list-item" [ngClass]="{'active' : curRole == 4}" (click)="setRole(4)">De Super-Admin</div>
+          <div class="tool" (click)="openCompareDialog()">
+            <div class="icon">$</div>
+            <div class="text">
+              Dal<span>ia</span>h es gratis para Ti, compárala con las mejores aplicaciones que te ayudan a vender
+            </div>
           </div>
         </div>
 
-        <div class="tabs-container" *ngIf="headerService.user">
+        <div class="action-part" *ngIf="tabarIndex">
+          <div class="actions">
+            <div class="action" (click)="enterClub()">Comparte tu invitación</div>
+            <!-- <div class="action" *ngIf="headerService.user">💚 Mira tus referidos directos e indirectos</div> -->
+            <div class="action">Mira como funciona</div>
+          </div>
+        </div>
+        <div class="desc" *ngIf="tabarIndex">
+          <p class="text">
+            Este programa te brinda una posibilidad de incrementar tus ingresos sin límites.
+            <br><br>COMO FUNCIONA<br>
+            Del dinero recolectado cada mes por Dal<span>ia</span>h, TU como Embajador ganas el 15% de cada invitado directo y el 10% de todos los indirectos*
+            <br><br>*Miembros que invitaron a quienes invitaste.
+          </p>
+          <div class="text yellow">
+            Los inscritos durante ProFlora reciben un sello con un QR-CODE y quienes lo escaneen quedarán enlazado a ti.
+            <br><br><span>Caso de uso:</span><br>
+            Es una manera fácil de invitar en las facturas que le entregas a tus clientes.
+          </div>
+        </div>
+        <div class="tabs-container" *ngIf="!tabarIndex">
           <!-- TABS -->
-          <!-- <div class="tab-question" >
-            Gestión Comercial de {{tabIndex?"proveedor":"floristería"}}.
-          </div> -->
-          <div class="tab-content">
-            <!-- <div class="tab-content-item" *ngFor="let item of tabProvider">
-              {{ item }}
-            </div> -->
-            <ul>
-              <li class="tab-content-item" [routerLinkActive]="!link.isDummy ? 'active' : ''" *ngFor="let link of tabProvider">
-                <a
-                    [routerLink]="!link.isDummy ? link.routerLink : null"
-                    (click)="redirectToLink(link)"
-                    style="padding: 0px"
-                    *ngIf="!link.isShowDialog"
-                >
-                  <span class="text">{{link.text}}</span><br>
-                </a>
-                <p class="text" *ngIf="link.isShowDialog" (click)="showDialog()">{{link.text}}</p>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="tabs-container" *ngIf="!headerService.user">
-          <!-- TABS -->
-          <div class="title">
-            HERRAMIENTAS GRATIS
-          </div>
-          <div class="tab-content">
-            <ul>
-              <li class="tab-content-item" [routerLinkActive]="!link.isDummy ? 'active' : ''" *ngFor="let link of tabServices">
-                <a
-                    [routerLink]="!link.isDummy ? link.routerLink : null"
-                    (click)="redirectToLink(link)"
-                    style="padding: 0px"
-                >
-                  <span class="text">{{link.text}}</span><br>
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="description" *ngIf="headerService.user">
-          <div class="title">
-            Monetización Multi-Nivel
-          </div>
-          <div class="content">
-            💚 Este programa de afiliación te permite incrementar tus ingresos pasivamente al invitar a comercios de la industria de las flores (abastecedores, productores, proveedores, tiendas, decoradores).
-          </div>
-          <div class="flex">
-            <div class="icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="67" height="67" viewBox="0 0 67 67" fill="none">
-                <circle cx="33.451" cy="32.5135" r="13.0994" fill="white"/>
-                <circle cx="16.659" cy="52.6824" r="8.23714" fill="#F7D455"/>
-                <circle cx="8.23714" cy="37.243" r="8.23714" fill="#F7D455"/>
-                <circle cx="33.1512" cy="58.0614" r="8.23714" fill="#F7D455"/>
-                <circle cx="50.1121" cy="52.4481" r="8.23714" fill="#F7D455"/>
-                <circle cx="58.7606" cy="37.0086" r="8.23714" fill="#F7D455"/>
-                <circle cx="55.9559" cy="19.7" r="8.23714" fill="#F7D455"/>
-                <circle cx="42.1512" cy="8.23714" r="8.23714" fill="#F7D455"/>
-                <circle cx="24.1434" cy="8.47151" r="8.23714" fill="#F7D455"/>
-                <circle cx="10.5809" cy="19.9324" r="8.23714" fill="#F7D455"/>
-                <line x1="39.5284" y1="16.5984" x2="38.0824" y2="19.9724" stroke="#F7D455" stroke-width="1.06473"/>
-                <line x1="27.2034" y1="16.1097" x2="29.1314" y2="19.2427" stroke="#F7D455" stroke-width="1.06473"/>
-                <line x1="18.0611" y1="23.8594" x2="21.6761" y2="25.5464" stroke="#F7D455" stroke-width="1.06473"/>
-                <line x1="16.3246" y1="35.3819" x2="20.1806" y2="34.8999" stroke="#F7D455" stroke-width="1.06473"/>
-                <line x1="21.7533" y1="46.1848" x2="24.4043" y2="42.8107" stroke="#F7D455" stroke-width="1.06473"/>
-                <line x1="32.9676" y1="49.8867" x2="32.9676" y2="45.5487" stroke="#F7D455" stroke-width="1.06473"/>
-                <line x1="44.4217" y1="45.8927" x2="41.7707" y2="42.7597" stroke="#F7D455" stroke-width="1.06473"/>
-                <line x1="50.0347" y1="36.6736" x2="46.1787" y2="35.9506" stroke="#F7D455" stroke-width="1.06473"/>
-                <line x1="49.16" y1="24.818" x2="45.7859" y2="26.505" stroke="#F7D455" stroke-width="1.06473"/>
-              </svg>
-            </div>
-            <div>
-              Monetizas el 15% de la colaboración de tus referidos directos y de los indirectos (referidos de quienes invitaste).
-            </div>
-          </div>
-        </div>
-
-        <div class="link" *ngIf="headerService.user">
-          <a href="https://www.wedowelike.com">Mira más de WeDoWeLiKe.com</a>
-        </div>
-
-        <div class="header-border"></div>
-
-        <!-- <div class="common" *ngIf="!headerService.user">
-          *Exponer es gratis, vender es opcional.
-          <br><br>Colaboradores venden desde su 🌼 Vitrina Online y pueden comisionar a quienes vendieron por ellos.
-          <br><br>Los miembros colaboran US$0.30 por venta (máximo US$250 mensual).
-        </div> -->
-
-
-        <ng-container>
-          <div class="tabs-container">
-            <!-- TABS -->
-            <h3 class="footer-swiper-title">Cosas que dicen comercios como el tuyo:</h3>
-            <div class="tabs">
-              <div
-                class="tab"
-                (click)="changeTab(i)"
-                *ngFor="let tab of tabs; index as i"
-                [ngClass]="{ active: tab.active }"
-              >
-                {{ tab.text }}
-              </div>
-            </div>
-  
-            <!-- SUBTABS -->
-            <div
-              class="subtabs"
-              *ngFor="let tab of tabs; index as i"
-              [ngClass]="{ active: tab.active }"
-            >
-              <ng-container *ngIf="tab.active">
-                <div
-                  class="subtab"
-                  *ngFor="let subtab of tab.subTabs; index as j"
-                  (click)="changeSubtab(i, j)"
-                  [ngClass]="{ active: subtab.active }"
-                >
-                  {{ subtab.text }}
-                </div>
-              </ng-container>
-            </div>
-            <!-- CONTENIDO DE SUBTABS -->
-            <ng-container *ngFor="let tab of tabs; index as i">
-              <ng-container *ngIf="tab.active">
-                <ng-container *ngFor="let subtab of tab.subTabs; index as j">
-                  <ng-container *ngIf="subtab.active">
-                    <div class="footer-swiper">
-                      <div class="swiper-custom-container">
-                        <swiper [config]="swiperConfig">
-                          <div *ngFor="let content of subtab.content">
-                            <div class="slide-content">{{ content }}</div>
-                            <div class="blank-space"></div>
-                          </div>
-                        </swiper>
+          <!-- <h3 class="footer-swiper-title">TESTIMONIOS DE QUIENES ESTAN USANDO LA VERSION BETA DE DAL<span>IA</span>H</h3> -->
+          <div class="footer-swiper">
+            <div class="swiper-custom-container">
+              <!-- <swiper [config]="swiperConfig"> -->
+                <div *ngFor="let item of list">
+                  <div class="slide-item">
+                    <div class="slide-content">{{ item.text }}</div>
+                    <div class="flex">
+                      <div class="image">
+                        <img src="../../../../../assets/images/avatar.svg" alt="">
+                      </div>
+                      <div class="info">
+                        <div class="name">{{item.name}}</div>
+                        <div class="role">{{item.role}}</div>
                       </div>
                     </div>
-                  </ng-container>
-                </ng-container>
-              </ng-container>
-            </ng-container>
+                  </div>
+                </div>
+              <!-- </swiper> -->
+            </div>
           </div>
-        </ng-container>
-
+        </div>
       </main>
-    
-      <footer (click)="share()" class="footer no-green">💚 Invita y monetiza cada mes</footer>
+      <div class="message">
+        <input type="text" placeholder="Daliah: hola como puedo ayudarte?">
+        <button>
+          <svg xmlns="http://www.w3.org/2000/svg" width="39" height="39" viewBox="0 0 39 39" fill="none">
+            <g clip-path="url(#clip0_1398_3484)">
+              <path d="M39 19.5C39 15.6433 37.8564 11.8731 35.7137 8.66638C33.571 5.45962 30.5255 2.96026 26.9623 1.48435C23.3992 0.00844193 19.4784 -0.377724 15.6957 0.374687C11.9131 1.1271 8.43855 2.98429 5.71143 5.71142C2.9843 8.43854 1.12711 11.9131 0.374696 15.6957C-0.377716 19.4784 0.00844908 23.3992 1.48436 26.9623C2.96027 30.5255 5.45963 33.571 8.66639 35.7137C11.8731 37.8563 15.6433 39 19.5 39C24.6717 39 29.6316 36.9455 33.2886 33.2886C36.9456 29.6316 39 24.6717 39 19.5ZM20.7188 28.0312C20.7188 28.3545 20.5904 28.6645 20.3618 28.893C20.1332 29.1216 19.8232 29.25 19.5 29.25C19.1768 29.25 18.8668 29.1216 18.6382 28.893C18.4097 28.6645 18.2813 28.3545 18.2813 28.0312V13.9108L13.0504 19.1441C12.9371 19.2574 12.8025 19.3473 12.6545 19.4086C12.5064 19.47 12.3478 19.5015 12.1875 19.5015C12.0273 19.5015 11.8686 19.47 11.7205 19.4086C11.5725 19.3473 11.4379 19.2574 11.3246 19.1441C11.2113 19.0308 11.1214 18.8963 11.0601 18.7482C10.9988 18.6002 10.9672 18.4415 10.9672 18.2812C10.9672 18.121 10.9988 17.9623 11.0601 17.8143C11.1214 17.6662 11.2113 17.5317 11.3246 17.4184L18.6371 10.1059C18.7503 9.99238 18.8848 9.90233 19.0329 9.84089C19.181 9.77945 19.3397 9.74782 19.5 9.74782C19.6603 9.74782 19.8191 9.77945 19.9671 9.84089C20.1152 9.90233 20.2497 9.99238 20.3629 10.1059L27.6754 17.4184C27.7887 17.5317 27.8786 17.6662 27.9399 17.8143C28.0012 17.9623 28.0328 18.121 28.0328 18.2812C28.0328 18.4415 28.0012 18.6002 27.9399 18.7482C27.8786 18.8963 27.7887 19.0308 27.6754 19.1441C27.5621 19.2574 27.4275 19.3473 27.2795 19.4086C27.1314 19.47 26.9728 19.5015 26.8125 19.5015C26.6523 19.5015 26.4936 19.47 26.3455 19.4086C26.1975 19.3473 26.063 19.2574 25.9496 19.1441L20.7188 13.9108V28.0312Z" fill="#87CD9B"/>
+            </g>
+            <defs>
+              <clipPath id="clip0_1398_3484">
+                <rect width="39" height="39" fill="white" transform="matrix(1 0 0 -1 0 39)"/>
+              </clipPath>
+            </defs>
+          </svg>
+        </button>
+      </div>
+      <footer (click)="share()" class="footer no-green" [ngClass]="{'no-green': headerService.user}">{{headerService.user?"💚 Trae invitados y gana $ cada mes":"Inscríbete e Invita, juntos es mejor!!"}}</footer>
     </div>
-</app-navigation>
+<!-- </app-navigation> -->

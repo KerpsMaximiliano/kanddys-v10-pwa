@@ -24,13 +24,13 @@
     text-align: center;
     line-height: 22.73px;
     color: #6fcf97;
-    margin: 0 8% 0 0;
+    margin: 0 30% 0 0;
   }
 
   button {
     color: #fff;
     font-size: 25px;
-    padding: 0;
+    padding: 4px 0 0 0;
   }
 }
 
@@ -68,7 +68,7 @@
   flex-direction: column;
   gap: 10px;
   width: 100%;
-  height: 75px;
+  min-height: 75px;
   padding: 14px 13px 0;
   border-radius: 4px;
   background: #fff;
@@ -94,6 +94,25 @@
     cursor: pointer;
     box-shadow: 0px 3px 6px rgba(#000000, 0.16);
     background-color: #936105;
+  }
+
+  .title {
+    font-family: "Inter", sans-serif;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    color: #7B7B7B;
+  }
+
+  .subtitle {
+    font-family: "Inter", sans-serif;
+    font-size: 13px;
+    font-style: italic;
+    font-weight: 300;
+    line-height: normal;
+    color: #2874AD;
+    margin-bottom: 10px;
   }
 }
 
