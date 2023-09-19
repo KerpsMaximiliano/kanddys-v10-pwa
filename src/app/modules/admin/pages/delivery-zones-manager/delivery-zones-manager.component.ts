@@ -11,6 +11,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog';
 
 import { DeliveryZone, DeliveryZoneInput } from 'src/app/core/models/deliveryzone';
+import { capitalize } from 'src/app/core/helpers/strings.helpers';
 
 @Component({
   selector: 'app-delivery-zones-manager',
@@ -21,6 +22,8 @@ export class DeliveryZonesManagerComponent implements OnInit {
 
   deliveryzones = [];
   expenditures = [];
+
+  capitalize = capitalize;
 
   constructor(
     private merchantsService: MerchantsService,

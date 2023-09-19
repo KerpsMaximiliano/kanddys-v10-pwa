@@ -43,7 +43,7 @@
     </div> -->
     <div class="card" *ngFor="let zone of deliveryzones">
         <div class="id">
-            {{zone.zona}}
+            {{zone?.zona ? capitalize(zone?.zona) : 'Sin nombre'}}
         </div>
         <div class="desc">
             {{zone.name ? zone.name: "Opcional: puede adicionar la descripcion."}}

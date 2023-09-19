@@ -1,11 +1,11 @@
 <div class="container">
-  <header class="header" *ngIf="!showQuotationOrder">
+  <header class="header quotation" *ngIf="!showQuotationOrder">
     <div class="left-area">
-      <a style="cursor: pointer">
-        <i class="fas fa-chevron-left" (click)="goBack()"></i
-      ></a>
+      <button class="close" (click)="goBack()">X</button>
       <p class="title">
-        Artículos a facturarse
+        {{
+          headerService.saleflow?.merchant?.name
+        }}
         <!-- {{
           headerService.saleflow?.merchant?.name.length < 26
             ? headerService.saleflow?.merchant?.name
@@ -13,12 +13,6 @@
                 "Tienda" | titlecase)
         }} -->
       </p>
-    </div>
-    <div class="right-area">
-      <span class="header-text" *ngIf="logged || headerService.user">
-        {{ currentUser?.name || currentUser?.phone || currentUser?.email }}
-      </span>
-      <!-- <img [src]="env + '/person.svg'" alt="Icono de una persona" /> -->
     </div>
   </header>
 
@@ -46,13 +40,6 @@
                 "Tienda" | titlecase)
         }} -->
       </p>
-    </div>
-
-    <div class="right-area">
-      <div class="share-btn" (click)="shareQuotation()">
-        <span>Compara precios</span>
-        <img [src]="env + '/share-icon2.svg'" alt="Icono de una persona" />
-      </div>
     </div>
   </header>
 
@@ -86,25 +73,9 @@
     <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
   </main>
 
-  <footer *ngIf="!showQuotationOrder">
-    <div style="text-align: center">
-      <button
-        mat-button
-        class="cta"
-        [ngClass]="{
-          valid: areWebformsValid
-        }"
-        [disabled]="!areWebformsValid"
-        (click)="openSubmitDialog()"
-      >
-        {{ !areWebformsValid ? "Llena las preguntas" : "Continuar" }}
-      </button>
-    </div>
-  </footer>
-
-  <footer class="quotations-footer" *ngIf="showQuotationOrder">
+  <footer class="quotations-footer">
     <button class="continue-order" (click)="openSubmitDialog()">
-      Sigue con la orden de Compra
+      Continuar
     </button>
 
     <span class="total-label">Total: ${{ totalPrice | number : "1.2-2" }}</span>
@@ -394,11 +365,11 @@
       </div>
     </div>
 
-    <div
+    <!-- <div
       class="card-footer"
       *ngIf="(itemObjects[item._id]?.amount > item.stock || !item.stock) && item.useStock"
     >
       * Probablemente no tengan esta cantidad
-    </div>
+    </div> -->
   </mat-card>
 </ng-template>

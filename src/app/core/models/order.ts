@@ -144,6 +144,11 @@ export class ItemOrder extends Model<ItemOrder> {
   notifications: string[];
   deliveryData?: DeliveryData;
   receiverData?: ReceiverData;
+  metadata: {
+    files: any[];
+    description: string;
+  }
+  identification?: string;
 }
 
 export class ItemOrderInput {
