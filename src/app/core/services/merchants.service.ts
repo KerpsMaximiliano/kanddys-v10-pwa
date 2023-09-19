@@ -55,6 +55,11 @@ import {
   ordersCommissionableItemsCount,
   merchantGroupFiltersQuantity,
   merchantGroupByType,
+  dataCountries,
+  merchantQuantityOfFiltersRole,
+  merchantQuantityOfFiltersCountry,
+  campaigns,
+  merchantQuantityOfFiltersCampaign,
 } from './../graphql/merchants.gql';
 import {
   EmployeeContract,
@@ -666,6 +671,46 @@ export class MerchantsService {
 
     if (!result || result?.errors) return undefined;
     return result?.merchantGroupByType;
+  }
+
+  async getDataCountries(){
+    const result = await this.graphql.query({
+      query: dataCountries,
+      fetchPolicy: 'no-cache',
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result?.dataCountries;
+  }
+
+  async merchantQuantityOfFiltersRole(){
+    const result = await this.graphql.query({
+      query: merchantQuantityOfFiltersRole,
+      fetchPolicy: 'no-cache',
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result?.merchantQuantityOfFiltersRole;
+  }
+
+  async merchantQuantityOfFiltersCountry(){
+    const result = await this.graphql.query({
+      query: merchantQuantityOfFiltersCountry,
+      fetchPolicy: 'no-cache',
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result?.merchantQuantityOfFiltersCountry;
+  }
+
+  async merchantQuantityOfFiltersCampaign(){
+    const result = await this.graphql.query({
+      query: merchantQuantityOfFiltersCampaign,
+      fetchPolicy: 'no-cache',
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result?.merchantQuantityOfFiltersCampaign;
   }
 }
 
