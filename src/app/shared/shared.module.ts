@@ -241,6 +241,8 @@ import { CostsMetricsNavigationComponent } from './components/costs-metrics-navi
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MessageDialogComponent } from './dialogs/message-dialog/message-dialog.component';
 import { SpecialDialogComponent } from './dialogs/special-dialog/special-dialog.component';
+import { WizardChatbotComponent } from './components/wizard-chatbot/wizard-chatbot.component';
+import { CompareDialogComponent } from './dialogs/compare-dialog/compare-dialog.component';
 import { NewlineToBrPipe } from '../core/pipes/newline.pipe';
 import { LinkifyPipe } from '../core/pipes/linkify.pipe';
 import { ProfloraLinkDialogComponent } from './dialogs/proflora-link-dialog/proflora-link-dialog.component';
@@ -502,6 +504,8 @@ const declarations = [
   ProfloraDescDialogComponent,
   MessageDialogComponent,
   SpecialDialogComponent,
+  WizardChatbotComponent,
+  CompareDialogComponent
 ];
 
 @NgModule({
