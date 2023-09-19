@@ -1,5 +1,5 @@
 <div class="main-container">
-  <nav [ngStyle]="{'max-width': dropdown ? '500px' : '482px'}">
+  <nav>
     <div *ngIf="!dropdown" class="subnav">
       <a class="exit"> X </a>
     </div>
@@ -161,10 +161,12 @@
       <h4>Cantidad de compradores diferentes</h4>
       <p>{{buyers}}</p>
     </div>
+    <!-- Esta card será dummy hasta que se implemente la query en el backend
     <div class="metric">
       <h4>Comprador que mas lo ha comprado</h4>
       <p>CompradorID</p>
     </div>
+    -->
     <div class="metric">
       <h4>Posicion segun las ventas</h4>
       <p>

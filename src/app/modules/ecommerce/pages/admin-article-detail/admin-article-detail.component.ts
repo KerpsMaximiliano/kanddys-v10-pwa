@@ -162,7 +162,7 @@ export class AdminArticleDetailComponent implements OnInit {
         formData.fields = [
           {
             name: 'cost',
-            type: 'text',
+            type: 'number',
             label: 'Monto',
             validators: [Validators.required, Validators.pattern(/[1-9]\d*|0/)],
           },
@@ -178,7 +178,7 @@ export class AdminArticleDetailComponent implements OnInit {
         formData.fields = [
           {
             name: 'cost-update',
-            type: 'text',
+            type: 'number',
             label: 'Monto',
             validators: [Validators.pattern(/[1-9]\d*|0/)],
           },
