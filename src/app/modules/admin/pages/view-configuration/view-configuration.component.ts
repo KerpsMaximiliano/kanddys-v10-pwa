@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Location } from '@angular/common';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { ActivatedRoute } from '@angular/router';
 import { ItemsService } from 'src/app/core/services/items.service';
@@ -27,7 +28,8 @@ export class ViewConfigurationComponent implements OnInit {
     // public merchantsService: MerchantsService,
     public saleflowService: SaleFlowService,
     private activatedRoute: ActivatedRoute, // private itemsService: ItemsService
-    public router: Router
+    public router: Router,
+    public location: Location,
   ) {}
 
   async ngOnInit() {
@@ -60,6 +62,10 @@ export class ViewConfigurationComponent implements OnInit {
   //   let item = await this.itemsService.item(id);
   //   array.push(item);
   // }
+
+  goBack() {
+    this.location.back();
+  }
 
   async changeView(type: string) {
     switch (type) {

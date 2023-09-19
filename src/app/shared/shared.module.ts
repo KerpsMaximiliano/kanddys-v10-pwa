@@ -159,7 +159,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle'; 
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
@@ -239,6 +239,12 @@ import { WizardChatbotComponent } from './components/wizard-chatbot/wizard-chatb
 import { CreateExpenditureDialogComponent } from './dialogs/create-expenditure-dialog/create-expenditure-dialog.component';
 import { CostsMetricsNavigationComponent } from './components/costs-metrics-navigation/costs-metrics-navigation.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MessageDialogComponent } from './dialogs/message-dialog/message-dialog.component';
+import { SpecialDialogComponent } from './dialogs/special-dialog/special-dialog.component';
+import { NewlineToBrPipe } from '../core/pipes/newline.pipe';
+import { LinkifyPipe } from '../core/pipes/linkify.pipe';
+import { ProfloraLinkDialogComponent } from './dialogs/proflora-link-dialog/proflora-link-dialog.component';
+import { ProfloraDescDialogComponent } from './dialogs/proflora-desc-dialog/proflora-desc-dialog.component';
 
 const imports = [
   CommonModule,
@@ -489,7 +495,13 @@ const declarations = [
   CostsDialogComponent,
   WizardChatbotComponent,
   CreateExpenditureDialogComponent,
-  CostsMetricsNavigationComponent
+  CostsMetricsNavigationComponent,
+  NewlineToBrPipe,
+  LinkifyPipe,
+  ProfloraLinkDialogComponent,
+  ProfloraDescDialogComponent,
+  MessageDialogComponent,
+  SpecialDialogComponent,
 ];
 
 @NgModule({
@@ -497,6 +509,6 @@ const declarations = [
   imports: [...imports, RouterModule],
   exports: [...declarations, ...imports],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: [],
+  providers: []
 })
 export class SharedModule {}
