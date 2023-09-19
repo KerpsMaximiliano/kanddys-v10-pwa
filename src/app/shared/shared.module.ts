@@ -237,6 +237,7 @@ import { SelectRoleDialogComponent } from './dialogs/select-role-dialog/select-r
 import { MessageDialogComponent } from './dialogs/message-dialog/message-dialog.component';
 import { SpecialDialogComponent } from './dialogs/special-dialog/special-dialog.component';
 import { WizardChatbotComponent } from './components/wizard-chatbot/wizard-chatbot.component';
+import { CompareDialogComponent } from './dialogs/compare-dialog/compare-dialog.component';
 
 const imports = [
   CommonModule,
@@ -485,7 +486,8 @@ const declarations = [
   SelectRoleDialogComponent,
   MessageDialogComponent,
   SpecialDialogComponent,
-  WizardChatbotComponent
+  WizardChatbotComponent,
+  CompareDialogComponent
 ];
 
 @NgModule({

@@ -1,0 +1,84 @@
+<mat-action-list
+  class="list"
+  [ngClass]="{
+    'full-screen': data.styles.fullScreen
+  }"
+>
+  <p class="close">
+    <!-- <button mat-icon-button (click)="openLink()"> -->
+    <mat-icon *ngIf="!data[0]?.styles?.fullScreen"(click)="close()">close</mat-icon>
+    <mat-icon *ngIf="data[0]?.styles?.fullScreen" style="color: #fff; transform: scale(0.8); margin-left: -18px;">
+      close
+    </mat-icon>
+    <!-- </button> -->
+  </p>
+  <main>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th class="bold">WooCo..</th>
+                <th class="bold">Shopify</th>
+                <th class="bold">Dal<span>ia</span>h</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Vendes sin pagar comisión</td>
+                <td class="bold">Gratis para Ti</td>
+                <td>De pago</td>
+                <td class="bold">Gratis para Ti</td>
+            </tr>
+            <tr>
+                <td>Inversión de tiempo</td>
+                <td>Mucho</td>
+                <td class="bold">Minimo</td>
+                <td class="bold">Minimo</td>
+            </tr>
+            <tr>
+                <td>Inversión de tiempo</td>
+                <td colspan="3" class="bold content"><span>Esta comparación no es justa porque Dal</span>ia<span>h se percibió con</span> Inteligencia Artificial</td>
+            </tr>
+            <tr>
+                <td>Compras lo que necesitas</td>
+                <td>No</td>
+                <td>No</td>
+                <td class="bold green">Si</td>
+            </tr>
+            <tr>
+                <td>Cotizas sin instalaciones de terceros</td>
+                <td>No</td>
+                <td>No</td>
+                <td class="bold green">Si</td>
+            </tr>
+            <tr>
+                <td>Premias sin instalaciones de terceros</td>
+                <td>No</td>
+                <td>No</td>
+                <td class="bold green">Si</td>
+            </tr>
+            <tr>
+                <td>Organizas los pedidos sin instalaciones d..</td>
+                <td>No</td>
+                <td>No</td>
+                <td class="bold green">Si</td>
+            </tr>
+            <tr>
+                <td>Afilias a Embajadores para crecer sin..</td>
+                <td>No</td>
+                <td>No</td>
+                <td class="bold green">Si</td>
+            </tr>
+            <tr>
+                <td>Son exclusivos de la Industria Floral</td>
+                <td>No</td>
+                <td>No</td>
+                <td class="bold green">Si</td>
+            </tr>
+        </tbody>
+    </table>
+  </main>
+</mat-action-list>
+<footer class="footer" [ngClass]="{'no-green': headerService.user}" (click)="share()">
+  {{headerService.user?"💚 Trae invitados y gana $ cada mes":"Inscríbete e Invita, juntos es mejor!!"}}
+</footer>
