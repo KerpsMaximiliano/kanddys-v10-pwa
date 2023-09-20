@@ -13,6 +13,7 @@ import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { WhatsappService } from 'src/app/core/services/whatsapp.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -28,6 +29,7 @@ export class WizardTrainingComponent implements OnInit {
   vectorsIdByLineIndex: Record<number, string> = {};
   merchantSaleflow: SaleFlow = null;
   loadingKnowledge: boolean = false;
+  whatsappQrCodeGenerated: boolean = false;
 
   constructor(
     private gptService: Gpt3Service,
@@ -35,7 +37,8 @@ export class WizardTrainingComponent implements OnInit {
     private saleflowsService: SaleFlowService,
     private merchantsService: MerchantsService,
     private toastrService: ToastrService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private whatsappService: WhatsappService
   ) {}
 
   async ngOnInit() {
@@ -74,7 +77,7 @@ export class WizardTrainingComponent implements OnInit {
     lockUI();
 
     try {
-      if(this.vectorsIdByLineIndex[index]) {
+      if (this.vectorsIdByLineIndex[index]) {
         await this.gptService.deleteVectorInKnowledgeBase(
           this.vectorsIdByLineIndex[index]
         );
@@ -185,5 +188,28 @@ export class WizardTrainingComponent implements OnInit {
     }
 
     unlockUI();
+  }
+
+  async createWhatsappClient() {
+    lockUI();
+
+    try {
+      let qrCode = await this.whatsappService.createClient();
+      
+      const imgElement: HTMLElement =
+        document.getElementById('whatsapp-qrcode');
+      (imgElement as HTMLImageElement).src = qrCode;
+
+      console.log("qrCode", qrCode),
+
+      this.whatsappQrCodeGenerated = qrCode ? true : false;
+    } catch (error) {
+      console.error(error);
+    }
+    unlockUI();
+  }
+
+  async exportOrdersDataForTraining() {
+    await this.gptService.exportOrdersDataForTraining(this.merchantsService.merchantData._id);
   }
 }

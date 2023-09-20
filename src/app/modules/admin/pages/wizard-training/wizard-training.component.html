@@ -6,12 +6,31 @@
         (click)="openNavigation = true"
         style="cursor: pointer; margin-left: auto"
       >
-        <p>🧙‍♂️ Entrenamiento de asistente</p>
+        <p>🧙‍♂️ Entrenamiento de daliah</p>
         <mat-icon>menu</mat-icon>
       </div>
     </div>
 
     <div class="page-body">
+      <section>
+        <h3 *ngIf="!whatsappQrCodeGenerated">Enlaza tu whatsapp al asistente</h3>
+        <h3 *ngIf="whatsappQrCodeGenerated">Escanea el código qr para enlazar tu whatsapp al asistente</h3>
+
+        <button *ngIf="!whatsappQrCodeGenerated" (click)="createWhatsappClient()">
+          Enlazar
+          <img [src]="env + '/whatsapp_black.svg'" class="img" alt="whatsapp" />
+        </button>
+
+        <img
+          class="whatsapp-qrcode"
+          id="whatsapp-qrcode"
+          [ngClass]="{
+            visible: whatsappQrCodeGenerated
+          }"
+          alt="link your whatsapp"
+        />
+      </section>
+
       <section>
         <h3>Entrenar al asistente con los productos de mi tienda</h3>
 
@@ -21,28 +40,38 @@
         </button>
       </section>
 
-      <!--
-        <section>
-          <h3>Carga tu archivo de entrenamiento(.txt)</h3>
-  
-          <input
-            type="file"
-            id="file"
-            [style.display]="'none'"
-            (change)="loadFile($event)"
-            multiple
-            [accept]="['.txt']"
-          />
-  
-          <label for="file" class="itemContainer add" [style.cursor]="'pointer'">
-            <div class="labelBox"></div>
-            <div class="imgBox">
-              <p>+</p>
-            </div>
-            <div class="label">Adiciona</div>
-          </label>
-        </section>
-      -->
+      <section>
+        <h3>Exportar los datos de mi orden para entrenar al asistente</h3>
+
+        <button (click)="exportOrdersDataForTraining()">
+          Exportar ordenes
+          <mat-icon>update</mat-icon>
+        </button>
+      </section>
+
+      <section>
+        <h3>
+          Carga un archivo de texto o una hoja de calculo de excel para entrenar
+          a tu asistente
+        </h3>
+
+        <input
+          type="file"
+          id="file"
+          [style.display]="'none'"
+          (change)="loadFile($event)"
+          multiple
+          [accept]="['.txt, .xlsx']"
+        />
+
+        <label for="file" class="itemContainer add" [style.cursor]="'pointer'">
+          <div class="labelBox"></div>
+          <div class="imgBox">
+            <p>+</p>
+          </div>
+          <div class="label">Adiciona</div>
+        </label>
+      </section>
 
       <section>
         <h3>
