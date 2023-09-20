@@ -1,83 +1,47 @@
-import {
-  Component,
-  OnInit,
-  ViewChildren,
-  ElementRef,
-  QueryList,
-  Inject,
-} from '@angular/core';
-import {
-  MatBottomSheetRef,
-  MAT_BOTTOM_SHEET_DATA,
-} from '@angular/material/bottom-sheet';
-import { environment } from 'src/environments/environment';
-import { HeaderService } from 'src/app/core/services/header.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { SwiperOptions } from 'swiper';
+import { Component, OnInit } from '@angular/core';
+import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
-import {
-  OptionsDialogComponent,
-  OptionsDialogTemplate,
-} from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
-import { GeneralFormSubmissionDialogComponent } from '../general-form-submission-dialog/general-form-submission-dialog.component';
-import {
-  FormComponent,
-  FormData,
-} from 'src/app/shared/dialogs/form/form.component';
-import { AuthService } from 'src/app/core/services/auth.service';
+import { FormComponent } from 'src/app/shared/dialogs/form/form.component';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { OptionsDialogTemplate, OptionsDialogComponent } from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
 import { FormGroup, Validators } from '@angular/forms';
-export interface DialogOptions {
-  title: string;
-  link?: string;
-  icon?: string;
-  callback: () => void;
-}
-
-export interface DialogSecondaryOptions {
-  title: string;
-  link?: string;
-  callback: () => void;
-}
-
-export interface DialogTemplate {
-  title: string;
-  styles?: Record<string, Record<string, boolean>>;
-  tabIndex: number;
-  callback: (e: number) => void;
-}
-
-interface Tabs {
-  text: string;
-  subTabs?: Array<{
-    text: string;
-    active: boolean;
-    content?: string[];
-  }>;
-  active?: boolean;
-}
+import { FormData } from 'src/app/shared/dialogs/form/form.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { HeaderService } from 'src/app/core/services/header.service';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
+import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-club-dialog',
-  templateUrl: './club-dialog.component.html',
-  styleUrls: ['./club-dialog.component.scss']
+  selector: 'app-proflora-link-dialog',
+  templateUrl: './proflora-link-dialog.component.html',
+  styleUrls: ['./proflora-link-dialog.component.scss']
 })
-export class ClubDialogComponent implements OnInit {
+export class ProfloraLinkDialogComponent {
 
-  tabIndex = 0
+  emailDialogRef: MatDialogRef<FormComponent, any> = null;
   openNavigation = false
+  
+  constructor(
+    private _bottomSheetRef: MatBottomSheetRef,
+    private dialog: MatDialog,
+    private authService: AuthService,
+    private snackbar: MatSnackBar,
+    private headerService: HeaderService,
+    private dialogService: DialogService,
+    private router: Router
+  ) { }
+
   tabProvider = [
     {
-      text: "🌼 Vitrina Online",
-      routerLink: ["/ecommerce/supplier-items-selector"],
+      text: "🌼 Vitrina Online de ComercioID",
+      routerLink: ["/admin/supplier-dashboard"],
       linkName: "",
       queryParams: {
         supplierMode: true
       },
-      authorization: false,
+      authorization: true,
       isDummy: false,
       isShowDialog: false
     },
@@ -91,18 +55,18 @@ export class ClubDialogComponent implements OnInit {
       isShowDialog: false
     },
     {
-      text: "📢 Comisiones de quienes venden por mi",
+      text: "🛟 Cotizaciones de Artículos que pudiera comprar",
       routerLink: ["/admin/supplier-dashboard"],
       linkName: "",
       queryParams: {
         supplierMode: true
       },
       authorization: true,
-      isDummy: true,
+      isDummy: false,
       isShowDialog: false
     },
     {
-      text: "🛟 Artículos que compro",
+      text: "🏷️ Tienda con Artículos que pudiera comprar",
       routerLink: ["/admin/supplier-dashboard"],
       linkName: "",
       queryParams: {
@@ -113,8 +77,8 @@ export class ClubDialogComponent implements OnInit {
       isShowDialog: true
     },
     {
-      text: "⚡️️ Ofertas flash para comprar",
-      routerLink: ["/admin/merchant-offers"],
+      text: "⚡️️ Ver ofertas flash que pudiera comprar",
+      routerLink: ["/admin/supplier-dashboard"],
       linkName: "",
       queryParams: {
         supplierMode: true
@@ -124,8 +88,8 @@ export class ClubDialogComponent implements OnInit {
       isShowDialog: false
     },
     {
-      text: "🧞‍♂️‍️️️ Crea ofertas flash para vender*",
-      routerLink: ["/admin/items-offers"],
+      text: "🧞‍♂️‍️️️ Crea ofertas flash para vender",
+      routerLink: ["/admin/supplier-dashboard"],
       linkName: "",
       queryParams: {
         supplierMode: true
@@ -136,7 +100,7 @@ export class ClubDialogComponent implements OnInit {
     },
     {
       text: "📦 Seguimiento de los pedidos",
-      routerLink: ["/admin/order-progress"],
+      routerLink: ["/admin/supplier-dashboard"],
       linkName: "",
       queryParams: {
         supplierMode: true
@@ -147,243 +111,103 @@ export class ClubDialogComponent implements OnInit {
     },
     {
       text: "💸 Seguimiento del dinero por factura",
-      routerLink: ["/"],
+      routerLink: ["/admin/supplier-dashboard"],
       linkName: "",
       queryParams: {
         supplierMode: true
       },
       authorization: true,
-      isDummy: true,
+      isDummy: false,
       isShowDialog: false
     },
     {
-      text: "🛒 Comparte una cotización de lo que vendes",
-      routerLink: ["/"],
+      text: "🛒 Carritos y cotizaciones de lo que vendo",
+      routerLink: ["/admin/supplier-dashboard"],
       linkName: "",
       queryParams: {
         supplierMode: true
       },
       authorization: true,
-      isDummy: true,
+      isDummy: false,
+      isShowDialog: false
+    },
+    {
+      text: "📢 Mercado de Referencias",
+      routerLink: ["/admin/supplier-dashboard"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: true,
+      isDummy: false,
       isShowDialog: false
     },
     {
       text: "✨ Recompensas de Compradores",
-      routerLink: ["/"],
+      routerLink: ["/admin/supplier-dashboard"],
       linkName: "",
       queryParams: {
         supplierMode: true
       },
       authorization: true,
-      isDummy: true,
+      isDummy: false,
       isShowDialog: false
     },
     {
       text: "🎁 Premios de seguidores que te mencionan",
-      routerLink: ["/"],
+      routerLink: ["/admin/supplier-dashboard"],
       linkName: "",
       queryParams: {
         supplierMode: true
       },
       authorization: true,
-      isDummy: true,
+      isDummy: false,
+      isShowDialog: false
+    },
+    {
+      text: "💰 Control, Beneficios e Impuestos",
+      routerLink: ["/admin/supplier-dashboard"],
+      linkName: "",
+      queryParams: {
+        supplierMode: true
+      },
+      authorization: true,
+      isDummy: false,
       isShowDialog: false
     },
     {
       text: "✋ Analiza las opiniones de los compradores",
-      routerLink: ["/"],
+      routerLink: ["/admin/supplier-dashboard"],
       linkName: "",
       queryParams: {
         supplierMode: true
       },
       authorization: true,
-      isDummy: true,
+      isDummy: false,
       isShowDialog: false
     },
     {
-      text: "💚 Invita y monetiza cada mes",
-      routerLink: ["/"],
+      text: "💚 Monetizaciones mensual invitando al Club ",
+      routerLink: ["/admin/supplier-dashboard"],
       linkName: "",
       queryParams: {
         supplierMode: true
       },
       authorization: true,
-      isDummy: true,
+      isDummy: false,
       isShowDialog: false
     },
   ]
-  tabs: Array<Tabs> = [
-    {
-      text: 'Control',
-      subTabs: [
-        {
-          text: 'Ordenes',
-          active: true,
-          content: [
-            '“.. puedo ver el estado actualizado de cada orden desde mi celular”',
-            '“.. la función de notificar a los clientes por WhatsApp o correo electrónico es una verdadera maravilla!”',
-            '“¡Es como magia para mantener todo bajo control!”',
-            '“.. me permite estar al tanto de cada orden de una manera que nunca imaginé”',
-            '“.. puedo filtrar las facturas según su estado para priorizar lo que necesito atender primero”',
-            '“.. es como tener a tu asistente personal siempre contigo”',
-            '“.. puedo ver qué órdenes necesitan mi atención inmediata y cuáles están en camino”',
-          ],
-        },
-        {
-          text: 'Entregas',
-          active: false,
-          content: [
-            '“.. puedo cobrar extra según la zona de entrega especificada por el comprador”',
-            '“..  maximizo lo que cobro y me permite entregar mas lejos”',
-            '“..  me muestra un enfoque estratégico de las entregas y eso me ayuda en la logística para entregar a tiempo”',
-          ],
-        },
-        {
-          text: 'Clientes',
-          active: false,
-          content: [
-            '“.. los reportes que puedo exportar me ayudan a planificar y ejecutar campañas”',
-            '“..  puedo dirigir mis mensajes a grupos específicos con información precisa basado en sus preferencias”',
-            '“..  tener una visión clara de quiénes son mis compradores y qué quieren”',
-          ],
-        },
-      ],
-      active: false,
-    },
-    {
-      text: 'Más Ventas',
-      subTabs: [
-        {
-          text: '#hashtags',
-          active: false,
-          content: [
-            '“.. asigno un simple #hashtag y, voilà, los interesados pueden dirigirse directamente a la compra desde cualquier red social”',
-            '“.. es una manera genial de simplificar el proceso de compra desde las plataformas sociales”',
-            '“.. convierto a los seguidores en compradores de manera rápida y sencilla”',
-          ],
-        },
-        {
-          text: 'Proveedores',
-          active: true,
-          content: [
-            '“.. puedo acceder a una red amplia de proveedores de flores en un abrir y cerrar de ojos.”',
-            '¡Esta función de Cotización Eficiente con Proveedores en la aplicación es como tener un equipo de compras personal a tu disposición!',
-            '“.. es como si los proveedores compitieran por ofrecerme las mejores ofertas, lo cual me siento confiado de donde comprar”',
-            '“.. me permite conectarme con un montón de proveedores y pedir cotizaciones en cuestión de minutos”',
-            '“.. significa que puedo tomar decisiones más inteligentes y aumentar mis ganancias”',
-            '“.. puedo pedir cotizaciones y luego simplemente comparar y elegir la opción más conveniente”',
-            '“.. no solo ahorro dinero, sino que también ahorro tiempo al evitar largas negociaciones, realmente es un ganar-ganar”',
-          ],
-        },
-        {
-          text: 'Premios',
-          active: false,
-          content: [
-            '“.. brindo incentivos a mis clientes, lo que realmente fomenta la fidelidad y la satisfacción”',
-            '“.. el programa de recompensar su lealtad es simplemente brillante”',
-            '“..  los premios no solo los mantiene contentos, sino que también crea un vínculo más sólido con nosotros”',
-          ],
-        },
-      ],
-      active: true,
-    },
-  ];
-  activeTabIndex: number = 0;
-
-  swiperConfig: SwiperOptions = {
-    slidesPerView: 1,
-    freeMode: false,
-    spaceBetween: 0,
-    pagination: {
-      el: '.swiper-pagination',
-      type: 'bullets',
-      clickable: true,
-    },
-  };
-  emailDialogRef: MatDialogRef<FormComponent, any> = null;
-
-  constructor(
-    @Inject(MAT_BOTTOM_SHEET_DATA) public data: DialogTemplate,
-    private _bottomSheetRef: MatBottomSheetRef,
-    public headerService: HeaderService,
-    private router: Router,
-    private dialog: MatDialog,
-    private snackbar: MatSnackBar,
-    private authService: AuthService,
-    private dialogService: DialogService
-  ) {}
-
-  env: string = environment.assetsUrl;
-  URI: string = environment.uri;
-  
 
   ngOnInit(): void {
-    if(this.data && this.data.styles && this.data.styles['fullScreen']) {
-      const element: HTMLElement = document.querySelector('.mat-bottom-sheet-container');
-      element.style.maxHeight = 'unset';
-    }
-    if (this.data.tabIndex) {
-      console.log("tabIndex1")
-    }
-    this.tabIndex = this.data.tabIndex
+    
+    const element: HTMLElement = document.querySelector('.mat-bottom-sheet-container');
+
+    element.style.maxHeight = 'unset';
+    element.style.padding = '0px';
   }
 
-  redirectToLink(link: any) {
-    this.headerService.flowRouteForEachPage[link.linkName] = this.router.url;
-
-    if (link.isDummy) {
-      const message = `Hola, me interesa esta funcionalidad: ${link.text}`;
-      const phone = '19188156444';
-      window.location.href = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
-      return;
-    }
-
-    this.headerService.flowRoute = this.headerService.buildURL(
-      link.routerLink.join('/'),
-      link.queryParams ? link.queryParams : null
-    );
-
-    this.router.navigate(link.routerLink, {
-      queryParams: link.queryParams ? link.queryParams : {},
-    });
-
-    this._bottomSheetRef.dismiss();
-  }
-
-  changeTab(tabIndex: number) {
-    this.tabs[tabIndex].active = true;
-    this.activeTabIndex = tabIndex;
-
-    this.tabs.forEach((tab, index) => {
-      if (index !== tabIndex) tab.active = false;
-    });
-  }
-
-  changeSubtab(tabIndex: number, subTabIndex: number) {
-    this.tabs[tabIndex].subTabs[subTabIndex].active = true;
-
-    this.tabs[tabIndex].subTabs.forEach((subTab, index) => {
-      if (index !== subTabIndex) subTab.active = false;
-    });
-  }
-
-  openLink(event?: MouseEvent): void {
-    this._bottomSheetRef.dismiss();
-    if (event) event.preventDefault();
-  }
-
-  onClick(index: number) {
-    this.data.callback(index)
-    this.tabIndex = index
-    this._bottomSheetRef.dismiss();
-  }
-
-  share() {
-    if (!this.headerService.user) {
-      this.openMagicLinkDialog()
-    }
-  }
-  async openMagicLinkDialog() {
+  openEmailDialog() {
     let fieldsToCreateInEmailDialog: FormData = {
       title: {
         text: 'Correo Electrónico:',
@@ -575,6 +399,41 @@ export class ClubDialogComponent implements OnInit {
       disableClose: true,
     });
   }
+
+  private async nonExistingUserLoginFlow(credentials: any, isFormValid: boolean) {
+    const emailOrPhone = credentials;
+
+    let optionsDialogTemplate: OptionsDialogTemplate = {
+      title: `Notamos que es la primera vez que intentas acceder con este correo, prefieres:`,
+      options: [
+        {
+          value: 'Empezar mi Membresía al Club con este correo electrónico',
+          callback: async () => {
+            this.typeOfMerchantFlow(credentials);
+          },
+        },
+        {
+          value: 'Intentar con otro correo electrónico.',
+          callback: async () => {
+            await this.openMagicLinkDialog();
+          },
+        },
+        {
+          value: 'Algo anda mal porque no es la primera vez que trato de acceder con este correo',
+          callback: () => {
+            const phone = '19188156444';
+            const message = 'Algo anda mal porque no es la primera vez que trato de acceder con este correo';
+            window.location.href = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
+          }
+        }
+      ],
+    };
+
+    this.dialog.open(OptionsDialogComponent, {
+      data: optionsDialogTemplate,
+      disableClose: true,
+    });
+  }
   private async addPassword (emailOrPhone: string) {
     this.emailDialogRef.close();
 
@@ -645,40 +504,93 @@ export class ClubDialogComponent implements OnInit {
       dialog2Ref.close();
       return this.openMagicLinkDialog();
     };
-  }
-
-  private async nonExistingUserLoginFlow(credentials: any, isFormValid: boolean) {
-    const emailOrPhone = credentials;
-
-    let optionsDialogTemplate: OptionsDialogTemplate = {
-      title: `Notamos que es la primera vez que intentas acceder con este correo, prefieres:`,
-      options: [
+  };
+  async openMagicLinkDialog() {
+    let fieldsToCreateInEmailDialog: FormData = {
+      title: {
+        text: 'Correo Electrónico:',
+      },
+      buttonsTexts: {
+        accept: 'Recibir el enlace con acceso',
+        cancel: 'Cancelar',
+      },
+      containerStyles: {
+        padding: '35px 23px 38px 18px',
+      },
+      hideBottomButtons: true,
+      fields: [
         {
-          value: 'Empezar mi Membresía al Club con este correo electrónico',
-          callback: async () => {
-            this.typeOfMerchantFlow(credentials);
+          name: 'magicLinkEmailOrPhone',
+          type: 'email',
+          placeholder: 'Escribe el correo electrónico..',
+          validators: [Validators.pattern(/[\S]/), Validators.required],
+          inputStyles: {
+            padding: '11px 1px',
+          },
+          styles: {
+            gap: '0px',
+          },
+          bottomTexts: [
+            {
+              text: 'Este correo también sirve para accesar al Club y aprovechar todas las herramientas que se están creando.',
+              styles: {
+                color: '#FFF',
+                fontFamily: 'InterLight',
+                fontSize: '19px',
+                fontStyle: 'normal',
+                fontWeight: '300',
+                lineHeight: 'normal',
+                marginBottom: '28px',
+                marginTop: '36px',
+              },
+            },
+          ],
+          submitButton: {
+            text: '>',
+            styles: {
+              borderRadius: '8px',
+              background: '#87CD9B',
+              padding: '6px 15px',
+              color: '#181D17',
+              textAlign: 'center',
+              fontFamily: 'InterBold',
+              fontSize: '17px',
+              fontStyle: 'normal',
+              fontWeight: '700',
+              lineHeight: 'normal',
+              position: 'absolute',
+              right: '1px',
+              top: '8px',
+            },
           },
         },
-        {
-          value: 'Intentar con otro correo electrónico.',
-          callback: async () => {
-            await this.openMagicLinkDialog();
-          },
-        },
-        {
-          value: 'Algo anda mal porque no es la primera vez que trato de acceder con este correo',
-          callback: () => {
-            const phone = '19188156444';
-            const message = 'Algo anda mal porque no es la primera vez que trato de acceder con este correo';
-            window.location.href = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
-          }
-        }
       ],
     };
 
-    this.dialog.open(OptionsDialogComponent, {
-      data: optionsDialogTemplate,
-      disableClose: true,
+    this.emailDialogRef = this.dialog.open(FormComponent, {
+      data: fieldsToCreateInEmailDialog,
+      disableClose: false,
+    });
+
+    this.emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+      if (result?.controls?.magicLinkEmailOrPhone.valid) {
+        const exists = await this.checkIfUserExists(result?.controls?.magicLinkEmailOrPhone.value);
+        if (exists) {
+          await this.existingUserLoginFlow(
+            result?.controls?.magicLinkEmailOrPhone.value,
+            result?.controls?.magicLinkEmailOrPhone.valid
+          );
+        } else {
+          await this.nonExistingUserLoginFlow(
+            result?.controls?.magicLinkEmailOrPhone.value,
+            result?.controls?.magicLinkEmailOrPhone.valid
+          );
+        }
+      } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
+        this.snackbar.open('Datos invalidos', 'Cerrar', {
+          duration: 3000,
+        });
+      }
     });
   }
   private typeOfMerchantFlow(credentials: any) {
@@ -724,4 +636,7 @@ export class ClubDialogComponent implements OnInit {
     });
   }
 
+  close() {
+    this._bottomSheetRef.dismiss();
+  }
 }

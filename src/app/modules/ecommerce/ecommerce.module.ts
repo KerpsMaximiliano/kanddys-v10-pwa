@@ -73,6 +73,7 @@ import { MagicLinkSentComponent } from './pages/magic-link-sent/magic-link-sent.
 import { MerchantRegisterComponent } from './pages/merchant-register/merchant-register.component';
 import { LoginLandingComponent } from './pages/login-landing/login-landing.component';
 import { NotificationAccessScreenComponent } from './pages/notification-access-screen/notification-access-screen.component';
+import { ProfloraCampainComponent } from './pages/proflora-campain/proflora-campain.component';
 
 const routes: Routes = [
   {
@@ -279,6 +280,10 @@ const routes: Routes = [
     component: ClubLandingComponent
   },
   {
+    path: 'proflora-campaign',
+    component: ProfloraCampainComponent
+  },
+  {
     path: ':merchantSlug',
     component: EcommerceComponent,
     children: [
@@ -473,7 +478,8 @@ const routes: Routes = [
     MagicLinkSentComponent,
     MerchantRegisterComponent,
     LoginLandingComponent,
-    NotificationAccessScreenComponent
+    NotificationAccessScreenComponent,
+    ProfloraCampainComponent
   ],
   imports: [
     CommonModule,
