@@ -106,6 +106,8 @@ import { ItemsOffersComponent } from './pages/items-offers/items-offers.componen
 import { OrderImageLoadComponent } from './pages/order-image-load/order-image-load.component';
 import { DeliveryZonesManagerComponent } from './pages/delivery-zones-manager/delivery-zones-manager.component';
 import { WizardTrainingComponent } from './pages/wizard-training/wizard-training.component';
+import { AffiliateReferalsComponent } from './pages/affiliate-referrals/affiliate-referrals.component';
+import { UpperCasePipe } from 'src/app/core/pipes/upper-case.pipe';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -632,6 +634,10 @@ const routes: Routes = [
   {
     path: 'monetizations',
     component: MonetizationsComponent
+  },
+  {
+    path: "affiliate-referrals",
+    component: AffiliateReferalsComponent
   }
 ];
 
@@ -721,6 +727,8 @@ const routes: Routes = [
     DeliveryZonesManagerComponent,
     WizardTrainingComponent,
     OrderImageLoadComponent,
+    AffiliateReferalsComponent,
+    UpperCasePipe
   ],
   exports: [ArticleCreatorComponent],
   imports: [

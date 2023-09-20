@@ -645,3 +645,8 @@ query merchantGroupFiltersQuantity($merchantId: ObjectID!, $type: String){
     merchantId: $merchantId
   )
 }`;
+
+export const affiliateTotalpaginate = gql`
+query affiliateTotalpaginate($input: PaginationInput, $date: Date!){
+  affiliateTotalpaginate(paginate: $input, date: $date)
+}`;

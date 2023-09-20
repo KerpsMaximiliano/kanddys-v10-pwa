@@ -55,6 +55,7 @@ import {
   ordersCommissionableItemsCount,
   merchantGroupFiltersQuantity,
   merchantGroupByType,
+  affiliateTotalpaginate,
 } from './../graphql/merchants.gql';
 import {
   EmployeeContract,
@@ -665,6 +666,17 @@ export class MerchantsService {
 
     if (!result || result?.errors) return undefined;
     return result?.merchantGroupByType;
+  }
+
+  async affiliateTotalpaginate (input: PaginationInput, date: String) {
+    const result = await this.graphql.query({
+      query: affiliateTotalpaginate,
+      variables: { input, date },
+      fetchPolicy: 'no-cache',
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result?.affiliateTotalpaginate;
   }
 }
 
