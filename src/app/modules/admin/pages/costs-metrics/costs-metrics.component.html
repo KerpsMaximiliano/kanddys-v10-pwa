@@ -1,0 +1,182 @@
+<div class="container">
+    <div class="header flex space-between items-center">
+        <div class="title flex">
+            <div class="icon flex items-center" (click)="toBenefitsControl()">
+                <img src="../../../../../assets/icons/icon-close.svg" alt="">
+            </div>
+            <div class="text">
+                💰 Control, Beneficios e Impuestos
+            </div>
+        </div>
+        <div class="special flex">
+            <span class="flex items-center search_icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16" fill="none">
+                    <g clip-path="url(#clip0_1019_1762)">
+                      <path d="M11.0103 10.406C11.9182 9.16707 12.3249 7.63107 12.1489 6.10525C11.9729 4.57943 11.2273 3.17631 10.0613 2.17661C8.89519 1.17692 7.39465 0.654369 5.85986 0.713508C4.32506 0.772646 2.86919 1.40911 1.7835 2.49557C0.697821 3.58203 0.0623969 5.03836 0.00435667 6.5732C-0.0536835 8.10804 0.46994 9.6082 1.47047 10.7735C2.471 11.9389 3.87465 12.6835 5.4006 12.8584C6.92654 13.0333 8.46226 12.6255 9.70049 11.7167C9.72876 11.7546 9.75946 11.7906 9.79238 11.8246L13.4022 15.4344C13.578 15.6103 13.8165 15.7092 14.0652 15.7093C14.314 15.7094 14.5525 15.6107 14.7285 15.4349C14.9044 15.2591 15.0033 15.0206 15.0034 14.7718C15.0035 14.5231 14.9047 14.2845 14.7289 14.1086L11.1191 10.4988C11.0856 10.4649 11.0495 10.4335 11.0113 10.405L11.0103 10.406ZM11.2522 6.80176C11.2522 7.8217 10.9498 8.81873 10.3832 9.66678C9.81651 10.5148 9.01111 11.1758 8.06881 11.5661C7.12651 11.9564 6.08963 12.0585 5.08929 11.8596C4.08895 11.6606 3.17008 11.1694 2.44888 10.4482C1.72767 9.72703 1.23653 8.80816 1.03755 7.80782C0.838567 6.80748 0.940691 5.7706 1.331 4.8283C1.72132 3.886 2.38229 3.0806 3.23034 2.51396C4.07838 1.94731 5.07542 1.64486 6.09535 1.64486C7.46305 1.64486 8.77472 2.18818 9.74183 3.15528C10.7089 4.12239 11.2522 5.43407 11.2522 6.80176Z" fill="black"/>
+                    </g>
+                    <defs>
+                      <clipPath id="clip0_1019_1762">
+                        <rect width="15.0025" height="15" fill="white" transform="translate(0 0.708984)"/>
+                      </clipPath>
+                    </defs>
+                </svg>
+            </span>
+            <span class="plus_icon" (click)="showCreateExpDialog()">+</span>
+            <img src="../../../../../assets/icons/triangle-black.svg" alt="" (click)="toBenefitsControl()">
+        </div>
+    </div>
+    <div class="search-list flex">
+        <div class="list-item" (click)="viewIndex=0" [ngClass]="{active: viewIndex==0}">
+            Impuesto
+        </div>
+        <div class="list-item" (click)="viewIndex=1" [ngClass]="{active: viewIndex==1}">
+            Ingresos
+        </div>
+        <div class="list-item" (click)="viewIndex=2" [ngClass]="{active: viewIndex==2}">
+            Egresos
+        </div>
+        <!-- <div class="list-item">
+            Beneficios
+        </div> -->
+    </div>
+    <div class="card" *ngIf="viewIndex==2">
+        <div class="flex space-between items-center">
+            <div class="id">
+                En días específicos
+            </div>
+            <div class="amount">
+                ${{amountFormat(only_day?.total)}}
+            </div>
+        </div>
+        <div class="flex space-between items-center">
+            <div class="date">
+                <!-- N478, hace FechaID -->
+            </div>
+            <div class="count">
+                {{only_day?.count}} artículos
+            </div>
+        </div>
+    </div>
+    <div class="card" *ngIf="viewIndex==2">
+        <div class="flex space-between items-center">
+            <div class="id">
+                Recurrentes y fijos (rentas)
+            </div>
+            <div class="amount">
+                ${{amountFormat(recurrent?.total)}}
+            </div>
+        </div>
+        <div class="flex space-between items-center">
+            <div class="date">
+                <!-- N478, hace FechaID -->
+            </div>
+            <div class="count">
+                {{recurrent?.count}} artículos
+            </div>
+        </div>
+    </div>
+    <div class="card" *ngIf="viewIndex==2">
+        <div class="flex space-between items-center">
+            <div class="id">
+                Costo según zona de entrega
+            </div>
+            <div class="amount">
+                ${{amountFormat(delivery_zone?.total)}}
+            </div>
+        </div>
+        <div class="flex space-between items-center">
+            <div class="date">
+                <!-- N478, hace FechaID -->
+            </div>
+            <div class="count">
+                {{delivery_zone?.count}} artículos
+            </div>
+        </div>
+    </div>
+    <div class="card" *ngIf="viewIndex==2">
+        <div class="flex space-between items-center">
+            <div class="id">
+                Costos extras en facturas
+            </div>
+            <div class="amount">
+                ${{amountFormat(others?.total)}}
+            </div>
+        </div>
+        <div class="flex space-between items-center">
+            <div class="date">
+                <!-- N478, hace FechaID -->
+            </div>
+            <div class="count">
+                {{others?.count}} artículos
+            </div>
+        </div>
+    </div>
+
+    <div class="card" *ngIf="viewIndex==1">
+        <div class="flex space-between items-center">
+            <div class="id">
+                Por artículos vendidos
+            </div>
+            <div class="amount">
+                {{ordersTotalLoading ? ('$' + amountFormat(ordersTotal?.total)) : 'Loading'}}
+            </div>
+        </div>
+        <div class="flex space-between items-center">
+            <div class="date">
+                <!-- N478, hace FechaID -->
+            </div>
+            <div class="count">
+                {{ordersTotalLoading ? (ordersTotal?.items + ' artículos') : 'Loading'}}
+            </div>
+        </div>
+    </div>
+    <div class="card" *ngIf="viewIndex==1">
+        <div class="flex space-between items-center">
+            <div class="id">
+                Por zonas de entrega
+            </div>
+            <div class="amount">
+                {{incomeTotalLoading ? ('$' + amountFormat(incomeTotal?.total)) : 'Loading'}}
+            </div>
+        </div>
+        <div class="flex space-between items-center">
+            <div class="date">
+                <!-- N478, hace FechaID -->
+            </div>
+            <div class="count">
+                {{incomeTotalLoading ? (amountFormat(incomeTotal?.count) + ' artículos') : 'Loading'}}
+            </div>
+        </div>
+    </div>
+
+    <div class="card" *ngIf="viewIndex==0">
+        <div class="flex space-between items-center">
+            <div class="id">
+                Impuestos Gubernamentales
+            </div>
+            <div class="amount">
+                <!-- ${{}} -->
+            </div>
+        </div>
+        <div class="flex space-between items-center">
+            <div class="date">
+                {{taxes ? (!taxes ? "Sin configurar" : "Configurations") : 'Loading'}}
+            </div>
+            <div class="count">
+                República Dominicana
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="action-btn" (click)="toBenefitsControl()">
+    <svg xmlns="http://www.w3.org/2000/svg" width="63" height="64" viewBox="0 0 63 64" fill="none">
+        <circle cx="31.5" cy="32.209" r="31.5" fill="#87CD9B"/>
+        <path d="M18 19.7102H43.28V44.9902H18V19.7102ZM19.6853 43.3049H41.5947V21.3956H19.6853V43.3049Z" fill="#181D17"/>
+        <path d="M30.5 27.9902L35.2631 36.2402H25.7369L30.5 27.9902Z" fill="#181D17"/>
+    </svg>
+</div>
+<div class="footer flex space-between">
+    <div class="id">FechaID a FechaID</div>
+    <div class="benefit">Total: {{incomeMerchantLoading ? ('$' + amountFormat(incomeMerchant)) : 'Loading'}}</div>
+</div>

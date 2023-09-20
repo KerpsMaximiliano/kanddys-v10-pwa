@@ -165,7 +165,7 @@ export class OrderProgressComponent implements OnInit {
         pagination
       )
     )
-    this.orders = orders != undefined ? orders : []
+    this.orders = orders.orderPaginate != undefined ? orders.orderPaginate : []
     console.log(this.orders)
     await this.orderService.orderQuantityOfFiltersStatusDelivery({ findBy: {merchant: this.merchantId} }).then((res) => {
       this.deliveryStatus = res

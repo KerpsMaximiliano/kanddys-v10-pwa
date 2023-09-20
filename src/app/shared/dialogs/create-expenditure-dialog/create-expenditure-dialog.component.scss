@@ -1,0 +1,99 @@
+::ng-deep .mat-dialog-container {
+    padding: 0px;
+    width: 90vw;
+    max-width: 500px !important;
+    margin: auto;
+    background-color: #181D17 !important;
+}
+
+::ng-deep .mat-datepicker-content {
+    height: fit-content;
+    position: fixed;
+    bottom: 30px;
+}
+
+::ng-deep .cdk-overlay-pane {
+    height: fit-content;
+    width: fit-content;
+}
+
+.container {
+    padding: 40px 20px;
+    padding-top: 75px;
+    background-color: #181d17;
+    color: #fff;
+    font-size: 17px;
+    font-family: InterLight;
+    font-style: normal;
+}
+
+.form_content {
+    display: block;
+    margin: 0 -24px;
+    padding: 0 24px;
+    max-height: 65vh;
+    overflow: auto;
+    .form_control {
+        position: relative;
+        display: inline-flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 30px;
+        width: 100%;
+        
+        label {
+            color: #fff;
+            font-size: 17px;
+            font-family: InterLight;
+            font-style: normal;
+        }
+        input {
+            background-color: #181d17;
+            border: none;
+            font-size: 21px;
+            font-family: InterBold;
+            font-style: normal;
+            line-height: normal;
+            color: white;
+            border-bottom: 1px solid #87cd9b;
+            width: 100%;
+        }
+    }
+    .form_control {
+        margin-bottom: 25px;
+    }
+    .form_control:last-child {
+        margin-bottom: 0px;
+    }
+}
+.button_group {
+    display: flex;
+    justify-content: center;
+    margin-top: 32px;
+    margin-bottom: 0px;
+    padding: 8px 0;
+    flex-wrap: wrap;
+    min-height: 52px;
+    align-items: center;
+    .cancel {
+        padding: 9px 24px;
+        border-radius: 8px;
+        border: none;
+        background-color: #181d17;
+        transition: 0.5s background-color linear;
+        font-size: clamp(14px, 3vw, 17px);
+        color: #c4c5c3;
+    }
+    .save {
+        background-color: #87cd9b;
+        color: #181d17;
+        text-align: center;
+        font-family: InterBold;
+        line-height: normal;
+        padding: 9px 24px;
+        border-radius: 8px;
+        border: none;
+        transition: 0.5s background-color linear;
+        font-size: clamp(14px, 3vw, 17px);
+    }
+}

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import { Location } from '@angular/common';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
@@ -31,10 +31,15 @@ export class DeliveryZonesManagerComponent implements OnInit {
     private deliveryZonesService: DeliveryZonesService,
     private headerService: HeaderService,
     private dialog: MatDialog,
+    public location: Location,
   ) { }
 
   ngOnInit() {
     this.generate()
+  }
+
+  goBack() {
+    this.location.back();
   }
   
   async generate() {
