@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { SwiperOptions } from 'swiper';
+import { GoogleSigninService } from 'src/app/core/services/google-signin.service';
 import { environment } from 'src/environments/environment';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { Location } from '@angular/common';
@@ -24,6 +25,7 @@ import {
 } from 'src/app/shared/dialogs/form/form.component';
 import { FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { ChangeDetectorRef } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   OptionsDialogComponent,
@@ -73,6 +75,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   isOpen = false;
   curRole = 0;
   tabarIndex = 0;
+
+  user : gapi.auth2.GoogleUser;
 
   list = [
     {
@@ -149,15 +153,22 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     private bottomSheet: MatBottomSheet,
     private itemsService: ItemsService,
     private dialogService: DialogService,
+    private googleSigninService: GoogleSigninService,
     private dialog: MatDialog,
     private snackbar: MatSnackBar,
     private authService: AuthService,
     private merchantsService: MerchantsService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private changeDetectorRef: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
+    this.googleSigninService.observable().subscribe((user) => {
+      this.user = user;
+      console.log(user)
+      this.changeDetectorRef.detectChanges();
+    })
   }
 
   showRoleDialog() {
@@ -321,7 +332,26 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
   share() {
     if (!this.headerService.user) {
-      this.openMagicLinkDialog()
+      this.dialog.open(OptionsDialogComponent, {
+        data: {
+          title: 'Correo electrónico:',
+          options: [
+            {
+              value: 'Adiciona tu correo',
+              callback: () => {
+                this.openMagicLinkDialog();
+              },
+            },
+            {
+              value: 'Usa tu cuenta de Google',
+              callback: () => {
+                let user = this.googleSigninService.signIn();
+                console.log(user)
+              },
+            },
+          ],
+        }
+      })
     }
     // else this.showDialog()
   }

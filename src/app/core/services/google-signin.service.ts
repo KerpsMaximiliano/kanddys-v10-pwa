@@ -1,3 +1,4 @@
+/// <reference types="@types/gapi.auth2" />
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { promise } from 'protractor';
@@ -21,7 +22,6 @@ export class GoogleSigninService {
       this.auth2 = gapi.auth2.init({
         client_id:
           '964059680966-lpq9bi386j6s85oeuhnvrq5rvudhqdgn.apps.googleusercontent.com',
-        fetch_basic_profile: false,
         scope: 'email',
       });
       console.log(this.auth2);
@@ -31,7 +31,8 @@ export class GoogleSigninService {
   public signIn(authLogin: boolean = true) {
     console.log('I am passing signIn');
 
-    var auth2 = gapi.auth2.getAuthInstance();         
+    var auth2 = gapi.auth2.getAuthInstance();
+    console.log(auth2.currentUser.get().getAuthResponse());         
       // Sign the user in, and then retrieve their ID.
       auth2.signIn().then(() => {
         console.log(auth2.currentUser.get().getAuthResponse().id_token);
