@@ -34,6 +34,7 @@ import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SelectRoleDialogComponent } from 'src/app/shared/dialogs/select-role-dialog/select-role-dialog.component';
 import { SpecialDialogComponent } from 'src/app/shared/dialogs/special-dialog/special-dialog.component';
 import { CompareDialogComponent } from 'src/app/shared/dialogs/compare-dialog/compare-dialog.component';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 interface ReviewsSwiper {
   title: string;
@@ -129,7 +130,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       ],
     },
   ];
-  link: string = this.URI + '/ecommerce/club-landing';
+  link: string = this.URI;
   swiperConfig: SwiperOptions = {
     slidesPerView: 1,
     freeMode: false,
@@ -154,7 +155,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private merchantsService: MerchantsService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private clipboard: Clipboard,
   ) {}
 
   ngOnInit() {
@@ -215,6 +217,47 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       this.isOpen = false;
   }
 
+  shareDialog() {
+    const dialogRef = this.bottomSheet.open(OptionsMenuComponent, {
+      data: {
+        title: "Compartir enlace",
+        options: [
+          {
+            value: "Copiar enlace",
+            callback: () => {
+              this.clipboard.copy(this.link);
+              this.snackbar.open("Enlace copiado", "Cerrar", {
+                duration: 3000,
+              });
+            },
+          },
+          {
+            value: "Compartir enlace",
+            callback: () => {
+              this.ngNavigatorShareService.share({
+                title: "Compartir enlace de www.flores.club",
+                url: `${this.link}`,
+              });
+            },
+          },
+          {
+            value: "Enviar por WhatsApp",
+            callback: () => {
+              const message = `${this.link}`;
+              window.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+            },
+          },
+          {
+            value: "Enviar por correo electrónico",
+            callback: () => {
+              window.location.href = `mailto:?body=${this.link}`;
+            },
+          },
+        ]
+      },
+    });
+  }
+
   showDialog() {
     const dialogRef = this.dialog.open(SpecialDialogComponent, {});
     const link = `${this.URI}/ecommerce/club-landing`;
@@ -239,9 +282,9 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
           });
           break;
         case "2":
-          const message = `Hola, me interesa esta funcionalidad: `;
+          const message = `${link}`;
           const phone = '19188156444';
-          window.location.href = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
+          window.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
           break;
         case "3":
           window.location.href = "mailto:"
