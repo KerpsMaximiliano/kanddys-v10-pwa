@@ -71,7 +71,7 @@ export class ClubDialogComponent implements OnInit {
   openNavigation = false
   tabProvider = [
     {
-      text: "🌼 Vitrina Online",
+      text: "🌼 Vitrina Online, para que vendas fácil",
       routerLink: ["/ecommerce/supplier-items-selector"],
       linkName: "",
       queryParams: {
@@ -82,7 +82,7 @@ export class ClubDialogComponent implements OnInit {
       isShowDialog: false
     },
     {
-      text: "🧾 Facturas",
+      text: "🧞‍♂️‍️️️ Ofertas Flash, para que vendas más",
       routerLink: ["/admin/order-progress"],
       linkName: "",
       queryParams: {},
@@ -91,7 +91,7 @@ export class ClubDialogComponent implements OnInit {
       isShowDialog: false
     },
     {
-      text: "📢 Comisiones de quienes venden por mi",
+      text: "📦 Control, seguimiento de los pedidos",
       routerLink: ["/admin/supplier-dashboard"],
       linkName: "",
       queryParams: {
@@ -102,7 +102,7 @@ export class ClubDialogComponent implements OnInit {
       isShowDialog: false
     },
     {
-      text: "🛟 Artículos que compro",
+      text: "✨ Recompensas, para fidelizar a Compradores",
       routerLink: ["/admin/supplier-dashboard"],
       linkName: "",
       queryParams: {
@@ -113,7 +113,7 @@ export class ClubDialogComponent implements OnInit {
       isShowDialog: true
     },
     {
-      text: "⚡️️ Ofertas flash para comprar",
+      text: "🎁 Premios, para incentivar a que te mencionen en las redes sociales",
       routerLink: ["/admin/merchant-offers"],
       linkName: "",
       queryParams: {
@@ -124,7 +124,7 @@ export class ClubDialogComponent implements OnInit {
       isShowDialog: false
     },
     {
-      text: "🧞‍♂️‍️️️ Crea ofertas flash para vender*",
+      text: "📢 Colaborar con Embajadores, para que alcances a sus seguidores",
       routerLink: ["/admin/items-offers"],
       linkName: "",
       queryParams: {
@@ -135,7 +135,7 @@ export class ClubDialogComponent implements OnInit {
       isShowDialog: false
     },
     {
-      text: "📦 Seguimiento de los pedidos",
+      text: "🛒 Cotizar a potenciales compradores",
       routerLink: ["/admin/order-progress"],
       linkName: "",
       queryParams: {
@@ -146,7 +146,7 @@ export class ClubDialogComponent implements OnInit {
       isShowDialog: false
     },
     {
-      text: "💸 Seguimiento del dinero por factura",
+      text: "🏷️ Mostrarte artículos que pudieras comprar y sus ofertas para que ahorre$",
       routerLink: ["/"],
       linkName: "",
       queryParams: {
@@ -157,7 +157,7 @@ export class ClubDialogComponent implements OnInit {
       isShowDialog: false
     },
     {
-      text: "🛒 Comparte una cotización de lo que vendes",
+      text: "💸 Beneficios por factura, para saber la realidad del costo de cada venta",
       routerLink: ["/"],
       linkName: "",
       queryParams: {
@@ -168,7 +168,7 @@ export class ClubDialogComponent implements OnInit {
       isShowDialog: false
     },
     {
-      text: "✨ Recompensas de Compradores",
+      text: "💰 Ingresos y Egresos, para que sepas exactamente lo que ganas después de impuestos",
       routerLink: ["/"],
       linkName: "",
       queryParams: {
@@ -179,7 +179,7 @@ export class ClubDialogComponent implements OnInit {
       isShowDialog: false
     },
     {
-      text: "🎁 Premios de seguidores que te mencionan",
+      text: "✋ Análisis de las opiniones de los compradores para que innoves y crezcas",
       routerLink: ["/"],
       linkName: "",
       queryParams: {
@@ -188,29 +188,7 @@ export class ClubDialogComponent implements OnInit {
       authorization: true,
       isDummy: true,
       isShowDialog: false
-    },
-    {
-      text: "✋ Analiza las opiniones de los compradores",
-      routerLink: ["/"],
-      linkName: "",
-      queryParams: {
-        supplierMode: true
-      },
-      authorization: true,
-      isDummy: true,
-      isShowDialog: false
-    },
-    {
-      text: "💚 Invita y monetiza cada mes",
-      routerLink: ["/"],
-      linkName: "",
-      queryParams: {
-        supplierMode: true
-      },
-      authorization: true,
-      isDummy: true,
-      isShowDialog: false
-    },
+    }
   ]
   tabs: Array<Tabs> = [
     {

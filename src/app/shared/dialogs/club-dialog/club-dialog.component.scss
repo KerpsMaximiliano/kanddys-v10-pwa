@@ -119,7 +119,7 @@ main {
   ul {
     margin: 0;
     padding: 0;
-    padding-left: 11px;
+    // padding-left: 11px;
     padding-bottom: 34px;
 
     li {
@@ -145,12 +145,11 @@ main {
       }
 
       &.active {
-        color: #87cd9b;
-
+        padding: 5px 0px 5px 12px;
+        background-color: #87CD9B;
         a {
-          color: #87cd9b;
+          color: #171d16;
         }
-
         .icon {
           visibility: visible;
           // color: #87cd9b;
@@ -235,9 +234,12 @@ main {
   .tab-question {
     font-size: 19px;
     color: white;
-    font-weight: 600;
+    font-weight: 500;
     font-family: InterRegular;
-    margin: 17px 14px;
+    margin: 17px 0px;
+    span {
+      color: #87CD9B;
+    }
   }
   .tab-content-item {
     font-size: 17px;
@@ -393,8 +395,8 @@ footer {
   left: 0px;
   right: 0px;
   bottom: 0px;
-  padding-top: 9px;
-  padding-bottom: 3px;
+  padding-top: 6px;
+  padding-bottom: 6px;
   color: #181d17;
   text-align: center;
   font-family: InterBold;
