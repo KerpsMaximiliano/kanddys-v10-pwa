@@ -94,12 +94,14 @@ export class Gpt3Service {
   async requestResponseFromKnowledgeBase(
     prompt: string,
     saleflowId: string,
-    conversationId: string
+    conversationId: string,
+    chatRoomId?: string,
+    socketId?: string
   ) {
     try {
       const result = await this.graphql.query({
         query: requestResponseFromKnowledgeBase,
-        variables: { prompt, saleflowId, conversationId },
+        variables: { prompt, saleflowId, conversationId, chatRoomId, socketId },
       });
       return result?.requestResponseFromKnowledgeBase;
     } catch (error) {
