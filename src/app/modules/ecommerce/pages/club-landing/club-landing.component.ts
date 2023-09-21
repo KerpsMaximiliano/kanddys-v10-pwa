@@ -345,8 +345,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
             {
               value: 'Usa tu cuenta de Google',
               callback: () => {
-                let user = this.googleSigninService.signIn();
-                console.log(user)
+                this.googleSigninService.signIn();
               },
             },
           ],
