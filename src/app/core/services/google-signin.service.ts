@@ -5,6 +5,7 @@ import { promise } from 'protractor';
 import { Observable, ReplaySubject } from 'rxjs';
 import { AppService } from 'src/app/app.service';
 import { AuthService } from './auth.service';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +22,7 @@ export class GoogleSigninService {
     gapi.load('auth2', () => {
       this.auth2 = gapi.auth2.init({
         client_id:
-          '964059680966-lpq9bi386j6s85oeuhnvrq5rvudhqdgn.apps.googleusercontent.com',
+        `${environment.socials.googleId}`,
         scope: 'email',
       });
       console.log(this.auth2);
