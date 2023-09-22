@@ -15,10 +15,18 @@ export const generateResponseForTemplate = gql`
 export const requestResponseFromKnowledgeBase = gql`
   query requestResponseFromKnowledgeBase(
     $prompt: String!
-    $saleflowId: ObjectID!,
+    $saleflowId: ObjectID!
     $conversationId: ObjectID
+    $chatRoomId: String
+    $socketId: String
   ) {
-    requestResponseFromKnowledgeBase(prompt: $prompt, saleflowId: $saleflowId, conversationId: $conversationId)
+    requestResponseFromKnowledgeBase(
+      prompt: $prompt
+      saleflowId: $saleflowId
+      conversationId: $conversationId
+      chatRoomId: $chatRoomId
+      socketId: $socketId
+    )
   }
 `;
 
