@@ -191,8 +191,6 @@ export class ProviderItemsComponent implements OnInit {
           this.parseMagicLinkData();
         }
 
-        // this.showTutorialModal()
-
         await this.getItemsISell();
         await this.getNumberOfItemsSold();
 
@@ -226,7 +224,7 @@ export class ProviderItemsComponent implements OnInit {
    * Obtiene el numero de items vendidos
    */
   async getNumberOfItemsSold() {
-    const type: TypeItem = this.isSupplier ? 'supplier' : ['default', null]
+    const type: TypeItem = this.isSupplier ? 'supplier' : 'default'
     if (this.isTheUserAMerchant) {
       const sold = await this.itemsService.itemsQuantitySoldTotal({
         findBy: {
@@ -439,7 +437,7 @@ export class ProviderItemsComponent implements OnInit {
       this.paginationState.page++;
     }
 
-    const type: TypeItem = this.isSupplier ? 'supplier' : ['default', null]
+    const type: TypeItem = this.isSupplier ? 'supplier' : 'default'
     const pagination: PaginationInput = {
       findBy: {
         type,
@@ -1062,7 +1060,7 @@ export class ProviderItemsComponent implements OnInit {
       notificationStock: true,
       notificationStockLimit: item.notificationStockLimit,
       useStock: item.useStock,
-      type,
+      type: "supplier",
     };
 
     if (this.merchantsService.merchantData) {
