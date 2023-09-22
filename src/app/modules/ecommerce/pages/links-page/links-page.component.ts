@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Location } from '@angular/common';
 import { environment } from 'src/environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UsersService } from 'src/app/core/services/users.service';
@@ -22,7 +23,8 @@ export class LinksPageComponent implements OnInit {
     private route: ActivatedRoute,
     private usersService: UsersService,
     private contactServive: ContactService,
-    private router: Router
+    private router: Router,
+    public location: Location,
   ) {}
 
   card;
@@ -168,7 +170,7 @@ export class LinksPageComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate([`ecommerce/kiosko-view/${this.userId}`]);
+    this.location.back();
   }
 
   goToLinkRegister() {
