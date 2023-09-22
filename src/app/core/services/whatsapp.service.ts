@@ -52,4 +52,47 @@ export class WhatsappService {
       return null;
     }
   }
+
+  async clientConnectionStatus() {
+    try {
+      let requestResponse = await fetch(
+        `${environment.api.url}/whatsapp/clientConnectionStatus`,
+        {
+          headers: {
+            'App-Key': `${environment.api.key}`,
+            Authorization: 'Bearer ' + localStorage.getItem('session-token'),
+          },
+        }
+      );
+
+      let data = await requestResponse.json();
+
+      if(typeof data === 'boolean') return data;
+      else {
+        throw Error('Error while checking whatsapp status')
+      }
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  async destroyClient(): Promise<boolean> {
+    let requestResponse = await fetch(
+      `${environment.api.url}/whatsapp/destroyClient`,
+      {
+        method: 'POST',
+        headers: {
+          'App-Key': `${environment.api.key}`,
+          Authorization: 'Bearer ' + localStorage.getItem('session-token'),
+        },
+      }
+    );
+
+    let destroyed = await requestResponse.json();
+
+    console.log('destroyed', destroyed);
+
+    return destroyed;
+  }
 }

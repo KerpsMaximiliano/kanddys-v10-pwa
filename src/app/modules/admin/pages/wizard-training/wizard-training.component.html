@@ -13,17 +13,34 @@
 
     <div class="page-body">
       <section>
-        <h3 *ngIf="!whatsappQrCodeGenerated">Enlaza tu whatsapp al asistente</h3>
-        <h3 *ngIf="whatsappQrCodeGenerated">Escanea el código qr para enlazar tu whatsapp al asistente</h3>
+        <h3 *ngIf="!whatsappQrCodeGenerated && !whatsappConnected">
+          Enlaza tu whatsapp al asistente
+        </h3>
+        <h3 *ngIf="whatsappQrCodeGenerated && !whatsappConnected">
+          Escanea el código qr para enlazar tu whatsapp al asistente
+        </h3>
 
-        <button *ngIf="!whatsappQrCodeGenerated" (click)="createWhatsappClient()">
+        <button
+          *ngIf="!whatsappQrCodeGenerated && !whatsappConnected"
+          (click)="createWhatsappClient()"
+        >
           Enlazar
+          <img [src]="env + '/whatsapp_black.svg'" class="img" alt="whatsapp" />
+        </button>
+
+        <h3 *ngIf="whatsappConnected">
+          Tu whatsapp está conectado a la plataforma
+        </h3>
+
+        <button *ngIf="whatsappConnected" (click)="unlinkWhatsapp()">
+          Desvincular
           <img [src]="env + '/whatsapp_black.svg'" class="img" alt="whatsapp" />
         </button>
 
         <img
           class="whatsapp-qrcode"
           id="whatsapp-qrcode"
+          *ngIf="!whatsappConnected"
           [ngClass]="{
             visible: whatsappQrCodeGenerated
           }"
