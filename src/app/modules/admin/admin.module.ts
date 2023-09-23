@@ -108,6 +108,7 @@ import { DeliveryZonesManagerComponent } from './pages/delivery-zones-manager/de
 import { WizardTrainingComponent } from './pages/wizard-training/wizard-training.component';
 import { AffiliateReferalsComponent } from './pages/affiliate-referrals/affiliate-referrals.component';
 import { UpperCasePipe } from 'src/app/core/pipes/upper-case.pipe';
+import { DatePipe } from 'src/app/core/pipes/date.pipe';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -728,7 +729,8 @@ const routes: Routes = [
     WizardTrainingComponent,
     OrderImageLoadComponent,
     AffiliateReferalsComponent,
-    UpperCasePipe
+    UpperCasePipe,
+    DatePipe
   ],
   exports: [ArticleCreatorComponent],
   imports: [

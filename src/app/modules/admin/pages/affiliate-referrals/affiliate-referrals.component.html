@@ -22,7 +22,9 @@
             type="text"
             name="item-search"
             class="input search-bar"
-            placeholder="Todos los Comerciantes (3,589) .."
+            placeholder="Todos los Comerciantes (3,589) ..."
+            [formControl]="itemSearchbar"
+            (input)="searchItems($event)"
           />
     
           <div class="filters">
@@ -31,71 +33,56 @@
           </div>
         </form>
       </div>
-  
-      <section *ngFor="let item of affiliate">
-        <h2 class="section-title">{{item.month | upperPipe}}</h2>
-  
-        <div class="content-cards-container" *ngFor="let affiliate of item.results">
-          <div class="content-card" >
-            <div class="display-flex">
-              <div class="content-card-info">
-                <p class="content-card-title">{{affiliate.reference.name}}</p>
-                <p class="content-card-extra-info">
-                  {{affiliate.secondaryCount.number}} indirectos</p>
+      <div *ngIf="showAllMonths">
+        <section *ngFor="let item of affiliate" >
+          <h2 class="section-title">{{item.month | upperPipe}}</h2>
+          <div class="last-month-section" *ngIf="item.affiliate[0].commissionStatus === 'paid' ">
+            <div
+            class="featured-image"
+            [ngStyle]="{
+              backgroundImage: item?.voucherData.metadata.screenshot
+                ? 'url(' + item.voucherData.metadata.screenshot + ')'
+                : 'url(/assets/images/noimage.png)'
+            }"
+          ></div>
+          <div>
+            <p class="payment-label">Pago que recibiste en {{item.voucherData.createdAt | datePipe}}.</p>
+          </div>
+          </div>
+          <div class="content-cards-container" *ngFor="let affiliate of item.results">
+            <div class="content-card" >
+              <div class="display-flex">
+                <div class="content-card-info">
+                  <p class="content-card-title">{{affiliate.reference.name}}</p>
+                  <p class="content-card-extra-info">
+                    {{affiliate.secondaryCount.number}} indirectos</p>
+                </div>
+              </div>
+              <div>
+                <p class="content-card-price">${{affiliate.comissionParent | CurrencyPipe}}</p>
               </div>
             </div>
-            <div>
-              <p class="content-card-price">${{affiliate.comission | CurrencyPipe}}</p>
-            </div>
           </div>
-        </div>
-      </section>
-      <section>
-        <h2 class="section-title">{{previousMonth}}</h2>
-        <div class="last-month-section">
-          <div
-          class="featured-image"
-          [ngStyle]="{
-            backgroundImage: 'url(/assets/images/noimage.png)'
-          }"
-        ></div>
-        <div>
-          <p class="payment-label">Pago que recibiste en fechaID.</p>
-        </div>
-        </div>
-      </section>
-      <section>
-        <div class="content-cards-container">
-          <div class="content-card" >
-            <div class="display-flex">
-              <!-- <img [src]=" order.user.image?order.user.image:'https://cdn-icons-png.flaticon.com/512/149/149071.png'" width="66px"> -->
-              <div class="content-card-info">
-                <p class="content-card-title">ReferidosDirectoID</p>
-                <p class="content-card-extra-info">
-                  50 indirectos</p>
+        </section>
+      </div>
+      <div *ngIf="!showAllMonths">
+        <section>
+          <div class="content-cards-container" *ngFor="let affiliate of filteredResults">
+            <div class="content-card" >
+              <div class="display-flex">
+                <div class="content-card-info">
+                  <p class="content-card-title">{{affiliate.reference.name}}</p>
+                  <p class="content-card-extra-info">
+                    {{affiliate.secondaryCount.number}} indirectos</p>
+                </div>
+              </div>
+              <div>
+                <p class="content-card-price">${{affiliate.comissionParent | CurrencyPipe}}</p>
               </div>
             </div>
-            <div>
-              <p class="content-card-price">$500.00</p>
-            </div>
           </div>
-        </div>
-        <div class="content-cards-container">
-          <div class="content-card" >
-            <div class="display-flex">
-              <!-- <img [src]=" order.user.image?order.user.image:'https://cdn-icons-png.flaticon.com/512/149/149071.png'" width="66px"> -->
-              <div class="content-card-info">
-                <p class="content-card-title">ReferidosDirectoID</p>
-                <p class="content-card-extra-info">
-                  50 indirectos</p>
-              </div>
-            </div>
-            <div>
-              <p class="content-card-price">$500.00</p>
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
+      </div>
     </div>
   </main>
   <footer class="bottom-footer">
