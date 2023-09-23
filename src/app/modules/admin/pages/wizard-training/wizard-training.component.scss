@@ -78,9 +78,23 @@ section {
       margin-left: 5px;
     }
 
+    .img {
+      margin-left: 5px;
+    }
+
     &:hover {
       background-color: darken($color: #87cd9b, $amount: 5);
       cursor: pointer;
+    }
+  }
+
+  .whatsapp-qrcode {
+    width: 100%;
+    visibility: hidden;
+
+    &.visible {
+      padding: 2rem;
+      visibility: visible;
     }
   }
 }

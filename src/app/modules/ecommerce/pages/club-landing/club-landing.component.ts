@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { SwiperOptions } from 'swiper';
 import { environment } from 'src/environments/environment';
@@ -35,6 +35,7 @@ import { SelectRoleDialogComponent } from 'src/app/shared/dialogs/select-role-di
 import { SpecialDialogComponent } from 'src/app/shared/dialogs/special-dialog/special-dialog.component';
 import { CompareDialogComponent } from 'src/app/shared/dialogs/compare-dialog/compare-dialog.component';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { base64ToBlob } from 'src/app/core/helpers/files.helpers';
 
 interface ReviewsSwiper {
   title: string;
@@ -143,6 +144,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   };
 
   emailDialogRef: MatDialogRef<FormComponent, any> = null;
+
+  @ViewChild('qrcode', { read: ElementRef }) qrcode: ElementRef;
 
   constructor(
     public headerService: HeaderService,
@@ -253,6 +256,12 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
               window.location.href = `mailto:?body=${this.link}`;
             },
           },
+          {
+            value: "Descargar QR",
+            callback: () => {
+              this.downloadQr()
+            }
+          }
         ]
       },
     });
@@ -797,5 +806,24 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     )}`;
 
     window.location.href = whatsappLink;
+  }
+
+  downloadQr() {
+    const parentElement =
+      this.qrcode.nativeElement.querySelector('img').src;
+    let blobData = base64ToBlob(parentElement);
+    if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
+      //IE
+      (window.navigator as any).msSaveOrOpenBlob(blobData, 'Landing QR Code');
+    } else {
+      // chrome
+      const blob = new Blob([blobData], { type: 'image/png' });
+      const url = window.URL.createObjectURL(blob);
+      // window.open(url);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = "Landing QR Code";
+      link.click();
+    }
   }
 }
