@@ -52,7 +52,7 @@ export class Merchant extends Model<Merchant> {
 
 interface Roles {
   _id: string
-  code: 'STORE' | 'PROVIDERS' | 'DEFAULT'
+  code: 'STORE' | 'PROVIDERS' | 'PROVIDER' | 'DEFAULT'
   name: string
 }
 

@@ -32,8 +32,6 @@ interface BtnFiltering {
   total: number
 }
 
-type TypeItem = 'supplier' | 'default' | ['default', null]
-
 @Component({
   selector: 'app-provider-items',
   templateUrl: './provider-items.component.html',
@@ -170,6 +168,7 @@ export class ProviderItemsComponent implements OnInit {
   ) { }
 
   async ngOnInit() {
+    this.verifyIfIsSupplier()
     if (localStorage.getItem('session-token')) {
       if (!this.headerService.user) {
         let sub = this.appService.events
@@ -194,9 +193,6 @@ export class ProviderItemsComponent implements OnInit {
         await this.getItemsISell();
         await this.getNumberOfItemsSold();
 
-        const merchantDefault = await this.merchantsService.merchantDefault()
-        this.isSupplier = merchantDefault.roles.code === 'PROVIDERS' ? true : false
-
         this.saleflowService
           .saleflowDefault(this.merchantsService.merchantData._id)
           .then(saleflow => {
@@ -220,15 +216,23 @@ export class ProviderItemsComponent implements OnInit {
     );
   }
 
+  verifyIfIsSupplier() {
+    this.merchantsService.merchantDefault()
+      .then(merchantDefault => {
+        this.isSupplier = merchantDefault.roles.code === 'PROVIDERS'
+          ? true
+          : false
+      })
+  }
+
   /**
    * Obtiene el numero de items vendidos
    */
   async getNumberOfItemsSold() {
-    const type: TypeItem = this.isSupplier ? 'supplier' : 'default'
     if (this.isTheUserAMerchant) {
       const sold = await this.itemsService.itemsQuantitySoldTotal({
         findBy: {
-          type,
+          type: this.isSupplier ? 'supplier' : 'default',
           merchant: this.merchantsService.merchantData._id,
         },
         options: {
@@ -374,6 +378,7 @@ export class ProviderItemsComponent implements OnInit {
     if (this.isTheUserAMerchant) {
       const supplierSpecificItemsPagination: PaginationInput = {
         findBy: {
+          type: this.isSupplier ? 'supplier' : 'default',
           parentItem: {
             $ne: null,
           },
@@ -436,11 +441,9 @@ export class ProviderItemsComponent implements OnInit {
     } else {
       this.paginationState.page++;
     }
-
-    const type: TypeItem = this.isSupplier ? 'supplier' : 'default'
     const pagination: PaginationInput = {
       findBy: {
-        type,
+        type: this.isSupplier ? 'supplier' : 'default',
         parentItem: null,
         _id: {
           $nin: this.itemsISell.map((item) => item.parentItem),
@@ -601,7 +604,6 @@ export class ProviderItemsComponent implements OnInit {
     itemIndex: number,
     providedByMe: boolean
   ) {
-    console.log('providedByMe', providedByMe);
     try {
       let newAmount: number;
       if (type === 'add' && providedByMe) {
@@ -1047,7 +1049,7 @@ export class ProviderItemsComponent implements OnInit {
     price: number,
     item: Item
   ): Promise<ItemInput> => {
-    const type: TypeItem = this.isSupplier ? 'supplier' : 'default'
+    // const type: TypeItem = this.isSupplier ? 'supplier' : 'default'
     const itemInput: ItemInput = {
       name: item.name,
       layout: item.layout,
