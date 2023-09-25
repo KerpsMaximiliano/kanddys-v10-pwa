@@ -276,7 +276,7 @@ const routes: Routes = [
   // TODO: Change this
   {
     path: 'provider-items',
-    component: DaliahChatComponent,
+    component: ProviderItemsComponent,
   },
   {
     path: 'club-landing',

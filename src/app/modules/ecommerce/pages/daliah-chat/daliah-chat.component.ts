@@ -162,7 +162,6 @@ export class DaliahChatComponent implements OnInit {
     if (message) {
       const newMessage = { sender: 'user', message, chatId: '' }
       this.addMessage(newMessage)
-      console.log(this.optionState)
       this.verifyStateChat()
     }
     this.chatFormGroup.get('input').setValue('')
@@ -308,6 +307,7 @@ export class DaliahChatComponent implements OnInit {
     }
 
     if (option === "SUPPORT-HUMAN") {
+      this.hideOptions = true
       setTimeout(() => {
         const message = "oki doki 🕺.. confirmaré que responderte con quienes me asisten a mí"
         const newMessage = { message, sender: 'IA', chatId: '' }
@@ -319,7 +319,6 @@ export class DaliahChatComponent implements OnInit {
         const newMessage = { message, sender: 'IA', chatId: '' }
         this.addMessage(newMessage)
         this.hideInput = false
-        this.hideOptions = true
         this.optionState = 'FINISH-HUMAN'
       }, 1000);
     }
