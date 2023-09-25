@@ -287,7 +287,7 @@ const routes: Routes = [
     component: ProfloraCampainComponent,
   },
   {
-    path: 'daliah-chat',
+    path: 'daliah-chat/:id',
     component: DaliahChatComponent
   },
   {

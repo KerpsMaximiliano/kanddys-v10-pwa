@@ -29,7 +29,7 @@ interface Message {
   styleUrls: ['./daliah-chat.component.scss']
 })
 export class DaliahChatComponent implements OnInit {
-  @ViewChild('chatContainer') chatContainer: ElementRef;
+  @ViewChild('chatContainer') private chatContainer: ElementRef;
 
   private socket: Socket;
   chat: Chat = {
@@ -44,6 +44,14 @@ export class DaliahChatComponent implements OnInit {
   });
   conversationId: null = null;
   isTheUserTheMerchant: boolean = false;
+
+  optionSelectedByUser = [
+    "En lo que compras",
+    "en lo que vendes",
+    "Quisieras vender más",
+    "En el seguimiento de lo que vendiste",
+    "En el control de tus ingresos o gastos"
+  ]
 
   groupOptions = [
     {
@@ -81,64 +89,73 @@ export class DaliahChatComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.chat.messages = [
-      { sender: 'IA', message: "Hola, soy Dalia, en que te puedo ser más útil?" },
-      { sender: 'user', message: "En lo que vendo" },
-      { sender: 'IA', message: "En qué lo puedo ayudar?" }
-    ]
-    // this.route.params.subscribe(({ chatId }) => {
-    //   if (
-    //     this.headerService.saleflow.merchant.owner._id ===
-    //     this.headerService.user?._id
-    //   )
-    //     this.isTheUserTheMerchant = true;
+    this.route.params.subscribe(({ id }) => {
+      const messageUser = this.optionSelectedByUser[id]
 
-    //   this.socket = io(SERVER_URL, {
-    //     extraHeaders: {
-    //       token: localStorage.getItem('session-token'),
-    //     },
-    //   });
+      if (!messageUser) {
+        // Redirigir al chat anterior
+        return
+      }
 
-    //   // client-side
-    //   this.socket.on('connect', () => {
-    //     // Send a message to the server
-    //     if (!chatId) {
-    //       this.socket.emit('GET_OR_CREATE_CHAT', {
-    //         owners: [this.socket.id],
-    //         userId: this.headerService.saleflow.merchant.owner._id,
-    //       });
-    //     } else {
-    //       this.socket.emit('GET_OR_CREATE_CHAT', {
-    //         owners: [this.socket.id],
-    //         chatId: chatId,
-    //       });
-    //     }
-    //     this.socket.on('GET_OR_CREATE_CHAT', (chat) => {
-    //       this.chat = chat;
-    //     });
+      this.chat.messages = [
+        { sender: 'IA', message: "Hola, soy Dalia, en que te puedo ser más útil?" },
+        { sender: 'user', message: messageUser },
+        { sender: 'IA', message: "En qué lo puedo ayudar?" }
+      ]
 
-    //     this.socket.on('MESSAGE_SEND', (messageReceived: Message) => {
-    //       console.log("messageReceived", messageReceived);
-    //       console.log("myUser", this.headerService.user);
-    //       this.chat.messages.push(messageReceived);
-    //     });
+      if (
+        this.headerService.saleflow?.merchant?.owner?._id ===
+        this.headerService.user?._id
+      ) {
+        this.isTheUserTheMerchant = true;
+      }
 
-    //     /*
-    //     this.socket.emit('CHAT_LIST');
+      // this.socket = io(SERVER_URL, {
+      //   extraHeaders: {
+      //     token: localStorage.getItem('session-token'),
+      //   },
+      // });
 
-    //     this.socket.on('CHAT_LIST', (data) => {
-    //       console.log('DATA LIST', data);
-    //     });*/
+      // client-side
+      // this.socket.on('connect', () => {
+      //   // Send a message to the server
+      //   if (!chatId) {
+      //     this.socket.emit('GET_OR_CREATE_CHAT', {
+      //       owners: [this.socket.id],
+      //       userId: this.headerService.saleflow.merchant.owner._id,
+      //     });
+      //   } else {
+      //     this.socket.emit('GET_OR_CREATE_CHAT', {
+      //       owners: [this.socket.id],
+      //       chatId: chatId,
+      //     });
+      //   }
+      //   this.socket.on('GET_OR_CREATE_CHAT', (chat) => {
+      //     this.chat = chat;
+      //   });
 
-    //     this.socket.on('ERROR', (data) => {
-    //       console.error('ERROR', data);
-    //     });
-    //   });
+      //   this.socket.on('MESSAGE_SEND', (messageReceived: Message) => {
+      //     console.log("messageReceived", messageReceived);
+      //     console.log("myUser", this.headerService.user);
+      //     this.chat.messages.push(messageReceived);
+      //   });
 
-    //   this.socket.on('disconnect', () => {
-    //     console.log('desconectado'); // undefined
-    //   });
-    // });
+      //   /*
+      //   this.socket.emit('CHAT_LIST');
+
+      //   this.socket.on('CHAT_LIST', (data) => {
+      //     console.log('DATA LIST', data);
+      //   });*/
+
+      //   this.socket.on('ERROR', (data) => {
+      //     console.error('ERROR', data);
+      //   });
+      // });
+
+      // this.socket.on('disconnect', () => {
+      //   console.log('desconectado'); // undefined
+      // });
+    });
   }
 
   /**
@@ -196,10 +213,14 @@ export class DaliahChatComponent implements OnInit {
    * LLleva al el contenido al fondo del chat con el Scroll
    */
   scrollToBottom(): void {
-    const container = this.chatContainer.nativeElement;
+    try {
+      const container = this.chatContainer.nativeElement;
+      // Scroll to the bottom of the container using smooth scrolling behavior
+      container.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      container.scrollTop = container.scrollHeight
+    } catch (error) {
 
-    // Scroll to the bottom of the container using smooth scrolling behavior
-    container.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
   }
 
   verifyStateChat() {
