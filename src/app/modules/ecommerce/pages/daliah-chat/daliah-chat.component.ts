@@ -158,6 +158,10 @@ export class DaliahChatComponent implements OnInit {
     });
   }
 
+  ngAfterViewInit(): void {
+    this.scrollToBottom();
+  }
+
   /**
    * Envia la opción seleccionada por el usuario
    *
@@ -212,14 +216,24 @@ export class DaliahChatComponent implements OnInit {
   /**
    * LLleva al el contenido al fondo del chat con el Scroll
    */
+  // scrollToBottom(): void {
+  //   try {
+  //     const container = this.chatContainer.nativeElement;
+  //     // Scroll to the bottom of the container using smooth scrolling behavior
+  //     container.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  //     container.scrollTop = container.scrollHeight
+  //   } catch (error) {
+
+  //   }
+  // }
+
   scrollToBottom(): void {
     try {
       const container = this.chatContainer.nativeElement;
-      // Scroll to the bottom of the container using smooth scrolling behavior
-      container.scrollIntoView({ behavior: 'smooth', block: 'end' });
-      container.scrollTop = container.scrollHeight
+      container.scrollTop = container.scrollHeight;
+      container.scrollIntoView({ behavior: 'smooth', alignToTop: false });
     } catch (error) {
-
+      console.error('Error al hacer scroll:', error);
     }
   }
 
