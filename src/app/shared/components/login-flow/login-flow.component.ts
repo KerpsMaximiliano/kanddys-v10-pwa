@@ -1,9 +1,11 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { OptionsDialogComponent, OptionsDialogTemplate } from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
 import { GoogleSigninService } from 'src/app/core/services/google-signin.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { FormComponent, FormData } from 'src/app/shared/dialogs/form/form.component';
 import { FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -28,6 +30,8 @@ export class LoginFlowComponent implements OnInit {
   });
 
   openNavigation: boolean = false;
+
+  @Output() dialogIsOpen: EventEmitter<boolean> = new EventEmitter();
   
   constructor(
     private headerService: HeaderService,
@@ -36,7 +40,9 @@ export class LoginFlowComponent implements OnInit {
     private authService: AuthService,
     private snackbar: MatSnackBar,
     private router: Router,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private merchantsService: MerchantsService,
+    private saleFlowService: SaleFlowService,
   ) { }
 
   emailDialogRef: MatDialogRef<FormComponent, any> = null;
@@ -47,7 +53,7 @@ export class LoginFlowComponent implements OnInit {
 
   share() {
     if (!this.headerService.user) {
-      this.dialog.open(OptionsDialogComponent, {
+      let dialogRef = this.dialog.open(OptionsDialogComponent, {
         data: {
           title: 'Correo electrónico:',
           options: [
@@ -59,14 +65,51 @@ export class LoginFlowComponent implements OnInit {
             },
             {
               value: 'Usa tu cuenta de Google',
-              callback: () => {
-                this.googleSigninService.signIn();
+              callback: async () => {
+                let promise = new Promise((resolve) => resolve(this.googleSigninService.signIn()))
+                promise.then((res) => this.merchantCheck()) 
+                /*this timeout is here to account for the time the signin queries take, 
+                but if the user takes too long in the google login screen it can currently fail */
               },
             },
           ],
-        }
+        },
+        disableClose: true
+      })
+      dialogRef.backdropClick().subscribe(() => {
+        console.log('backdrop')
+        this.dialogIsOpen.emit(false);
+        dialogRef.close()
       })
     }
+  }
+
+  async merchantCheck() {
+      let merchant: boolean;
+      await this.merchantsService.merchantDefault().then((res) => {
+        console.log(res)
+        merchant = res ? true : false;
+      })
+      if (!merchant) {
+        let newMerchant;
+        await this.merchantsService.createMerchant({}).then((res) => {
+          console.log(res)
+          newMerchant = res.createMerchant._id;
+        })
+        await this.merchantsService.setDefaultMerchant(newMerchant).then((res) => {
+          console.log(res)
+        })
+        let saleflow;
+        await this.saleFlowService.createSaleflow({
+          merchant: newMerchant,
+        }).then((res) => {
+          console.log(res)
+          saleflow = res.createSaleflow._id;
+        })
+        await this.saleFlowService.setDefaultSaleflow(newMerchant, saleflow).then((res) => {
+          console.log(res)
+        })
+      }
   }
 
   async openMagicLinkDialog() {
@@ -133,8 +176,13 @@ export class LoginFlowComponent implements OnInit {
 
     this.emailDialogRef = this.dialog.open(FormComponent, {
       data: fieldsToCreateInEmailDialog,
-      disableClose: false,
+      disableClose: true,
     });
+
+    this.emailDialogRef.backdropClick().subscribe(() => {
+      this.dialogIsOpen.emit(false);
+      this.emailDialogRef.close()
+    })
 
     this.emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
       if (result?.controls?.magicLinkEmailOrPhone.valid) {
@@ -170,12 +218,12 @@ export class LoginFlowComponent implements OnInit {
     }
   }
 
-  private async nonExistingUserLoginFlow(credentials: any, isFormValid: boolean) {
-    this.openTemplateUser(credentials)
+  private async nonExistingUserLoginFlow(credentials: string, isFormValid: boolean) {
+    this.openTemplateCommerce(credentials)
   }
 
-  openTemplateUser(credentials) {
-    let accepted = true;
+  async openTemplateUser(credentials : string) {
+    let isUser = true;
     let formTemplateUser: FormData = {
       fields: [
         {
@@ -186,7 +234,7 @@ export class LoginFlowComponent implements OnInit {
           bottomButton: {
             text: 'Tengo un comercio',
             callback: () => {
-              accepted = false;
+              isUser = false;
               this.dialog.closeAll();
               this.openTemplateCommerce(credentials)
             },
@@ -199,7 +247,7 @@ export class LoginFlowComponent implements OnInit {
         },
         {
           label: 'Apellido:',
-          name: 'lastName',
+          name: 'lastname',
           type: 'text',
           validators: [Validators.pattern(/[\S]/), Validators.required],
         },
@@ -208,10 +256,29 @@ export class LoginFlowComponent implements OnInit {
 
     let dialogRef = this.dialog.open(FormComponent, {
       data: formTemplateUser,
+      disableClose: true,
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if(accepted) {
+  
+    if(isUser) {
+      let signup = false;
+      await dialogRef.afterClosed().subscribe((result) => {
+        this.dialogIsOpen.emit(false);
+        if(result.value.name && result.value.lastname) {
+          this.authService.signup(
+            {
+              email: credentials,
+              name: result.value.name,
+              lastname: result.value.lastname
+            },
+            "none"
+          ).then((res)=>{
+            console.log(res)
+          })
+          signup = true;
+        }
+      });
+      if(signup) {
         this.authService.generateMagicLink(
           credentials,
           this.redirectionRoute,
@@ -223,11 +290,11 @@ export class LoginFlowComponent implements OnInit {
           []
         );
       }
-    });
+    }
   }
 
   async openTemplateCommerce(credentials) {
-    let accepted = true;
+    let isCommerce = true;
     let formTemplateCommerce: FormData = {
       fields: [
         {
@@ -238,7 +305,7 @@ export class LoginFlowComponent implements OnInit {
           bottomButton: {
             text: 'No tengo un comercio',
             callback: () => {
-              accepted = false;
+              isCommerce = false;
               this.dialog.closeAll();
               this.openTemplateUser(credentials)
             },
@@ -251,18 +318,48 @@ export class LoginFlowComponent implements OnInit {
         },
         {
           label: 'Whatsapp donde tus compradores te contactan:',
-          name: 'whatsapp',
+          name: 'phone',
           type: 'phone',
-          validators: [Validators.pattern(/[\d]/), Validators.required],
+          validators: [Validators.required],
         },
       ],
     };
+
     let dialogRef = this.dialog.open(FormComponent, {
       data: formTemplateCommerce,
+      disableClose: true,
     });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if(accepted) {
+    console.log(isCommerce)
+    if(isCommerce) {
+      let businessName = null;
+      let owner = null;
+      await dialogRef.afterClosed().subscribe((result) => {
+        this.dialogIsOpen.emit(false);
+        console.log(result)
+        if(result.value.phone && result.value.businessName) {
+          businessName = result.value.businessName;
+          this.authService.signup(
+            {
+              email: credentials,
+              phone: result.value.phone.e164Number,
+            },
+            "none"
+          ).then((res)=> {
+            console.log(res)
+            owner = res._id;
+          });
+        }
+      });
+      if(owner && businessName) {
+        await this.merchantsService.createMerchant(
+          {
+            name: businessName,
+            owner: owner,
+          }
+        ).then((res)=> {
+          console.log(res)
+        })
+  
         this.authService.generateMagicLink(
           credentials,
           this.redirectionRoute,
@@ -274,7 +371,7 @@ export class LoginFlowComponent implements OnInit {
           []
         );
       }
-    });
+    }
   }
 
   private async existingUserLoginFlow(credentials: any, isFormValid: boolean) {

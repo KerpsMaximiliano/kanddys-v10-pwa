@@ -69,7 +69,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   queryParamsSubscription: Subscription = null;
   routerParamsSubscription: Subscription = null;
 
-  redirectionRoute: string = this.router.url;
+  redirectionRoute: string = '/ecommerce/login-landing';
   redirectionRouteId : string | null = null;
   entity: string = "MerchantAccess";
   jsondata: string = JSON.stringify({
@@ -174,7 +174,6 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    console.log(this.router.url)
     this.googleSigninService.observable().subscribe((user) => {
       this.user = user;
       console.log(user)
@@ -354,5 +353,10 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.queryParamsSubscription.unsubscribe();
+  }
+
+  resetLoginDialog(event) {
+    console.log('fire', event)
+    this.loginflow = false;
   }
 }

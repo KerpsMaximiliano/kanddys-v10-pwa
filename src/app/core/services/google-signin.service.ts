@@ -29,13 +29,13 @@ export class GoogleSigninService {
     });
   }
 
-  public signIn(authLogin: boolean = true) {
+  public async signIn(authLogin: boolean = true) {
     console.log('I am passing signIn');
 
     var auth2 = gapi.auth2.getAuthInstance();
     console.log(auth2.currentUser.get().getAuthResponse());         
       // Sign the user in, and then retrieve their ID.
-      auth2.signIn().then(() => {
+      await auth2.signIn().then(() => {
         console.log(auth2.currentUser.get().getAuthResponse().id_token);
         this.auth.signinSocial({
           token: auth2.currentUser.get().getAuthResponse().id_token,
@@ -54,7 +54,8 @@ export class GoogleSigninService {
           }
         })
         return auth2.currentUser.get().getBasicProfile();
-      });         
+      });
+    return;         
  }
 
   public signout() {

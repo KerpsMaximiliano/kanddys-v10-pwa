@@ -160,13 +160,13 @@
         </button>
       </div>
       <footer (click)="share()" class="footer no-green" [ngClass]="{'no-green': headerService.user}">{{headerService.user?"💚 Trae invitados y gana $ cada mes":"Inscríbete e Invita, juntos es mejor!!"}}</footer>
-      <div *ngIf="loginflow">
         <app-login-flow
+          *ngIf="loginflow"
           [redirectionRoute]="redirectionRoute"
           [redirectionRouteId]="redirectionRouteId"
           [entity]="entity"
           [jsondata]="jsondata"
+          (dialogIsOpen)="resetLoginDialog($event)"
         ></app-login-flow>
-      </div>
     </div>
 <!-- </app-navigation> -->
