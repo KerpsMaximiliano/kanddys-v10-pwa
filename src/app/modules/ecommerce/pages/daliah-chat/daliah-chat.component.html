@@ -1,0 +1,76 @@
+<div class="chat-page">
+  <header class="chat-header">
+    <p>
+      Dal<span>ia</span>hChat con
+      <span>{{ "Desconocido" }}</span>
+    </p>
+    <button type="button" role="button">
+      <img src="../../../../../assets/icons/close-button.svg" alt="close" />
+    </button>
+  </header>
+  <div class="messages" #chatContainer>
+    <!-- <ng-container *ngFor="let message of chat?.messages">
+      <div class="message-sent" *ngIf="message.sender === 'IA'">
+        {{ message.message }}
+      </div>
+      <div class="message-received" *ngIf="message.sender !== 'user'">
+        {{ message.message }}
+      </div>
+    </ng-container> -->
+    <ng-container *ngFor="let message of chat?.messages">
+      <!-- <div class="message message-sent">
+        {{ "Hola, soy Dalia, en que te puedo ser más útil?" }}
+      </div>
+      <div class="message message-received">
+        {{ "En lo que vendo" }}
+      </div>
+      <div class="message message-sent">
+        {{ "En qué lo puedo ayudar?" }}
+      </div> -->
+
+      <div class="message message-sent" *ngIf="message.sender === 'IA'">
+        {{ message.message }}
+      </div>
+      <div class="message message-received" *ngIf="message.sender !== 'IA'">
+        {{ message.message }}
+      </div>
+    </ng-container>
+    <div class="group-options" *ngIf="!hideOptions">
+      <button
+        class="option"
+        type="button"
+        role="button"
+        *ngFor="let option of groupOptions; let i = index"
+        (click)="sendOption(i)"
+      >
+        {{ option.text }}
+      </button>
+    </div>
+
+    <form
+      class="user-input"
+      [formGroup]="chatFormGroup"
+      role="form"
+      *ngIf="!hideInput"
+    >
+      <textarea
+        class="user-input-box"
+        placeholder="Escribe algo..."
+        formControlName="input"
+        rows="3"
+      ></textarea>
+
+      <button
+        class="submit-button"
+        role="button"
+        [disabled]="!chat"
+        (click)="sendMessage()"
+      >
+        <img
+          src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fsend_black.svg"
+          alt="send"
+        />
+      </button>
+    </form>
+  </div>
+</div>
