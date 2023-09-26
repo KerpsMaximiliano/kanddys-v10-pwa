@@ -261,7 +261,6 @@ export class LoginFlowComponent implements OnInit {
 
   
     if(isUser) {
-      let signup = false;
       await dialogRef.afterClosed().subscribe((result) => {
         this.dialogIsOpen.emit(false);
         if(result.value.name && result.value.lastname) {
@@ -275,21 +274,18 @@ export class LoginFlowComponent implements OnInit {
           ).then((res)=>{
             console.log(res)
           })
-          signup = true;
+          this.authService.generateMagicLink(
+            credentials,
+            this.redirectionRoute,
+            this.redirectionRouteId,
+            this.entity,
+            {
+              jsondata: this.jsondata,
+            },
+            []
+          );
         }
       });
-      if(signup) {
-        this.authService.generateMagicLink(
-          credentials,
-          this.redirectionRoute,
-          this.redirectionRouteId,
-          this.entity,
-          {
-            jsondata: this.jsondata,
-          },
-          []
-        );
-      }
     }
   }
 
@@ -330,48 +326,40 @@ export class LoginFlowComponent implements OnInit {
       disableClose: true,
     });
     console.log(isCommerce)
-    if(isCommerce) {
-      let businessName = null;
-      let owner = null;
+    if (isCommerce) {
       await dialogRef.afterClosed().subscribe((result) => {
         this.dialogIsOpen.emit(false);
         console.log(result)
-        if(result.value.phone && result.value.businessName) {
-          businessName = result.value.businessName;
+        if (result.value.phone && result.value.businessName) {
+          let businessName = result.value.businessName;
           this.authService.signup(
             {
               email: credentials,
               phone: result.value.phone.e164Number,
             },
             "none"
-          ).then((res)=> {
-            console.log(res)
-            owner = res._id;
-          });
+          ).then((res) => {
+            this.merchantsService.createMerchant(
+              {
+                name: businessName,
+                owner: res._id,
+              }
+            ).then((res) => {
+              console.log(res)
+            })
+            this.authService.generateMagicLink(
+              credentials,
+              this.redirectionRoute,
+              this.redirectionRouteId,
+              this.entity,
+              {
+                jsondata: this.jsondata,
+              },
+              [])
+          })
         }
       });
-      if(owner && businessName) {
-        await this.merchantsService.createMerchant(
-          {
-            name: businessName,
-            owner: owner,
-          }
-        ).then((res)=> {
-          console.log(res)
-        })
-  
-        this.authService.generateMagicLink(
-          credentials,
-          this.redirectionRoute,
-          this.redirectionRouteId,
-          this.entity,
-          {
-            jsondata: this.jsondata,
-          },
-          []
-        );
-      }
-    }
+    };  
   }
 
   private async existingUserLoginFlow(credentials: any, isFormValid: boolean) {
