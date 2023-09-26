@@ -31,7 +31,6 @@ export class GoogleSigninService {
 
   public async signIn(authLogin: boolean = true) {
     console.log('I am passing signIn');
-
     var auth2 = gapi.auth2.getAuthInstance();
     console.log(auth2.currentUser.get().getAuthResponse());         
       // Sign the user in, and then retrieve their ID.
@@ -54,8 +53,7 @@ export class GoogleSigninService {
           }
         })
         return auth2.currentUser.get().getBasicProfile();
-      });
-    return;         
+      })
  }
 
   public signout() {

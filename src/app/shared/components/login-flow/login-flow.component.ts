@@ -11,6 +11,7 @@ import { FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { AppService } from 'src/app/app.service';
 import { Router } from '@angular/router';
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 
@@ -43,6 +44,7 @@ export class LoginFlowComponent implements OnInit {
     private dialogService: DialogService,
     private merchantsService: MerchantsService,
     private saleFlowService: SaleFlowService,
+    private appService : AppService
   ) { }
 
   emailDialogRef: MatDialogRef<FormComponent, any> = null;
@@ -66,10 +68,11 @@ export class LoginFlowComponent implements OnInit {
             {
               value: 'Usa tu cuenta de Google',
               callback: async () => {
-                let promise = new Promise((resolve) => resolve(this.googleSigninService.signIn()))
-                promise.then((res) => this.merchantCheck()) 
-                /*this timeout is here to account for the time the signin queries take, 
-                but if the user takes too long in the google login screen it can currently fail */
+                this.googleSigninService.signIn()
+                this.appService.events.subscribe((res) => {
+                  console.log(res)
+                  this.merchantCheck(res.data)
+                })
               },
             },
           ],
@@ -84,32 +87,39 @@ export class LoginFlowComponent implements OnInit {
     }
   }
 
-  async merchantCheck() {
-      let merchant: boolean;
+  async merchantCheck(userData) {
       await this.merchantsService.merchantDefault().then((res) => {
         console.log(res)
-        merchant = res ? true : false;
+        return res ? true : false;
+      }).then((merchant) => {
+        console.log(merchant)
+        console.log(userData)
+        if(!merchant) {
+          this.newMerchantCreation(userData)
+        }
       })
-      if (!merchant) {
-        let newMerchant;
-        await this.merchantsService.createMerchant({}).then((res) => {
-          console.log(res)
-          newMerchant = res.createMerchant._id;
-        })
-        await this.merchantsService.setDefaultMerchant(newMerchant).then((res) => {
-          console.log(res)
-        })
-        let saleflow;
-        await this.saleFlowService.createSaleflow({
-          merchant: newMerchant,
-        }).then((res) => {
-          console.log(res)
-          saleflow = res.createSaleflow._id;
-        })
-        await this.saleFlowService.setDefaultSaleflow(newMerchant, saleflow).then((res) => {
-          console.log(res)
-        })
-      }
+  }
+
+  async newMerchantCreation(userData) {
+      console.log(userData)
+      let newMerchant;
+      await this.merchantsService.createMerchant({owner:userData.user._id}).then((res) => {
+        console.log(res)
+        newMerchant = res.createMerchant._id;
+      })
+      await this.merchantsService.setDefaultMerchant(newMerchant).then((res) => {
+        console.log(res)
+      })
+      let saleflow;
+      await this.saleFlowService.createSaleflow({
+        merchant: newMerchant,
+      }).then((res) => {
+        console.log(res)
+        saleflow = res.createSaleflow._id;
+      })
+      await this.saleFlowService.setDefaultSaleflow(newMerchant, saleflow).then((res) => {
+        console.log(res)
+      })
   }
 
   async openMagicLinkDialog() {
@@ -199,6 +209,7 @@ export class LoginFlowComponent implements OnInit {
           );
         }
       } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
+        this.dialogIsOpen.emit(false);
         this.snackbar.open('Datos invalidos', 'Cerrar', {
           duration: 3000,
         });
