@@ -219,10 +219,11 @@ export class ProviderItemsComponent implements OnInit {
   verifyIfIsSupplier() {
     this.merchantsService.merchantDefault()
       .then(merchantDefault => {
-        this.isSupplier = merchantDefault.roles.code === 'PROVIDERS'
-          ? true
-          : false
+        this.isSupplier = merchantDefault.roles.code != 'PROVIDER'
+          ? false
+          : true
       })
+      console.log(this.isSupplier)
   }
 
   /**
@@ -390,6 +391,7 @@ export class ProviderItemsComponent implements OnInit {
           page: 1,
         },
       };
+      console.log(supplierSpecificItemsPagination, "itemsSell")
 
       if (this.itemSearchbar.value && this.itemSearchbar.value !== '') {
         let regexQueries: Array<any> = [
@@ -455,7 +457,7 @@ export class ProviderItemsComponent implements OnInit {
         page: this.paginationState.page,
       },
     };
-
+    console.log(pagination, "getNewPageOfItemsIDontSell")
     if (this.isTheUserAMerchant) {
       pagination.findBy.merchant = {
         $ne: this.merchantsService.merchantData._id,
