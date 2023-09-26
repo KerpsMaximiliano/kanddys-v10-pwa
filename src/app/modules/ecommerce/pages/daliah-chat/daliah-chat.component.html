@@ -8,25 +8,27 @@
       <img src="../../../../../assets/icons/close-button.svg" alt="close" />
     </button>
   </header>
-  <div class="messages" #chatContainer>
-    <ng-container *ngFor="let message of chat?.messages">
-      <div class="message message-sent" *ngIf="message.sender === 'IA'">
-        {{ message.message }}
+  <div class="messages">
+    <div class="messages-container" #chatContainer>
+      <ng-container *ngFor="let message of chat?.messages">
+        <div class="message message-sent" *ngIf="message.sender === 'IA'">
+          {{ message.message }}
+        </div>
+        <div class="message message-received" *ngIf="message.sender !== 'IA'">
+          {{ message.message }}
+        </div>
+      </ng-container>
+      <div class="group-options" *ngIf="!hideOptions">
+        <button
+          class="option"
+          type="button"
+          role="button"
+          *ngFor="let option of groupOptions; let i = index"
+          (click)="sendOption(i)"
+        >
+          {{ option.text }}
+        </button>
       </div>
-      <div class="message message-received" *ngIf="message.sender !== 'IA'">
-        {{ message.message }}
-      </div>
-    </ng-container>
-    <div class="group-options" *ngIf="!hideOptions">
-      <button
-        class="option"
-        type="button"
-        role="button"
-        *ngFor="let option of groupOptions; let i = index"
-        (click)="sendOption(i)"
-      >
-        {{ option.text }}
-      </button>
     </div>
   </div>
   <form class="user-input" [formGroup]="chatFormGroup" role="form">
