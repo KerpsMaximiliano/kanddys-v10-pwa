@@ -167,10 +167,6 @@ export class DaliahChatComponent implements OnInit {
     //   // });
   }
 
-  ngAfterViewInit(): void {
-    this.scrollToBottom();
-  }
-
   /**
    * Envia la opción seleccionada por el usuario
    *
