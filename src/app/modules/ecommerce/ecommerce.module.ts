@@ -75,6 +75,7 @@ import { LoginLandingComponent } from './pages/login-landing/login-landing.compo
 import { NotificationAccessScreenComponent } from './pages/notification-access-screen/notification-access-screen.component';
 import { ProfloraCampainComponent } from './pages/proflora-campain/proflora-campain.component';
 import { ChatRoomComponent } from './pages/chat-room/chat-room.component';
+import { DaliahChatComponent } from './pages/daliah-chat/daliah-chat.component';
 
 const routes: Routes = [
   {
@@ -272,6 +273,7 @@ const routes: Routes = [
     path: 'ambassador-store',
     component: AmbassadorStoreComponent,
   },
+  // TODO: Change this
   {
     path: 'provider-items',
     component: ProviderItemsComponent,
@@ -283,6 +285,10 @@ const routes: Routes = [
   {
     path: 'proflora-campaign',
     component: ProfloraCampainComponent,
+  },
+  {
+    path: 'daliah-chat',
+    component: DaliahChatComponent
   },
   {
     path: ':merchantSlug',
@@ -432,6 +438,7 @@ const routes: Routes = [
       },
     ],
   },
+
 ];
 
 @NgModule({
@@ -490,6 +497,7 @@ const routes: Routes = [
     NotificationAccessScreenComponent,
     ProfloraCampainComponent,
     ChatRoomComponent,
+    DaliahChatComponent,
   ],
   imports: [
     CommonModule,
@@ -506,4 +514,4 @@ const routes: Routes = [
     }),
   ],
 })
-export class EcommerceModule {}
+export class EcommerceModule { }
