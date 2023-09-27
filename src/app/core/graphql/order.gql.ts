@@ -156,7 +156,7 @@ const orderData = `
     image
   }
   metadata {
-    #files
+    files
     description
   }
   identification

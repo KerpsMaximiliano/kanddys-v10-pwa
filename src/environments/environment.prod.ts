@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  uri: 'https://www.floristerias.club',
+  uri: 'https://www.flores.club',
   whatsAppAPI: 'https://api.whatsapp.com',
   api: {
     //url: 'https://api.rewardcharly.com',

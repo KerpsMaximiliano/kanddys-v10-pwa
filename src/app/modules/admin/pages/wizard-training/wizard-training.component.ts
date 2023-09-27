@@ -13,6 +13,7 @@ import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { WhatsappService } from 'src/app/core/services/whatsapp.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -28,6 +29,12 @@ export class WizardTrainingComponent implements OnInit {
   vectorsIdByLineIndex: Record<number, string> = {};
   merchantSaleflow: SaleFlow = null;
   loadingKnowledge: boolean = false;
+  whatsappQrCodeGenerated: boolean = false;
+  whatsappConnected: boolean = false;
+  pollingInterval = 15000; // Polling interval in milliseconds (15 seconds)
+  abortController = new AbortController();
+  signal = this.abortController.signal;
+  pollingTimeout;
 
   constructor(
     private gptService: Gpt3Service,
@@ -35,7 +42,8 @@ export class WizardTrainingComponent implements OnInit {
     private saleflowsService: SaleFlowService,
     private merchantsService: MerchantsService,
     private toastrService: ToastrService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private whatsappService: WhatsappService
   ) {}
 
   async ngOnInit() {
@@ -43,6 +51,11 @@ export class WizardTrainingComponent implements OnInit {
     this.merchantSaleflow = await this.saleflowsService.saleflowDefault(
       this.merchantsService.merchantData._id
     );
+
+    this.whatsappService
+      .clientConnectionStatus()
+      .then((connected) => (this.whatsappConnected = connected))
+      .catch((err) => console.error(err));
 
     this.loadingKnowledge = true;
     const embeddingQueryResponse =
@@ -74,7 +87,7 @@ export class WizardTrainingComponent implements OnInit {
     lockUI();
 
     try {
-      if(this.vectorsIdByLineIndex[index]) {
+      if (this.vectorsIdByLineIndex[index]) {
         await this.gptService.deleteVectorInKnowledgeBase(
           this.vectorsIdByLineIndex[index]
         );
@@ -185,5 +198,96 @@ export class WizardTrainingComponent implements OnInit {
     }
 
     unlockUI();
+  }
+
+  async createWhatsappClient() {
+    lockUI();
+
+    try {
+      let qrCode = await this.whatsappService.createClient();
+
+      const imgElement: HTMLElement =
+        document.getElementById('whatsapp-qrcode');
+      (imgElement as HTMLImageElement).src = qrCode;
+
+      this.whatsappQrCodeGenerated = qrCode ? true : false;
+
+      if (this.whatsappQrCodeGenerated) {
+        this.pollingMechanismForWhatsappStatus();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+    unlockUI();
+  }
+
+  async exportOrdersDataForTraining() {
+    await this.gptService.exportOrdersDataForTraining(
+      this.merchantsService.merchantData._id
+    );
+  }
+
+  async unlinkWhatsapp() {
+    lockUI();
+    try {
+      const unlinked = await this.whatsappService.destroyClient();
+
+      this.whatsappConnected = !unlinked;
+      this.whatsappQrCodeGenerated = false;
+    } catch (error) {
+      console.error(error);
+    }
+    unlockUI();
+  }
+
+  pollingMechanismForWhatsappStatus = async () => {
+    // Cancel the previous request if it's still ongoing
+    this.abortController?.abort();
+
+    this.abortController = new AbortController();
+    this.signal = this.abortController.signal;
+
+    fetch(`${environment.api.url}/whatsapp/clientConnectionStatus`, {
+      signal: this.signal,
+      headers: {
+        'App-Key': `${environment.api.key}`,
+        Authorization: 'Bearer ' + localStorage.getItem('session-token'),
+      },
+    })
+      .then((response) => {
+        console.log("then 1")
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (typeof data === 'boolean') {
+          this.whatsappConnected = data;
+
+          if (this.whatsappConnected) {
+            console.log("limpiando interval");
+            clearInterval(this.pollingTimeout);
+          }
+        } else {
+          throw Error('Error while checking whatsapp status');
+        }
+      })
+      .catch((error) => {
+        if (error.name === 'AbortError') {
+          console.log('Previous request was aborted.');
+        } else {
+          console.error('Error fetching data:', error);
+        }
+      });
+
+    if(!this.pollingTimeout && !this.whatsappConnected) {
+      console.log("seteando timeout", this.pollingTimeout);
+      this.pollingTimeout = setInterval(
+        this.pollingMechanismForWhatsappStatus,
+        this.pollingInterval
+      );
+      console.log("timeout seteado", this.pollingTimeout);
+    }
   }
 }
