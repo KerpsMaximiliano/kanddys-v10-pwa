@@ -247,3 +247,8 @@ export interface ItemKeyword extends Model<Item> {
   reference: Item;
   user: string;
 }
+
+export class RangeDate{
+  from:any;
+  to:any;
+}

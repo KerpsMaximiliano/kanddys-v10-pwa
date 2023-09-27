@@ -2,9 +2,9 @@ import { Injectable, EventEmitter } from '@angular/core';
 import { Subject } from 'rxjs';
 
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
-import { Item } from '../models/item';
+import { Item, RangeDate } from '../models/item';
 import { ItemOrder } from '../models/order';
-import { PaginationInput } from '../models/saleflow';
+import { PaginationInput, PaginationRangeInput } from '../models/saleflow';
 import { Tag } from '../models/tags';
 import { RecurrentUserData, User, UserInput } from '../models/user';
 import { ViewsMerchant } from '../models/views-merchant';
@@ -61,6 +61,7 @@ import {
   merchantQuantityOfFiltersCountry,
   campaigns,
   merchantQuantityOfFiltersCampaign,
+  affiliateComisionTotalByRange,
 } from './../graphql/merchants.gql';
 import {
   EmployeeContract,
@@ -695,6 +696,17 @@ export class MerchantsService {
 
       if (!result || result?.errors) return undefined;
       return result?.affiliateTotalpaginate;
+  }
+
+  async affiliateComisionTotalByRange (referenceId: String, range: PaginationRangeInput) {
+    const result = await this.graphql.query({
+      query: affiliateComisionTotalByRange,
+      variables: { referenceId, range },
+      fetchPolicy: 'no-cache',
+    });
+
+      if (!result || result?.errors) return undefined;
+      return result?.affiliateComisionTotalByRange;
   }
 
   async getDataCountries(){
