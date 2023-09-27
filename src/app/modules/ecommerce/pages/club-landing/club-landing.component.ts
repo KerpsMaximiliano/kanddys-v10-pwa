@@ -163,6 +163,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.openDaliaDialog()
   }
 
   showRoleDialog() {
@@ -307,6 +308,60 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   close() {
     // if (this.headerService.user) this.location.back();
     this.openNavigation = true;
+  }
+
+  openDaliaDialog() {
+    this.bottomSheet.open(OptionsMenuComponent, {
+      data: {
+        title: "LaiaChat con desconocido de la industria floral",
+        description:"Hola, soy Laia, en que te puedo ser mas útil?",
+        options: [
+          {
+            value: "En lo que compras",
+            callback: () => {
+            },
+          },
+          {
+            value: "En lo que vendes",
+            callback: () => {
+            },
+          },
+          {
+            value: "Quisieras vender más",
+            callback: () => {
+            },
+          },
+          {
+            value: "En el seguimiento de lo que vendiste",
+            callback: () => {
+            },
+          },
+          {
+            value: "En el control de tus ingresos y egresos",
+            callback: () => {
+            },
+          },
+        ],
+        styles: {
+          title:{
+            color: "var(--Fondo-de-Pantallas, #F6F6F6)",
+            fontFamily: "Inter",
+            fontSize: "16px",
+          },
+          description: {
+            borderRadius: "57.335px",
+            opacity: "0.8",
+            backgroundColor: "var(--El-verdecito, #87CD9B)",
+            color: "var(--El-mas-oscuro, #181D17)",
+            fontFamily: "Inter",
+            fontSize: "16.107px",
+            width: "215px",
+            padding: "6px 12px",
+          },
+          noDarkBg: true,
+        },
+      },
+    });
   }
 
   openClubDialog() {
