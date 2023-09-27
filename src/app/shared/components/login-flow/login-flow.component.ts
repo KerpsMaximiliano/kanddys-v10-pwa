@@ -69,9 +69,10 @@ export class LoginFlowComponent implements OnInit {
               value: 'Usa tu cuenta de Google',
               callback: async () => {
                 this.googleSigninService.signIn()
-                this.appService.events.subscribe((res) => {
+                this.appService.events.subscribe(async (res) => {
                   console.log(res)
-                  this.merchantCheck(res.data)
+                  await this.merchantCheck(res.data)
+                  window.location.reload()
                 })
               },
             },
@@ -91,11 +92,11 @@ export class LoginFlowComponent implements OnInit {
       await this.merchantsService.merchantDefault().then((res) => {
         console.log(res)
         return res ? true : false;
-      }).then((merchant) => {
+      }).then( async (merchant) => {
         console.log(merchant)
         console.log(userData)
         if(!merchant) {
-          this.newMerchantCreation(userData)
+          await this.newMerchantCreation(userData)
         }
       })
   }
@@ -295,6 +296,21 @@ export class LoginFlowComponent implements OnInit {
             },
             []
           );
+
+          this.dialogService.open(
+            GeneralFormSubmissionDialogComponent,
+            {
+              type: 'centralized-fullscreen',
+              props: {
+                icon: 'check-circle.svg',
+                showCloseButton: false,
+                message:
+                  'Se ha enviado un link mágico a tu correo electrónico',
+              },
+              customClass: 'app-dialog',
+              flags: ['no-header'],
+            }
+          );
         }
       });
     }
@@ -367,6 +383,21 @@ export class LoginFlowComponent implements OnInit {
                 jsondata: this.jsondata,
               },
               [])
+
+              this.dialogService.open(
+                GeneralFormSubmissionDialogComponent,
+                {
+                  type: 'centralized-fullscreen',
+                  props: {
+                    icon: 'check-circle.svg',
+                    showCloseButton: false,
+                    message:
+                      'Se ha enviado un link mágico a tu correo electrónico',
+                  },
+                  customClass: 'app-dialog',
+                  flags: ['no-header'],
+                }
+              );
           })
         }
       });
