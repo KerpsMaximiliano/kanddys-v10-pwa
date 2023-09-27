@@ -8,7 +8,7 @@ export interface DialogTemplate {
     value: string;
     callback: () => void;
   }>;
-  styles?: Record<string, Record<string, boolean>>;
+  styles?: Record<string, Record<string, string>>;
 }
 
 @Component({
@@ -26,10 +26,41 @@ export class OptionsMenuComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log(this.data)
     if(this.data && this.data.styles && this.data.styles['fullScreen']) {
       const element: HTMLElement = document.querySelector('.mat-bottom-sheet-container');
 
       element.style.maxHeight = 'unset';
+    }
+    if(this.data.styles.title) {
+      setTimeout(()=> {
+        console.log(this.data.styles.title)
+        const element: HTMLElement = document.querySelector('.dialog-title');
+        console.log(element)
+        element.style.color = this.data.styles.title.color;
+        console.log(element.style.color)
+        element.style.fontFamily = this.data.styles.title.fontFamily;
+        console.log(element.style.fontFamily)
+        element.style.fontSize = this.data.styles.title.fontSize;
+        console.log(element.style.fontSize)
+      }, 1000)
+    }
+    if(this.data.styles.description) {
+      setTimeout(()=> {
+        const element: HTMLElement = document.querySelector('.description');
+        element.style.color = this.data.styles.description.color;
+        element.style.backgroundColor = this.data.styles.description.backgroundColor;
+        element.style.fontFamily = this.data.styles.description.fontFamily;
+        element.style.fontSize = this.data.styles.description.fontSize;
+        element.style.borderRadius = this.data.styles.description.borderRadius;
+        element.style.opacity = this.data.styles.description.opacity;
+        element.style.padding = this.data.styles.description.padding;
+        element.style.width = this.data.styles.description.width;
+      }, 1000)
+    }
+    if(this.data.styles.noDarkBg) {
+      const element : HTMLElement = document.querySelector('.cdk-overlay-dark-backdrop');
+      element.style.backgroundColor = 'unset';
     }
   }
 
