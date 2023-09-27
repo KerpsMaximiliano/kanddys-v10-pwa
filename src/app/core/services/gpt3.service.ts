@@ -12,6 +12,7 @@ import {
   requestResponseFromKnowledgeBase,
   updateVectorInKnowledgeBase,
 } from '../graphql/gpt3.gql';
+import { environment } from 'src/environments/environment';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 
 @Injectable({
@@ -70,9 +71,7 @@ export class Gpt3Service {
     return result?.updateVectorInKnowledgeBase;
   }
 
-  async deleteVectorInKnowledgeBase(
-    id: string
-  ): Promise<boolean> {
+  async deleteVectorInKnowledgeBase(id: string): Promise<boolean> {
     const result = await this.graphql.mutate({
       mutation: deleteVectorInKnowledgeBase,
       variables: { id },
@@ -92,11 +91,17 @@ export class Gpt3Service {
     }
   }
 
-  async requestResponseFromKnowledgeBase(prompt: string, saleflowId: string, conversationId: string) {
+  async requestResponseFromKnowledgeBase(
+    prompt: string,
+    saleflowId: string,
+    conversationId: string,
+    chatRoomId?: string,
+    socketId?: string
+  ) {
     try {
       const result = await this.graphql.query({
         query: requestResponseFromKnowledgeBase,
-        variables: { prompt, saleflowId, conversationId },
+        variables: { prompt, saleflowId, conversationId, chatRoomId, socketId },
       });
       return result?.requestResponseFromKnowledgeBase;
     } catch (error) {
@@ -154,5 +159,29 @@ export class Gpt3Service {
       context: { useMultipart: true },
     });
     return result.imageObjectRecognition;
+  }
+
+  async exportOrdersDataForTraining(merchantId: string) {
+    const response = await fetch(
+      `${environment.api.url}/download/order/txt/` + merchantId,
+      {
+        method: 'GET',
+        headers: {
+          'App-Key': `${environment.api.key}`,
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + localStorage.getItem('session-token'),
+        },
+      }
+    );
+
+    const data = await response.blob();
+
+    const aElement = document.createElement('a');
+    aElement.setAttribute('download', 'orders.txt');
+    const href = URL.createObjectURL(data);
+    aElement.href = href;
+    aElement.setAttribute('target', '_blank');
+    aElement.click();
+    URL.revokeObjectURL(href);
   }
 }

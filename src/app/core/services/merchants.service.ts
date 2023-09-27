@@ -56,6 +56,11 @@ import {
   merchantGroupFiltersQuantity,
   merchantGroupByType,
   affiliateTotalpaginate,
+  dataCountries,
+  merchantQuantityOfFiltersRole,
+  merchantQuantityOfFiltersCountry,
+  campaigns,
+  merchantQuantityOfFiltersCampaign,
 } from './../graphql/merchants.gql';
 import {
   EmployeeContract,
@@ -63,13 +68,14 @@ import {
   MerchantInput,
 } from './../models/merchant';
 import { Contact } from '../models/contact';
-import { carts, getMe } from '../graphql/cart.gql';
+import { carts, getMe, taxesByMerchant } from '../graphql/cart.gql';
 
 @Injectable({ providedIn: 'root' })
 export class MerchantsService {
   loadedMerchantData = new Subject();
   constructor(private graphql: GraphQLWrapper) {}
   merchantData: Merchant;
+  temporalMerchantInput: any | null = null;
   merchantContact: Contact;
   merchantIncome: {
     orderAmount: number;
@@ -169,6 +175,18 @@ export class MerchantsService {
     try {
       const response = await this.graphql.query({
         query: carts,
+        variables: { paginate },
+        fetchPolicy: 'no-cache',
+      });
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  async taxesByMerchant(paginate: PaginationInput) {
+    try {
+      const response = await this.graphql.query({
+        query: taxesByMerchant,
         variables: { paginate },
         fetchPolicy: 'no-cache',
       });
@@ -675,8 +693,48 @@ export class MerchantsService {
       fetchPolicy: 'no-cache',
     });
 
+      if (!result || result?.errors) return undefined;
+      return result?.affiliateTotalpaginate;
+  }
+
+  async getDataCountries(){
+    const result = await this.graphql.query({
+      query: dataCountries,
+      fetchPolicy: 'no-cache',
+    });
+
     if (!result || result?.errors) return undefined;
-    return result?.affiliateTotalpaginate;
+    return result?.dataCountries;
+  }
+
+  async merchantQuantityOfFiltersRole(){
+    const result = await this.graphql.query({
+      query: merchantQuantityOfFiltersRole,
+      fetchPolicy: 'no-cache',
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result?.merchantQuantityOfFiltersRole;
+  }
+
+  async merchantQuantityOfFiltersCountry(){
+    const result = await this.graphql.query({
+      query: merchantQuantityOfFiltersCountry,
+      fetchPolicy: 'no-cache',
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result?.merchantQuantityOfFiltersCountry;
+  }
+
+  async merchantQuantityOfFiltersCampaign(){
+    const result = await this.graphql.query({
+      query: merchantQuantityOfFiltersCampaign,
+      fetchPolicy: 'no-cache',
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result?.merchantQuantityOfFiltersCampaign;
   }
 }
 
