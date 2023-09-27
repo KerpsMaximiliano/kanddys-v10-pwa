@@ -95,7 +95,6 @@ export const setDefaultSaleflow = gql`
       merchant {
         _id
         name
-        status
       }
     }
   }

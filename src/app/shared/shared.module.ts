@@ -246,6 +246,7 @@ import { NewlineToBrPipe } from '../core/pipes/newline.pipe';
 import { LinkifyPipe } from '../core/pipes/linkify.pipe';
 import { ProfloraLinkDialogComponent } from './dialogs/proflora-link-dialog/proflora-link-dialog.component';
 import { ProfloraDescDialogComponent } from './dialogs/proflora-desc-dialog/proflora-desc-dialog.component';
+import { LoginFlowComponent } from './components/login-flow/login-flow.component';
 
 const imports = [
   CommonModule,
@@ -503,7 +504,8 @@ const declarations = [
   ProfloraDescDialogComponent,
   MessageDialogComponent,
   SpecialDialogComponent,
-  CompareDialogComponent
+  CompareDialogComponent,
+  LoginFlowComponent
 ];
 
 @NgModule({
