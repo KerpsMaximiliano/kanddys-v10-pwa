@@ -78,19 +78,19 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
   list = [
     {
-      text: '\"Daliah, nos impulsa a avanzar para no quedarnos atrás\"',
+      text: '\"Laia, nos impulsa a avanzar para no quedarnos atrás\"',
       avatar: '',
       name: 'José Miguel Caffaro',
       role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
-      text: '\"Daliah, nos impulsa a avanzar para no quedarnos atrás\"',
+      text: '\"Laia, nos impulsa a avanzar para no quedarnos atrás\"',
       avatar: '',
       name: 'José Miguel Caffaro',
       role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
-      text: '\"Daliah, nos impulsa a avanzar para no quedarnos atrás\"',
+      text: '\"Laia, nos impulsa a avanzar para no quedarnos atrás\"',
       avatar: '',
       name: 'José Miguel Caffaro',
       role: 'Proveedor de flores frescas, follajes y bases'
@@ -163,7 +163,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.openDaliaDialog()
+    this.openLaiaDialog()
   }
 
   showRoleDialog() {
@@ -310,7 +310,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     this.openNavigation = true;
   }
 
-  openDaliaDialog() {
+  openLaiaDialog() {
     this.bottomSheet.open(OptionsMenuComponent, {
       data: {
         title: "LaiaChat con desconocido de la industria floral",
