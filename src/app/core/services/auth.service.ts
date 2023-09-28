@@ -28,6 +28,10 @@ import { Session } from '../models/session';
 import { User, UserInput } from '../models/user';
 import { refresh, userExists, verifyUser } from './../graphql/auth.gql';
 import { environment } from 'src/environments/environment';
+import { Merchant } from '../models/merchant';
+import { MerchantsService } from './merchants.service';
+import { AffiliateService } from './affiliate.service';
+import { AffiliateInput } from '../models/affiliate';
 // import { Logs } from 'selenium-webdriver';
 
 @Injectable({
@@ -36,12 +40,15 @@ import { environment } from 'src/environments/environment';
 export class AuthService {
   public session: Session;
   public ready: Observable<any>;
+  merchant:string;
 
   constructor(
     private readonly graphql: GraphQLWrapper,
     // private readonly social: SocialAuthService,
     private readonly app: AppService,
-    private readonly router: Router
+    private readonly router: Router,
+    private merchantService: MerchantsService,
+    private affiliateService: AffiliateService
   ) {
     if (localStorage.getItem('session-token'))
       this.ready = from(this.refresh());
@@ -77,6 +84,15 @@ export class AuthService {
       this.session = undefined;
     }
     this.app.events.emit({ type: 'auth', data: this.session });
+    if(localStorage.getItem("affiliateCode")){
+      if(this.merchant){
+        const input: AffiliateInput = {
+          reference: this.merchant
+        }
+        this.affiliateService.createAffiliate(localStorage.getItem("affiliateCode"), input);
+        localStorage.removeItem("affiliateCode");
+      }
+    }
     return this.session;
   }
 
@@ -113,6 +129,15 @@ export class AuthService {
       this.session = undefined;
     }
     //this.app.events.emit({ type: 'auth', data: this.session });
+    if(localStorage.getItem("affiliateCode")){
+      if(this.merchant){
+        const input: AffiliateInput = {
+          reference: this.merchant
+        }
+        this.affiliateService.createAffiliate(localStorage.getItem("affiliateCode"), input);
+        localStorage.removeItem("affiliateCode");
+      }
+    }
     return this.session;
   }
 
@@ -405,5 +430,10 @@ export class AuthService {
       countryIso: CountryISO[region],
       region,
     };
+  }
+
+  async getMerchantDefault() {
+    const merchantDefault: Merchant = await this.merchantService.merchantDefault();
+    this.merchant = merchantDefault._id;
   }
 }

@@ -55,13 +55,11 @@ import {
   ordersCommissionableItemsCount,
   merchantGroupFiltersQuantity,
   merchantGroupByType,
-  affiliateTotalpaginate,
   dataCountries,
   merchantQuantityOfFiltersRole,
   merchantQuantityOfFiltersCountry,
   campaigns,
   merchantQuantityOfFiltersCampaign,
-  affiliateComisionTotalByRange,
 } from './../graphql/merchants.gql';
 import {
   EmployeeContract,
@@ -70,11 +68,13 @@ import {
 } from './../models/merchant';
 import { Contact } from '../models/contact';
 import { carts, getMe, taxesByMerchant } from '../graphql/cart.gql';
+import { AffiliateService } from './affiliate.service';
+import { AffiliateInput } from '../models/affiliate';
 
 @Injectable({ providedIn: 'root' })
 export class MerchantsService {
   loadedMerchantData = new Subject();
-  constructor(private graphql: GraphQLWrapper) {}
+  constructor(private graphql: GraphQLWrapper, private affiliateService: AffiliateService) {}
   merchantData: Merchant;
   temporalMerchantInput: any | null = null;
   merchantContact: Contact;
@@ -328,7 +328,14 @@ export class MerchantsService {
     });
 
     if (!result || result?.errors) return undefined;
-    console.log(result);
+    console.log(result.createMerchant);
+    if(localStorage.getItem("affiliateCode")){
+      const input: AffiliateInput = {
+        reference: result.createMerchant._id
+      }
+      this.affiliateService.createAffiliate(localStorage.getItem("affiliateCode"), input);
+      localStorage.removeItem("affiliateCode");
+    }
     return result;
   }
 
@@ -685,28 +692,6 @@ export class MerchantsService {
 
     if (!result || result?.errors) return undefined;
     return result?.merchantGroupByType;
-  }
-
-  async affiliateTotalpaginate (input: PaginationInput, date: String) {
-    const result = await this.graphql.query({
-      query: affiliateTotalpaginate,
-      variables: { input, date },
-      fetchPolicy: 'no-cache',
-    });
-
-      if (!result || result?.errors) return undefined;
-      return result?.affiliateTotalpaginate;
-  }
-
-  async affiliateComisionTotalByRange (referenceId: String, range: PaginationRangeInput) {
-    const result = await this.graphql.query({
-      query: affiliateComisionTotalByRange,
-      variables: { referenceId, range },
-      fetchPolicy: 'no-cache',
-    });
-
-      if (!result || result?.errors) return undefined;
-      return result?.affiliateComisionTotalByRange;
   }
 
   async getDataCountries(){

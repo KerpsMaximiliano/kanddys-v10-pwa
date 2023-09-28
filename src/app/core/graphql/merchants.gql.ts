@@ -656,16 +656,6 @@ query merchantGroupFiltersQuantity($merchantId: ObjectID!, $type: String){
   )
 }`;
 
-export const affiliateTotalpaginate = gql`
-query affiliateTotalpaginate($input: PaginationInput, $date: Date!){
-  affiliateTotalpaginate(paginate: $input, date: $date)
-}`;
-
-export const affiliateComisionTotalByRange = gql`
-query affiliateComisionTotalByRange($referenceId: ObjectID!, $range: PaginationRangeInput!){
-  affiliateComisionTotalByRange(referenceId: $referenceId, range: $range)
-}`;
-
 export const dataCountries = gql`
 query dataCountries{
   dataCountries

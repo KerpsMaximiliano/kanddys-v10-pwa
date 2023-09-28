@@ -38,6 +38,9 @@ import { SpecialDialogComponent } from 'src/app/shared/dialogs/special-dialog/sp
 import { CompareDialogComponent } from 'src/app/shared/dialogs/compare-dialog/compare-dialog.component';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { base64ToBlob } from 'src/app/core/helpers/files.helpers';
+import { AffiliateService } from 'src/app/core/services/affiliate.service';
+import { Merchant } from 'src/app/core/models/merchant';
+import { AffiliateInput } from 'src/app/core/models/affiliate';
 
 interface ReviewsSwiper {
   title: string;
@@ -158,7 +161,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   };
 
   emailDialogRef: MatDialogRef<FormComponent, any> = null;
-
+  merchant:string;
   @ViewChild('qrcode', { read: ElementRef }) qrcode: ElementRef;
 
   constructor(
@@ -176,9 +179,29 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     private router: Router,
     private changeDetectorRef: ChangeDetectorRef,
     private clipboard: Clipboard,
+    private affiliateService: AffiliateService
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
+    await this.getMerchantDefault();
+    this.queryParamsSubscription = this.route.queryParams.subscribe(
+      async ({ affiliateCode }) => {
+        if(affiliateCode){
+          if(this.merchant){
+            const input: AffiliateInput = {
+              reference: this.merchant
+            }
+            await this.affiliateService.createAffiliate(affiliateCode, input);
+          }else{
+            localStorage.setItem('affiliateCode', affiliateCode);
+          }
+        }
+      }
+    );
+
+    
+
+
     this.googleSigninService.observable().subscribe((user) => {
       this.user = user;
       console.log(user)
@@ -429,5 +452,9 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       link.download = "Landing QR Code";
       link.click();
     }
+  }
+  async getMerchantDefault() {
+    const merchantDefault: Merchant = await this.merchantsService.merchantDefault();
+    this.merchant = merchantDefault._id;
   }
 }

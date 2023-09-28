@@ -15,6 +15,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { QueryparametersService } from 'src/app/core/services/queryparameters.service';
 import { QueryParameter } from 'src/app/core/models/query-parameters';
 import { MatDatepicker } from '@angular/material/datepicker';
+import { AffiliateService } from 'src/app/core/services/affiliate.service';
 
 @Component({
   selector: 'app-affiliate-referals',
@@ -44,8 +45,9 @@ export class AffiliateReferalsComponent implements OnInit {
   datesOfYear = [];
   @ViewChild('picker') datePicker: MatDatepicker<Date>;
 
-  constructor(private merchantService: MerchantsService, private paymentLog: PaymentLogsService, 
-    private queryParameterService: QueryparametersService) { }
+  constructor(private merchantService: MerchantsService, 
+              private paymentLog: PaymentLogsService,
+              private affiliateService: AffiliateService) { }
 
   async ngOnInit() {
     this.getFirstDayOfMonth();
@@ -84,7 +86,7 @@ export class AffiliateReferalsComponent implements OnInit {
   }
 
   async getBenefits(reference, range){
-    const benefits = await this.merchantService.affiliateComisionTotalByRange(reference, range);
+    const benefits = await this.affiliateService.affiliateComisionTotalByRange(reference, range);
     this.benefit = benefits && benefits.total ? benefits.total : 0;
   }
 
@@ -96,7 +98,7 @@ export class AffiliateReferalsComponent implements OnInit {
       }
     }
     this.datesOfYear.forEach(async date => {
-      const affiliate = await this.merchantService.affiliateTotalpaginate(paginate, date.date);
+      const affiliate = await this.affiliateService.affiliateTotalpaginate(paginate, date.date);
       if (affiliate.referrals.totalResults > 0) {
         this.affiliate.push({
           affiliate: affiliate.affiliate,
