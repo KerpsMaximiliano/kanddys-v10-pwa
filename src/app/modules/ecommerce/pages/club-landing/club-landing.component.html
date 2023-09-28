@@ -44,6 +44,9 @@
           <div class="tab" (click)="tabarIndex=2" [ngClass]="{active: tabarIndex === 2}">
             <div class="text">Memoria de Laia</div>
           </div>
+          <div class="tab" (click)="tabarIndex=3" [ngClass]="{active: tabarIndex === 3}">
+            <div class="text">Gana$</div>
+          </div>
         </div>
 
         <!--
@@ -69,7 +72,6 @@
           <p (click)="openCompareDialog()">Compárame con las mejores plataformas</p>
           <p>Ya nos conocemos?</p>
         </div>
-        <span class="line"></span>
         <div class="footer-swiper">
           <div class="slide-item borderless">
             <div class="flex" *ngIf="!tabarIndex">
@@ -83,6 +85,7 @@
             </div>
           </div>
         </div>
+        <span class="line"></span>
         <!--
         <div class="tools" *ngIf="!tabarIndex">
           <div class="tool" (click)="openClubDialog()">

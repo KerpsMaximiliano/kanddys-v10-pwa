@@ -71,20 +71,25 @@ main {
   padding: 15px 19px 28px 19px;
   padding-bottom: 100px;
   .tab-bar {
-    width: 100vw;
-    max-width: 500px;
+    width: 500px;
+    white-space: nowrap;
     display: flex;
-    overflow-y: hidden;
-    overflow-x: auto;
+    justify-content: center;
+    overflow: scroll;
     position: relative;
     right: 19px;
     background-color: #4D4B4B;
+    @media(max-width: 500px) {
+      width: 100vw;
+      display: block;
+    }
     .tab {
-      width: 50%;
-      display: flex;
-      align-items: center;
-      padding: 6px 0px;
-      margin: 6px;
+    padding: 6px 6px;
+    margin: 6px;
+    flex: none;
+    @media(max-width: 500px) {
+      display: inline-block;
+    }
       .text {
         color: #f6f6f6;
         font-family: InterRegular;
@@ -125,12 +130,15 @@ main {
       text-align: center;
       font-family: InterLight;
       font-size: 15px;
+      margin-top: 0;
     }
   }
   .line {
-    width: 90%;
+    display: block;
+    width: 95%;
     height: 1px;
     background: #7B7B7B;
+    margin: 10px auto;
   }
   .tab-header {
     margin-top: 30px;
