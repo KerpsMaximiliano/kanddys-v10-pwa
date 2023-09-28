@@ -152,6 +152,7 @@ export class ProviderItemsComponent implements OnInit {
   private keyPresentationState = 'providersPresentationClosed'
   private keyTutorialState = 'tutorialClosed'
   private saleFlowId = null;
+  private merchantId = null
 
   constructor(
     private headerService: HeaderService,
@@ -204,26 +205,31 @@ export class ProviderItemsComponent implements OnInit {
 
         this.checkIfPresentationWasClosedBefore();
         this.checkIfTutorialWasOpen()
-        await this.getNewPageOfItemsIDontSell(true, false);
+        if (this.isSupplier) {
+          await this.getNewPageOfItemsIDontSell(true, false);
+        }
 
 
         this.itemSearchbar.valueChanges.subscribe(async () => {
           await this.getItemsISell();
           await this.getNewPageOfItemsIDontSell(true, false);
-
         });
       }
     );
   }
 
+  /**
+   * Verifica si el usuario es de tipo proveedor o no
+   */
   verifyIfIsSupplier() {
     this.merchantsService.merchantDefault()
       .then(merchantDefault => {
         this.isSupplier = merchantDefault.roles.code != 'PROVIDER'
-          ? false
-          : true
+          // ? false
+          // : true
+          ? true
+          : false
       })
-      console.log(this.isSupplier)
   }
 
   /**
@@ -377,13 +383,27 @@ export class ProviderItemsComponent implements OnInit {
     }
 
     if (this.isTheUserAMerchant) {
+      // const supplierSpecificItemsPagination: PaginationInput = {
+      //   findBy: {
+      //     type: this.isSupplier ? 'supplier' : 'default',
+      //     parentItem: {
+      //       $ne: null,
+      //     },
+      //     merchant: this.merchantsService.merchantData._id,
+      //   },
+      //   options: {
+      //     sortBy: 'createdAt:desc',
+      //     limit: -1,
+      //     page: 1,
+      //   },
+      // };
       const supplierSpecificItemsPagination: PaginationInput = {
         findBy: {
           type: this.isSupplier ? 'supplier' : 'default',
-          parentItem: {
-            $ne: null,
-          },
           merchant: this.merchantsService.merchantData._id,
+          _id: {
+            $nin: this.itemsISell.map((item) => item.parentItem),
+          }
         },
         options: {
           sortBy: 'createdAt:desc',
@@ -391,7 +411,6 @@ export class ProviderItemsComponent implements OnInit {
           page: 1,
         },
       };
-      console.log(supplierSpecificItemsPagination, "itemsSell")
 
       if (this.itemSearchbar.value && this.itemSearchbar.value !== '') {
         let regexQueries: Array<any> = [
@@ -419,6 +438,7 @@ export class ProviderItemsComponent implements OnInit {
         };
       }
 
+      console.log(supplierSpecificItemsPagination, "itemsSell")
       const supplierSpecificItems: Array<Item> = (
         await this.itemsService.listItems(supplierSpecificItemsPagination)
       )?.listItems;
@@ -445,11 +465,8 @@ export class ProviderItemsComponent implements OnInit {
     }
     const pagination: PaginationInput = {
       findBy: {
-        type: this.isSupplier ? 'supplier' : 'default',
+        type: 'supplier',
         parentItem: null,
-        _id: {
-          $nin: this.itemsISell.map((item) => item.parentItem),
-        },
       },
       options: {
         sortBy: 'createdAt:desc',
@@ -457,7 +474,20 @@ export class ProviderItemsComponent implements OnInit {
         page: this.paginationState.page,
       },
     };
-    console.log(pagination, "getNewPageOfItemsIDontSell")
+    // const pagination: PaginationInput = {
+    //   findBy: {
+    //     type: this.isSupplier ? 'supplier' : 'default',
+    //     parentItem: null,
+    //     _id: {
+    //       $nin: this.itemsISell.map((item) => item.parentItem),
+    //     },
+    //   },
+    //   options: {
+    //     sortBy: 'createdAt:desc',
+    //     limit: this.paginationState.pageSize,
+    //     page: this.paginationState.page,
+    //   },
+    // };
     if (this.isTheUserAMerchant) {
       pagination.findBy.merchant = {
         $ne: this.merchantsService.merchantData._id,
@@ -524,6 +554,7 @@ export class ProviderItemsComponent implements OnInit {
       };
     }
 
+    console.log(pagination, "getNewPageOfItemsIDontSell")
     this.renderItemsPromise = this.saleflowService.listItems(pagination, true);
 
     return this.renderItemsPromise.then(async (response) => {

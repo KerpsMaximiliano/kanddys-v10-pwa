@@ -149,7 +149,9 @@ h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
       </section>
 
       <!-- Articulos no exhibidos -->
-      <section *ngIf="itemsIDontSell?.length > 0 && !hiddenDashboard">
+      <section
+      *ngIf="(itemsIDontSell?.length > 0 && !hiddenDashboard) && isSupplier"
+      >
         <h3>ARTICULOS QUE NECESITAN LAS FLORISTERIAS MIEMBROS</h3>
 
         <div class="list-of-items">
@@ -254,14 +256,11 @@ h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
         <ng-container *ngIf="item.pricing !== null && providedByMe">
           ${{ item.pricing | number : "1.2-2" }}
         </ng-container>
-        <ng-container *ngIf="item.pricing !== null && !providedByMe">
-          ${{ item.pricing | number : "1.2-2" }}
-        </ng-container>
       </div>
 
       <div
         class="item-add-price"
-        *ngIf="!providedByMe && item.pricing === null"
+        *ngIf="!providedByMe"
         (click)="addPrice(item)"
       >
         Mi precio
