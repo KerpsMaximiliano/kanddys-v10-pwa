@@ -88,11 +88,10 @@ main {
       .text {
         color: #f6f6f6;
         font-family: InterRegular;
+        text-align: center;
         font-size: 16px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: normal;
-        margin: 0px auto;
+        margin: auto;
+        vertical-align: middle;
         span {
           color: #87CD9B;
         }
@@ -109,13 +108,10 @@ main {
   .explain-text {
     color: var(--Fondo-de-Pantallas, #F6F6F6);
     text-align: center;
-    font-family: Fira Sans;
+    font-family: InterLight;
     font-size: 17px;
-    font-style: normal;
-    font-weight: 300;
-    line-height: normal;
     letter-spacing: 0.935px;
-    width: 361px;
+    width: 90%;
     margin: 0px auto;
     padding-top: 25px;
     padding-bottom: 19px;
@@ -127,11 +123,8 @@ main {
     p {
       color: var(--El-verdecito, #87CD9B);
       text-align: center;
-      font-family: Inter;
+      font-family: InterLight;
       font-size: 15px;
-      font-style: normal;
-      font-weight: 300;
-      line-height: normal;
     }
   }
   .line {
