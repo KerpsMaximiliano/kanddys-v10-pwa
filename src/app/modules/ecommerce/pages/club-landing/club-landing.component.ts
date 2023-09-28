@@ -358,7 +358,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
             width: "215px",
             padding: "6px 12px",
           },
-          noDarkBg: true,
+          noDarkOverlay: true,
+          lightBg: true,
         },
       },
     });

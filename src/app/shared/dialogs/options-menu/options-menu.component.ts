@@ -29,20 +29,16 @@ export class OptionsMenuComponent implements OnInit {
     console.log(this.data)
     if(this.data && this.data.styles && this.data.styles['fullScreen']) {
       const element: HTMLElement = document.querySelector('.mat-bottom-sheet-container');
-
+      
       element.style.maxHeight = 'unset';
     }
     if(this.data.styles.title) {
       setTimeout(()=> {
         console.log(this.data.styles.title)
         const element: HTMLElement = document.querySelector('.dialog-title');
-        console.log(element)
         element.style.color = this.data.styles.title.color;
-        console.log(element.style.color)
         element.style.fontFamily = this.data.styles.title.fontFamily;
-        console.log(element.style.fontFamily)
         element.style.fontSize = this.data.styles.title.fontSize;
-        console.log(element.style.fontSize)
       }, 1000)
     }
     if(this.data.styles.description) {
@@ -58,9 +54,13 @@ export class OptionsMenuComponent implements OnInit {
         element.style.width = this.data.styles.description.width;
       }, 1000)
     }
-    if(this.data.styles.noDarkBg) {
+    if(this.data.styles.noDarkOverlay) {
       const element : HTMLElement = document.querySelector('.cdk-overlay-dark-backdrop');
       element.style.backgroundColor = 'unset';
+    }
+    if(this.data.styles.lightBg) {
+      const element : HTMLElement = document.querySelector('.mat-bottom-sheet-container');
+      element.style.backgroundColor = '#403D3D';
     }
   }
 
