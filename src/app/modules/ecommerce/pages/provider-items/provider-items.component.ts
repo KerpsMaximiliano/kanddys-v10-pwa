@@ -61,7 +61,7 @@ export class ProviderItemsComponent implements OnInit {
   activatedSearchFilters: Record<string, boolean> = {};
   isSwitchActive: boolean = true;
 
-  isSupplier: boolean = false;
+  isSupplier: boolean = true;
   hiddenDashboard: boolean = false
   itemToSearch: string = ''
   itemsFiltering = []
@@ -152,7 +152,6 @@ export class ProviderItemsComponent implements OnInit {
   private keyPresentationState = 'providersPresentationClosed'
   private keyTutorialState = 'tutorialClosed'
   private saleFlowId = null;
-  private merchantId = null
 
   constructor(
     private headerService: HeaderService,
@@ -169,17 +168,32 @@ export class ProviderItemsComponent implements OnInit {
   ) { }
 
   async ngOnInit() {
-    this.verifyIfIsSupplier()
-    if (localStorage.getItem('session-token')) {
+    this.itemSearchbar.valueChanges.subscribe(async () => {
+      this.verifyIfIsSupplier()
+      await this.getItemsISell();
+      await this.getNewPageOfItemsIDontSell(true, false);
+    });
+
+    const existToken = localStorage.getItem('session-token')
+    if (existToken) {
       if (!this.headerService.user) {
         let sub = this.appService.events
           .pipe(filter((e) => e.type === 'auth'))
           .subscribe((e) => {
-            this.executeInitProcesses();
+            this.verifyIfIsSupplier()
+            this.getStatusSwitch()
+            setTimeout(() => this.executeInitProcesses(), 500);
             sub.unsubscribe();
           });
-      } else this.executeInitProcesses();
-    } else this.executeInitProcesses();
+      } else {
+        this.executeInitProcesses();
+      }
+    }
+
+    if (!existToken) {
+      this.executeInitProcesses();
+    }
+
   }
 
   async executeInitProcesses() {
@@ -194,28 +208,28 @@ export class ProviderItemsComponent implements OnInit {
         await this.getItemsISell();
         await this.getNumberOfItemsSold();
 
-        this.saleflowService
-          .saleflowDefault(this.merchantsService.merchantData._id)
-          .then(saleflow => {
-            this.isSwitchActive = !saleflow.status || saleflow.status === 'open'
-              ? true
-              : false;
-            this.saleFlowId = saleflow._id
-          })
-
         this.checkIfPresentationWasClosedBefore();
         this.checkIfTutorialWasOpen()
         if (this.isSupplier) {
           await this.getNewPageOfItemsIDontSell(true, false);
         }
-
-
-        this.itemSearchbar.valueChanges.subscribe(async () => {
-          await this.getItemsISell();
-          await this.getNewPageOfItemsIDontSell(true, false);
-        });
       }
     );
+  }
+
+  /**
+   * Obtiene el estado del switch
+   */
+  getStatusSwitch() {
+    this.merchantsService.merchantDefault()
+      .then((merchantDefault) => {
+        this.saleflowService.saleflowDefault(merchantDefault._id)
+          .then(saleflow => {
+            const status = !saleflow?.status || saleflow?.status === 'open'
+            this.isSwitchActive = status
+            this.saleFlowId = saleflow._id
+          })
+      })
   }
 
   /**
@@ -224,11 +238,7 @@ export class ProviderItemsComponent implements OnInit {
   verifyIfIsSupplier() {
     this.merchantsService.merchantDefault()
       .then(merchantDefault => {
-        this.isSupplier = merchantDefault.roles.code != 'PROVIDER'
-          // ? false
-          // : true
-          ? true
-          : false
+        this.isSupplier = merchantDefault.roles[0].code !== 'STORE'
       })
   }
 
@@ -309,7 +319,7 @@ export class ProviderItemsComponent implements OnInit {
     this.merchantsService.merchantDefault().then(merchant => {
       const pagination: PaginationInput = {
         findBy: {
-          merchant: merchant._id,
+          merchant: merchant?._id,
         },
         options: {
           sortBy: 'createdAt:desc',
@@ -438,7 +448,6 @@ export class ProviderItemsComponent implements OnInit {
         };
       }
 
-      console.log(supplierSpecificItemsPagination, "itemsSell")
       const supplierSpecificItems: Array<Item> = (
         await this.itemsService.listItems(supplierSpecificItemsPagination)
       )?.listItems;
@@ -554,7 +563,6 @@ export class ProviderItemsComponent implements OnInit {
       };
     }
 
-    console.log(pagination, "getNewPageOfItemsIDontSell")
     this.renderItemsPromise = this.saleflowService.listItems(pagination, true);
 
     return this.renderItemsPromise.then(async (response) => {
@@ -1693,20 +1701,14 @@ export class ProviderItemsComponent implements OnInit {
   onChangeBtnFiltering(btnActual: BtnFiltering) {
     const index = this.buttonFiltering.findIndex(btn => btn.label === btnActual.label)
     this.buttonFiltering[index].isActive = this.buttonFiltering[index].isActive
-      ? false
-      : true
-    const isSomeBtnActive = this.buttonFiltering.some(btn => btn.isActive)
-    this.hiddenDashboard = isSomeBtnActive ? true : false
+    this.hiddenDashboard = this.buttonFiltering.some(btn => btn.isActive)
     this.filteringItemsBySearchbar(this.itemToSearch)
   }
 
   onChangeBtnFilteringNotSupplier(btnActual: BtnFiltering) {
     const i = this.buttonFilteringNoSupplier.findIndex(btn => btn.label === btnActual.label)
     this.buttonFilteringNoSupplier[i].isActive = this.buttonFilteringNoSupplier[i].isActive
-      ? false
-      : true
-    const isSomeBtnActive = this.buttonFilteringNoSupplier.some(btn => btn.isActive)
-    this.hiddenDashboard = isSomeBtnActive ? true : false
+    this.hiddenDashboard = this.buttonFilteringNoSupplier.some(btn => btn.isActive)
     this.filteringItemsBySearchbarNotSupplier(this.itemToSearch)
   }
 

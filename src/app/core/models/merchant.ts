@@ -47,7 +47,7 @@ export class Merchant extends Model<Merchant> {
   receiveNotificationsMainPhone?: boolean;
   secondaryContacts?: string[];
   default?: boolean;
-  roles?: Roles
+  roles?: Roles[]
 }
 
 interface Roles {
