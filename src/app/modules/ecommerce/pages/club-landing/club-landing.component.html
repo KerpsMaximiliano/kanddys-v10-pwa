@@ -72,9 +72,9 @@
           <p (click)="openCompareDialog()">Compárame con las mejores plataformas</p>
           <p>Ya nos conocemos?</p>
         </div>
-        <div class="footer-swiper">
+        <div class="footer-swiper" *ngIf="!tabarIndex">
           <div class="slide-item borderless">
-            <div class="flex" *ngIf="!tabarIndex">
+            <div class="flex">
               <div class="image">
                 <img src="../../../../../assets/images/avatar.svg" alt="">
               </div>
@@ -85,7 +85,19 @@
             </div>
           </div>
         </div>
-        <span class="line"></span>
+        <span *ngIf="!tabarIndex" class="line"></span>
+        <div class="tab-header" *ngIf="tabarIndex === 3">
+          <p class="subject">Ganas dinero mensual, recurrente y sin límites cuando invitas al Club.</p>
+          <p class="info">Del dinero recolectado cada mes para Laia, TU como Embajador ganas el 15% de cada invitado directo y el 10% de todos los indirectos*</p>
+          <p class="small">*Miembros que invitaron a quienes invitaste.</p>
+          <button (click)="invite()" class="button">
+            <p>Invita con tu enlace</p>
+            <mat-icon>ios_share</mat-icon>
+          </button>
+          <button *ngIf="headerService.user" class="button">
+            <p>Mira a tus invitados miembros</p>
+          </button>
+        </div>
         <!--
         <div class="tools" *ngIf="!tabarIndex">
           <div class="tool" (click)="openClubDialog()">
@@ -118,13 +130,15 @@
           </div>
         </div>
         -->
+        <!--
         <div class="action-part" *ngIf="tabarIndex">
           <div class="actions">
             <div class="action" (click)="enterClub()">Comparte tu invitación</div>
-            <!-- <div class="action" *ngIf="headerService.user">💚 Mira tus referidos directos e indirectos</div> -->
+            <div class="action" *ngIf="headerService.user">💚 Mira tus referidos directos e indirectos</div>
             <div class="action">Mira como funciona</div>
           </div>
         </div>
+        
         <div class="desc" *ngIf="tabarIndex">
           <p class="text">
             Este programa te brinda una posibilidad de incrementar tus ingresos sin límites.
@@ -137,7 +151,7 @@
             <br><br><span>Caso de uso:</span><br>
             Es una manera fácil de invitar en las facturas que le entregas a tus clientes.
           </div>
-        </div>
+        </div>-->
         <div class="tabs-container" *ngIf="!tabarIndex">
           <!-- TABS -->
           <h3 class="footer-swiper-title">TESTIMONIOS DE QUIENES ME ESTAN EDUCANDO</h3>
@@ -163,7 +177,7 @@
           </div>
         </div>
       </main>
-      <div class="message">
+      <div class="message" *ngIf="!tabarIndex">
         <input type="text" placeholder="Laia: hola como puedo ayudarte?">
         <button>
           <svg xmlns="http://www.w3.org/2000/svg" width="39" height="39" viewBox="0 0 39 39" fill="none">
@@ -178,7 +192,7 @@
           </svg>
         </button>
       </div>
-      <footer (click)="share()" class="footer no-green" [ngClass]="{'no-green': headerService.user}">{{headerService.user?"💚 Trae invitados y gana $ cada mes":"Inscríbete e Invita, juntos es mejor!!"}}</footer>
+      <footer *ngIf="!tabarIndex" (click)="share()" class="footer no-green" [ngClass]="{'no-green': headerService.user}">{{headerService.user?"💚 Trae invitados y gana $ cada mes":"Inscríbete e Invita, juntos es mejor!!"}}</footer>
         <app-login-flow
           *ngIf="loginflow"
           [redirectionRoute]="redirectionRoute"
