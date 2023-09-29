@@ -1,0 +1,30 @@
+<div class="container">
+    <div class="form_content">
+        <div class="form_control">
+            <label for="">Nombra</label>
+            <input type="text" placeholder="Escribe.." [(ngModel)]="name" >
+        </div>
+        <div class="form_control">
+            <label for="">Cantidad</label>
+            <input type="number" placeholder="Escribe.." [(ngModel)]="amount">
+        </div>
+        <div class="form_control">
+            <label for="">fecha</label>
+            <mat-form-field style="display:none!important;" >
+                <input
+                  matInput
+                  [matDatepicker]="picker" 
+                  placeholder="date"
+                  (dateChange)="change_date('change', $event)"
+                >
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+            <input type="text" placeholder="Escribe.." id="date" [value]="getDateFormat(changeDate)" (click)="picker.open()" >
+        </div>
+    </div>
+    <div class="button_group">
+        <button class="cancel" (click)="onClick()">Cancel</button>
+        <button class="save" [mat-dialog-close]="data()">Save changes</button>
+    </div>
+</div>

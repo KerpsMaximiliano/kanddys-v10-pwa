@@ -7,7 +7,9 @@ import { shortFormatID, truncateString } from 'src/app/core/helpers/strings.help
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
-
+import { MatDialog } from '@angular/material/dialog';
+import { FormComponent } from 'src/app/shared/dialogs/form/form.component';
+import { Validators } from '@angular/forms';
 @Component({
   selector: 'app-order-progress',
   templateUrl: './order-progress.component.html',
@@ -35,6 +37,7 @@ export class OrderProgressComponent implements OnInit {
     private orderService: OrderService,
     private deliveryZonesService: DeliveryZonesService,
     private router: Router,
+    private dialog: MatDialog,
   ) {}
 
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
@@ -49,7 +52,6 @@ export class OrderProgressComponent implements OnInit {
   pickUp : any = {amount: 0, selected: false};
   delivery : any = {amount: 0, selected: false};
 
-  externalOrderDialog : boolean = false;
   externalOrderNumber : number | undefined;
   externalOrderImages : File[] = [];
 
@@ -139,7 +141,9 @@ export class OrderProgressComponent implements OnInit {
     } else {
       ShippingType = null
     }
-    let findBy = {}
+    let findBy = {
+      merchant: this.merchantId,
+    }
     if(this.selectedProgress.length > 0) {
       findBy["orderStatusDelivery"] = this.selectedProgress
     }
@@ -153,17 +157,16 @@ export class OrderProgressComponent implements OnInit {
       findBy: findBy,
       options: {
         limit: 25,
-        sortBy: 'updatedAt:desc'
+        sortBy: 'createdAt:desc'
       },
     };
     const orders = (
-      await this.merchantsService.ordersByMerchant(
-        this.merchantId,
+      await this.orderService.orderPaginate(
         pagination
       )
-    )?.ordersByMerchant;
-    this.orders = orders != undefined ? orders : []
-
+    )
+    this.orders = orders.orderPaginate != undefined ? orders.orderPaginate : []
+    console.log(this.orders)
     await this.orderService.orderQuantityOfFiltersStatusDelivery({ findBy: {merchant: this.merchantId} }).then((res) => {
       this.deliveryStatus = res
     })
@@ -223,7 +226,19 @@ export class OrderProgressComponent implements OnInit {
     (document.querySelector('#file') as HTMLElement).click();
   }
 
-  goToOrderDetail(orderID: string) {
+  goToOrderDetail(orderID: string, index) {
+    if(this.orders[index].orderType === 'external') {
+      return this.router.navigate(
+        [
+          `/ecommerce/manual-order-management/${orderID}`
+        ],
+        {
+          queryParams: {
+            redirectTo: this.router.url
+          }
+        }
+      );
+    }
     return this.router.navigate(
       [
         `/ecommerce/order-detail/${orderID}`
@@ -244,6 +259,9 @@ export class OrderProgressComponent implements OnInit {
     datestring = datestring.slice(0, -5)
     let date = new Date(datestring)
     let time = Math.ceil((new Date().getTime() - date.getTime())/(1000*60));
+    if(time <= 1) {
+      return '1 minuto';
+    }
     if(time < 60) {
       return time + ' minutos';
     }
@@ -295,25 +313,57 @@ export class OrderProgressComponent implements OnInit {
       this.externalOrderImages.push(file);
     }
     if (!this.externalOrderImages.length) return;
-
-    this.externalOrderDialog = true;
+    this.externalOrderDialog();
   }
 
-  sendExternalOrder(sendAmount : boolean) {
+  externalOrderDialog() {
+    const dialogRef = this.dialog.open(FormComponent, {
+      width: '500px',
+      data: {
+        title: {text:'Monto Pagado:',},
+        fields: [
+          {
+            placeholder: "$ escribe...",
+            type: 'text',
+            name: 'externalOrderNumber',
+            validators: [Validators.pattern(/^\d+(\.\d{2})?$/)],
+          },
+        ],
+        buttonsTexts: {
+          cancel: 'Brincar',
+          accept: 'Guardar',
+        }
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log(result)
+      if (result) {
+        console.log(result)
+        this.externalOrderNumber = Number(result.value.externalOrderNumber);
+        console.log(this.externalOrderNumber)
+        this.sendExternalOrder(true);
+      } else {
+        this.sendExternalOrder(false);
+      }
+    });
+  }
+
+  async sendExternalOrder(sendAmount : boolean) {
     let orderData = {
       metadata: {
         files: this.externalOrderImages,
       },
       merchants: this.merchantId, //backend is merchants, if changed to merchant change this
-      user: this.userId,
     }
     if(sendAmount) {
       orderData["amount"] = this.externalOrderNumber;
     }
-    this.orderService.createOrderExternal(orderData)
-    this.externalOrderDialog = false;
+    await this.orderService.createOrderExternal(orderData)
+
     this.externalOrderImages = [];
     this.externalOrderNumber = undefined;
+    this.generate()
   }
 
   truncateString (word) {

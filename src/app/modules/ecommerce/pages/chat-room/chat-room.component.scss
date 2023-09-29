@@ -1,0 +1,19 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .messages {
+    flex: 1;
+
+    .message-sent {
+      background-color: lightskyblue;
+      text-align: left;
+    }
+
+    .message-received {
+      background-color: pink;
+      text-align: right;
+    }
+  }
+}

@@ -33,6 +33,7 @@ export const body = `
   active
   showItems
   address
+  createdAt
   owner { 
     phone
     email
@@ -42,6 +43,15 @@ export const body = `
   social {
     name
     url
+  }
+  roles{
+    code
+    name
+  }
+  deliveryLocations{
+    country{
+      _id
+    }
   }
 `;
 
@@ -300,6 +310,7 @@ export const ordersByMerchant = gql`
           _id
         }
       }
+      orderType
       orderStatus
       orderStatusDelivery
       status {
@@ -644,3 +655,36 @@ query merchantGroupFiltersQuantity($merchantId: ObjectID!, $type: String){
     merchantId: $merchantId
   )
 }`;
+
+
+export const dataCountries = gql`
+query dataCountries{
+  dataCountries
+  {
+    _id
+    value
+  }
+}`;
+
+export const merchantQuantityOfFiltersRole = gql`
+query merchantQuantityOfFiltersRole{
+  merchantQuantityOfFiltersRole
+}`;
+
+export const merchantQuantityOfFiltersCountry = gql`
+query merchantQuantityOfFiltersCountry{
+  merchantQuantityOfFiltersCountry
+}`;
+
+export const campaigns = gql`
+query campaigns($paginate:PaginationInput){
+  campaigns(paginate:$paginate)
+}`;
+
+
+export const merchantQuantityOfFiltersCampaign = gql`
+query merchantQuantityOfFiltersCampaign{
+  merchantQuantityOfFiltersCampaign
+}`;
+
+

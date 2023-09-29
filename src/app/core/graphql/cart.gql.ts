@@ -21,6 +21,18 @@ query carts($paginate: PaginationInput!) {
   }
 `;
 
+export const taxesByMerchant = gql`
+query taxesByMerchant($paginate: PaginationInput!) {
+    taxesByMerchant(paginate: $paginate) {
+        _id
+        type
+        percentage
+        finalSequence
+        available
+    }
+  }
+`;
+
 export const getMe = gql`
 query me {
     me {

@@ -1,0 +1,38 @@
+::ng-deep .cdk-global-overlay-wrapper {
+    background-color: rgba($color: white, $alpha: 0.7);
+}
+::ng-deep .cdk-overlay-pane {
+    max-width: 90vw !important;
+}
+::ng-deep .mat-dialog-container {
+    padding: 0px;
+    background-color: #181D17!important;
+    max-width: 480px !important;
+    margin: auto;
+}
+.container {
+    padding: 39px 42px 39px 26px;
+    .title {
+        color: #FFF;
+        font-family: InterBold;
+        font-size: 19px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+        margin-bottom: 7px;
+        max-width: 310px;
+    }
+    .role {
+        color: #FFF;
+        font-family: InterRegular;
+        font-size: 17px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+        margin-top: 18px;
+        max-width: 322px;
+        padding-left: 12px;
+        border-left: 3px solid #87CD9B;
+        cursor: pointer;
+    }
+}

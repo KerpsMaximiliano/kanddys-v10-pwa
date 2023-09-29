@@ -1,5 +1,5 @@
 <div class="container">
-  <div *ngIf="tutorialEnabled || externalOrderDialog" class="blur"></div>
+  <div *ngIf="tutorialEnabled" class="blur"></div>
   <div *ngIf="tutorialEnabled" class="dialog">
     <p class="tutorial-title">CONTROLA TODAS LAS ORDENES</p>
     <div class="arrow-svg">
@@ -103,13 +103,23 @@
       </p>
     </div>
     <div class="content-cards-container">
-      <div class="content-card" *ngFor="let order of orders; index as i" (click)="goToOrderDetail(order._id)">
+      <div class="content-card" *ngFor="let order of orders; index as i" (click)="goToOrderDetail(order._id, i)">
         <div class="display-flex">
           <!-- <img [src]=" order.user.image?order.user.image:'https://cdn-icons-png.flaticon.com/512/149/149071.png'" width="66px"> -->
           <div class="content-card-info">
             <p class="content-card-title">{{ order.user != null ? (order.user.name || order.user.email ||
-              order.user.phone) : "Usuario borrado" }}</p>
-            <p class="content-card-extra-info">{{ shortFormatID(order.dateId) }}, hace {{dateHandler(order.dateId)}}</p>
+              order.user.phone) : "Sin nombre" }}</p>
+            <p class="content-card-extra-info">
+              <img
+                *ngIf="order.orderType === 'external'; else elseBlock"
+                alt="camara"
+                class="camera-icon grey"
+                src="{{env}}/grey-camera.png"
+                (click)="emitFileInputClick()"
+              />
+              <ng-template #elseBlock>
+                {{ shortFormatID(order.dateId) }}
+              </ng-template>, hace {{dateHandler(order.createdAt)}}</p>
           </div>
         </div>
         <div>
@@ -117,19 +127,6 @@
           <p class="content-card-extra-info">{{ order.items.length }} artículos</p>
         </div>
       </div>
-    </div>
-  </div>
-  <div *ngIf="externalOrderDialog" class="dialog external-order-dialog">
-    <p class="external-order-title">Monto Pagado:</p>
-    <input
-      class="external-order-input"
-      placeholder="$ escribe..." 
-      type="number"
-      [(ngModel)]="externalOrderNumber"
-    >
-    <div class="tutorial-button-holder">
-      <button class="tutorial-button" (click)="sendExternalOrder(false)">Brincar</button>
-      <button class="ok-button external-order-button" (click)="sendExternalOrder(true)">Guardar</button>
     </div>
   </div>
 </div>

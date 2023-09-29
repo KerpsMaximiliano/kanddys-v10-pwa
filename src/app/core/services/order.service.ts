@@ -52,6 +52,8 @@ import {
   orderQuantityOfFiltersStatusDelivery,
   orderQuantityOfFiltersDeliveryZone,
   orderQuantityOfFiltersShippingType,
+  orderPaginate,
+  updateOrderExternal,
 } from '../graphql/order.gql';
 import {
   ItemOrder,
@@ -208,10 +210,25 @@ export class OrderService {
 
   async ordersPaginate(
     pagination: PaginationInput
-  ): Promise<Array<{ order: ItemOrder }>> {
+  ): Promise<{orders: {orders: Array<ItemOrder>}}> {
     try {
       const response = await this.graphql.query({
         query: orders,
+        variables: { pagination },
+        fetchPolicy: 'no-cache',
+      });
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async orderPaginate(
+    pagination: PaginationInput
+  ): Promise<{orderPaginate: Array<ItemOrder>}> {
+    try {
+      const response = await this.graphql.query({
+        query: orderPaginate,
         variables: { pagination },
         fetchPolicy: 'no-cache',
       });
@@ -686,5 +703,24 @@ export class OrderService {
       fetchPolicy: 'no-cache',
     });
     return result?.orderQuantityOfFiltersShippingType;
+  }
+
+  // async orderPaginate(pagination: PaginationInput) {
+  //   const result = await this.graphql.query({
+  //     query: orderPaginate,
+  //     variables: { pagination },
+  //     fetchPolicy: 'no-cache',
+  //   });
+  //   return result?.orderPaginate;
+  // }
+
+  async updateOrderExternal(input : ItemOrderExternalInput, id: string) {
+    const result = await this.graphql.mutate({
+      mutation: updateOrderExternal,
+      variables: { input, id },
+      fetchPolicy: 'no-cache',
+      context:{ useMultipart: true }
+    });
+    return result?.updateOrderExternal;
   }
 }

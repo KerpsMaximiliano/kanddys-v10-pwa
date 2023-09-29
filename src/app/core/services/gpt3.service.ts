@@ -1,10 +1,18 @@
 import { Injectable } from '@angular/core';
 import {
+  createEmbeddingsForMyMerchantItems,
+  deleteVectorInKnowledgeBase,
+  feedFileToKnowledgeBase,
+  feedKnowledgeBaseWithTextData,
+  fetchAllDataInVectorDatabaseNamespace,
   generateCompletionForMerchant,
   generateResponseForTemplate,
   imageObjectRecognition,
   requestQAResponse,
+  requestResponseFromKnowledgeBase,
+  updateVectorInKnowledgeBase,
 } from '../graphql/gpt3.gql';
+import { environment } from 'src/environments/environment';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 
 @Injectable({
@@ -24,6 +32,93 @@ export class Gpt3Service {
       variables: { templateObject, templateId },
     });
     return result.generateResponseForTemplate;
+  }
+
+  async feedFileToKnowledgeBase(uploadedFile: File): Promise<boolean> {
+    const result = await this.graphql.mutate({
+      mutation: feedFileToKnowledgeBase,
+      variables: { uploadedFile },
+      context: { useMultipart: true },
+    });
+
+    return result?.feedFileToKnowledgeBase;
+  }
+
+  async feedKnowledgeBaseWithTextData(text: string): Promise<{
+    namespace: string;
+    vector: any;
+  }> {
+    const result = await this.graphql.mutate({
+      mutation: feedKnowledgeBaseWithTextData,
+      variables: { text },
+    });
+
+    return result?.feedKnowledgeBaseWithTextData;
+  }
+
+  async updateVectorInKnowledgeBase(
+    id: string,
+    text: string
+  ): Promise<{
+    namespace: string;
+    vector: any;
+  }> {
+    const result = await this.graphql.mutate({
+      mutation: updateVectorInKnowledgeBase,
+      variables: { id, text },
+    });
+
+    return result?.updateVectorInKnowledgeBase;
+  }
+
+  async deleteVectorInKnowledgeBase(id: string): Promise<boolean> {
+    const result = await this.graphql.mutate({
+      mutation: deleteVectorInKnowledgeBase,
+      variables: { id },
+    });
+
+    return result?.deleteVectorInKnowledgeBase;
+  }
+
+  async createEmbeddingsForMyMerchantItems() {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: createEmbeddingsForMyMerchantItems,
+      });
+      return result?.createEmbeddingsForMyMerchantItems;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async requestResponseFromKnowledgeBase(
+    prompt: string,
+    saleflowId: string,
+    conversationId: string,
+    chatRoomId?: string,
+    socketId?: string
+  ) {
+    try {
+      const result = await this.graphql.query({
+        query: requestResponseFromKnowledgeBase,
+        variables: { prompt, saleflowId, conversationId, chatRoomId, socketId },
+      });
+      return result?.requestResponseFromKnowledgeBase;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async fetchAllDataInVectorDatabaseNamespace(saleflowId: string) {
+    try {
+      const result = await this.graphql.query({
+        query: fetchAllDataInVectorDatabaseNamespace,
+        variables: { prompt, saleflowId },
+      });
+      return result?.fetchAllDataInVectorDatabaseNamespace;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async requestQAResponse(
@@ -61,8 +156,32 @@ export class Gpt3Service {
     const result = await this.graphql.mutate({
       mutation: imageObjectRecognition,
       variables: { merchantId, file },
-      context: { useMultipart: true }
+      context: { useMultipart: true },
     });
     return result.imageObjectRecognition;
+  }
+
+  async exportOrdersDataForTraining(merchantId: string) {
+    const response = await fetch(
+      `${environment.api.url}/download/order/txt/` + merchantId,
+      {
+        method: 'GET',
+        headers: {
+          'App-Key': `${environment.api.key}`,
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + localStorage.getItem('session-token'),
+        },
+      }
+    );
+
+    const data = await response.blob();
+
+    const aElement = document.createElement('a');
+    aElement.setAttribute('download', 'orders.txt');
+    const href = URL.createObjectURL(data);
+    aElement.href = href;
+    aElement.setAttribute('target', '_blank');
+    aElement.click();
+    URL.revokeObjectURL(href);
   }
 }

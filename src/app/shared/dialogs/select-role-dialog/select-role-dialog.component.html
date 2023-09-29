@@ -1,0 +1,30 @@
+<!-- <h1 mat-dialog-title>Hi {{data.name}}</h1>
+<div mat-dialog-content>
+  <p>What's your favorite animal?</p>
+  <mat-form-field>
+    <mat-label>Favorite Animal</mat-label>
+    <input matInput [(ngModel)]="data.animal">
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">No Thanks</button>
+  <button mat-button [mat-dialog-close]="data.animal" cdkFocusInitial>Ok</button>
+</div> -->
+<div class="container">
+  <div class="title">
+    Perfil de:
+  </div>
+  <div class="role" mat-dialog-close="1">
+    De Súper-Admin (cuando logged) 
+  </div>
+  <div class="role" mat-dialog-close="2">
+    Yo como Comprador o Embajador
+  </div>
+  <div class="role" mat-dialog-close="3">
+    Crear un nuevo comercio
+  </div>
+  <div class="flex space-between">
+    <div class="cancel" mat-dialog-close="4">Cambiar de Industria</div>
+    <div class="signout" mat-dialog-close="5">Sign out</div>
+  </div>
+</div>

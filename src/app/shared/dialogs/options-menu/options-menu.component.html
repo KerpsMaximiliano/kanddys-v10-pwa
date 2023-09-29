@@ -1,5 +1,5 @@
 <div style="padding: 3em 0px 0px 0px">
-  <h3 class="title" *ngIf="data?.title">{{ data.title }}</h3>
+  <h3 class="dialog-title" *ngIf="data?.title">{{ data.title }}</h3>
   <p class="description" *ngIf="data?.description">{{ data.description }}</p>
 
   <div style="display: flex; flex-direction: column; margin-top: 28px">
@@ -15,4 +15,5 @@
       </button>
     </div>
   </div>
+  <p class="bottom-label" *ngIf="data?.bottomLabel">{{data.bottomLabel}}</p>
 </div>
