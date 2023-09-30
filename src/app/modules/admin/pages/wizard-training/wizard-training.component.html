@@ -6,14 +6,71 @@
         (click)="openNavigation = true"
         style="cursor: pointer; margin-left: auto"
       >
-        <p>🧙‍♂️ Entrenamiento de asistente</p>
+        <p>🧙‍♂️ Entrenamiento de daliah</p>
         <mat-icon>menu</mat-icon>
       </div>
     </div>
 
     <div class="page-body">
       <section>
-        <h3>Carga tu archivo de entrenamiento(.txt)</h3>
+        <h3 *ngIf="!whatsappQrCodeGenerated && !whatsappConnected">
+          Enlaza tu whatsapp al asistente
+        </h3>
+        <h3 *ngIf="whatsappQrCodeGenerated && !whatsappConnected">
+          Escanea el código qr para enlazar tu whatsapp al asistente
+        </h3>
+
+        <button
+          *ngIf="!whatsappQrCodeGenerated && !whatsappConnected"
+          (click)="createWhatsappClient()"
+        >
+          Enlazar
+          <img [src]="env + '/whatsapp_black.svg'" class="img" alt="whatsapp" />
+        </button>
+
+        <h3 *ngIf="whatsappConnected">
+          Tu whatsapp está conectado a la plataforma
+        </h3>
+
+        <button *ngIf="whatsappConnected" (click)="unlinkWhatsapp()">
+          Desvincular
+          <img [src]="env + '/whatsapp_black.svg'" class="img" alt="whatsapp" />
+        </button>
+
+        <img
+          class="whatsapp-qrcode"
+          id="whatsapp-qrcode"
+          *ngIf="!whatsappConnected"
+          [ngClass]="{
+            visible: whatsappQrCodeGenerated
+          }"
+          alt="link your whatsapp"
+        />
+      </section>
+
+      <section>
+        <h3>Entrenar al asistente con los productos de mi tienda</h3>
+
+        <button (click)="trainChatbotWithMyItems()">
+          Entrenar
+          <mat-icon>update</mat-icon>
+        </button>
+      </section>
+
+      <section>
+        <h3>Exportar los datos de mi orden para entrenar al asistente</h3>
+
+        <button (click)="exportOrdersDataForTraining()">
+          Exportar ordenes
+          <mat-icon>update</mat-icon>
+        </button>
+      </section>
+
+      <section>
+        <h3>
+          Carga un archivo de texto o una hoja de calculo de excel para entrenar
+          a tu asistente
+        </h3>
 
         <input
           type="file"
@@ -21,7 +78,7 @@
           [style.display]="'none'"
           (change)="loadFile($event)"
           multiple
-          [accept]="['.txt']"
+          [accept]="['.txt, .xlsx']"
         />
 
         <label for="file" class="itemContainer add" [style.cursor]="'pointer'">
@@ -34,14 +91,67 @@
       </section>
 
       <section>
-        <h3>Reentrenar al asistente con los productos de mi tienda</h3>
+        <h3>
+          Entrena al asistente con "Recuerdos", añade cada recuerdo para que tu
+          asistente responda en base a ellos
+        </h3>
 
         <button
-          (click)="trainChatbotWithMyItems()"
+          mat-fab
+          class="add-button"
+          (click)="addALineToKnowledgeBase()"
+          aria-label="Add a memory for the assitant's brain"
         >
-          Reentrenar
-          <mat-icon>update</mat-icon>
+          <mat-icon>add</mat-icon>
         </button>
+
+        <div class="knowledge-base-memories" *ngIf="!loadingKnowledge">
+          <ng-container
+            *ngFor="let field of embeddingsLines?.controls; let i = index"
+          >
+            <div class="input-flex">
+              <div class="close-button" (click)="deleteKnowledgeData(i)">
+                <mat-icon>close</mat-icon>
+              </div>
+              <input
+                [formControl]="getFormControl(embeddingsLines?.controls[i])"
+                tabindex="-1"
+                [type]="'text'"
+                [placeholder]="
+                  'Escribe lo que deseas que recuerde tu asistente...'
+                "
+                class="input-knowledge-base"
+                id="knowledge-{{ i }}"
+              />
+              <button
+                class="accept-button"
+                [disabled]="field.status !== 'VALID'"
+                (click)="
+                  !vectorsIdByLineIndex[i]
+                    ? saveChangesInKnowledgeBaseData(i)
+                    : updateChangesInKnowledgeBaseData(i)
+                "
+              >
+                <mat-icon *ngIf="!vectorsIdByLineIndex[i]">check</mat-icon>
+                <mat-icon *ngIf="vectorsIdByLineIndex[i]">update</mat-icon>
+              </button>
+            </div>
+          </ng-container>
+        </div>
+
+        <ng-container *ngIf="loadingKnowledge">
+          <div
+            [ngStyle]="{
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              height: '80px',
+              justifyContent: 'center'
+            }"
+          >
+            <app-dot-loader></app-dot-loader>
+          </div>
+        </ng-container>
       </section>
     </div>
   </div>

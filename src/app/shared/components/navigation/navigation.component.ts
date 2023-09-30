@@ -6,7 +6,7 @@ import {
   Output,
   EventEmitter,
 } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSidenav } from '@angular/material/sidenav';
 import { Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -19,6 +19,7 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { QuotationsService } from 'src/app/core/services/quotations.service';
+import { NgNavigatorShareService } from 'ng-navigator-share';
 import {
   LoginDialogComponent,
   LoginDialogData,
@@ -40,7 +41,9 @@ import {
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { SelectRoleDialogComponent } from '../../dialogs/select-role-dialog/select-role-dialog.component';
-
+import { MessageDialogComponent } from '../../dialogs/message-dialog/message-dialog.component';
+import { SpecialDialogComponent } from '../../dialogs/special-dialog/special-dialog.component';
+import { CompareDialogComponent } from '../../dialogs/compare-dialog/compare-dialog.component';
 interface NavigationTab {
   headerText: string;
   text: string;
@@ -109,966 +112,7 @@ export class NavigationComponent implements OnInit {
   isCurrentUserAnAdmin: boolean = false;
   activeTabIndex: number = 0;
   assetsFolder: string = environment.assetsUrl;
-
-  tabName = {
-    CLUB: 'El Club',
-    ME: 'Yo',
-    FLORISTS: 'Floristeria',
-    PROVIDERS: 'Proveedor',
-    ADMIN: 'Super Admin',
-  };
-
-  tabByName = {
-    'El Club': 'CLUB',
-    Yo: 'ME',
-    Floristeria: 'FLORISTS',
-    Proveedor: 'PROVIDERS',
-    'Super Admin': 'ADMIN',
-  };
-
-  adminTab: NavigationTab = {
-    headerText:
-      'Resuelve problemas a las floristerías para darle valor a la plataforma de ventas.',
-    text: this.tabName['ADMIN'],
-    active: false,
-    links: [
-      {
-        text: 'Gestión de los Artículos Globales',
-        routerLink: ['/admin/provider-items-management'],
-        linkName: 'provider-items-management',
-      },
-    ],
-  };
-
-  providerTab: NavigationTab = {
-    headerText:
-      'Alcanza a mas floristerías. Simplifica las cotizaciones y el proceso de ventas.',
-    text: this.tabName['PROVIDERS'],
-    active: false,
-    links: [
-      {
-        text: 'Mi KiosKo',
-        routerLink: ['/admin/supplier-dashboard'],
-        queryParams: {
-          supplierMode: true,
-        },
-        hardcodedURL: '/admin/supplier-dashboard?supplierMode=true',
-        linkName: 'my-dashboard',
-      },
-      {
-        text: 'Artículos & Ventas 💰',
-        routerLink: ['/ecommerce/provider-items'],
-        linkName: 'provider-pov-link',
-      },
-      {
-        text: 'El club',
-        routerLink: ['/ecommerce/club-landing'],
-        linkName: 'club-link',
-      },
-    ],
-  };
-
-  sellerTab: NavigationTab = {
-    headerText:
-      'Vendes. Venden por ti. Recompensa a compradores. Cotiza y compra al proveedor conveniente',
-    text: this.tabName['FLORISTS'],
-    active: false,
-    links: [
-      {
-        text: 'Mi KiosKo 💰',
-        routerLink: ['/admin/dashboard'],
-        linkName: 'my-dashboard',
-      },
-      {
-        text: 'Carrito del Proveedor (yo compro)',
-        routerLink: ['/ecommerce/supplier-items-selector'],
-        possibleRedirection: ['/ecommerce/quotations'],
-        linkName: 'quotations-link',
-      },
-      {
-        text: 'El club',
-        routerLink: ['/ecommerce/club-landing'],
-        linkName: 'club-link',
-      },
-    ],
-  };
-
-  tabs: Array<Tabs> = [
-    {
-      text: 'Control',
-      subTabs: [
-        {
-          text: 'Ordenes',
-          active: true,
-          content: [
-            '“.. puedo ver el estado actualizado de cada orden desde mi celular”',
-            '“.. la función de notificar a los clientes por WhatsApp o correo electrónico es una verdadera maravilla!”',
-            '“¡Es como magia para mantener todo bajo control!”',
-            '“.. me permite estar al tanto de cada orden de una manera que nunca imaginé”',
-            '“.. puedo filtrar las facturas según su estado para priorizar lo que necesito atender primero”',
-            '“.. es como tener a tu asistente personal siempre contigo”',
-            '“.. puedo ver qué órdenes necesitan mi atención inmediata y cuáles están en camino”',
-          ],
-        },
-        {
-          text: 'Entregas',
-          active: false,
-          content: [
-            '“.. puedo cobrar extra según la zona de entrega especificada por el comprador”',
-            '“..  maximizo lo que cobro y me permite entregar mas lejos”',
-            '“..  me muestra un enfoque estratégico de las entregas y eso me ayuda en la logística para entregar a tiempo”',
-          ],
-        },
-        {
-          text: 'Clientes',
-          active: false,
-          content: [
-            '“.. los reportes que puedo exportar me ayudan a planificar y ejecutar campañas”',
-            '“..  puedo dirigir mis mensajes a grupos específicos con información precisa basado en sus preferencias”',
-            '“..  tener una visión clara de quiénes son mis compradores y qué quieren”',
-          ],
-        },
-      ],
-      active: false,
-    },
-    {
-      text: 'Más Ventas',
-      subTabs: [
-        {
-          text: '#hashtags',
-          active: false,
-          content: [
-            '“.. asigno un simple #hashtag y, voilà, los interesados pueden dirigirse directamente a la compra desde cualquier red social”',
-            '“.. es una manera genial de simplificar el proceso de compra desde las plataformas sociales”',
-            '“.. convierto a los seguidores en compradores de manera rápida y sencilla”',
-          ],
-        },
-        {
-          text: 'Proveedores',
-          active: true,
-          content: [
-            '“.. puedo acceder a una red amplia de proveedores de flores en un abrir y cerrar de ojos.”',
-            '¡Esta función de Cotización Eficiente con Proveedores en la aplicación es como tener un equipo de compras personal a tu disposición!',
-            '“.. es como si los proveedores compitieran por ofrecerme las mejores ofertas, lo cual me siento confiado de donde comprar”',
-            '“.. me permite conectarme con un montón de proveedores y pedir cotizaciones en cuestión de minutos”',
-            '“.. significa que puedo tomar decisiones más inteligentes y aumentar mis ganancias”',
-            '“.. puedo pedir cotizaciones y luego simplemente comparar y elegir la opción más conveniente”',
-            '“.. no solo ahorro dinero, sino que también ahorro tiempo al evitar largas negociaciones, realmente es un ganar-ganar”',
-          ],
-        },
-        {
-          text: 'Premios',
-          active: false,
-          content: [
-            '“.. brindo incentivos a mis clientes, lo que realmente fomenta la fidelidad y la satisfacción”',
-            '“.. el programa de recompensar su lealtad es simplemente brillante”',
-            '“..  los premios no solo los mantiene contentos, sino que también crea un vínculo más sólido con nosotros”',
-          ],
-        },
-      ],
-      active: true,
-    },
-  ];
-
-  tabContents = {
-    tab1: [
-      {
-        text: '🛟 “Cotiza Flash” con Proveedores',
-        subText: 'Seleccionas, comparas y decides',
-        routerLink: ['/ecommerce/supplier-items-selector'],
-        linkName: '',
-        queryParams: {},
-        authorization: false,
-        isDummy: false,
-      },
-      {
-        text: '🧞 “Ofertas Flash” de los Proveedores',
-        subText: 'Compra flores ideales para eventos cortos e inmediatos',
-        routerLink: ['/'],
-        linkName: '',
-        queryParams: {},
-        authorization: false,
-        isDummy: true,
-      },
-      {
-        text: '📦 “Control Flash” de los pedidos',
-        subText:
-          'Sube la foto de la factura y ve cambiando el status según el progreso',
-        routerLink: ['/admin/order-progress'],
-        linkName: '',
-        queryParams: {},
-        authorization: true,
-        isDummy: false,
-      },
-      {
-        text: '🧾 “Factura Flash” a tus compradores',
-        subText:
-          'Escribe fácilmente lo que te compraron para que lleves el control desde tu celular',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '📝 “Cotiza Flash” a tus compradores',
-        subText:
-          'Escribe fácilmente lo que potencialmente te compraran y potencialmente conviértela en factura.',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '🎁 “Premios Flash” para tus seguidores',
-        subText: 'Incentiva a quienes te mencionan en sus redes sociales',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '✨ “Recompensas Flash” para compradores',
-        subText:
-          'Fideliza a tus compradores con la foto de la factura que le emites',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '🙌 “Afiliación Flash” de membresía al Club',
-        subText:
-          'Comparte tu código ALGOID para ganar hasta $125 cada mes por cada invitado',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '🔗 “QR Flash” para guiarlos a donde necesites ',
-        subText: 'Pegas el enlace y descargas el QR',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '✋ “Opinión de Compradores”',
-        subText:
-          'Compradores reciben una encuesta que después que recibieron lo que compraron',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: 'Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales',
-        subText: '',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-    ],
-    tab2: [
-      {
-        text: '🛟 “Cotizaciones Flash” con Proveedores',
-        subText: 'Seleccionas, comparas y decides',
-        routerLink: ['/ecommerce/supplier-items-selector'],
-        linkName: '',
-        queryParams: {},
-        authorization: false,
-        isDummy: false,
-      },
-      {
-        text: '🧞 “Ofertas Flash” de los Proveedores',
-        subText: 'Compra flores ideales para eventos cortos e inmediatos',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '📦 “pedidos en Control Flash”',
-        subText:
-          'Sube la foto de la factura y ve cambiando el status según el progreso',
-        routerLink: ['/admin/order-progress'],
-        linkName: '',
-        queryParams: {},
-        authorization: true,
-        isDummy: false,
-      },
-      {
-        text: '🛒 “Factura Flash” a tus compradores',
-        subText:
-          'Escribes fácilmente lo que te compraron para que lleves el control desde tu celular',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '🎁 “seguidores en Premios Flash”',
-        subText: 'Incentiva a quienes te mencionan en sus redes sociales',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '✨ “compradores en Recompensas Flash”',
-        subText:
-          'Fideliza a tus compradores con la foto de la factura que le emites',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '🙌 “códigos activos de Afiliación Flash”',
-        subText:
-          'Tu código ALGOID, ganas hasta $125 cada mes por cada invitado. Haz ganado $14,547.',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '🔗 “enlaces QR Flash”',
-        subText: 'Pegas el enlace y descargas el QR',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '✋ “opiniones de Compradores”',
-        subText: 'Encuesta que reciben después que recibieron lo que compraron',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: 'Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales',
-        subText: '',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-    ],
-    tab3: [
-      {
-        text: '🛟 “Cotiza Flash” con Proveedores',
-        subText: 'Seleccionas, comparas y decides',
-        routerLink: ['/ecommerce/supplier-items-selector'],
-        linkName: '',
-        queryParams: {},
-        authorization: false,
-        isDummy: false,
-      },
-      {
-        text: '🧞 “Ofertas Flash” para Miembros',
-        subText: 'Vende las flores ideales para eventos cortos e inmediatos',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '📦 “Control Flash” de los pedidos',
-        subText:
-          'Sube la foto de la factura y ve cambiando el status según el progreso',
-        routerLink: ['/admin/order-progress'],
-        linkName: '',
-        queryParams: {},
-        authorization: true,
-        isDummy: false,
-      },
-      {
-        text: '🧾 “Factura Flash” a tus compradores',
-        subText:
-          'Selecciona lo que te compraron para que lleves el control desde tu celular',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '📝 “Cotiza Flash” a tus compradores',
-        subText:
-          'Selecciona lo que potencialmente te compraran y potencialmente conviértela en factura.',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '🎁 “Premios Flash” para tus seguidores',
-        subText: 'Incentiva a quienes te mencionan en sus redes sociales',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '✨ “Recompensas Flash” para compradores',
-        subText:
-          'Fideliza a tus compradores con la foto de la factura que le emites',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '🙌 “Afiliación Flash” de membresía al Club',
-        subText:
-          'Comparte tu código ALGOID para ganar hasta $125 cada mes por cada invitado',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '🔗 “QR Flash” para guiarlos a donde necesites ',
-        subText: 'Pegas el enlace y descargas el QR',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '✋ “Opinión de Compradores”',
-        subText:
-          'Compradores reciben una encuesta que después que recibieron lo que compraron',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: 'Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales',
-        subText: '',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-    ],
-    tab4: [
-      {
-        text: '🛟 “Cotiza Flash” con Proveedores',
-        subText: 'Seleccionas, comparas y decides',
-        routerLink: ['/ecommerce/supplier-items-selector'],
-        linkName: '',
-        queryParams: {},
-        authorization: false,
-        isDummy: false,
-      },
-      {
-        text: '🧞 “Ofertas Flash” para Miembros',
-        subText: 'Vende las flores ideales para eventos cortos e inmediatos',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '📦 “Control Flash” de los pedidos',
-        subText:
-          'Sube la foto de la factura y ve cambiando el status según el progreso',
-        routerLink: ['/admin/order-progress'],
-        linkName: '',
-        queryParams: {},
-        authorization: true,
-        isDummy: false,
-      },
-      {
-        text: '🧾 “Factura Flash” a tus compradores',
-        subText:
-          'Selecciona lo que te compraron para que lleves el control desde tu celular',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '📝 “Cotiza Flash” a tus compradores',
-        subText:
-          'Selecciona lo que potencialmente te compraran y potencialmente conviértela en factura.',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '🎁 “Premios Flash” para tus seguidores',
-        subText: 'Incentiva a quienes te mencionan en sus redes sociales',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '✨ “Recompensas Flash” para compradores',
-        subText:
-          'Fideliza a tus compradores con la foto de la factura que le emites',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '🙌 “Afiliación Flash” de membresía al Club',
-        subText:
-          'Comparte tu código ALGOID para ganar hasta $125 cada mes por cada invitado',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '🔗 “QR Flash” para guiarlos a donde necesites ',
-        subText: 'Pegas el enlace y descargas el QR',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: '✋ “Opinión de Compradores”',
-        subText:
-          'Compradores reciben una encuesta que después que recibieron lo que compraron',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-      {
-        text: 'Ir al enlace de Youtube donde hay muchos videos de como preparar arreglos florales',
-        subText: '',
-        routerLink: [''],
-        linkName: '',
-        queryParams: {},
-        isDummy: true,
-        authorization: false,
-      },
-    ],
-  };
-
-  tabServices = [
-    {
-      text: '🌼 Vitrina Online para exhibir lo que vendo*',
-      routerLink: ['/ecommerce/provider-items'],
-      linkName: '',
-      queryParams: {},
-      authorization: false,
-      isDummy: false,
-    },
-    {
-      text: '🛟 Artículos que compro',
-      routerLink: ['/ecommerce/supplier-items-selector'],
-      linkName: '',
-      queryParams: {},
-      authorization: false,
-      isDummy: false,
-    },
-    {
-      text: '⚡️️ Ofertas flash para comprar',
-      routerLink: ['/admin/merchant-offers'],
-      linkName: '',
-      queryParams: {},
-      authorization: true,
-      isDummy: false,
-    },
-    {
-      text: '🧞‍♂️‍️️️ Crea ofertas flash para vender*',
-      routerLink: ['/admin/items-offers'],
-      linkName: '',
-      queryParams: {},
-      authorization: true,
-      isDummy: false,
-    },
-    {
-      text: '📦 Seguimiento de los pedidos',
-      routerLink: ['/admin/order-progress'],
-      linkName: '',
-      queryParams: {},
-      authorization: true,
-      isDummy: false,
-    },
-    {
-      text: '💸 Seguimiento del dinero por factura',
-      routerLink: ['/'],
-      linkName: '',
-      queryParams: {},
-      authorization: true,
-      isDummy: true,
-    },
-    {
-      text: '🛒 Comparte una cotización de lo que vendes',
-      routerLink: ['/'],
-      linkName: '',
-      queryParams: {},
-      authorization: true,
-      isDummy: true,
-    },
-    {
-      text: '✨ Fideliza a compradores con recompensas',
-      routerLink: ['/'],
-      linkName: '',
-      queryParams: {},
-      authorization: true,
-      isDummy: true,
-    },
-    {
-      text: '🎁 Premia a los seguidores que te mencionan',
-      routerLink: ['/'],
-      linkName: '',
-      queryParams: {},
-      authorization: true,
-      isDummy: true,
-    },
-    {
-      text: '✋ Analiza las opiniones de los compradores',
-      routerLink: ['/'],
-      linkName: '',
-      queryParams: {},
-      authorization: true,
-      isDummy: true,
-    },
-    {
-      text: '💚 Invita y monetiza cada mes',
-      routerLink: ['/'],
-      linkName: '',
-      queryParams: {},
-      authorization: true,
-      isDummy: true,
-    },
-    {
-      text: '🧙‍♂️ Entrenamiento de asistente',
-      routerLink: ['/admin/wizard-training'],
-      linkName: '',
-      queryParams: {},
-      authorization: true,
-      isDummy: false,
-    },
-  ];
-
-  tabVendor = [
-    {
-      text: '🌼 Lo que vendo',
-      routerLink: ['/admin/dashboard'],
-      linkName: '',
-      queryParams: {},
-      authorization: true,
-      isDummy: false,
-    },
-    {
-      text: '📦 Control Flash',
-      routerLink: ['/admin/order-progress'],
-      linkName: '',
-      queryParams: {},
-      authorization: true,
-      isDummy: false,
-    },
-    // {
-    //   text: "💰 Mis beneficios",
-    //   routerLink: ["/ecommerce/supplier-items-selector"],
-    //   linkName: "",
-    //   queryParams: {},
-    //   authorization: true,
-    //   isDummy: false
-    // },
-    // {
-    //   text: "🧾 Facturas Flash",
-    //   routerLink: ["/ecommerce/supplier-items-selector"],
-    //   linkName: "",
-    //   queryParams: {},
-    //   authorization: false,
-    //   isDummy: false
-    // },
-    // {
-    //   text: "📝 Cotizaciones Flash",
-    //   routerLink: ["/ecommerce/supplier-items-selector"],
-    //   linkName: "",
-    //   queryParams: {},
-    //   authorization: false,
-    //   isDummy: false
-    // },
-    // {
-    //   text: "📢 Comisiones de quienes venden por mi",
-    //   routerLink: ["/ecommerce/supplier-items-selector"],
-    //   linkName: "",
-    //   queryParams: {},
-    //   authorization: false,
-    //   isDummy: false
-    // },
-  ];
-
-  tabProvider = [
-    {
-      text: '🌼 Vitrina Online',
-      routerLink: ["/ecommerce/provider-items"],
-      linkName: '',
-      queryParams: {
-        supplierMode: true,
-      },
-      authorization: true,
-      isDummy: false,
-      isShowDialog: false,
-    },
-    {
-      text: '🧾 Facturas',
-      routerLink: ['/admin/order-progress'],
-      linkName: '',
-      queryParams: {},
-      authorization: true,
-      isDummy: false,
-      isShowDialog: false,
-    },
-    {
-      text: '📢 Comisiones de quienes venden por mi',
-      routerLink: ['/admin/supplier-dashboard'],
-      linkName: '',
-      queryParams: {
-        supplierMode: true,
-      },
-      authorization: true,
-      isDummy: true,
-      isShowDialog: false,
-    },
-    {
-      text: '🛟 Artículos que compro',
-      routerLink: ['/admin/supplier-dashboard'],
-      linkName: '',
-      queryParams: {
-        supplierMode: true,
-      },
-      authorization: true,
-      isDummy: false,
-      isShowDialog: true,
-    },
-    {
-      text: '⚡️️ Ofertas flash para comprar',
-      routerLink: ['/admin/merchant-offers'],
-      linkName: '',
-      queryParams: {
-        supplierMode: true,
-      },
-      authorization: true,
-      isDummy: false,
-      isShowDialog: false,
-    },
-    {
-      text: '🧞‍♂️‍️️️ Crea ofertas flash para vender*',
-      routerLink: ['/admin/items-offers'],
-      linkName: '',
-      queryParams: {
-        supplierMode: true,
-      },
-      authorization: true,
-      isDummy: false,
-      isShowDialog: false,
-    },
-    {
-      text: '📦 Seguimiento de los pedidos',
-      routerLink: ['/admin/order-progress'],
-      linkName: '',
-      queryParams: {
-        supplierMode: true,
-      },
-      authorization: true,
-      isDummy: false,
-      isShowDialog: false,
-    },
-    {
-      text: '💸 Seguimiento del dinero por factura',
-      routerLink: ['/'],
-      linkName: '',
-      queryParams: {
-        supplierMode: true,
-      },
-      authorization: true,
-      isDummy: true,
-      isShowDialog: false,
-    },
-    {
-      text: '🛒 Comparte una cotización de lo que vendes',
-      routerLink: ['/'],
-      linkName: '',
-      queryParams: {
-        supplierMode: true,
-      },
-      authorization: true,
-      isDummy: true,
-      isShowDialog: false,
-    },
-    {
-      text: '✨ Recompensas de Compradores',
-      routerLink: ['/'],
-      linkName: '',
-      queryParams: {
-        supplierMode: true,
-      },
-      authorization: true,
-      isDummy: true,
-      isShowDialog: false,
-    },
-    {
-      text: '🎁 Premios de seguidores que te mencionan',
-      routerLink: ['/'],
-      linkName: '',
-      queryParams: {
-        supplierMode: true,
-      },
-      authorization: true,
-      isDummy: true,
-      isShowDialog: false,
-    },
-    {
-      text: '✋ Analiza las opiniones de los compradores',
-      routerLink: ['/'],
-      linkName: '',
-      queryParams: {
-        supplierMode: true,
-      },
-      authorization: true,
-      isDummy: true,
-      isShowDialog: false,
-    },
-    {
-      text: '💚 Invita y monetiza cada mes',
-      routerLink: ['/'],
-      linkName: '',
-      queryParams: {
-        supplierMode: true,
-      },
-      authorization: true,
-      isDummy: true,
-      isShowDialog: false,
-    },
-    {
-      text: '🧙‍♂️ Entrenamiento de asistente',
-      routerLink: ['/admin/wizard-training'],
-      linkName: '',
-      queryParams: {},
-      authorization: true,
-      isDummy: false,
-      isShowDialog: false,
-    },
-  ];
-
-  underTabs: Array<underTab> = [
-    {
-      text: 'Control',
-      subTabs: [
-        {
-          text: 'Ordenes',
-          active: true,
-          content: [
-            '“.. puedo ver el estado actualizado de cada orden desde mi celular”',
-            '“.. la función de notificar a los clientes por WhatsApp o correo electrónico es una verdadera maravilla!”',
-            '“¡Es como magia para mantener todo bajo control!”',
-            '“.. me permite estar al tanto de cada orden de una manera que nunca imaginé”',
-            '“.. puedo filtrar las facturas según su estado para priorizar lo que necesito atender primero”',
-            '“.. es como tener a tu asistente personal siempre contigo”',
-            '“.. puedo ver qué órdenes necesitan mi atención inmediata y cuáles están en camino”',
-          ],
-        },
-        {
-          text: 'Entregas',
-          active: false,
-          content: [
-            '“.. puedo cobrar extra según la zona de entrega especificada por el comprador”',
-            '“..  maximizo lo que cobro y me permite entregar mas lejos”',
-            '“..  me muestra un enfoque estratégico de las entregas y eso me ayuda en la logística para entregar a tiempo”',
-          ],
-        },
-        {
-          text: 'Clientes',
-          active: false,
-          content: [
-            '“.. los reportes que puedo exportar me ayudan a planificar y ejecutar campañas”',
-            '“..  puedo dirigir mis mensajes a grupos específicos con información precisa basado en sus preferencias”',
-            '“..  tener una visión clara de quiénes son mis compradores y qué quieren”',
-          ],
-        },
-      ],
-      active: false,
-    },
-    {
-      text: 'Más Ventas',
-      subTabs: [
-        {
-          text: '#hashtags',
-          active: false,
-          content: [
-            '“.. asigno un simple #hashtag y, voilà, los interesados pueden dirigirse directamente a la compra desde cualquier red social”',
-            '“.. es una manera genial de simplificar el proceso de compra desde las plataformas sociales”',
-            '“.. convierto a los seguidores en compradores de manera rápida y sencilla”',
-          ],
-        },
-        {
-          text: 'Proveedores',
-          active: true,
-          content: [
-            '“.. puedo acceder a una red amplia de proveedores de flores en un abrir y cerrar de ojos.”',
-            '¡Esta función de Cotización Eficiente con Proveedores en la aplicación es como tener un equipo de compras personal a tu disposición!',
-            '“.. es como si los proveedores compitieran por ofrecerme las mejores ofertas, lo cual me siento confiado de donde comprar”',
-            '“.. me permite conectarme con un montón de proveedores y pedir cotizaciones en cuestión de minutos”',
-            '“.. significa que puedo tomar decisiones más inteligentes y aumentar mis ganancias”',
-            '“.. puedo pedir cotizaciones y luego simplemente comparar y elegir la opción más conveniente”',
-            '“.. no solo ahorro dinero, sino que también ahorro tiempo al evitar largas negociaciones, realmente es un ganar-ganar”',
-          ],
-        },
-        {
-          text: 'Premios',
-          active: false,
-          content: [
-            '“.. brindo incentivos a mis clientes, lo que realmente fomenta la fidelidad y la satisfacción”',
-            '“.. el programa de recompensar su lealtad es simplemente brillante”',
-            '“..  los premios no solo los mantiene contentos, sino que también crea un vínculo más sólido con nosotros”',
-          ],
-        },
-      ],
-      active: true,
-    },
-  ];
+  URI: string = environment.uri;
 
   tabIndex = 0;
   userID = '';
@@ -1077,8 +121,31 @@ export class NavigationComponent implements OnInit {
   mainTitle = 'HERRAMIENTAS GRATIS  PARA PROVEEDORES';
   curRole = 0;
   isOpen = false;
+  list = [
+    {
+      text: '\"Daliah, nos impulsa a avanzar para no quedarnos atrás\"',
+      avatar: '',
+      name: 'José Miguel Caffaro',
+      role: 'Proveedor de flores frescas, follajes y bases'
+    },
+    {
+      text: '\"Daliah, nos impulsa a avanzar para no quedarnos atrás\"',
+      avatar: '',
+      name: 'José Miguel Caffaro',
+      role: 'Proveedor de flores frescas, follajes y bases'
+    },
+    {
+      text: '\"Daliah, nos impulsa a avanzar para no quedarnos atrás\"',
+      avatar: '',
+      name: 'José Miguel Caffaro',
+      role: 'Proveedor de flores frescas, follajes y bases'
+    }
+  ]
+  tabarIndex = 0
 
-  footerSwiperConfig: SwiperOptions = {
+  emailDialogRef: MatDialogRef<FormComponent, any> = null;
+
+  swiperConfig: SwiperOptions = {
     slidesPerView: 1,
     freeMode: false,
     spaceBetween: 0,
@@ -1099,98 +166,72 @@ export class NavigationComponent implements OnInit {
     private router: Router,
     private matDialog: MatDialog,
     private translate: TranslateService,
-    private matSnackBar: MatSnackBar,
+    private snackbar: MatSnackBar,
     private bottomSheet: MatBottomSheet,
-    private dialogService: DialogService
-  ) {
+    private dialogService: DialogService,
+    private dialog: MatDialog,
+    private ngNavigatorShareService: NgNavigatorShareService
+    ) {
     translate.setDefaultLang('en');
     translate.use('en');
   }
 
   async ngOnInit() {
-    // if (localStorage.getItem('session-token')) {
-    //   if (!this.headerService.user) {
-    //     let sub = this.appService.events
-    //       .pipe(filter((e) => e.type === 'auth'))
-    //       .subscribe((e) => {
-    //         this.executeInitProcesses();
-
-    //         sub.unsubscribe();
-    //       });
-    //   } else this.executeInitProcesses();
-    // } else this.executeInitProcesses();
-    const me = await this.authService.me();
-    this.userID = me?.name || me?.email || me?.phone;
-
-    if (this.userID) {
-      const merchant = await this.merchantsService.merchantDefault();
-      // console.log(merchant)
-      if (merchant?._id) {
-        const supplier_pagination: PaginationInput = {
-          findBy: {
-            type: 'supplier',
-            merchant: merchant._id,
-          },
-          options: {
-            sortBy: 'createdAt:desc',
-            limit: 1,
-          },
-        };
-        let supplier: Array<any> = [];
-        supplier = (await this.itemsService.listItems(supplier_pagination))
-          ?.listItems;
-
-        const vendor_pagination: PaginationInput = {
-          findBy: {
-            type: ['default', null],
-            merchant: merchant._id,
-          },
-          options: {
-            sortBy: 'createdAt:desc',
-            limit: 1,
-          },
-        };
-        let vendor: Array<any> = [];
-        vendor = (await this.itemsService.listItems(vendor_pagination))
-          ?.listItems;
-
-        if (supplier.length) {
-          this.isProvider = true;
-          this.tabIndex = 1;
+    
+  }
+  openClubDialog() {
+    this.bottomSheet.open(ClubDialogComponent, {
+      data: {
+        title: "",
+        styles: {
+          fullScreen: true,
+        },
+        tabIndex: this.tabIndex,
+        callback: (e: number) => {
+          this.tabIndex = e;
         }
-        if (vendor.length) {
-          this.isVendor = true;
-          this.tabIndex = 0;
-        }
-        // console.log(supplier)
-        // console.log(vendor)
-      }
-    } else {
-      // Borrar de cada tab los tabs que tienen authorize true
-      this.tabContents.tab1 = this.tabContents.tab1.filter(
-        (tab) => !tab.authorization
-      );
-      this.tabContents.tab2 = this.tabContents.tab2.filter(
-        (tab) => !tab.authorization
-      );
-      this.tabContents.tab3 = this.tabContents.tab3.filter(
-        (tab) => !tab.authorization
-      );
-      this.tabContents.tab4 = this.tabContents.tab4.filter(
-        (tab) => !tab.authorization
-      );
-    }
+      },
+    });
   }
 
   showDialog() {
-    const dialogRef = this.matDialog.open(SelectRoleDialogComponent, {
-      data: {},
-    });
+    console.log("dafdsasdf")
+    const dialogRef = this.dialog.open(SpecialDialogComponent, {});
+    const link = `${this.URI}/ecommerce/club-landing`;
 
-    dialogRef.afterClosed().subscribe((role) => {
-      if (role != undefined) this.setRole(parseInt(role));
+    dialogRef.afterClosed().subscribe(role => {
+      if (!role) {
+        // this.setRole(parseInt(role))
+        return
+      }
+      console.log(role)
+      switch (role) {
+        case "0":
+          this.ngNavigatorShareService.share({
+            title: '',
+            url: `${link}`,
+          });
+          break;
+        case "1":
+          this.ngNavigatorShareService.share({
+            title: '',
+            url: `${link}`,
+          });
+          break;
+        case "2":
+          const message = `Hola, me interesa esta funcionalidad: `;
+          const phone = '19188156444';
+          window.location.href = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
+          break;
+        case "3":
+          window.location.href = "mailto:"
+          break;
+        default:
+          break;
+      }
     });
   }
+
 
   setRole(role: number) {
     this.curRole = role;
@@ -1229,49 +270,34 @@ export class NavigationComponent implements OnInit {
     });
   }
 
-  filterData() {
-    if (this.headerService.user) {
-      if (this.tabIndex == 1) return this.tabContents.tab4;
-      if (this.tabIndex == 0) return this.tabContents.tab2;
-    } else {
-      if (this.tabIndex == 1) return this.tabContents.tab3;
-      if (this.tabIndex == 0) return this.tabContents.tab1;
+  openMsgDialog() {
+    const dialogRef = this.dialog.open(MessageDialogComponent, {});
+
+    dialogRef.afterClosed().subscribe(role => {
+      if (!role) {
+        // this.setRole(parseInt(role))
+        return
+      }
+      console.log(role)
+    });
+  }
+
+  share() {
+    if (!this.headerService.user) {
+      this.openMagicLinkDialog()
     }
-    if (this.tabIndex == 1)
-      this.mainTitle = 'HERRAMIENTAS GRATIS  PARA PROVEEDORES';
-    if (this.tabIndex == 0)
-      this.mainTitle = 'HERRAMIENTAS GRATIS FACILES DE USAR';
-    return this.tabContents.tab3;
+    // else this.showDialog()
   }
 
   enterClub() {
-    this.bottomSheet.open(OptionsMenuComponent, {
-      data: {
-        options: [
-          {
-            value: `Soy miembro`,
-            callback: async () => {
-              await this.openMagicLinkDialog();
-            },
-          },
-          {
-            value: `Quiero entrar como invitado`,
-            callback: () => {
-              // this.openNavigation = true;
-            },
-          },
-        ],
-        styles: {
-          fullScreen: true,
-        },
-      },
-    });
+    if(!this.headerService.user) this.openMagicLinkDialog();
+    else this.showDialog()
   }
 
   async openMagicLinkDialog() {
     let fieldsToCreateInEmailDialog: FormData = {
       title: {
-        text: 'Acceso al Club:',
+        text: 'Correo Electrónico:',
       },
       buttonsTexts: {
         accept: 'Recibir el enlace con acceso',
@@ -1290,6 +316,24 @@ export class NavigationComponent implements OnInit {
           inputStyles: {
             padding: '11px 1px',
           },
+          styles: {
+            gap: '0px',
+          },
+          bottomTexts: [
+            {
+              text: 'Este correo también sirve para accesar al Club y aprovechar todas las herramientas que se están creando.',
+              styles: {
+                color: '#FFF',
+                fontFamily: 'InterLight',
+                fontSize: '19px',
+                fontStyle: 'normal',
+                fontWeight: '300',
+                lineHeight: 'normal',
+                marginBottom: '28px',
+                marginTop: '36px',
+              },
+            },
+          ],
           submitButton: {
             text: '>',
             styles: {
@@ -1312,179 +356,30 @@ export class NavigationComponent implements OnInit {
       ],
     };
 
-    const emailDialogRef = this.matDialog.open(FormComponent, {
+    this.emailDialogRef = this.dialog.open(FormComponent, {
       data: fieldsToCreateInEmailDialog,
-      disableClose: true,
+      disableClose: false,
     });
 
-    emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+    this.emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
       if (result?.controls?.magicLinkEmailOrPhone.valid) {
-        const emailOrPhone = result?.value['magicLinkEmailOrPhone'];
-
-        let optionsDialogTemplate: OptionsDialogTemplate = {
-          options: [
-            {
-              value: 'Accederé con la clave',
-              callback: async () => {
-                await addPassword(emailOrPhone);
-              },
-            },
-            {
-              value: 'Prefiero recibir el enlace de acceso en mi correo',
-              callback: async () => {
-                if (result?.controls?.magicLinkEmailOrPhone.valid) {
-                  const validEmail = new RegExp(
-                    /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/gim
-                  );
-
-                  let emailOrPhone = null;
-
-                  if (
-                    typeof result?.value['magicLinkEmailOrPhone'] ===
-                      'string' &&
-                    validEmail.test(result?.value['magicLinkEmailOrPhone'])
-                  ) {
-                    emailOrPhone = result?.value['magicLinkEmailOrPhone'];
-                  } else {
-                    emailOrPhone =
-                      result?.value['magicLinkEmailOrPhone'].e164Number.split(
-                        '+'
-                      )[1];
-                  }
-
-                  // lockUI();
-
-                  await this.authService.generateMagicLink(
-                    emailOrPhone,
-                    '/ecommerce/club-landing',
-                    null,
-                    'MerchantAccess',
-                    {
-                      jsondata: JSON.stringify({
-                        openNavigation: true,
-                      }),
-                    },
-                    []
-                  );
-
-                  unlockUI();
-
-                  this.dialogService.open(
-                    GeneralFormSubmissionDialogComponent,
-                    {
-                      type: 'centralized-fullscreen',
-                      props: {
-                        icon: 'check-circle.svg',
-                        showCloseButton: false,
-                        message:
-                          'Se ha enviado un link mágico a tu correo electrónico',
-                      },
-                      customClass: 'app-dialog',
-                      flags: ['no-header'],
-                    }
-                  );
-                } else if (
-                  result?.controls?.magicLinkEmailOrPhone.valid === false
-                ) {
-                  unlockUI();
-                  this.matSnackBar.open('Datos invalidos', 'Cerrar', {
-                    duration: 3000,
-                  });
-                }
-              },
-            },
-          ],
-        };
-
-        this.matDialog.open(OptionsDialogComponent, {
-          data: optionsDialogTemplate,
-          disableClose: true,
-        });
+        // const exists = await this.checkIfUserExists(result?.controls?.magicLinkEmailOrPhone.value);
+        // if (exists) {
+        //   await this.existingUserLoginFlow(
+        //     result?.controls?.magicLinkEmailOrPhone.value,
+        //     result?.controls?.magicLinkEmailOrPhone.valid
+        //   );
+        // } else {
+        //   await this.nonExistingUserLoginFlow(
+        //     result?.controls?.magicLinkEmailOrPhone.value,
+        //     result?.controls?.magicLinkEmailOrPhone.valid
+        //   );
+        // }
       } else if (result?.controls?.magicLinkEmailOrPhone.valid === false) {
-        unlockUI();
-        this.matSnackBar.open('Datos invalidos', 'Cerrar', {
+        this.snackbar.open('Datos invalidos', 'Cerrar', {
           duration: 3000,
         });
       }
-    });
-
-    const addPassword = async (emailOrPhone: string) => {
-      emailDialogRef.close();
-
-      let fieldsToCreate: FormData = {
-        title: {
-          text: 'Clave de Acceso:',
-        },
-        buttonsTexts: {
-          accept: 'Accesar al Club',
-          cancel: 'Cancelar',
-        },
-        fields: [
-          {
-            name: 'password',
-            type: 'password',
-            placeholder: 'Escribe la contraseña',
-            validators: [Validators.pattern(/[\S]/)],
-            bottomButton: {
-              text: 'Prefiero recibir el correo con el enlace de acceso',
-              callback: () => {
-                //Cerrar 2do dialog
-
-                return switchToMagicLinkDialog();
-              },
-            },
-          },
-        ],
-      };
-
-      const dialog2Ref = this.matDialog.open(FormComponent, {
-        data: fieldsToCreate,
-        disableClose: true,
-      });
-
-      dialog2Ref.afterClosed().subscribe(async (result: FormGroup) => {
-        try {
-          if (result?.controls?.password.valid) {
-            let password = result?.value['password'];
-
-            lockUI();
-
-            const session = await this.authService.signin(
-              emailOrPhone,
-              password,
-              true
-            );
-
-            if (!session) throw new Error('invalid credentials');
-
-            // if (session) this.openNavigation = true;
-
-            unlockUI();
-          } else if (result?.controls?.password.valid === false) {
-            unlockUI();
-            this.matSnackBar.open('Datos invalidos', 'Cerrar', {
-              duration: 3000,
-            });
-          }
-        } catch (error) {
-          unlockUI();
-          console.error(error);
-          this.headerService.showErrorToast();
-        }
-      });
-
-      const switchToMagicLinkDialog = () => {
-        dialog2Ref.close();
-        return this.openMagicLinkDialog();
-      };
-    };
-  }
-
-  changeSubtab(tabIndex: number, subTabIndex: number) {
-    this.tabs[tabIndex].subTabs[subTabIndex].active = true;
-
-    this.tabs[tabIndex].subTabs.forEach((subTab, index) => {
-      if (index !== subTabIndex) subTab.active = false;
     });
   }
 
@@ -1602,15 +497,6 @@ export class NavigationComponent implements OnInit {
     this.authService.signouttwo();
   }
 
-  changeTab(tabIndex: number) {
-    this.tabs[tabIndex].active = true;
-    this.activeTabIndex = tabIndex;
-
-    this.tabs.forEach((tab, index) => {
-      if (index !== tabIndex) tab.active = false;
-    });
-  }
-
   login() {
     const matDialogRef = this.matDialog.open(LoginDialogComponent, {
       data: {
@@ -1650,6 +536,53 @@ export class NavigationComponent implements OnInit {
     });
 
     this.close();
+  }
+  showRoleDialog() {
+    const dialogRef = this.dialog.open(SelectRoleDialogComponent, {});
+    dialogRef.afterClosed().subscribe(role => {
+      if (role != undefined) {
+        this.setRole(parseInt(role))
+        return
+      }
+      switch (role) {
+        case "0":
+          
+          break;
+        case "1":
+          
+          break;
+        case "2":
+          
+          break;
+        case "3":
+          
+          break;
+        case "4":
+        
+          break;
+        case "5":
+        
+          break;
+      
+        default:
+          break;
+      }
+    });
+  }
+
+  openCompareDialog(){
+    this.bottomSheet.open(CompareDialogComponent, {
+      data: {
+        title: "",
+        styles: {
+          fullScreen: true,
+        },
+        tabIndex: this.tabIndex,
+        callback: (e: number) => {
+          this.tabIndex = e;
+        }
+      },
+    });
   }
 
   @ViewChild('sidenav') sidenav: MatSidenav;

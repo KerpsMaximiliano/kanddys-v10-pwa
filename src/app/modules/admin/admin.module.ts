@@ -55,7 +55,6 @@ import { BuyerDataComponent } from './pages/buyer-data/buyer-data.component';
 import { ReportsComponent } from './pages/reports/reports.component';
 import { FilterPipeSearchPipe } from 'src/app/core/pipes/filter-pipe-search.pipe';
 import { MatNativeDateModule } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { AutofocusDirective } from 'src/app/core/directives/autofocus.directive';
 import { ExpendituresComponent } from './pages/expenditures/expenditures.component';
 import { IncomesComponent } from './pages/incomes/incomes.component';
@@ -105,7 +104,15 @@ import { AdminCartsComponent } from './pages/admin-carts/admin-carts.component';
 import { ItemsOffersComponent } from './pages/items-offers/items-offers.component';
 import { OrderImageLoadComponent } from './pages/order-image-load/order-image-load.component';
 import { DeliveryZonesManagerComponent } from './pages/delivery-zones-manager/delivery-zones-manager.component';
+import { TaxesComponent } from './pages/taxes/taxes.component';
+import { TaxEditionComponent } from './pages/tax-edition/tax-edition.component';
+import { BenefitsControlComponent } from './pages/benefits-control/benefits-control.component';
+import { CostsMetricsComponent } from './pages/costs-metrics/costs-metrics.component';
 import { WizardTrainingComponent } from './pages/wizard-training/wizard-training.component';
+import { SuperAdminMerchantsComponent } from './pages/super-admin-merchants/super-admin-merchants.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -367,6 +374,10 @@ const routes: Routes = [
       {
         path: 'benefits/date',
         component: FilteredBenefitsComponent,
+      },
+      {
+        path: 'benefits-control',
+        component: BenefitsControlComponent,
       },
       {
         path: 'order-expenses/:orderId',
@@ -632,6 +643,26 @@ const routes: Routes = [
   {
     path: 'monetizations',
     component: MonetizationsComponent
+  },
+  {
+    path: 'taxes',
+    component: TaxesComponent
+  },
+  {
+    path: 'tax-edition/:itemId',
+    component: TaxEditionComponent,
+  },
+  {
+    path: 'tax-edition',
+    component: TaxEditionComponent,
+  },
+  {
+    path: 'costs-metrics',
+    component: CostsMetricsComponent
+  },
+  {
+    path:'super-admin-merchants',
+    component:SuperAdminMerchantsComponent
   }
 ];
 
@@ -719,8 +750,13 @@ const routes: Routes = [
     AdminCartsComponent,
     ItemsOffersComponent,
     DeliveryZonesManagerComponent,
+    BenefitsControlComponent,
+    CostsMetricsComponent,
     WizardTrainingComponent,
     OrderImageLoadComponent,
+    TaxesComponent,
+    TaxEditionComponent,
+    SuperAdminMerchantsComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [
@@ -728,8 +764,10 @@ const routes: Routes = [
     SharedModule,
     MatCheckboxModule,
     // MatDaterangepickerModule,
-    MatDatepickerModule,
+    MatFormFieldModule,
     MatNativeDateModule,
+    MatDatepickerModule,
+    MatInputModule,
     RouterModule.forChild(routes),
     TranslateModule.forRoot({
       loader: {

@@ -1,0 +1,33 @@
+<div class="container">
+  <div class="messages">
+    <ng-container *ngFor="let message of chat?.messages">
+      <div
+        class="message-sent"
+        *ngIf="message.sender === headerService.user._id"
+      >
+        {{ message.message }}
+      </div>
+      <div
+        class="message-received"
+        *ngIf="message.sender !== headerService.user._id"
+      >
+        {{ message.message }}
+      </div>
+    </ng-container>
+  </div>
+
+  <form [formGroup]="chatFormGroup">
+    <textarea
+      class="user-input-box"
+      placeholder="Escribe algo..."
+      formControlName="input"
+    ></textarea>
+
+    <button class="submit-button" [disabled]="!chat" (click)="sendQuestion()">
+      <img
+        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fsend_black.svg"
+        alt="send"
+      />
+    </button>
+  </form>
+</div>
