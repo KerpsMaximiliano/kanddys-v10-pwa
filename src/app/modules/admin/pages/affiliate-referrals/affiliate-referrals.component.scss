@@ -1,3 +1,4 @@
+
 .container {
   min-height: 100vh;
   background: #f6f6f6;
@@ -58,7 +59,7 @@
     position: absolute;
     bottom: 0;
     background-color: #6fcf97 !important;
-    padding: 0 25px;
+    padding: 0 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -313,3 +314,27 @@ section {
   }
 }
 
+::ng-deep .mat-datepicker-content {
+  max-width: 250px !important;
+  width: 250vw !important;
+  height: 390px;
+  display: flex;
+  bottom: 0;
+  position: absolute;
+
+}
+::ng-deep .mat-datepicker-content .mat-calendar {
+  height: auto!important;
+  width: auto!important;
+}
+::ng-deep .cdk-overlay-pane {
+  bottom: 32px!important;
+  left: calc(50vw - 250px)!important;
+  right: 0px;
+}
+
+@media (max-width:500px) {
+  ::ng-deep .cdk-overlay-pane {
+      left: 0px!important;
+  }
+}

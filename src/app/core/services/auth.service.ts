@@ -40,7 +40,6 @@ import { AffiliateInput } from '../models/affiliate';
 export class AuthService {
   public session: Session;
   public ready: Observable<any>;
-  merchant:string;
 
   constructor(
     private readonly graphql: GraphQLWrapper,
@@ -70,7 +69,7 @@ export class AuthService {
     emailOrPhone: string,
     password: string,
     remember: boolean
-  ): Promise<Session> {
+  ): Promise<Session> {    
     try {
       const variables = { emailOrPhone, password, remember };
       const promise = this.graphql.mutate({ mutation: signin, variables });
@@ -84,10 +83,11 @@ export class AuthService {
       this.session = undefined;
     }
     this.app.events.emit({ type: 'auth', data: this.session });
+    const merchant:string = await this.getMerchantDefault();
     if(localStorage.getItem("affiliateCode")){
-      if(this.merchant){
+      if(merchant){
         const input: AffiliateInput = {
-          reference: this.merchant
+          reference: merchant
         }
         this.affiliateService.createAffiliate(localStorage.getItem("affiliateCode"), input);
         localStorage.removeItem("affiliateCode");
@@ -129,10 +129,11 @@ export class AuthService {
       this.session = undefined;
     }
     //this.app.events.emit({ type: 'auth', data: this.session });
+    const merchant:string = await this.getMerchantDefault();
     if(localStorage.getItem("affiliateCode")){
-      if(this.merchant){
+      if(merchant){
         const input: AffiliateInput = {
-          reference: this.merchant
+          reference: merchant
         }
         this.affiliateService.createAffiliate(localStorage.getItem("affiliateCode"), input);
         localStorage.removeItem("affiliateCode");
@@ -434,6 +435,6 @@ export class AuthService {
 
   async getMerchantDefault() {
     const merchantDefault: Merchant = await this.merchantService.merchantDefault();
-    this.merchant = merchantDefault._id;
+    return  merchantDefault._id;
   }
 }
