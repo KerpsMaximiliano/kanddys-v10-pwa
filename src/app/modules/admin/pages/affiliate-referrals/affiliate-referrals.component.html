@@ -100,7 +100,7 @@
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-date-range-picker #picker></mat-date-range-picker>
     </mat-form-field>
-    <p *ngIf="startDateLabel === ''">Filtrar por rango de fechas</p>
+    <p *ngIf="startDateLabel === ''">Filtro por fechas</p>
     <p *ngIf="startDateLabel !== ''">{{startDateLabel}} a {{endDateLabel}}</p>
     <p class="benefits">Beneficio: ${{benefit | CurrencyPipe}}</p>
   </footer>

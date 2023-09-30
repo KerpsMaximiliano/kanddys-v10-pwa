@@ -191,7 +191,12 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
             const input: AffiliateInput = {
               reference: this.merchant
             }
-            await this.affiliateService.createAffiliate(affiliateCode, input);
+            try{
+              await this.affiliateService.createAffiliate(affiliateCode, input);
+            }catch(error){
+              console.log(error);
+              
+            }
           }else{
             localStorage.setItem('affiliateCode', affiliateCode);
           }
