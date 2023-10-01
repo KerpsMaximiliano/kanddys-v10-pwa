@@ -688,3 +688,8 @@ query merchantQuantityOfFiltersCampaign{
 }`;
 
 
+export const merchantQuantityOfFiltersHaveDebt = gql`
+query merchantQuantityOfFiltersHaveDebt{
+  merchantQuantityOfFiltersHaveDebt
+}`;
+
