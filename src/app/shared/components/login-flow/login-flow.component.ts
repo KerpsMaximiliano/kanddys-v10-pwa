@@ -72,7 +72,6 @@ export class LoginFlowComponent implements OnInit {
                 this.appService.events.subscribe(async (res) => {
                   console.log(res)
                   await this.merchantCheck(res.data)
-                  window.location.reload()
                 })
               },
             },
@@ -99,6 +98,7 @@ export class LoginFlowComponent implements OnInit {
           await this.newMerchantCreation(userData)
         }
       })
+      this.dialogIsOpen.emit(false);
   }
 
   async newMerchantCreation(userData) {
@@ -582,6 +582,7 @@ export class LoginFlowComponent implements OnInit {
           this.openNavigation = true;
 
           unlockUI();
+          this.dialogIsOpen.emit(false);
         } else if (result?.controls?.password.valid === false) {
           unlockUI();
           this.snackbar.open('Datos invalidos', 'Cerrar', {

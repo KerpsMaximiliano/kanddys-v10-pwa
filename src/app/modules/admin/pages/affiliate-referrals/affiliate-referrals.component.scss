@@ -1,0 +1,340 @@
+
+.container {
+  min-height: 100vh;
+  background: #f6f6f6;
+  display: flex;
+  flex-direction: column;
+
+  header {
+    background: #181d17;
+    padding: 15px 17px;
+    display: flex;
+    align-items: center;
+    color: #fff;
+    font-family: InterRegular;
+    box-shadow: 0px 4px 5px 0px rgba(123, 123, 123, 0.2);
+
+    .close {
+      cursor: pointer;
+      color: #c4c5c3;
+      font-size: 25px;
+      height: 21px;
+      width: 21px;
+    }
+
+    h2 {
+      margin: 0px;
+      padding: 0px;
+      font-size: 17px;
+      font-weight: 300;
+      margin-left: 11px;
+      line-height: 20.57px;
+    }
+
+    .back-icon {
+      cursor: pointer;
+      color: #c4c5c3;
+      font-size: 25px;
+      height: 21px;
+      width: 21px;
+    }
+
+    .info-button {
+      width: 25.28px;
+      height: 25.28px;
+      flex-shrink: 0;
+      filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(307deg)
+        brightness(102%) contrast(102%);
+    }
+
+    .options-wrapper {
+      margin-left: auto;
+      display: flex;
+      column-gap: 16px;
+      color: #C4C5C3;
+    }
+  }
+
+  .bottom-footer {
+    position: absolute;
+    bottom: 0;
+    background-color: #6fcf97 !important;
+    padding: 0 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 29px;
+    text-align: left;
+    width: 100%;
+    p {
+      color: #181d17;
+      text-align: left;
+      font-family: InterBold;
+      font-size: 17px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+  }
+
+  .benefits{
+    font-family: InterRegular !important;
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 21px;
+    letter-spacing: 0em;
+    text-align: right;
+  }
+}
+
+
+
+.search-bar-wrapper {
+  display: flex;
+  justify-content: space-between;
+  margin: 16px 0px;
+  padding-bottom: 0;
+  position: relative;
+
+  .search-bar {
+    /*
+        DESCOMENTAR LUEGO
+        width: 70.09%;
+      */
+    text-align: left;
+    height: fit-content;
+    padding: 8px 21px 12px 21px;
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 8px;
+    background: #d9d9d9;
+    color: #7b7b7b;
+    font-family: InterBold;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    border: none;
+    width: 100%;
+  }
+
+  .filters {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto 0;
+    display: flex;
+    gap: 20px;
+    right: 17px;
+    align-items: center;
+    background: #d9d9d9;
+    padding-left: 17px;
+
+    .option {
+      font-size: 18px;
+    }
+
+    .option:hover {
+      cursor: pointer;
+    }
+  }
+}
+main {
+  padding-left: 19px;
+  padding-right: 19px;
+  padding-bottom: 50px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+section {
+  margin-bottom: 19px;
+
+  .section-title {
+    color: #000;
+    font-family: InterLight;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    margin: 0px;
+    padding: 0px;
+    padding-bottom: 11px;
+  }
+
+  .item-field {
+    border-radius: 4px;
+    background: #fff;
+    padding: 13px 18px;
+    padding-right: 16.43px;
+    display: flex;
+    justify-content: space-between;
+
+    &.empty {
+      box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    }
+
+    &:not(:last-child) {
+      margin-bottom: 9px;
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    .field-name {
+      color: #000;
+      font-family: InterLight;
+      font-size: 17px;
+      font-style: italic;
+      font-weight: 300;
+      line-height: normal;
+    }
+
+    .add-icon:hover {
+      cursor: pointer;
+    }
+  }
+  .tax-voucher {
+    color: #7b7b7b;
+    font-size: 17px;
+    font-family: InterRegular;
+    margin: 0px;
+    font-weight: 700;
+    line-height: 20.57px;
+    margin-bottom: 12px;
+  }
+}
+.edition-link {
+  color: #2874AD;
+  font-size: 13px;
+  font-family: InterRegular;
+  font-style: italic;
+  margin: 0px;
+  font-weight: 300;
+  line-height: 15.73px;
+}
+
+.content-cards-container {
+}
+
+.content-card {
+  cursor: pointer;
+  width: 100%;
+  padding-top: 11px;
+  padding-left: 18px;
+  padding-right: 18px;
+  padding-bottom: 10px;
+  background: #ffffff;
+  margin-top: 19px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.content-card-title {
+  color: #272727;
+  font-family: InterBold;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 20.57px;
+  margin: 0;
+}
+
+.content-card-price {
+  color: #7b7b7b;
+  text-align: right;
+  font-family: InterRegular;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20.57px;
+  margin: 0;
+}
+
+.content-card-extra-info {
+  color: #7b7b7b;
+  text-align: left;
+  font-family: InterRegular;
+  font-size: 15px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 18.15px;
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+
+.flex{
+    display:flex;
+    align-items: center;
+
+    .add-icon{
+        margin-left: 25px;
+    }
+
+    mat-icon{
+        color:#87CD9B;
+        font-size: 40px;
+        width: 40px;
+        height: 40px;
+    }
+}
+
+.display-flex {
+  display: flex;
+}
+
+.featured-image {
+  cursor: pointer;
+  width: 51px;
+  height: 51px;
+  background-position: center center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  border-radius: 10px;
+  border: 0.001px solid lightgray;
+
+}
+
+.last-month-section{
+  display: flex;
+  align-items: center;
+
+  .payment-label{
+    margin-left: 13px;
+    line-height: 20.57px;
+    font-weight: 500;
+    font-size: 17px;
+    font-family: InterRegular;
+    font-style: italic;
+    color:#7B7B7B;
+  }
+}
+
+::ng-deep .mat-datepicker-content {
+  max-width: 250px !important;
+  width: 250vw !important;
+  height: 390px;
+  display: flex;
+  bottom: 0;
+  position: absolute;
+
+}
+::ng-deep .mat-datepicker-content .mat-calendar {
+  height: auto!important;
+  width: auto!important;
+}
+::ng-deep .cdk-overlay-pane {
+  bottom: 32px!important;
+  left: calc(50vw - 250px)!important;
+  right: 0px;
+}
+
+@media (max-width:500px) {
+  ::ng-deep .cdk-overlay-pane {
+      left: 0px!important;
+  }
+}
