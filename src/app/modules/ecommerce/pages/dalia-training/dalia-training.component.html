@@ -43,9 +43,16 @@
             />
 
             <img
-              (click)="editOrApplyQuestionChange()"
+              class="edit-or-confirm"
+              (click)="
+                !(editingQuestion && !questionForm.get('question').value)
+                  ? editOrApplyQuestionChange()
+                  : null
+              "
               [ngClass]="{
-                editing: true
+                editing: true,
+                notAllowed:
+                  editingQuestion && !questionForm.get('question').value
               }"
               [src]="
                 assetsFolder +
@@ -55,13 +62,15 @@
             />
           </div>
 
-          <div class="sender">
+          <div class="sender" *ngIf="headerService.user">
             {{
               headerService.user.name ||
                 headerService.user.email ||
                 headerService.user.phone
             }}
           </div>
+
+          <div class="sender" *ngIf="!headerService.user">DESCONOCIDO</div>
         </div>
 
         <div class="response-box-wrapper">
@@ -96,9 +105,12 @@
 
     <button>
       <img
-        [src]="assetsFolder + '/submit-btn.svg'"
+        [ngClass]="{
+          notAllowed: !inputQuestionForm.get('question').value
+        }"
+        [src]="assetsFolder + '/sumit-icon-arrecho.png'"
         alt="edit question"
-        (click)="testMemory()"
+        (click)="inputQuestionForm.get('question').value ? testMemory() : null"
       />
     </button>
   </section>

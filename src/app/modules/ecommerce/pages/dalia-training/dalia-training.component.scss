@@ -196,8 +196,6 @@
       background-color: #403d3d;
       max-width: 70%;
       padding: 8px 19px;
-
-      
     }
 
     .question-box-input {
@@ -231,9 +229,10 @@
       border-radius: 20px;
       opacity: 0.8;
       background: #2874ad;
-      width: 252px;
+      width: 100%;
       flex-shrink: 0;
       padding: 8px 19px;
+      margin-top: 10px;
       color: var(--Fondo-de-Pantallas, #f6f6f6);
       font-family: InterRegular;
     }
@@ -285,6 +284,16 @@
       background-color: transparent;
       border: none;
       margin-left: 6px;
+
+      .notAllowed {
+        &:hover {
+          cursor: not-allowed;
+        }
+      }
+
+      &:hover {
+        cursor: pointer;
+      }
     }
   }
 }
@@ -292,4 +301,16 @@
 .editing {
   filter: invert(49%) sepia(10%) saturate(15%) hue-rotate(324deg)
     brightness(97%) contrast(91%);
+
+  &.notAllowed {
+    &:hover {
+      cursor: not-allowed;
+    }
+  }
+}
+
+.edit-or-confirm {
+  &:hover {
+    cursor: pointer;
+  }
 }

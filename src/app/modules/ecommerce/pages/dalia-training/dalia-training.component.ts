@@ -107,9 +107,9 @@ export class DaliaTrainingComponent implements OnInit {
   async testMemory() {
     try {
       lockUI();
-      const response = await this.gptService.generateResponseForTemplate(
+      let response = await this.gptService.generateResponseForTemplate(
         {
-          content: this.form.get('memory').value,
+          content: (this.form.get('memory').value as string).replace(/"/g, "'"),
           question: this.inputQuestionForm.get('question').value,
         },
         null,
@@ -117,17 +117,9 @@ export class DaliaTrainingComponent implements OnInit {
       );
 
       if (response) {
-        const escapedJsonString = response.replace(
-          /"(?![^{}]*":)([^"]*)"/g,
-          (match, value) => {
-            const escapedValue = value.replace(/"/g, '\\"');
-            return `"${escapedValue}"`;
-          }
-        );
+        response = response[0] === '.' ? response.slice(1) : response;
 
-        console.log(escapedJsonString);
-
-        const qaObject = JSON.parse(escapedJsonString);
+        const qaObject = JSON.parse(response);
 
         this.generatedQA = {
           question: qaObject.question,
@@ -146,26 +138,21 @@ export class DaliaTrainingComponent implements OnInit {
   async editQA() {
     try {
       lockUI();
-      const response = await this.gptService.generateResponseForTemplate(
+
+      let response = await this.gptService.generateResponseForTemplate(
         {
           question: this.generatedQA.question,
           previousResponse: this.generatedQA.response,
           newQuestion: this.questionForm.get('question').value,
-          content: this.form.get('memory').value,
+          content: (this.form.get('memory').value).replace(/"/g, "'"),
         },
         null,
         'Q&AEdit'
       );
 
       if (response) {
-        const escapedJsonString = response.replace(
-          /"(?![^{}]*":)([^"]*)"/g,
-          (match, value) => {
-            const escapedValue = value.replace(/"/g, '\\"');
-            return `"${escapedValue}"`;
-          }
-        );
-        const qaObject = JSON.parse(escapedJsonString);
+        response = response[0] === '.' ? response.slice(1) : response;
+        const qaObject = JSON.parse(response);
 
         this.generatedQA = {
           question: qaObject.question,
