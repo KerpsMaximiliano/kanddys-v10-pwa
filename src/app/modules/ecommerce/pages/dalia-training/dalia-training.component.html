@@ -22,7 +22,7 @@
         <button
           class="see-more"
           (click)="showMoreText()"
-          *ngIf="showExtendButton"
+          *ngIf="showExtendButton && form.get('memory').value"
         >
           VER TODO
         </button>
