@@ -87,16 +87,36 @@
         </div>
         <span *ngIf="!tabarIndex" class="line"></span>
         <div class="tab-header" *ngIf="tabarIndex === 3">
-          <p class="subject">Ganas dinero mensual, recurrente y sin límites cuando invitas al Club.</p>
+          <div class="info-container">
+            <p class="info-container-title">Gana Dinero</p>
+            <div class="flex-space-between">
+            <p class="info-container-icon">🤑</p>
+            <div>
+              <p class="info-container-desc">
+                Por cada factura que generen tus invitados comerciales ganas dinero. Es un ingreso recurrente y sin límites.
+              </p>
+              <p class="info-container-invited-link">
+                0 invitados
+              </p>
+            </div>
+            </div>
+          </div>
+          <p class="ganas-desc">
+            Del dinero recolectado cada mes para mantener a Laia, TU como Embajador ganas el 15% de cada comercio invitado directo y el 10% de todos los indirectos*
+          </p>
+          <p class="ganas-desc ganas-desc-ad">
+            *Comercios que invitaron a quienes invitaste.
+          </p>
+          <!-- <p class="subject">Ganas dinero mensual, recurrente y sin límites cuando invitas al Club.</p>
           <p class="info">Del dinero recolectado cada mes para Laia, TU como Embajador ganas el 15% de cada invitado directo y el 10% de todos los indirectos*</p>
-          <p class="small">*Miembros que invitaron a quienes invitaste.</p>
-          <button (click)="invite()" class="button">
+          <p class="small">*Miembros que invitaron a quienes invitaste.</p> -->
+          <!-- <button (click)="invite()" class="button">
             <p>Invita con tu enlace</p>
             <mat-icon>ios_share</mat-icon>
           </button>
           <button *ngIf="headerService.user" class="button">
             <p>Mira a tus invitados miembros</p>
-          </button>
+          </button> -->
         </div>
         <!--
         <div class="tools" *ngIf="!tabarIndex">
@@ -202,7 +222,10 @@
           (dialogIsOpen)="resetLoginDialog($event)"
         ></app-login-flow>
     </div>
-
+<footer class="footer-ganas" *ngIf="tabarIndex===3" (click)="invite()">
+  Invita a comerciantes con tu enlace
+  <mat-icon>ios_share</mat-icon>
+</footer>
     <qrcode
       style="display: none"
       #qrcode
