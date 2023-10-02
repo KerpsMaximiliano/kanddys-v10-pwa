@@ -37,6 +37,9 @@ import { SpecialDialogComponent } from 'src/app/shared/dialogs/special-dialog/sp
 import { CompareDialogComponent } from 'src/app/shared/dialogs/compare-dialog/compare-dialog.component';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { base64ToBlob } from 'src/app/core/helpers/files.helpers';
+import { AffiliateService } from 'src/app/core/services/affiliate.service';
+import { Merchant } from 'src/app/core/models/merchant';
+import { AffiliateInput } from 'src/app/core/models/affiliate';
 
 interface ReviewsSwiper {
   title: string;
@@ -157,7 +160,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   };
 
   emailDialogRef: MatDialogRef<FormComponent, any> = null;
-
+  merchant:string;
   @ViewChild('qrcode', { read: ElementRef }) qrcode: ElementRef;
 
   constructor(
@@ -175,13 +178,30 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     private router: Router,
     private changeDetectorRef: ChangeDetectorRef,
     private clipboard: Clipboard,
+    private affiliateService: AffiliateService
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.getMerchantDefault();
     this.queryParamsSubscription = this.route.queryParams.subscribe(
-      (params) => {
-        if (params.tabarIndex) {
-          this.tabarIndex = parseInt(params.tabarIndex);
+      async ({ affiliateCode, tabarIndex }) => {
+        if(affiliateCode){
+          if(this.merchant){
+            const input: AffiliateInput = {
+              reference: this.merchant
+            }
+            try{
+              await this.affiliateService.createAffiliate(affiliateCode, input);
+            }catch(error){
+              console.log(error);
+              
+            }
+          }else{
+            localStorage.setItem('affiliateCode', affiliateCode);
+          }
+        }
+        if (tabarIndex) {
+          this.tabarIndex = parseInt(tabarIndex);
         }
       }
     );
@@ -189,8 +209,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       this.user = user;
       console.log(user)
       this.changeDetectorRef.detectChanges();
-    })
-    this.openLaiaDialog()
+    });
+    this.openLaiaDialog();
   }
 
   showRoleDialog() {
@@ -530,6 +550,10 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       link.download = "Landing QR Code";
       link.click();
     }
+  }
+  async getMerchantDefault() {
+    const merchantDefault: Merchant = await this.merchantsService.merchantDefault();
+    this.merchant = merchantDefault._id;
   }
 
   invite() {
