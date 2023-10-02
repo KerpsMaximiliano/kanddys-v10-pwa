@@ -33,6 +33,7 @@ export class DaliaTrainingComponent implements OnInit {
     response: string;
   } = null;
   editingQuestion: boolean = false;
+  laiaPlaceholder = `Ejemplo:\n\nTrabajamos de 8 a 9 de la noche, de lunes a viernes, y de 8 a 12pm los sábados, los domingos estamos cerrados. Trabajamos de 8 a 9 de la noche, de lunes a viernes, y de 8 a 12pm los sábados, los domingos estamos cerrados.\n\nTrabajamos de 8 a 9 de la noche, de lunes a viernes, y de 8 a 12pm los sábados, los domingos estamos cerrados.\n\n`;
 
   constructor(
     private gptService: Gpt3Service,
@@ -144,7 +145,7 @@ export class DaliaTrainingComponent implements OnInit {
           question: this.generatedQA.question,
           previousResponse: this.generatedQA.response,
           newQuestion: this.questionForm.get('question').value,
-          content: (this.form.get('memory').value).replace(/"/g, "'"),
+          content: this.form.get('memory').value.replace(/"/g, "'"),
         },
         null,
         'Q&AEdit'
