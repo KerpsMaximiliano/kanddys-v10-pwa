@@ -60,6 +60,7 @@ import {
   merchantQuantityOfFiltersCountry,
   campaigns,
   merchantQuantityOfFiltersCampaign,
+  merchantQuantityOfFiltersHaveDebt,
 } from './../graphql/merchants.gql';
 import {
   EmployeeContract,
@@ -738,6 +739,16 @@ export class MerchantsService {
 
     if (!result || result?.errors) return undefined;
     return result?.merchantQuantityOfFiltersCampaign;
+  }
+
+  async merchantQuantityOfFiltersHaveDebt(){
+    const result = await this.graphql.query({
+      query: merchantQuantityOfFiltersHaveDebt,
+      fetchPolicy: 'no-cache',
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result?.merchantQuantityOfFiltersHaveDebt;
   }
 }
 
