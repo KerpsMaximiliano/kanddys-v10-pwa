@@ -497,12 +497,15 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     }
   }
 
-  async openLinkDialog() {
+  async openLinkDialog(merchant?: Merchant) {
     let slug;
-    await this.merchantsService.merchantDefault().then((res) => {
-      console.log(res)
-      slug = res.slug
-    })
+    if(merchant) {
+      slug = merchant.slug;
+    } else {
+      await this.merchantsService.merchantDefault().then((res) => {
+        slug = res.slug
+      })
+    }
     let link = this.URI+this.router.url+'?affiliateCode='+slug
     console.log(link)
     let dialogData = {
@@ -558,10 +561,52 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
   invite() {
     if(!this.headerService.user) {
-      this.redirectionRoute = '/ecommerce/club-landing?tabarIndex=3'
-      this.loginflow = true;
+      //this.redirectionRoute = '/ecommerce/club-landing?tabarIndex=3'
+      this.openLoginDialog();
     } else {
       this.openLinkDialog();
     }
+  }
+
+  openLoginDialog() {
+    let dialogRef = this.dialog.open(FormComponent, {
+      data: {
+        title:{ text: "🤑 Correo electronico que guardará el dinero:"},
+        fields: [
+          {
+            name: "email",
+            placeholder: "Escribe..",
+            type: "text",
+            validations: [Validators.required, Validators.email],
+          }
+        ],
+        buttonsTexts: {
+          accept: "Generar el enlace",
+        }
+      }
+    });
+    dialogRef.afterClosed().subscribe(async (result) => {
+      if(!result.value.email) return;
+      const exists = await this.authService.checkUser(result.value.email);
+      if(exists) {
+        let merchants = await this.merchantsService.merchants({ findBy: { owner: exists._id } });
+        if(merchants.length > 0) {
+          let defaultMerchant = merchants.find(merchant => merchant.default);
+          if(defaultMerchant) {
+            this.openLinkDialog(defaultMerchant);
+          } else {
+            this.openLinkDialog(merchants[0])
+          }
+        } else {
+          let merchant = await this.merchantsService.createMerchant({ owner: exists._id });
+          console.log(merchant)
+          this.openLinkDialog(merchant.createMerchant);
+        }        
+      } else {
+        let user = await this.authService.signup({email: result.value.email}, 'none');
+        let merchant = await this.merchantsService.createMerchant({ owner: user._id });
+        this.openLinkDialog(merchant.createMerchant);
+      }
+    });
   }
 }
