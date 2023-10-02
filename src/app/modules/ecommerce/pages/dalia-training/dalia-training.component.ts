@@ -34,6 +34,8 @@ export class DaliaTrainingComponent implements OnInit {
   } = null;
   editingQuestion: boolean = false;
   laiaPlaceholder = `Ejemplo:\n\nTrabajamos de 8 a 9 de la noche, de lunes a viernes, y de 8 a 12pm los sábados, los domingos estamos cerrados. Trabajamos de 8 a 9 de la noche, de lunes a viernes, y de 8 a 12pm los sábados, los domingos estamos cerrados.\n\nTrabajamos de 8 a 9 de la noche, de lunes a viernes, y de 8 a 12pm los sábados, los domingos estamos cerrados.\n\n`;
+  timeoutDeleteKey: any = null;
+  timeoutCutKey: any = null;
 
   constructor(
     private gptService: Gpt3Service,
@@ -69,15 +71,31 @@ export class DaliaTrainingComponent implements OnInit {
     document.addEventListener('keydown', (event: KeyboardEvent) => {
       const targetElement: HTMLElement = event.target as HTMLElement;
 
-      // Check for allowed keys on keydown
       if (
         (event.key === 'Delete' || event.key === 'Backspace') &&
         this.passedTextLimit &&
-        targetElement.classList.contains('base-text')
+        targetElement.classList.contains('base-text') &&
+        textarea.scrollHeight <= 169
       ) {
         textarea.style.height = '169px';
         this.showExtendButton = false;
         this.alreadyClickedShowButton = false;
+      } else if (
+        (event.key === 'Delete' || event.key === 'Backspace') &&
+        this.passedTextLimit &&
+        targetElement.classList.contains('base-text') &&
+        textarea.scrollHeight >= 169
+      ) {
+        if (!this.timeoutDeleteKey)
+          this.timeoutDeleteKey = setTimeout(() => {
+            if (textarea.scrollHeight <= 169) {
+              textarea.style.height = '169px';
+              this.showExtendButton = false;
+              this.alreadyClickedShowButton = false;
+            }
+
+            clearTimeout(this.timeoutDeleteKey);
+          }, 400);
       }
 
       if (
@@ -92,6 +110,14 @@ export class DaliaTrainingComponent implements OnInit {
         textarea.style.height = '169px';
         this.showExtendButton = false;
         this.alreadyClickedShowButton = false;
+
+        if (!this.timeoutCutKey) {
+          this.timeoutCutKey = setTimeout(() => {
+            textarea.style.height = '169px';
+            this.showExtendButton = false;
+            this.alreadyClickedShowButton = false;
+          }, 400);
+        }
         event.preventDefault();
       }
     });
