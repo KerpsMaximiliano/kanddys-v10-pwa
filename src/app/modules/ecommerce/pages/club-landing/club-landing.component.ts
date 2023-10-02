@@ -69,6 +69,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
   assetsFolder: string = environment.assetsUrl;
   URI: string = environment.uri;
+  qrdata: string | undefined = undefined;
   openNavigation: boolean = false;
   queryParamsSubscription: Subscription = null;
   routerParamsSubscription: Subscription = null;
@@ -307,6 +308,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
           {
             value: "Descargar QR",
             callback: () => {
+              this.qrdata = this.link;
               this.downloadQr()
             }
           }
@@ -500,6 +502,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   async openLinkDialog(merchant?: Merchant) {
     let slug;
     if(merchant) {
+      console.log(merchant)
       slug = merchant.slug;
     } else {
       await this.merchantsService.merchantDefault().then((res) => {
@@ -524,6 +527,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         {
           value: "Descarga el QR",
           callback: () => {
+            this.qrdata = link;
             this.downloadQr();
           },
         },
