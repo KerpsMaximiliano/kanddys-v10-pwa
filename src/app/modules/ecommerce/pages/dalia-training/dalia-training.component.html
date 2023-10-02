@@ -1,0 +1,105 @@
+<div class="container">
+  <header>
+    <div class="knowledge-slot-header">
+      Memoria <span class="knowledge-slot-name">Sin nombre</span>
+    </div>
+    <div class="close-button">X</div>
+  </header>
+
+  <main>
+    <div class="base-text-wrapper">
+      <label for="base-text">TEXTO BASE DE LA MEMORIA</label>
+
+      <div class="textarea-wrapper" [formGroup]="form">
+        <textarea
+          name="base-text"
+          formControlName="memory"
+          id="base-text"
+          placeholder="Escribe en la memoria de laia"
+          class="base-text"
+        ></textarea>
+
+        <button
+          class="see-more"
+          (click)="showMoreText()"
+          *ngIf="showExtendButton"
+        >
+          VER TODO
+        </button>
+      </div>
+
+      <div class="request-response-box" *ngIf="generatedQA">
+        <div class="question-box-wrapper">
+          <div class="content" [formGroup]="questionForm">
+            <div class="question-box" *ngIf="!editingQuestion">
+              {{ generatedQA.question }}
+            </div>
+
+            <input
+              *ngIf="editingQuestion"
+              type="text"
+              class="question-box-input"
+              formControlName="question"
+            />
+
+            <img
+              (click)="editOrApplyQuestionChange()"
+              [ngClass]="{
+                editing: true
+              }"
+              [src]="
+                assetsFolder +
+                (editingQuestion ? '/check-black.svg' : '/edit-comment.svg')
+              "
+              alt="edit question"
+            />
+          </div>
+
+          <div class="sender">
+            {{
+              headerService.user.name ||
+                headerService.user.email ||
+                headerService.user.phone
+            }}
+          </div>
+        </div>
+
+        <div class="response-box-wrapper">
+          <div class="content">
+            <div class="response-box">{{ generatedQA.response }}</div>
+
+            <div class="sender">LAIA</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer *ngIf="!generatedQA?.response">Escribe en la Memoria de Laia</footer>
+  <footer
+    class="save"
+    *ngIf="form.get('memory').value && generatedQA?.response"
+    (click)="saveMemoryInKnowledgeBase()"
+  >
+    Salva la Memoria
+  </footer>
+
+  <section
+    class="input-area"
+    [formGroup]="inputQuestionForm"
+    *ngIf="form.get('memory').value && !generatedQA?.response"
+  >
+    <textarea
+      formControlName="question"
+      placeholder="Escríbele. Laia te responderá de su memoria.."
+    ></textarea>
+
+    <button>
+      <img
+        [src]="assetsFolder + '/submit-btn.svg'"
+        alt="edit question"
+        (click)="testMemory()"
+      />
+    </button>
+  </section>
+</div>

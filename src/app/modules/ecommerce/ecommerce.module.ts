@@ -76,6 +76,7 @@ import { NotificationAccessScreenComponent } from './pages/notification-access-s
 import { ProfloraCampainComponent } from './pages/proflora-campain/proflora-campain.component';
 import { ChatRoomComponent } from './pages/chat-room/chat-room.component';
 import { DaliahChatComponent } from './pages/daliah-chat/daliah-chat.component';
+import { DaliaTrainingComponent } from './pages/dalia-training/dalia-training.component';
 
 const routes: Routes = [
   {
@@ -291,6 +292,10 @@ const routes: Routes = [
     component: DaliahChatComponent
   },
   {
+    path: 'daliah-training',
+    component: DaliaTrainingComponent
+  },
+  {
     path: ':merchantSlug',
     component: EcommerceComponent,
     children: [
@@ -436,6 +441,10 @@ const routes: Routes = [
         path: 'chat-merchant/:chatId',
         component: ChatRoomComponent,
       },
+      {
+        path: 'daliah-training',
+        component: DaliaTrainingComponent
+      }
     ],
   },
 
@@ -498,6 +507,7 @@ const routes: Routes = [
     ProfloraCampainComponent,
     ChatRoomComponent,
     DaliahChatComponent,
+    DaliaTrainingComponent,
   ],
   imports: [
     CommonModule,

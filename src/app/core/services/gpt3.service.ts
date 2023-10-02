@@ -25,11 +25,12 @@ export class Gpt3Service {
 
   async generateResponseForTemplate(
     templateObject: any,
-    templateId: string
+    templateId: string,
+    code: string
   ): Promise<string> {
     const result = await this.graphql.mutate({
       mutation: generateResponseForTemplate,
-      variables: { templateObject, templateId },
+      variables: { templateObject, templateId, code },
     });
     return result.generateResponseForTemplate;
   }

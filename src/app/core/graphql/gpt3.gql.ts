@@ -3,11 +3,13 @@ import gql from 'graphql-tag';
 export const generateResponseForTemplate = gql`
   mutation generateResponseForTemplate(
     $templateObject: JSON!
-    $templateId: ObjectID!
+    $templateId: ObjectID
+    $code: String!
   ) {
     generateResponseForTemplate(
       templateObject: $templateObject
       templateId: $templateId
+      code: $code
     )
   }
 `;

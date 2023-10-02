@@ -18,7 +18,11 @@ $rewardcharly-accent: mat-palette($mat-pink, A200, A100, A400);
 $rewardcharly-warn: mat-palette($mat-red);
 
 // Create the theme object (a Sass map containing all of the palettes).
-$rewardcharly-theme: mat-light-theme($rewardcharly-primary, $rewardcharly-accent, $rewardcharly-warn);
+$rewardcharly-theme: mat-light-theme(
+  $rewardcharly-primary,
+  $rewardcharly-accent,
+  $rewardcharly-warn
+);
 
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
@@ -50,8 +54,8 @@ $rewardcharly-theme: mat-light-theme($rewardcharly-primary, $rewardcharly-accent
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
-    "Helvetica Neue", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   font-size: 14px;
   background-color: #f6f6f6;
   // background-image: url(https://storage.needpix.com/rsynced_images/geometric-pattern-3d-blocks.jpg);
@@ -118,8 +122,8 @@ a {
 }
 
 ::ng-deep .snack-toast-error {
-  background-color: #BD362F !important;
-  color: #FFF;
+  background-color: #bd362f !important;
+  color: #fff;
 }
 
 .transparent {
@@ -241,14 +245,16 @@ a {
 
 @font-face {
   font-family: "Commercial-Script";
-  src: url("https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/Commercial-Script.ttf") format("truetype");
+  src: url("https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/Commercial-Script.ttf")
+    format("truetype");
   font-display: swap;
   // src: url("../src/assets/fonts/Commercial-Script.ttf") format("truetype");
 }
 
 @font-face {
   font-family: "Onyx";
-  src: url("https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/ONYX.TTF") format("truetype");
+  src: url("https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/ONYX.TTF")
+    format("truetype");
   font-display: swap;
   // src: url("../src/assets/fonts/ONYX.TTF") format("truetype");
 }
@@ -273,13 +279,15 @@ a {
 
 @font-face {
   font-family: "SfProMedium";
-  src: url("../src/assets/fonts/FontsFree-Net-SFProDisplay-Medium.ttf") format("truetype");
+  src: url("../src/assets/fonts/FontsFree-Net-SFProDisplay-Medium.ttf")
+    format("truetype");
   font-display: swap;
 }
 
 @font-face {
   font-family: "SfProBold";
-  src: url("../src/assets/fonts/FontsFree-Net-SFProDisplay-Bold.ttf") format("truetype");
+  src: url("../src/assets/fonts/FontsFree-Net-SFProDisplay-Bold.ttf")
+    format("truetype");
   font-display: swap;
 }
 
@@ -340,20 +348,23 @@ a {
 
 @font-face {
   font-family: "Cheltenham";
-  src: url("https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/CheltenhamStdBold.otf") format("opentype");
+  src: url("https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/CheltenhamStdBold.otf")
+    format("opentype");
   font-display: swap;
   // src: url("../src/assets/fonts/CheltenhamStdBold.otf") format("opentype");
 }
 
 @font-face {
   font-family: "CheltenhamStd-HdtooledBold";
-  src: url("../src/assets/fonts/CheltenhamStd-HdtooledBold.otf") format("opentype");
+  src: url("../src/assets/fonts/CheltenhamStd-HdtooledBold.otf")
+    format("opentype");
   font-display: swap;
 }
 
 @font-face {
   font-family: "AirForce45-Regular";
-  src: url("https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/AirForce45-Regular.ttf") format("truetype");
+  src: url("https://storage-rewardcharly.sfo2.digitaloceanspaces.com/fonts/AirForce45-Regular.ttf")
+    format("truetype");
   font-display: swap;
 }
 
@@ -371,6 +382,11 @@ a {
 @font-face {
   font-family: "Inter";
   src: url("../src/assets/fonts/Inter-Regular.ttf");
+}
+
+@font-face {
+  font-family: "FiraSans-SemiBold.ttf";
+  src: url("../src/assets/fonts/FiraSans-SemiBold.ttf");
 }
 
 @font-face {
@@ -440,5 +456,6 @@ body {
   width: 100%;
   height: 100%;
   padding: 3rem !important;
-  filter: invert(87%) sepia(40%) saturate(582%) hue-rotate(60deg) brightness(101%) contrast(89%);
+  filter: invert(87%) sepia(40%) saturate(582%) hue-rotate(60deg)
+    brightness(101%) contrast(89%);
 }
