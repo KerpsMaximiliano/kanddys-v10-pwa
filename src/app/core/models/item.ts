@@ -82,7 +82,6 @@ export class Item extends Model<Item> {
   showImages: boolean;
   status: ItemStatus;
   notifications: string[];
-
   customizerId?: string;
   totalPrice?: number;
   amount?: number;
@@ -108,6 +107,10 @@ export class Item extends Model<Item> {
   approvedByAdmin?: boolean;
   priceOriginal?:number;
   useStock?: boolean;
+  estimatedDeliveryTime?: {
+    from?: number;
+    until?: number;
+  };
 }
 
 export class ItemImage extends Model<ItemImage> {
@@ -216,6 +219,10 @@ export class ItemInput {
   approvedByAdmin?: boolean;
   offerPrice?:number;
   activeOffer?:boolean;
+  estimatedDeliveryTime?: {
+    from?: number;
+    until?: number;
+  };
 }
 
 export class ItemImageInput {

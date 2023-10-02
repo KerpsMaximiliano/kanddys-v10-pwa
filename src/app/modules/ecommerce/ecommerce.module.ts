@@ -73,6 +73,7 @@ import { MagicLinkSentComponent } from './pages/magic-link-sent/magic-link-sent.
 import { MerchantRegisterComponent } from './pages/merchant-register/merchant-register.component';
 import { LoginLandingComponent } from './pages/login-landing/login-landing.component';
 import { NotificationAccessScreenComponent } from './pages/notification-access-screen/notification-access-screen.component';
+import { AdminArticleDetailComponent } from './pages/admin-article-detail/admin-article-detail.component';
 import { ProfloraCampainComponent } from './pages/proflora-campain/proflora-campain.component';
 import { ChatRoomComponent } from './pages/chat-room/chat-room.component';
 import { DaliahChatComponent } from './pages/daliah-chat/daliah-chat.component';
@@ -289,11 +290,15 @@ const routes: Routes = [
   },
   {
     path: 'daliah-chat',
-    component: DaliahChatComponent
+    component: DaliahChatComponent,
   },
   {
     path: 'daliah-training',
-    component: DaliaTrainingComponent
+    component: DaliaTrainingComponent,
+  },
+  {
+    path: 'admin-article-detail/:itemId',
+    component: AdminArticleDetailComponent,
   },
   {
     path: ':merchantSlug',
@@ -443,11 +448,10 @@ const routes: Routes = [
       },
       {
         path: 'daliah-training',
-        component: DaliaTrainingComponent
-      }
+        component: DaliaTrainingComponent,
+      },
     ],
   },
-
 ];
 
 @NgModule({
@@ -504,6 +508,7 @@ const routes: Routes = [
     MerchantRegisterComponent,
     LoginLandingComponent,
     NotificationAccessScreenComponent,
+    AdminArticleDetailComponent,
     ProfloraCampainComponent,
     ChatRoomComponent,
     DaliahChatComponent,
@@ -524,4 +529,4 @@ const routes: Routes = [
     }),
   ],
 })
-export class EcommerceModule { }
+export class EcommerceModule {}

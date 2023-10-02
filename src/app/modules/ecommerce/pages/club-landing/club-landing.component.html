@@ -12,7 +12,7 @@
             (click)="openMsgDialog()"
           /> -->
     
-          <div class="title" (click)="openMsgDialog()">www.flores.club</div>
+          <div class="title" (click)="openMsgDialog()">LaiaChat para www.flores.club</div>
         </div>
     
         <div class="right-part">
@@ -36,38 +36,69 @@
         
         <div class="tab-bar flex">
           <div class="tab" (click)="tabarIndex=0" [ngClass]="{active: !tabarIndex}">
-            <div class="text">Dal<span>ia</span>h</div>
-            <div class="icon" *ngIf="!tabarIndex">
-              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="7" viewBox="0 0 10 7" fill="none">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M10 1.25313L5 6.25312L-1.00845e-06 1.25312L1.25 -3.82475e-07L5 3.75313L8.75 -5.46392e-08L10 1.25313Z" fill="#7B7B7B"/>
-              </svg>
-            </div>
+            <div class="text">Testimonios</div>
           </div>
-          <div class="tab" (click)="tabarIndex=1" [ngClass]="{active: tabarIndex}">
-            <div class="text">Invitacione$</div>
-            <div class="icon" *ngIf="tabarIndex">
-              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="7" viewBox="0 0 10 7" fill="none">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M10 1.25313L5 6.25312L-1.00845e-06 1.25312L1.25 -3.82475e-07L5 3.75313L8.75 -5.46392e-08L10 1.25313Z" fill="#7B7B7B"/>
-              </svg>
-            </div>
+          <div class="tab" (click)="tabarIndex=1" [ngClass]="{active: tabarIndex === 1}">
+            <div class="text">Compra&Venta</div>
+          </div>
+          <div class="tab" (click)="tabarIndex=2" [ngClass]="{active: tabarIndex === 2}">
+            <div class="text">Memoria de Laia</div>
+          </div>
+          <div class="tab" (click)="tabarIndex=3" [ngClass]="{active: tabarIndex === 3}">
+            <div class="text">Gana$</div>
           </div>
         </div>
 
-        <div class="tab-header">
+        <!--
+          <div class="tab-header">
           <div class="subject" *ngIf="!tabarIndex">
             Dal<span>ia</span>hChat
           </div>
-          <div class="subject" *ngIf="tabarIndex">
+          <div class="subject" *ngIf="tabarIndex === 3">
             Invitacione<span>$</span>
           </div>
           <div class="info" *ngIf="!tabarIndex">
             Tu asistente con <span>I</span>nteligencia <span>A</span>rtificial percibida para la Industria Floral
           </div>
-          <div class="info" *ngIf="tabarIndex">
+          <div class="info" *ngIf="tabarIndex === 3">
             El programa que te genera un ingreso mensual, recurrente y sin límites!!
           </div>
         </div>
-
+        -->
+        <p class="explain-text" *ngIf="!tabarIndex">
+          “Te ahorro tiempo comprando, vendiendo y automatizando las respuestas de tu WhatsApp, Instagram y Website”
+        </p>
+        <div class="green-text" *ngIf="!tabarIndex">
+          <p (click)="openCompareDialog()">Compárame con las mejores plataformas</p>
+          <p>Ya nos conocemos?</p>
+        </div>
+        <div class="footer-swiper" *ngIf="!tabarIndex">
+          <div class="slide-item borderless">
+            <div class="flex">
+              <div class="image">
+                <img src="../../../../../assets/images/avatar.svg" alt="">
+              </div>
+              <div class="info">
+                <div class="name">La<span>ia</span></div>
+                <div class="role">Asistente Virtual que utiliza Inteligencia Artificial</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <span *ngIf="!tabarIndex" class="line"></span>
+        <div class="tab-header" *ngIf="tabarIndex === 3">
+          <p class="subject">Ganas dinero mensual, recurrente y sin límites cuando invitas al Club.</p>
+          <p class="info">Del dinero recolectado cada mes para Laia, TU como Embajador ganas el 15% de cada invitado directo y el 10% de todos los indirectos*</p>
+          <p class="small">*Miembros que invitaron a quienes invitaste.</p>
+          <button (click)="invite()" class="button">
+            <p>Invita con tu enlace</p>
+            <mat-icon>ios_share</mat-icon>
+          </button>
+          <button *ngIf="headerService.user" class="button">
+            <p>Mira a tus invitados miembros</p>
+          </button>
+        </div>
+        <!--
         <div class="tools" *ngIf="!tabarIndex">
           <div class="tool" (click)="openClubDialog()">
             <div class="icon">
@@ -98,14 +129,16 @@
             </div>
           </div>
         </div>
-
+        -->
+        <!--
         <div class="action-part" *ngIf="tabarIndex">
           <div class="actions">
             <div class="action" (click)="enterClub()">Comparte tu invitación</div>
-            <!-- <div class="action" *ngIf="headerService.user">💚 Mira tus referidos directos e indirectos</div> -->
+            <div class="action" *ngIf="headerService.user">💚 Mira tus referidos directos e indirectos</div>
             <div class="action">Mira como funciona</div>
           </div>
         </div>
+        
         <div class="desc" *ngIf="tabarIndex">
           <p class="text">
             Este programa te brinda una posibilidad de incrementar tus ingresos sin límites.
@@ -118,10 +151,10 @@
             <br><br><span>Caso de uso:</span><br>
             Es una manera fácil de invitar en las facturas que le entregas a tus clientes.
           </div>
-        </div>
+        </div>-->
         <div class="tabs-container" *ngIf="!tabarIndex">
           <!-- TABS -->
-          <!-- <h3 class="footer-swiper-title">TESTIMONIOS DE QUIENES ESTAN USANDO LA VERSION BETA DE DAL<span>IA</span>H</h3> -->
+          <h3 class="footer-swiper-title">TESTIMONIOS DE QUIENES ME ESTAN EDUCANDO</h3>
           <div class="footer-swiper">
             <div class="swiper-custom-container">
               <!-- <swiper [config]="swiperConfig"> -->
@@ -144,8 +177,8 @@
           </div>
         </div>
       </main>
-      <div class="message">
-        <input type="text" placeholder="Daliah: hola como puedo ayudarte?">
+      <div class="message" *ngIf="!tabarIndex">
+        <input type="text" placeholder="Laia: hola como puedo ayudarte?">
         <button>
           <svg xmlns="http://www.w3.org/2000/svg" width="39" height="39" viewBox="0 0 39 39" fill="none">
             <g clip-path="url(#clip0_1398_3484)">
@@ -159,7 +192,7 @@
           </svg>
         </button>
       </div>
-      <footer (click)="share()" class="footer no-green" [ngClass]="{'no-green': headerService.user}">{{headerService.user?"💚 Trae invitados y gana $ cada mes":"Inscríbete e Invita, juntos es mejor!!"}}</footer>
+      <footer *ngIf="!tabarIndex" (click)="share()" class="footer no-green" [ngClass]="{'no-green': headerService.user}">{{headerService.user?"💚 Trae invitados y gana $ cada mes":"Inscríbete e Invita, juntos es mejor!!"}}</footer>
         <app-login-flow
           *ngIf="loginflow"
           [redirectionRoute]="redirectionRoute"

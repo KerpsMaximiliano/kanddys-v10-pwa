@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { SwiperOptions } from 'swiper';
 import { GoogleSigninService } from 'src/app/core/services/google-signin.service';
@@ -25,7 +25,6 @@ import {
 } from 'src/app/shared/dialogs/form/form.component';
 import { FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { ChangeDetectorRef } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   OptionsDialogComponent,
@@ -92,19 +91,19 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
   list = [
     {
-      text: '\"Daliah, nos impulsa a avanzar para no quedarnos atrás\"',
+      text: '\"Laia, nos impulsa a avanzar para no quedarnos atrás\"',
       avatar: '',
       name: 'José Miguel Caffaro',
       role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
-      text: '\"Daliah, nos impulsa a avanzar para no quedarnos atrás\"',
+      text: '\"Laia, nos impulsa a avanzar para no quedarnos atrás\"',
       avatar: '',
       name: 'José Miguel Caffaro',
       role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
-      text: '\"Daliah, nos impulsa a avanzar para no quedarnos atrás\"',
+      text: '\"Laia, nos impulsa a avanzar para no quedarnos atrás\"',
       avatar: '',
       name: 'José Miguel Caffaro',
       role: 'Proveedor de flores frescas, follajes y bases'
@@ -179,11 +178,19 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.queryParamsSubscription = this.route.queryParams.subscribe(
+      (params) => {
+        if (params.tabarIndex) {
+          this.tabarIndex = parseInt(params.tabarIndex);
+        }
+      }
+    );
     this.googleSigninService.observable().subscribe((user) => {
       this.user = user;
       console.log(user)
       this.changeDetectorRef.detectChanges();
     })
+    this.openLaiaDialog()
   }
 
   showRoleDialog() {
@@ -330,6 +337,61 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     this.openNavigation = true;
   }
 
+  openLaiaDialog() {
+    this.bottomSheet.open(OptionsMenuComponent, {
+      data: {
+        title: "LaiaChat con desconocido de la industria floral",
+        description:"Hola, soy Laia, en que te puedo ser mas útil?",
+        options: [
+          {
+            value: "En lo que compras",
+            callback: () => {
+            },
+          },
+          {
+            value: "En lo que vendes",
+            callback: () => {
+            },
+          },
+          {
+            value: "Quisieras vender más",
+            callback: () => {
+            },
+          },
+          {
+            value: "En el seguimiento de lo que vendiste",
+            callback: () => {
+            },
+          },
+          {
+            value: "En el control de tus ingresos y egresos",
+            callback: () => {
+            },
+          },
+        ],
+        styles: {
+          title:{
+            color: "var(--Fondo-de-Pantallas, #F6F6F6)",
+            fontFamily: "Inter",
+            fontSize: "16px",
+          },
+          description: {
+            borderRadius: "57.335px",
+            opacity: "0.8",
+            backgroundColor: "var(--El-verdecito, #87CD9B)",
+            color: "var(--El-mas-oscuro, #181D17)",
+            fontFamily: "Inter",
+            fontSize: "16.107px",
+            width: "215px",
+            padding: "6px 12px",
+          },
+          noDarkOverlay: true,
+          lightBg: true,
+        },
+      },
+    });
+  }
+
   openClubDialog() {
     this.bottomSheet.open(ClubDialogComponent, {
       data: {
@@ -408,8 +470,47 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   resetLoginDialog(event) {
-    console.log('fire', event)
     this.loginflow = false;
+    this.changeDetectorRef.detectChanges();
+    if(this.tabarIndex === 3 && this.headerService.user) {
+      this.openLinkDialog();
+    }
+  }
+
+  async openLinkDialog() {
+    let slug;
+    await this.merchantsService.merchantDefault().then((res) => {
+      console.log(res)
+      slug = res.slug
+    })
+    let link = this.URI+this.router.url+'?affiliateCode='+slug
+    console.log(link)
+    let dialogData = {
+      title: "Gana dinero cada mes, recurrente y sin limites",
+      bottomLabel: "Tu enlace es: " + link,
+      options: [
+        {
+          value: "Comparte tu enlace",
+          callback: () => {
+            this.ngNavigatorShareService.share({
+              title: "Compartir enlace de www.flores.club",
+              url: `${link}`,
+            });
+          },
+        },
+        {
+          value: "Descarga el QR",
+          callback: () => {
+            this.downloadQr();
+          },
+        },
+      ],
+    };
+
+    let dialogRef = this.bottomSheet.open(OptionsMenuComponent, {
+      data: dialogData,
+    });
+    console.log(dialogRef)
   }
 
   downloadQr() {
@@ -428,6 +529,15 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       link.href = url;
       link.download = "Landing QR Code";
       link.click();
+    }
+  }
+
+  invite() {
+    if(!this.headerService.user) {
+      this.redirectionRoute = '/ecommerce/club-landing?tabarIndex=3'
+      this.loginflow = true;
+    } else {
+      this.openLinkDialog();
     }
   }
 }
