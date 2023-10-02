@@ -2,9 +2,9 @@ import { Injectable, EventEmitter } from '@angular/core';
 import { Subject } from 'rxjs';
 
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
-import { Item } from '../models/item';
+import { Item, RangeDate } from '../models/item';
 import { ItemOrder } from '../models/order';
-import { PaginationInput } from '../models/saleflow';
+import { PaginationInput, PaginationRangeInput } from '../models/saleflow';
 import { Tag } from '../models/tags';
 import { RecurrentUserData, User, UserInput } from '../models/user';
 import { ViewsMerchant } from '../models/views-merchant';
@@ -68,11 +68,13 @@ import {
 } from './../models/merchant';
 import { Contact } from '../models/contact';
 import { carts, getMe, taxesByMerchant } from '../graphql/cart.gql';
+import { AffiliateService } from './affiliate.service';
+import { AffiliateInput } from '../models/affiliate';
 
 @Injectable({ providedIn: 'root' })
 export class MerchantsService {
   loadedMerchantData = new Subject();
-  constructor(private graphql: GraphQLWrapper) {}
+  constructor(private graphql: GraphQLWrapper, private affiliateService: AffiliateService) { }
   merchantData: Merchant;
   temporalMerchantInput: any | null = null;
   merchantContact: Contact;
@@ -326,7 +328,20 @@ export class MerchantsService {
     });
 
     if (!result || result?.errors) return undefined;
-    console.log(result);
+    console.log(result.createMerchant);
+    if (localStorage.getItem("affiliateCode")) {
+      const input: AffiliateInput = {
+        reference: result.createMerchant._id
+      }
+      try {
+        this.affiliateService.createAffiliate(localStorage.getItem("affiliateCode"), input);
+        localStorage.removeItem("affiliateCode");
+      } catch (error) {
+        console.log(error);
+
+      }
+
+    }
     return result;
   }
 
@@ -586,7 +601,7 @@ export class MerchantsService {
   ) {
     const result = await this.graphql.query({
       query: merchantFuncionality,
-      variables: { merchantId},
+      variables: { merchantId },
       fetchPolicy: 'no-cache',
       context: { useMultipart: true },
     });
@@ -596,12 +611,12 @@ export class MerchantsService {
   }
 
   async updateMerchantFuncionality(
-    input:any,
+    input: any,
     merchantId: string,
   ) {
     const result = await this.graphql.mutate({
       mutation: updateMerchantFuncionality,
-      variables: {input, merchantId},
+      variables: { input, merchantId },
       fetchPolicy: 'no-cache',
       context: { useMultipart: true },
     });
@@ -610,7 +625,7 @@ export class MerchantsService {
     return result.updateMerchantFuncionality;
   }
 
-  async paginateUsers (input: PaginationInput) {
+  async paginateUsers(input: PaginationInput) {
     const result = await this.graphql.query({
       query: paginateUsers,
       variables: { input },
@@ -621,11 +636,11 @@ export class MerchantsService {
     return result.paginateUsers;
   }
 
-  async payUserStarAffiliate (
-    screenshot : File, 
-    paymentMethod : string, 
-    userId : string, 
-    merchantId : string
+  async payUserStarAffiliate(
+    screenshot: File,
+    paymentMethod: string,
+    userId: string,
+    merchantId: string
   ) {
     const result = await this.graphql.mutate({
       mutation: payUserStarAffiliate,
@@ -663,7 +678,7 @@ export class MerchantsService {
     return response?.ordersCommissionableItemsCount;
   }
 
-  async merchantGroupFiltersQuantity (merchantId: string, type:string) {
+  async merchantGroupFiltersQuantity(merchantId: string, type: string) {
     const result = await this.graphql.query({
       query: merchantGroupFiltersQuantity,
       variables: { merchantId, type },
@@ -674,7 +689,7 @@ export class MerchantsService {
     return result?.merchantGroupFiltersQuantity;
   }
 
-  async merchantGroupByType (input: PaginationInput) {
+  async merchantGroupByType(input: PaginationInput) {
     const result = await this.graphql.query({
       query: merchantGroupByType,
       variables: { input },
@@ -685,7 +700,7 @@ export class MerchantsService {
     return result?.merchantGroupByType;
   }
 
-  async getDataCountries(){
+  async getDataCountries() {
     const result = await this.graphql.query({
       query: dataCountries,
       fetchPolicy: 'no-cache',
@@ -695,7 +710,7 @@ export class MerchantsService {
     return result?.dataCountries;
   }
 
-  async merchantQuantityOfFiltersRole(){
+  async merchantQuantityOfFiltersRole() {
     const result = await this.graphql.query({
       query: merchantQuantityOfFiltersRole,
       fetchPolicy: 'no-cache',
@@ -705,7 +720,7 @@ export class MerchantsService {
     return result?.merchantQuantityOfFiltersRole;
   }
 
-  async merchantQuantityOfFiltersCountry(){
+  async merchantQuantityOfFiltersCountry() {
     const result = await this.graphql.query({
       query: merchantQuantityOfFiltersCountry,
       fetchPolicy: 'no-cache',
@@ -715,7 +730,7 @@ export class MerchantsService {
     return result?.merchantQuantityOfFiltersCountry;
   }
 
-  async merchantQuantityOfFiltersCampaign(){
+  async merchantQuantityOfFiltersCampaign() {
     const result = await this.graphql.query({
       query: merchantQuantityOfFiltersCampaign,
       fetchPolicy: 'no-cache',

@@ -656,7 +656,6 @@ query merchantGroupFiltersQuantity($merchantId: ObjectID!, $type: String){
   )
 }`;
 
-
 export const dataCountries = gql`
 query dataCountries{
   dataCountries

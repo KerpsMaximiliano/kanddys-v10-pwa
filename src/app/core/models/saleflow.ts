@@ -116,6 +116,7 @@ export class PaginationInput {
   options?: PaginationOptionsInput;
   findBy?: any;
   filter?: any;
+  reference?:string
 }
 
 export class SaleflowModuleConfigInput {
