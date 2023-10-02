@@ -53,9 +53,16 @@
             <div class="content-card" >
               <div class="display-flex">
                 <div class="content-card-info">
-                  <p class="content-card-title">{{affiliate.reference.name}}</p>
+                  <p class="content-card-title">
+                    {{ 
+                      affiliate?.reference?.name ? 
+                      affiliate?.reference?.name : 
+                      affiliate?.reference?.owner.email ? 
+                      affiliate?.reference?.owner.email :
+                      affiliate?.reference?.owner.phone
+                    }}</p>
                   <p class="content-card-extra-info">
-                    {{affiliate.secondaryCount.number}} indirectos</p>
+                    {{affiliate?.secondaryCount?.number}} indirectos</p>
                 </div>
               </div>
               <div>
