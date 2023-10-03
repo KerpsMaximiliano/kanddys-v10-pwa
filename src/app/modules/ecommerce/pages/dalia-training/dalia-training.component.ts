@@ -48,7 +48,7 @@ export class DaliaTrainingComponent implements OnInit {
     const textarea: HTMLElement = document.querySelector('.base-text');
 
     textarea.addEventListener('input', () => {
-      console.log("textarea scrollHeight", textarea.scrollHeight);
+      console.log('textarea scrollHeight', textarea.scrollHeight);
       if (textarea.scrollHeight > 171) {
         if (this.showExtendButton === false) {
           this.showExtendButton = true;
@@ -153,6 +153,11 @@ export class DaliaTrainingComponent implements OnInit {
           question: qaObject.question,
           response: qaObject.response,
         };
+
+        setTimeout(() => {
+          // Call the function to scroll to the bottom smoothly
+          this.scrollToBottom();
+        }, 500);
       }
 
       unlockUI();
@@ -232,5 +237,12 @@ export class DaliaTrainingComponent implements OnInit {
       console.error(error);
       unlockUI();
     }
+  }
+
+  scrollToBottom() {
+    const scrollElem = document.querySelector('#question-response-bottom');
+    scrollElem.scrollIntoView();
+
+    console.log('scrolleando');
   }
 }

@@ -6,7 +6,11 @@
     <div class="close-button">X</div>
   </header>
 
-  <main>
+  <main
+    [ngClass]="{
+      inputPending: form.get('memory').value && !generatedQA?.response
+    }"
+  >
     <div class="base-text-wrapper">
       <label for="base-text">TEXTO BASE DE LA MEMORIA</label>
 
@@ -81,6 +85,8 @@
           </div>
         </div>
       </div>
+
+      <div id="question-response-bottom"></div>
     </div>
   </main>
 

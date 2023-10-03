@@ -1,5 +1,6 @@
 .container {
   height: 100%;
+  scroll-behavior: smooth;
 
   header {
     position: fixed;
@@ -75,6 +76,10 @@
     min-height: 100%;
     padding: 0px 24px;
     padding-bottom: 48px;
+
+    &.inputPending {
+      padding-bottom: 95px;
+    }
   }
 
   .base-text-wrapper {
