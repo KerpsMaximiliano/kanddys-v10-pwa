@@ -154,10 +154,13 @@ export class DaliaTrainingComponent implements OnInit {
           response: qaObject.response,
         };
 
-        setTimeout(() => {
-          // Call the function to scroll to the bottom smoothly
-          this.scrollToBottom();
-        }, 500);
+        // Usage example:
+        if (this.isTextareaFullHeight('base-text')) {
+          setTimeout(() => {
+            // Call the function to scroll to the bottom smoothly
+            this.scrollToBottom();
+          }, 500);
+        }
       }
 
       unlockUI();
@@ -244,5 +247,14 @@ export class DaliaTrainingComponent implements OnInit {
     scrollElem.scrollIntoView();
 
     console.log('scrolleando');
+  }
+
+  isTextareaFullHeight(textareaId: string) {
+    const textarea = document.getElementById(textareaId); // Replace 'yourTextareaId' with the actual ID of your textarea element
+
+    const textareaHeight = textarea.offsetHeight;
+    const windowHeight = window.innerHeight;
+
+    return textareaHeight >= windowHeight;
   }
 }
