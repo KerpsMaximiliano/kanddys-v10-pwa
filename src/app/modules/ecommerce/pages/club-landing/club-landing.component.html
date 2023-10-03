@@ -11,15 +11,15 @@
             alt="open internal information"
             (click)="openMsgDialog()"
           /> -->
-    
+
           <div class="title" (click)="openMsgDialog()">LaiaChat para www.flores.club</div>
         </div>
-    
+
         <div class="right-part">
           <!-- <div class="member">
             <div class="user-button" (click)="enterClub()" *ngIf="!headerService.user">Ingresa al club</div>
           </div> -->
-    
+
           <div class="close">
             <div *ngIf="headerService.user" (click)="showRoleDialog()">{{userID}}</div>
             <!-- <div *ngIf="!headerService.user" (click)="enterClub()">Soy Miembro</div> -->
@@ -31,9 +31,9 @@
           </div>
         </div>
       </div>
-    
+
       <main>
-        
+
         <div class="tab-bar flex">
           <div class="tab" (click)="tabarIndex=0" [ngClass]="{active: !tabarIndex}">
             <div class="text">Testimonios</div>
@@ -119,7 +119,7 @@
               </svg>
             </div>
             <div class="text">
-              Adiciona las informaciones que usualmente te preguntan. Crea Ofertas . Cotiza. 
+              Adiciona las informaciones que usualmente te preguntan. Crea Ofertas . Cotiza.
             </div>
           </div>
           <div class="tool" (click)="openCompareDialog()">
@@ -138,7 +138,7 @@
             <div class="action">Mira como funciona</div>
           </div>
         </div>
-        
+
         <div class="desc" *ngIf="tabarIndex">
           <p class="text">
             Este programa te brinda una posibilidad de incrementar tus ingresos sin límites.
@@ -178,7 +178,7 @@
         </div>
       </main>
       <div class="message" *ngIf="!tabarIndex">
-        <input type="text" placeholder="Laia: hola como puedo ayudarte?">
+        <input type="text" placeholder="Laia: hola como puedo ayudarte?" (click)="openLaiaDialog()">
         <button>
           <svg xmlns="http://www.w3.org/2000/svg" width="39" height="39" viewBox="0 0 39 39" fill="none">
             <g clip-path="url(#clip0_1398_3484)">
