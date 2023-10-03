@@ -82,11 +82,9 @@ export class SignupChatComponent implements OnInit {
     const message: string = this.chatFormGroup.get('input').value
     const isEmailValid = message && isEmail(message)
 
-    /**Para enviar mensajes que se escriben por primera vez */
-    if (isEmailValid && !this.isEdit) {
+    if (isEmailValid) {
       const newMessage = { sender: 'user', message, chatId: '' }
       await this.addMessage(newMessage)
-      console.log("Registrando...")
 
       try {
         const userRegistered = await this.authService.checkUser(message)
@@ -100,7 +98,6 @@ export class SignupChatComponent implements OnInit {
         }
 
         if (!userRegistered) {
-          console.log("usuario no registrado")
           await this.registerUser(message);
           await this.addMessage({
             sender: 'IA',
@@ -120,24 +117,24 @@ export class SignupChatComponent implements OnInit {
         console.error(error)
       }
     }
-
-    /**Para enviar mensajes editados */
-    if (isEmailValid && this.isEdit) {
-      console.log("Editando mensaje...")
-      const index = this.chat.messages.findIndex(message => message.sender === 'user')
-      this.chat.messages[index].message = message
-      this.isEdit = false
-      console.log("Dejando de editar", this.isEdit)
-      this.hideInput = true
-      console.log("ocultando input", this.hideInput)
-      return
-    }
   }
 
   async registerUser(email: string) {
     const input = { email }
     await this.authService.signup(input, "none")
-    console.log("Usuario rgistrado")
+  }
+
+  async sendEditMessage() {
+    const message: string = this.chatFormGroup.get('input').value
+    const isEmailValid = message && isEmail(message)
+
+    if (isEmailValid) {
+      const index = this.chat.messages.findIndex(message => message.sender === 'user')
+      this.chat.messages[index].message = message
+      await this.registerUser(message);
+      this.isEdit = false
+      this.hideInput = true
+    }
   }
 
   updateListMessages() {
@@ -154,7 +151,7 @@ export class SignupChatComponent implements OnInit {
     this.scrollToBottom()
   }
 
-  editMessage(message: Message) {
+  editMessage() {
     this.hideInput = false
     this.isEdit = true
   }

@@ -15,8 +15,8 @@
           <button
             class="button button-edit"
             role="button"
-            *ngIf="isEdit && i === chat?.messages.length"
-            (click)="editMessage(message)"
+            *ngIf="isEdit"
+            (click)="editMessage()"
           >
             <img
               src="../../../../assets/icons/edit-chat.svg"
@@ -47,7 +47,7 @@
       class="button button-submit"
       role="button"
       [disabled]="!chat"
-      (click)="sendMessage()"
+      (click)="!isEdit ? sendMessage() : sendEditMessage()"
     >
       <img
         src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fsend_black.svg"
