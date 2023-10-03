@@ -1,6 +1,6 @@
 import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
+import { MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
 import { isEmail } from 'src/app/core/helpers/strings.helpers';
 import { Chat, Message } from 'src/app/core/models/chat';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -33,6 +33,7 @@ export class SignupChatComponent implements OnInit {
   chatFormGroup: FormGroup = new FormGroup({
     input: new FormControl('', Validators.required),
   });
+  showEditButton = false;
   hideInput: boolean = false;
   isEdit: boolean = false
 
@@ -110,7 +111,7 @@ export class SignupChatComponent implements OnInit {
             chatId: ""
           })
           this.hideInput = true
-          this.isEdit = true
+          this.showEditButton = true
           return
         }
       } catch (error) {
@@ -131,14 +132,10 @@ export class SignupChatComponent implements OnInit {
     if (isEmailValid) {
       const index = this.chat.messages.findIndex(message => message.sender === 'user')
       this.chat.messages[index].message = message
-      await this.registerUser(message);
       this.isEdit = false
       this.hideInput = true
+      await this.registerUser(message);
     }
-  }
-
-  updateListMessages() {
-    this.chat.messages = [...this.chat.messages]
   }
 
   /**
@@ -154,6 +151,7 @@ export class SignupChatComponent implements OnInit {
   editMessage() {
     this.hideInput = false
     this.isEdit = true
+    this.showEditButton = false
   }
 
   scrollToBottom(): void {
