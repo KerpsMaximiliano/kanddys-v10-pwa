@@ -16,7 +16,7 @@
     }
 
     .message {
-      width: 340px;
+      width: 370px;
       max-width: fit-content;
       padding: 10px 15px 10px;
       border-radius: 12px;
@@ -79,7 +79,7 @@
     appearance: none;
     background: #d9d9d9;
     border: 1px solid #2874ad;
-    border-radius: 15px;
+    border-radius: 300px;
     padding: 12px;
     color: #7b7b7b;
     resize: none;
@@ -91,21 +91,19 @@
   place-items: center;
   position: absolute;
   appearance: none;
-  padding: 8px;
+  padding: 0;
   border: none;
   border-radius: 50%;
+  background: none;
 
   &-edit {
     top: 3px;
     right: 412px;
-    background: none;
-    padding: 0;
   }
 
   &-submit {
     right: 10px;
-    bottom: 6px;
-    background: #d9d9d9 no-repeat;
+    bottom: 4px;
   }
 }
 

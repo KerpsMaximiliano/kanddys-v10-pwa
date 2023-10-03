@@ -52,28 +52,18 @@ export class SignupChatComponent implements OnInit {
   }
 
   welcomeMessage() {
-    this.chat.messages = [
-      {
-        sender: 'IA',
-        message: "Hola, soy Laia, y te estaba esperando!!",
-        chatId: ""
-      },
-      {
-        sender: 'IA',
-        message: "Necesito que agregues detalles en mi memoria para que la magia de la Inteligencia Artificial te ahorre tiempo en tus compras, ventas y pedidos.",
-        chatId: ""
-      },
-      {
-        sender: 'IA',
-        message: "También te ayudaré a cotizar, recompensar y premiar a quienes te refieran. Y lo mejor, ¡adiós a responder las mismas preguntas una y otra vez!",
-        chatId: ""
-      },
-      {
-        sender: 'IA',
-        message: "¿Y tú, me estabas esperando?",
-        chatId: ""
-      },
-    ]
+    const message = `Hola, soy Laia, y te estaba esperando!!\n
+
+    Necesito que agregues detalles en mi memoria para que la magia de la Inteligencia Artificial te ahorre tiempo en tus compras, ventas y pedidos.\n
+
+    También te ayudaré a cotizar, recompensar y premiar a quienes te refieran. Y lo mejor, ¡adiós a responder las mismas preguntas una y otra vez!\n
+
+    ¿Y tú, me estabas esperando?`
+    this.addMessage({
+      sender: 'IA',
+      message,
+      chatId: ""
+    })
   }
 
   /**
@@ -92,7 +82,7 @@ export class SignupChatComponent implements OnInit {
       try {
         userRegistered = await this.authService.checkUser(message)
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
 
       if (userRegistered) {
@@ -105,6 +95,8 @@ export class SignupChatComponent implements OnInit {
       }
 
       if (!userRegistered) {
+        this.hideInput = true
+        this.showEditButton = true
         await this.registerUser(message);
         await this.addMessage({
           sender: 'IA',
@@ -116,9 +108,6 @@ export class SignupChatComponent implements OnInit {
           message: "Te mantendremos informad@ de su entrenamiento.",
           chatId: ""
         })
-        console.log("Ocultando form");
-        this.hideInput = true
-        this.isEdit = true
         return
       }
     }
@@ -142,6 +131,7 @@ export class SignupChatComponent implements OnInit {
       this.chat.messages[index].message = message
       this.isEdit = false
       this.hideInput = true
+      this.showEditButton = true
       await this.registerUser(message);
     }
   }
