@@ -209,7 +209,8 @@ export type ExpenditureType =
   | 'others'
   | 'employee'
   | 'only-day'
-  | 'only-month';
+  | 'only-month'
+  | 'item';
 
 export class Expenditure extends Model<Expenditure> {
   type: ExpenditureType;
@@ -222,11 +223,11 @@ export class Expenditure extends Model<Expenditure> {
 }
 
 export class ExpenditureInput {
-  type: ExpenditureType;
-  name: string;
+  type?: ExpenditureType;
+  name?: string;
   description?: string;
-  amount: number;
-  activeDate: ActiveDate;
+  amount?: number;
+  activeDate?: ActiveDate;
   media?: any;
 }
 

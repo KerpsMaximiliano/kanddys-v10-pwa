@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { SwiperOptions } from 'swiper';
 import { GoogleSigninService } from 'src/app/core/services/google-signin.service';
@@ -25,7 +25,6 @@ import {
 } from 'src/app/shared/dialogs/form/form.component';
 import { FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { ChangeDetectorRef } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   OptionsDialogComponent,
@@ -38,6 +37,10 @@ import { SpecialDialogComponent } from 'src/app/shared/dialogs/special-dialog/sp
 import { CompareDialogComponent } from 'src/app/shared/dialogs/compare-dialog/compare-dialog.component';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { base64ToBlob } from 'src/app/core/helpers/files.helpers';
+import { SignupChatComponent } from 'src/app/shared/dialogs/signup-chat/signup-chat.component';
+import { AffiliateService } from 'src/app/core/services/affiliate.service';
+import { Merchant } from 'src/app/core/models/merchant';
+import { AffiliateInput } from 'src/app/core/models/affiliate';
 
 interface ReviewsSwiper {
   title: string;
@@ -67,12 +70,13 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
   assetsFolder: string = environment.assetsUrl;
   URI: string = environment.uri;
+  qrdata: string | undefined = undefined;
   openNavigation: boolean = false;
   queryParamsSubscription: Subscription = null;
   routerParamsSubscription: Subscription = null;
 
   redirectionRoute: string = '/ecommerce/login-landing';
-  redirectionRouteId : string | null = null;
+  redirectionRouteId: string | null = null;
   entity: string = "MerchantAccess";
   jsondata: string = JSON.stringify({
     openNavigation: true,
@@ -88,28 +92,82 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   curRole = 0;
   tabarIndex = 0;
 
-  user : gapi.auth2.GoogleUser;
+  user: gapi.auth2.GoogleUser;
 
   list = [
     {
-      text: '\"Daliah, nos impulsa a avanzar para no quedarnos atrás\"',
+      text: '\"Laia, nos impulsa a avanzar para no quedarnos atrás\"',
       avatar: '',
       name: 'José Miguel Caffaro',
       role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
-      text: '\"Daliah, nos impulsa a avanzar para no quedarnos atrás\"',
+      text: '\".. es una manera genial de simplificar el proceso de compra desde las plataformas sociales\"',
       avatar: '',
-      name: 'José Miguel Caffaro',
+      name: 'Valentina Vargas',
       role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
-      text: '\"Daliah, nos impulsa a avanzar para no quedarnos atrás\"',
+      text: '\".. convierto a los seguidores en compradores de manera rápida y sencilla\"',
       avatar: '',
-      name: 'José Miguel Caffaro',
+      name: 'Mateo López',
+      role: 'Proveedor de flores frescas, follajes y bases'
+    },
+    {
+      text: '\".. puedo subir sus productos de manera rápida y sencilla\"',
+      avatar: '',
+      name: 'Sofía Martínez',
+      role: 'Proveedor de flores frescas, follajes y bases'
+    },
+    {
+      text: '\".. los clientes no tienen que descargar ninguna aplicación, eso simplifica la experiencia de compra\"',
+      avatar: '',
+      name: 'Luciana Fernández',
+      role: 'Proveedor de flores frescas, follajes y bases'
+    },
+    {
+      text: '\".. puedo acceder a una red amplia de proveedores de flores en un abrir y cerrar de ojos.\"',
+      avatar: '',
+      name: 'Tomás Gómez',
+      role: 'Proveedor de flores frescas, follajes y bases'
+    },
+    {
+      text: '\"¡Esta función de Cotización Eficiente con Proveedores en la aplicación es como tener un equipo de compras personal a tu disposición!\"',
+      avatar: '',
+      name: 'Aitana Sánchez',
+      role: 'Proveedor de flores frescas, follajes y bases'
+    },
+    {
+      text: '\".. es como si los proveedores compitieran por ofrecerme las mejores ofertas, lo cual me siento confiado de donde comprar\"',
+      avatar: '',
+      name: 'Emiliano Torres',
+      role: 'Proveedor de flores frescas, follajes y bases'
+    },
+    {
+      text: '\".. me permite conectarme con un montón de proveedores y pedir cotizaciones en cuestión de minutos\"',
+      avatar: '',
+      name: 'Camila Díaz',
+      role: 'Proveedor de flores frescas, follajes y bases'
+    },
+    {
+      text: '\".. significa que puedo tomar decisiones más inteligentes y aumentar mis ganancias\"',
+      avatar: '',
+      name: 'Matías Vidal',
+      role: 'Proveedor de flores frescas, follajes y bases'
+    },
+    {
+      text: '\".. puedo pedir cotizaciones y luego simplemente comparar y elegir la opción más conveniente\"',
+      avatar: '',
+      name: 'Julieta García',
+      role: 'Proveedor de flores frescas, follajes y bases'
+    },
+    {
+      text: '\".. no solo ahorro dinero, sino que también ahorro tiempo al evitar largas negociaciones, realmente es un ganar-ganar\"',
+      avatar: '',
+      name: 'Nicolás Herrera',
       role: 'Proveedor de flores frescas, follajes y bases'
     }
-  ]
+  ];
 
   activeTabIndex: number = 0;
 
@@ -158,7 +216,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   };
 
   emailDialogRef: MatDialogRef<FormComponent, any> = null;
-
+  merchant:string;
   @ViewChild('qrcode', { read: ElementRef }) qrcode: ElementRef;
 
   constructor(
@@ -176,14 +234,39 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     private router: Router,
     private changeDetectorRef: ChangeDetectorRef,
     private clipboard: Clipboard,
+    private affiliateService: AffiliateService
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.getMerchantDefault();
+    this.queryParamsSubscription = this.route.queryParams.subscribe(
+      async ({ affiliateCode, tabarIndex }) => {
+        if(affiliateCode){
+          if(this.merchant){
+            const input: AffiliateInput = {
+              reference: this.merchant
+            }
+            try{
+              await this.affiliateService.createAffiliate(affiliateCode, input);
+            }catch(error){
+              console.log(error);
+              
+            }
+          }else{
+            localStorage.setItem('affiliateCode', affiliateCode);
+          }
+        }
+        if (tabarIndex) {
+          this.tabarIndex = parseInt(tabarIndex);
+        }
+      }
+    );
     this.googleSigninService.observable().subscribe((user) => {
       this.user = user;
       console.log(user)
       this.changeDetectorRef.detectChanges();
-    })
+    });
+    this.openLaiaDialog();
   }
 
   showRoleDialog() {
@@ -195,24 +278,24 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       }
       switch (role) {
         case "0":
-          
+
           break;
         case "1":
-          
+
           break;
         case "2":
-          
+
           break;
         case "3":
-          
+
           break;
         case "4":
-        
+
           break;
         case "5":
-        
+
           break;
-      
+
         default:
           break;
       }
@@ -233,12 +316,12 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         break;
       case 3:
         this.tabIndex = 0
-        break;  
+        break;
       default:
         this.tabIndex = 1;
         break;
-      }
-      this.isOpen = false;
+    }
+    this.isOpen = false;
   }
 
   shareDialog() {
@@ -280,6 +363,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
           {
             value: "Descargar QR",
             callback: () => {
+              this.qrdata = this.link;
               this.downloadQr()
             }
           }
@@ -330,6 +414,10 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     this.openNavigation = true;
   }
 
+  openLaiaDialog() {
+    this.bottomSheet.open(SignupChatComponent, {});
+  }
+
   openClubDialog() {
     this.bottomSheet.open(ClubDialogComponent, {
       data: {
@@ -344,7 +432,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       },
     });
   }
-  openCompareDialog(){
+  openCompareDialog() {
     this.bottomSheet.open(CompareDialogComponent, {
       data: {
         title: "",
@@ -399,7 +487,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   enterClub() {
-    if(!this.headerService.user) this.loginflow = true;
+    if (!this.headerService.user) this.loginflow = true;
     else this.showDialog()
   }
 
@@ -408,12 +496,57 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   resetLoginDialog(event) {
-    console.log('fire', event)
     this.loginflow = false;
+    this.changeDetectorRef.detectChanges();
+    if (this.tabarIndex === 3 && this.headerService.user) {
+      this.openLinkDialog();
+    }
+  }
+
+  async openLinkDialog(merchant?: Merchant) {
+    let slug;
+    if(merchant) {
+      console.log(merchant)
+      slug = merchant.slug;
+    } else {
+      await this.merchantsService.merchantDefault().then((res) => {
+        slug = res.slug
+      })
+    }
+    let link = this.URI+this.router.url+'?affiliateCode='+slug
+    console.log(link)
+    let dialogData = {
+      title: "Gana dinero cada mes, recurrente y sin limites",
+      bottomLabel: "Tu enlace es: " + link,
+      options: [
+        {
+          value: "Comparte tu enlace",
+          callback: () => {
+            this.ngNavigatorShareService.share({
+              title: "Compartir enlace de www.flores.club",
+              url: `${link}`,
+            });
+          },
+        },
+        {
+          value: "Descarga el QR",
+          callback: () => {
+            this.qrdata = link;
+            this.downloadQr();
+          },
+        },
+      ],
+    };
+
+    let dialogRef = this.bottomSheet.open(OptionsMenuComponent, {
+      data: dialogData,
+    });
+    console.log(dialogRef)
   }
 
   downloadQr() {
-    const parentElement =
+    setTimeout(() => {
+      const parentElement =
       this.qrcode.nativeElement.querySelector('img').src;
     let blobData = base64ToBlob(parentElement);
     if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
@@ -429,5 +562,61 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       link.download = "Landing QR Code";
       link.click();
     }
+    }, 1000)
+  }
+  async getMerchantDefault() {
+    const merchantDefault: Merchant = await this.merchantsService.merchantDefault();
+    this.merchant = merchantDefault._id;
+  }
+
+  invite() {
+    if(!this.headerService.user) {
+      //this.redirectionRoute = '/ecommerce/club-landing?tabarIndex=3'
+      this.openLoginDialog();
+    } else {
+      this.openLinkDialog();
+    }
+  }
+
+  openLoginDialog() {
+    let dialogRef = this.dialog.open(FormComponent, {
+      data: {
+        title:{ text: "🤑 Correo electronico que guardará el dinero:"},
+        fields: [
+          {
+            name: "email",
+            placeholder: "Escribe..",
+            type: "text",
+            validations: [Validators.required, Validators.email],
+          }
+        ],
+        buttonsTexts: {
+          accept: "Generar el enlace",
+        }
+      }
+    });
+    dialogRef.afterClosed().subscribe(async (result) => {
+      if(!result.value.email) return;
+      const exists = await this.authService.checkUser(result.value.email);
+      if(exists) {
+        let merchants = await this.merchantsService.merchants({ findBy: { owner: exists._id } });
+        if(merchants.length > 0) {
+          let defaultMerchant = merchants.find(merchant => merchant.default);
+          if(defaultMerchant) {
+            this.openLinkDialog(defaultMerchant);
+          } else {
+            this.openLinkDialog(merchants[0])
+          }
+        } else {
+          let merchant = await this.merchantsService.createMerchant({ owner: exists._id });
+          console.log(merchant)
+          this.openLinkDialog(merchant.createMerchant);
+        }        
+      } else {
+        let user = await this.authService.signup({email: result.value.email}, 'none');
+        let merchant = await this.merchantsService.createMerchant({ owner: user._id });
+        this.openLinkDialog(merchant.createMerchant);
+      }
+    });
   }
 }

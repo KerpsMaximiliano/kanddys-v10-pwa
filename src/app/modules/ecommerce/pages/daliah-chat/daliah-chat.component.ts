@@ -1,7 +1,11 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { Socket, io } from 'socket.io-client';
+import { isEmail } from 'src/app/core/helpers/strings.helpers';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 
@@ -53,6 +57,8 @@ export class DaliahChatComponent implements OnInit {
     "En el control de tus ingresos o gastos"
   ]
 
+  selectedOption: string;
+
   groupOptions = [
     {
       id: "OPTIONS",
@@ -84,7 +90,9 @@ export class DaliahChatComponent implements OnInit {
   constructor(
     public headerService: HeaderService,
     private route: ActivatedRoute,
-    private gpt3Service: Gpt3Service
+    private gpt3Service: Gpt3Service,
+    private authService: AuthService,
+    private snackBar: MatSnackBar
   ) {
   }
 
@@ -96,9 +104,10 @@ export class DaliahChatComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       const type = params.userType
       console.log(type)
-      const index = this.optionSelectedByUser.findIndex(option => option.toLowerCase() === type)
+      const index = this.optionSelectedByUser.findIndex(option => option.toLowerCase() === type.toLowerCase())
       console.log(index)
       if (index === -1) return
+      this.selectedOption = this.optionSelectedByUser[index]
       const messageUser = this.optionSelectedByUser[index]
       this.chat.messages = [
         { sender: 'IA', message: "Hola, soy Dalia, en que te puedo ser más útil?" },
@@ -183,11 +192,37 @@ export class DaliahChatComponent implements OnInit {
    * Envia la respuesta del usuario por input
    *
    */
-  sendMessage() {
+  async sendMessage() {
     const message = this.chatFormGroup.get('input').value
     if (message) {
       const newMessage = { sender: 'user', message, chatId: '' }
       this.addMessage(newMessage)
+      if (this.optionState === "SUPPORT-IA-EMAIL") {
+        if (isEmail(message)) {
+          try {
+            lockUI();
+            const user = await this.authService.signup(
+              {
+                email: message,
+                password: "4587",
+              },
+              'none'
+            );
+            unlockUI();
+          } catch (error) {
+            console.log(error);
+            unlockUI();
+            this.snackBar.open('Ya existe un usuario con ese correo', 'Cerrar', {
+              duration: 2000,
+            });  
+          }
+        } else {
+          this.snackBar.open('El correo ingresado no es válido', 'Cerrar', {
+            duration: 2000,
+          });
+          return;
+        };
+      }
       this.verifyStateChat()
     }
     this.chatFormGroup.get('input').setValue('')
@@ -276,7 +311,7 @@ export class DaliahChatComponent implements OnInit {
   private optionsBySelect(option: string) {
     if (option === "OPTIONS") {
       setTimeout(() => {
-        const message = "¿Quisieras aprovechar lo que te puedo brindar usando la Inteligencia Artificial para ahorrarte tiempo en IentreopcionesseleccionadaDelLanding?"
+        const message = `¿Quisieras aprovechar lo que te puedo brindar usando la Inteligencia Artificial para ahorrarte tiempo en "${this.selectedOption}"?`
         const newMessage = { message, sender: 'IA', chatId: '' }
         this.addMessage(newMessage)
         this.groupOptions = [
@@ -288,18 +323,19 @@ export class DaliahChatComponent implements OnInit {
 
     if (option === "SUPPORT-IA") {
       setTimeout(() => {
-        const message = "Perfecto 🕺.  Te empezaré a informar de posibles herramientas que te ayudarán en lo que vendes .."
+        const message = `Perfecto 🕺.  Te empezaré a informar de posibles herramientas que te ayudarán en "${this.selectedOption}"..`
         const newMessage = { message, sender: 'IA', chatId: '' }
         this.addMessage(newMessage)
       }, 1000);
 
       setTimeout(() => {
-        const message = "Cuando puedas, plis déjame saber en que eMail puedo guardar este chat."
+        const message = "Cuando puedas, plis déjame saber en qué eMail puedo guardar este chat."
         const newMessage = { message, sender: 'IA', chatId: '' }
         this.addMessage(newMessage)
         this.hideInput = false
         this.hideOptions = true
         this.optionState = "SUPPORT-IA-EMAIL"
+        console.log(" A LA VERGA PRIMOOOOOOOOOOOOOOO");
       }, 1000);
     }
 
