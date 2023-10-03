@@ -48,7 +48,8 @@ export class DaliaTrainingComponent implements OnInit {
     const textarea: HTMLElement = document.querySelector('.base-text');
 
     textarea.addEventListener('input', () => {
-      if (textarea.scrollHeight > 169) {
+      console.log("textarea scrollHeight", textarea.scrollHeight);
+      if (textarea.scrollHeight > 171) {
         if (this.showExtendButton === false) {
           this.showExtendButton = true;
         }
@@ -63,7 +64,7 @@ export class DaliaTrainingComponent implements OnInit {
         this.showExtendButton = false;
 
         if (this.passedTextLimit) {
-          textarea.style.height = '169px';
+          textarea.style.height = '171px';
         }
       }
     });
@@ -75,21 +76,21 @@ export class DaliaTrainingComponent implements OnInit {
         (event.key === 'Delete' || event.key === 'Backspace') &&
         this.passedTextLimit &&
         targetElement.classList.contains('base-text') &&
-        textarea.scrollHeight <= 169
+        textarea.scrollHeight <= 171
       ) {
-        textarea.style.height = '169px';
+        textarea.style.height = '171px';
         this.showExtendButton = false;
         this.alreadyClickedShowButton = false;
       } else if (
         (event.key === 'Delete' || event.key === 'Backspace') &&
         this.passedTextLimit &&
         targetElement.classList.contains('base-text') &&
-        textarea.scrollHeight >= 169
+        textarea.scrollHeight >= 171
       ) {
         if (!this.timeoutDeleteKey)
           this.timeoutDeleteKey = setTimeout(() => {
-            if (textarea.scrollHeight <= 169) {
-              textarea.style.height = '169px';
+            if (textarea.scrollHeight <= 171) {
+              textarea.style.height = '171px';
               this.showExtendButton = false;
               this.alreadyClickedShowButton = false;
             }
@@ -107,13 +108,13 @@ export class DaliaTrainingComponent implements OnInit {
         // Your code to handle Ctrl + X here
         // Prevent the default behavior (cut action) if needed
 
-        textarea.style.height = '169px';
+        textarea.style.height = '171px';
         this.showExtendButton = false;
         this.alreadyClickedShowButton = false;
 
         if (!this.timeoutCutKey) {
           this.timeoutCutKey = setTimeout(() => {
-            textarea.style.height = '169px';
+            textarea.style.height = '171px';
             this.showExtendButton = false;
             this.alreadyClickedShowButton = false;
           }, 400);
