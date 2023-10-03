@@ -287,6 +287,8 @@
       margin-left: 6px;
 
       .notAllowed {
+        filter: brightness(0.7);
+
         &:hover {
           cursor: not-allowed;
         }
@@ -304,6 +306,9 @@
     brightness(97%) contrast(91%);
 
   &.notAllowed {
+    filter: invert(49%) sepia(10%) saturate(15%) hue-rotate(324deg)
+    brightness(47%) contrast(91%);
+
     &:hover {
       cursor: not-allowed;
     }
