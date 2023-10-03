@@ -369,7 +369,18 @@
   Invita a comerciantes con tu enlace
   <mat-icon>ios_share</mat-icon>
 </footer>
+
 <qrcode
+  style="display: none"
+  #qrcode
+  [qrdata]="qrdata"
+  [elementType]="'img'"
+  [width]="500"
+  [errorCorrectionLevel]="'M'"
+  [allowEmptyString]="true"
+  colorDark="#000"
+></qrcode>
+<!-- <qrcode
   style="display: none"
   #qrcode
   [qrdata]="URI"
@@ -378,5 +389,5 @@
   [errorCorrectionLevel]="'M'"
   [allowEmptyString]="true"
   colorDark="#000"
-></qrcode>
+></qrcode> -->
 <!-- </app-navigation> -->
