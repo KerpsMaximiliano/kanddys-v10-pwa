@@ -28,6 +28,10 @@ import { Session } from '../models/session';
 import { User, UserInput } from '../models/user';
 import { refresh, userExists, verifyUser } from './../graphql/auth.gql';
 import { environment } from 'src/environments/environment';
+import { Merchant } from '../models/merchant';
+import { MerchantsService } from './merchants.service';
+import { AffiliateService } from './affiliate.service';
+import { AffiliateInput } from '../models/affiliate';
 // import { Logs } from 'selenium-webdriver';
 
 @Injectable({
@@ -41,7 +45,9 @@ export class AuthService {
     private readonly graphql: GraphQLWrapper,
     // private readonly social: SocialAuthService,
     private readonly app: AppService,
-    private readonly router: Router
+    private readonly router: Router,
+    private merchantService: MerchantsService,
+    private affiliateService: AffiliateService
   ) {
     if (localStorage.getItem('session-token'))
       this.ready = from(this.refresh());
@@ -55,7 +61,7 @@ export class AuthService {
         variables: { emailOrPhone },
       });
       return result?.exists as boolean;
-    } catch (e) {}
+    } catch (e) { }
     return false;
   }
 
@@ -77,6 +83,20 @@ export class AuthService {
       this.session = undefined;
     }
     this.app.events.emit({ type: 'auth', data: this.session });
+    const merchant: string = await this.getMerchantDefault();
+    if (localStorage.getItem("affiliateCode")) {
+      if (merchant) {
+        const input: AffiliateInput = {
+          reference: merchant
+        }
+        try {
+          this.affiliateService.createAffiliate(localStorage.getItem("affiliateCode"), input);
+          localStorage.removeItem("affiliateCode");
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
     return this.session;
   }
 
@@ -113,6 +133,21 @@ export class AuthService {
       this.session = undefined;
     }
     //this.app.events.emit({ type: 'auth', data: this.session });
+    const merchant: string = await this.getMerchantDefault();
+    if (localStorage.getItem("affiliateCode")) {
+      if (merchant) {
+        const input: AffiliateInput = {
+          reference: merchant
+        }
+        try {
+          this.affiliateService.createAffiliate(localStorage.getItem("affiliateCode"), input);
+          localStorage.removeItem("affiliateCode");
+        } catch (error) {
+          console.log(error);
+        }
+
+      }
+    }
     return this.session;
   }
 
@@ -162,7 +197,7 @@ export class AuthService {
       const result = await promise;
       session = new Session(result?.session, use);
       if (use) this.session = session;
-    } catch (e) {}
+    } catch (e) { }
     this.app.events.emit({ type: 'auth', data: this.session });
     return session;
   }
@@ -240,7 +275,7 @@ export class AuthService {
         fetchPolicy: 'no-cache',
       });
       return response;
-    } catch (e) {}
+    } catch (e) { }
   }
 
   public async updateMe(input: any, files?: any) {
@@ -265,7 +300,7 @@ export class AuthService {
         fetchPolicy: 'no-cache',
       });
       return response?.checkUser ? new User(response?.checkUser) : undefined;
-    } catch (e) {}
+    } catch (e) { }
   }
 
   public async hotCheckUser(emailOrPhone: String) {
@@ -276,7 +311,7 @@ export class AuthService {
         fetchPolicy: 'no-cache',
       });
       return response?.checkUser ? response?.checkUser : undefined;
-    } catch (e) {}
+    } catch (e) { }
   }
 
   public async generateOTP(emailOrPhone: String) {
@@ -371,7 +406,7 @@ export class AuthService {
       this.session = new Session(response?.session, true);
       this.app.events.emit({ type: 'auth', data: this.session });
       return response;
-    } catch (e) {}
+    } catch (e) { }
   }
 
   public async generatePowerMagicLink(hostPhoneNumber: string) {
@@ -405,5 +440,10 @@ export class AuthService {
       countryIso: CountryISO[region],
       region,
     };
+  }
+
+  async getMerchantDefault() {
+    const merchantDefault: Merchant = await this.merchantService.merchantDefault();
+    return merchantDefault._id;
   }
 }

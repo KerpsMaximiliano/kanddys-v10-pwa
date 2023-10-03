@@ -26,7 +26,7 @@
   background: #171d16;
 }
 
-.title {
+.dialog-title {
   font-family: "InterSemiBold";
   font-size: 19px;
   color: #fff;
@@ -73,4 +73,11 @@
     transition: 0.2s all;
     padding: 5px;
   }
+}
+
+.bottom-label {
+  color: var(--Fondo-de-Pantallas, #F6F6F6);
+  font-family: InterLight;
+  font-size: 14px;
+  font-style: italic;
 }

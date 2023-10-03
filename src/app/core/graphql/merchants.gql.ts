@@ -656,7 +656,6 @@ query merchantGroupFiltersQuantity($merchantId: ObjectID!, $type: String){
   )
 }`;
 
-
 export const dataCountries = gql`
 query dataCountries{
   dataCountries
@@ -687,4 +686,9 @@ query merchantQuantityOfFiltersCampaign{
   merchantQuantityOfFiltersCampaign
 }`;
 
+
+export const merchantQuantityOfFiltersHaveDebt = gql`
+query merchantQuantityOfFiltersHaveDebt{
+  merchantQuantityOfFiltersHaveDebt
+}`;
 

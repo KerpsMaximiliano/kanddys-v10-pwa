@@ -1,0 +1,131 @@
+.chat-dialog {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5em 0px 0px 0px;
+
+  .messages {
+    flex: 1;
+    width: 100%;
+
+    &-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: 50vh;
+      overflow-y: scroll;
+    }
+
+    .message {
+      width: 370px;
+      max-width: fit-content;
+      padding: 10px 15px 10px;
+      border-radius: 12px;
+      text-align: left;
+      word-break: break-word;
+
+      &-sent {
+        background-color: #87cd9b;
+      }
+
+      &-received {
+        position: relative;
+        align-self: flex-end;
+        color: #f6f6f6;
+        background-color: #2874ad;
+        p {
+          margin: 0;
+        }
+      }
+    }
+  }
+}
+
+.chat-header {
+  background: #403d3d;
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 0px;
+
+  p,
+  button {
+    color: #f6f6f6;
+  }
+
+  p {
+    font-family: Inter;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19px;
+    letter-spacing: 0em;
+    text-align: left;
+    span {
+      color: #87cd9b;
+    }
+  }
+
+  button {
+    appearance: none;
+    border: none;
+    background: none;
+  }
+}
+
+.user-input {
+  position: relative;
+  align-self: center;
+  width: 100%;
+  &-box {
+    width: 87%;
+    appearance: none;
+    background: #d9d9d9;
+    border: 1px solid #2874ad;
+    border-radius: 300px;
+    padding: 12px;
+    color: #7b7b7b;
+    resize: none;
+  }
+}
+
+.button {
+  display: grid;
+  place-items: center;
+  position: absolute;
+  appearance: none;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+
+  &-edit {
+    top: 3px;
+    right: 412px;
+  }
+
+  &-submit {
+    right: 0;
+    bottom: 4px;
+  }
+}
+
+::ng-deep .cdk-overlay-pane {
+  width: 100%;
+  max-width: 500px !important;
+}
+
+.list {
+  color: #ffffff;
+
+  &.full-screen {
+    min-height: 100vh;
+  }
+}
+
+::ng-deep.mat-bottom-sheet-container {
+  padding: 24px;
+  padding-top: 0;
+  width: 100%;
+  min-width: 90%;
+  box-shadow: 0 8px 10px -5px #0003, 0 16px 24px 2px #00000024,
+    0 6px 30px 5px #0000001f;
+  background: #403d3d;
+}
