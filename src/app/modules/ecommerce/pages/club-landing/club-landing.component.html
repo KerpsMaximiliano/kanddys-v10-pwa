@@ -1,55 +1,74 @@
 <!-- <app-navigation [opened]="openNavigation" (closed)="openNavigation = false"> -->
-    <div class="container">
-      <!-- <div class="close-content" *ngIf="!isFlag">
+<div class="container">
+  <!-- <div class="close-content" *ngIf="!isFlag">
         <span (click)="isFlag=true">X</span>
       </div> -->
-      <div class="header-wrapper">
-        <div class="left-part">
-          <!-- <img
+  <div class="header-wrapper">
+    <div class="left-part">
+      <!-- <img
             [src]="assetsFolder + '/icon_info.png'"
             class="info-button"
             alt="open internal information"
             (click)="openMsgDialog()"
           /> -->
-    
-          <div class="title" (click)="openMsgDialog()">LaiaChat para www.flores.club</div>
-        </div>
-    
-        <div class="right-part">
-          <!-- <div class="member">
+
+      <div class="title" (click)="openMsgDialog()">
+        LaiaChat para www.flores.club
+      </div>
+    </div>
+
+    <div class="right-part">
+      <!-- <div class="member">
             <div class="user-button" (click)="enterClub()" *ngIf="!headerService.user">Ingresa al club</div>
           </div> -->
-    
-          <div class="close">
-            <div *ngIf="headerService.user" (click)="showRoleDialog()">{{userID}}</div>
-            <!-- <div *ngIf="!headerService.user" (click)="enterClub()">Soy Miembro</div> -->
-          </div>
-          <div class="icon" style="color: #C4C5C3" (click)="openNavigation=true">
-            <span (click)="shareDialog()">
-              <mat-icon>ios_share</mat-icon>
-            </span>
-          </div>
-        </div>
-      </div>
-    
-      <main>
-        
-        <div class="tab-bar flex">
-          <div class="tab" (click)="tabarIndex=0" [ngClass]="{active: !tabarIndex}">
-            <div class="text">Testimonios</div>
-          </div>
-          <div class="tab" (click)="tabarIndex=1" [ngClass]="{active: tabarIndex === 1}">
-            <div class="text">Compra&Venta</div>
-          </div>
-          <div class="tab" (click)="tabarIndex=2" [ngClass]="{active: tabarIndex === 2}">
-            <div class="text">Memoria de Laia</div>
-          </div>
-          <div class="tab" (click)="tabarIndex=3" [ngClass]="{active: tabarIndex === 3}">
-            <div class="text">Gana$</div>
-          </div>
-        </div>
 
-        <!--
+      <div class="close">
+        <div *ngIf="headerService.user" (click)="showRoleDialog()">
+          {{ userID }}
+        </div>
+        <!-- <div *ngIf="!headerService.user" (click)="enterClub()">Soy Miembro</div> -->
+      </div>
+      <div class="icon" style="color: #c4c5c3" (click)="openNavigation = true">
+        <span (click)="shareDialog()">
+          <mat-icon>ios_share</mat-icon>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <div class="tab-bar flex">
+      <div
+        class="tab"
+        (click)="tabarIndex = 0"
+        [ngClass]="{ active: !tabarIndex }"
+      >
+        <div class="text">Testimonios</div>
+      </div>
+      <div
+        class="tab"
+        (click)="tabarIndex = 1"
+        [ngClass]="{ active: tabarIndex === 1 }"
+      >
+        <div class="text">Compra&Venta</div>
+      </div>
+      <div
+        class="tab"
+        (click)="tabarIndex = 2"
+        [ngClass]="{ active: tabarIndex === 2 }"
+      >
+        <div class="text">Memoria de Laia</div>
+      </div>
+      <div
+        class="tab"
+        (click)="tabarIndex = 3"
+        [ngClass]="{ active: tabarIndex === 3 }"
+      >
+        <div class="text">Gana$</div>
+      </div>
+    </div>
+
+    <!--
           <div class="tab-header">
           <div class="subject" *ngIf="!tabarIndex">
             Dal<span>ia</span>hChat
@@ -65,60 +84,157 @@
           </div>
         </div>
         -->
-        <p class="explain-text" *ngIf="!tabarIndex">
-          “Te ahorro tiempo comprando, vendiendo y automatizando las respuestas de tu WhatsApp, Instagram y Website”
+    <p class="explain-text" *ngIf="!tabarIndex">
+      “Te ahorro tiempo comprando, vendiendo y automatizando las respuestas de
+      tu WhatsApp, Instagram y Website”
+    </p>
+    <div class="green-text" *ngIf="!tabarIndex">
+      <p (click)="openCompareDialog()">Compárame con las mejores plataformas</p>
+      <p>Ya nos conocemos?</p>
+    </div>
+    <div class="footer-swiper" *ngIf="!tabarIndex">
+      <div class="slide-item borderless">
+        <div class="flex">
+          <div class="image">
+            <img src="../../../../../assets/images/avatar.svg" alt="" />
+          </div>
+          <div class="info">
+            <div class="name">La<span>ia</span></div>
+            <div class="role">
+              Asistente Virtual que utiliza Inteligencia Artificial
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span *ngIf="!tabarIndex" class="line"></span>
+    <div class="tab-header" *ngIf="tabarIndex === 2">
+      <div class="info-container">
+        <p class="info-container-title">Ahorra tiempo en Responder</p>
+        <p class="info-container-desc info-container-desc-mt">
+          Laia utiliza la IA para formular respuestas según el contenido que
+          adiciones a sus memorias.
         </p>
-        <div class="green-text" *ngIf="!tabarIndex">
-          <p (click)="openCompareDialog()">Compárame con las mejores plataformas</p>
-          <p>Ya nos conocemos?</p>
+        <div class="flex">
+          <p class="info-container-invited-link info-container-invited-link-mr">
+            0 memorias
+          </p>
+          <p class="info-container-invited-link info-container-invited-link-mr">
+            0 chats
+          </p>
         </div>
-        <div class="footer-swiper" *ngIf="!tabarIndex">
-          <div class="slide-item borderless">
-            <div class="flex">
-              <div class="image">
-                <img src="../../../../../assets/images/avatar.svg" alt="">
-              </div>
-              <div class="info">
-                <div class="name">La<span>ia</span></div>
-                <div class="role">Asistente Virtual que utiliza Inteligencia Artificial</div>
-              </div>
-            </div>
+      </div>
+      <p class="ganas-desc">
+        Responde desde tu propio Website, WhatsApp e Instagram.
+      </p>
+      <hr />
+      <div class="info-container">
+        <p class="info-container-title">Compras más ágiles</p>
+        <p class="info-container-desc info-container-desc-mt">
+          Laia conservará en su memoria tus intereses y compras. Con la IA te expondrá ofertas de artículos y comercios parecidos
+        </p>
+        <div class="flex">
+          <p class="info-container-invited-link info-container-invited-link-mr">
+            0 industrias
+          </p>
+          <p class="info-container-invited-link info-container-invited-link-mr">
+            0 cotizaciones
+          </p>
+          <p class="info-container-invited-link info-container-invited-link-mr">
+            0 compras
+          </p>
+          <p class="info-container-invited-link info-container-invited-link-mr">
+            0 carritos
+          </p>
+          <p class="info-container-invited-link info-container-invited-link-mr">
+            0 ofertas flash
+          </p>
+        </div>
+      </div>
+      <p class="ganas-desc">
+        Invita a los comercios donde compras para ahorrar tiempo y ganar dinero recurrente e ilimitado
+      </p>
+      <hr />
+      <div class="info-container">
+        <div class="info-container-title-container">
+          <p class="info-container-title">Vende fácilmente </p>
+          <div>
+            <mat-icon>add</mat-icon>
+            
+            <mat-icon>ios_share</mat-icon>
           </div>
         </div>
-        <span *ngIf="!tabarIndex" class="line"></span>
-        <div class="tab-header" *ngIf="tabarIndex === 3">
-          <div class="info-container">
-            <p class="info-container-title">Gana Dinero</p>
-            <div class="flex-space-between">
-            <p class="info-container-icon">🤑</p>
-            <div>
-              <p class="info-container-desc">
-                Por cada factura que generen tus invitados comerciales ganas dinero. Es un ingreso recurrente y sin límites.
-              </p>
-              <p class="info-container-invited-link">
-                0 invitados
-              </p>
-            </div>
-            </div>
+        <p class="info-container-desc info-container-desc-mt">
+          Laia utiliza la IA para acomodar tus artículos a que lo vendas fácilmente a través de enlaces.
+        </p>
+          <p class="info-container-invited-link info-container-invited-link-mr">
+            0 Artículos en Memoria
+          </p>
+
+      </div>
+      <div class="flex-space-between align-center">
+        <p class="ganas-desc ">
+          El comprador paga us$0.30 a Laia.
+        </p>
+        <img src="../../../../../assets/icons/switch-green.svg" class="switch-img">
+      </div>
+      <hr />
+      <div class="info-container">
+        <p class="info-container-title">Vende más</p>
+        <p class="info-container-desc info-container-desc-mt">
+          Con la IA es que Laia lleva el control de los Premios, Recompensas y Ofertas que expones para incrementar las posibilidades de ventas.
+        </p>
+        <div class="flex-space-between">
+          <p class="info-container-invited-link ">
+            0 premios
+          </p>
+          <p class="info-container-invited-link ">
+            0 recompensas
+          </p>
+          <p class="info-container-invited-link ">
+            0 ofertas
+          </p>
+        </div>
+      </div>
+      <p class="ganas-desc">
+        Laia brindará las respuestas consistentes a tus clientes basada en la información que le adiciones a tus artículos.
+      </p>
+      <hr />
+    </div>
+    <div class="tab-header" *ngIf="tabarIndex === 3">
+      <div class="info-container">
+        <p class="info-container-title">Gana Dinero</p>
+        <div class="flex-space-between">
+          <p class="info-container-icon">🤑</p>
+          <div>
+            <p class="info-container-desc">
+              Por cada factura que generen tus invitados comerciales ganas
+              dinero. Es un ingreso recurrente y sin límites.
+            </p>
+            <p class="info-container-invited-link">0 invitados</p>
           </div>
-          <p class="ganas-desc">
-            Del dinero recolectado cada mes para mantener a Laia, TU como Embajador ganas el 15% de cada comercio invitado directo y el 10% de todos los indirectos*
-          </p>
-          <p class="ganas-desc ganas-desc-ad">
-            *Comercios que invitaron a quienes invitaste.
-          </p>
-          <!-- <p class="subject">Ganas dinero mensual, recurrente y sin límites cuando invitas al Club.</p>
+        </div>
+      </div>
+      <p class="ganas-desc">
+        Del dinero recolectado cada mes para mantener a Laia, TU como Embajador
+        ganas el 15% de cada comercio invitado directo y el 10% de todos los
+        indirectos*
+      </p>
+      <p class="ganas-desc ganas-desc-ad">
+        *Comercios que invitaron a quienes invitaste.
+      </p>
+      <!-- <p class="subject">Ganas dinero mensual, recurrente y sin límites cuando invitas al Club.</p>
           <p class="info">Del dinero recolectado cada mes para Laia, TU como Embajador ganas el 15% de cada invitado directo y el 10% de todos los indirectos*</p>
           <p class="small">*Miembros que invitaron a quienes invitaste.</p> -->
-          <!-- <button (click)="invite()" class="button">
+      <!-- <button (click)="invite()" class="button">
             <p>Invita con tu enlace</p>
             <mat-icon>ios_share</mat-icon>
           </button>
           <button *ngIf="headerService.user" class="button">
             <p>Mira a tus invitados miembros</p>
           </button> -->
-        </div>
-        <!--
+    </div>
+    <!--
         <div class="tools" *ngIf="!tabarIndex">
           <div class="tool" (click)="openClubDialog()">
             <div class="icon">
@@ -150,7 +266,7 @@
           </div>
         </div>
         -->
-        <!--
+    <!--
         <div class="action-part" *ngIf="tabarIndex">
           <div class="actions">
             <div class="action" (click)="enterClub()">Comparte tu invitación</div>
@@ -172,68 +288,106 @@
             Es una manera fácil de invitar en las facturas que le entregas a tus clientes.
           </div>
         </div>-->
-        <div class="tabs-container" *ngIf="!tabarIndex">
-          <!-- TABS -->
-          <h3 class="footer-swiper-title">TESTIMONIOS DE QUIENES ME ESTAN EDUCANDO</h3>
-          <div class="footer-swiper">
-            <div class="swiper-custom-container">
-              <!-- <swiper [config]="swiperConfig"> -->
-                <div *ngFor="let item of list">
-                  <div class="slide-item">
-                    <div class="slide-content">{{ item.text }}</div>
-                    <div class="flex">
-                      <div class="image">
-                        <img src="../../../../../assets/images/avatar.svg" alt="">
-                      </div>
-                      <div class="info">
-                        <div class="name">{{item.name}}</div>
-                        <div class="role">{{item.role}}</div>
-                      </div>
-                    </div>
-                  </div>
+    <div class="tabs-container" *ngIf="!tabarIndex">
+      <!-- TABS -->
+      <h3 class="footer-swiper-title">
+        TESTIMONIOS DE QUIENES ME ESTAN EDUCANDO
+      </h3>
+      <div class="footer-swiper">
+        <div class="swiper-custom-container">
+          <!-- <swiper [config]="swiperConfig"> -->
+          <div *ngFor="let item of list">
+            <div class="slide-item">
+              <div class="slide-content">{{ item.text }}</div>
+              <div class="flex">
+                <div class="image">
+                  <img src="../../../../../assets/images/avatar.svg" alt="" />
                 </div>
-              <!-- </swiper> -->
+                <div class="info">
+                  <div class="name">{{ item.name }}</div>
+                  <div class="role">{{ item.role }}</div>
+                </div>
+              </div>
             </div>
           </div>
+          <!-- </swiper> -->
         </div>
-      </main>
-      <div class="message" *ngIf="!tabarIndex">
-        <input type="text" placeholder="Laia: hola como puedo ayudarte?">
-        <button>
-          <svg xmlns="http://www.w3.org/2000/svg" width="39" height="39" viewBox="0 0 39 39" fill="none">
-            <g clip-path="url(#clip0_1398_3484)">
-              <path d="M39 19.5C39 15.6433 37.8564 11.8731 35.7137 8.66638C33.571 5.45962 30.5255 2.96026 26.9623 1.48435C23.3992 0.00844193 19.4784 -0.377724 15.6957 0.374687C11.9131 1.1271 8.43855 2.98429 5.71143 5.71142C2.9843 8.43854 1.12711 11.9131 0.374696 15.6957C-0.377716 19.4784 0.00844908 23.3992 1.48436 26.9623C2.96027 30.5255 5.45963 33.571 8.66639 35.7137C11.8731 37.8563 15.6433 39 19.5 39C24.6717 39 29.6316 36.9455 33.2886 33.2886C36.9456 29.6316 39 24.6717 39 19.5ZM20.7188 28.0312C20.7188 28.3545 20.5904 28.6645 20.3618 28.893C20.1332 29.1216 19.8232 29.25 19.5 29.25C19.1768 29.25 18.8668 29.1216 18.6382 28.893C18.4097 28.6645 18.2813 28.3545 18.2813 28.0312V13.9108L13.0504 19.1441C12.9371 19.2574 12.8025 19.3473 12.6545 19.4086C12.5064 19.47 12.3478 19.5015 12.1875 19.5015C12.0273 19.5015 11.8686 19.47 11.7205 19.4086C11.5725 19.3473 11.4379 19.2574 11.3246 19.1441C11.2113 19.0308 11.1214 18.8963 11.0601 18.7482C10.9988 18.6002 10.9672 18.4415 10.9672 18.2812C10.9672 18.121 10.9988 17.9623 11.0601 17.8143C11.1214 17.6662 11.2113 17.5317 11.3246 17.4184L18.6371 10.1059C18.7503 9.99238 18.8848 9.90233 19.0329 9.84089C19.181 9.77945 19.3397 9.74782 19.5 9.74782C19.6603 9.74782 19.8191 9.77945 19.9671 9.84089C20.1152 9.90233 20.2497 9.99238 20.3629 10.1059L27.6754 17.4184C27.7887 17.5317 27.8786 17.6662 27.9399 17.8143C28.0012 17.9623 28.0328 18.121 28.0328 18.2812C28.0328 18.4415 28.0012 18.6002 27.9399 18.7482C27.8786 18.8963 27.7887 19.0308 27.6754 19.1441C27.5621 19.2574 27.4275 19.3473 27.2795 19.4086C27.1314 19.47 26.9728 19.5015 26.8125 19.5015C26.6523 19.5015 26.4936 19.47 26.3455 19.4086C26.1975 19.3473 26.063 19.2574 25.9496 19.1441L20.7188 13.9108V28.0312Z" fill="#87CD9B"/>
-            </g>
-            <defs>
-              <clipPath id="clip0_1398_3484">
-                <rect width="39" height="39" fill="white" transform="matrix(1 0 0 -1 0 39)"/>
-              </clipPath>
-            </defs>
-          </svg>
-        </button>
       </div>
-      <footer *ngIf="!tabarIndex" (click)="share()" class="footer no-green" [ngClass]="{'no-green': headerService.user}">{{headerService.user?"💚 Trae invitados y gana $ cada mes":"Inscríbete e Invita, juntos es mejor!!"}}</footer>
-        <app-login-flow
-          *ngIf="loginflow"
-          [redirectionRoute]="redirectionRoute"
-          [redirectionRouteId]="redirectionRouteId"
-          [entity]="entity"
-          [jsondata]="jsondata"
-          (dialogIsOpen)="resetLoginDialog($event)"
-        ></app-login-flow>
     </div>
-<footer class="footer-ganas" *ngIf="tabarIndex===3" (click)="invite()">
+  </main>
+  <div class="message" *ngIf="!tabarIndex">
+    <input type="text" placeholder="Laia: hola como puedo ayudarte?" />
+    <button>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="39"
+        height="39"
+        viewBox="0 0 39 39"
+        fill="none"
+      >
+        <g clip-path="url(#clip0_1398_3484)">
+          <path
+            d="M39 19.5C39 15.6433 37.8564 11.8731 35.7137 8.66638C33.571 5.45962 30.5255 2.96026 26.9623 1.48435C23.3992 0.00844193 19.4784 -0.377724 15.6957 0.374687C11.9131 1.1271 8.43855 2.98429 5.71143 5.71142C2.9843 8.43854 1.12711 11.9131 0.374696 15.6957C-0.377716 19.4784 0.00844908 23.3992 1.48436 26.9623C2.96027 30.5255 5.45963 33.571 8.66639 35.7137C11.8731 37.8563 15.6433 39 19.5 39C24.6717 39 29.6316 36.9455 33.2886 33.2886C36.9456 29.6316 39 24.6717 39 19.5ZM20.7188 28.0312C20.7188 28.3545 20.5904 28.6645 20.3618 28.893C20.1332 29.1216 19.8232 29.25 19.5 29.25C19.1768 29.25 18.8668 29.1216 18.6382 28.893C18.4097 28.6645 18.2813 28.3545 18.2813 28.0312V13.9108L13.0504 19.1441C12.9371 19.2574 12.8025 19.3473 12.6545 19.4086C12.5064 19.47 12.3478 19.5015 12.1875 19.5015C12.0273 19.5015 11.8686 19.47 11.7205 19.4086C11.5725 19.3473 11.4379 19.2574 11.3246 19.1441C11.2113 19.0308 11.1214 18.8963 11.0601 18.7482C10.9988 18.6002 10.9672 18.4415 10.9672 18.2812C10.9672 18.121 10.9988 17.9623 11.0601 17.8143C11.1214 17.6662 11.2113 17.5317 11.3246 17.4184L18.6371 10.1059C18.7503 9.99238 18.8848 9.90233 19.0329 9.84089C19.181 9.77945 19.3397 9.74782 19.5 9.74782C19.6603 9.74782 19.8191 9.77945 19.9671 9.84089C20.1152 9.90233 20.2497 9.99238 20.3629 10.1059L27.6754 17.4184C27.7887 17.5317 27.8786 17.6662 27.9399 17.8143C28.0012 17.9623 28.0328 18.121 28.0328 18.2812C28.0328 18.4415 28.0012 18.6002 27.9399 18.7482C27.8786 18.8963 27.7887 19.0308 27.6754 19.1441C27.5621 19.2574 27.4275 19.3473 27.2795 19.4086C27.1314 19.47 26.9728 19.5015 26.8125 19.5015C26.6523 19.5015 26.4936 19.47 26.3455 19.4086C26.1975 19.3473 26.063 19.2574 25.9496 19.1441L20.7188 13.9108V28.0312Z"
+            fill="#87CD9B"
+          />
+        </g>
+        <defs>
+          <clipPath id="clip0_1398_3484">
+            <rect
+              width="39"
+              height="39"
+              fill="white"
+              transform="matrix(1 0 0 -1 0 39)"
+            />
+          </clipPath>
+        </defs>
+      </svg>
+    </button>
+  </div>
+  <footer
+    *ngIf="!tabarIndex"
+    (click)="share()"
+    class="footer no-green"
+    [ngClass]="{ 'no-green': headerService.user }"
+  >
+    {{
+      headerService.user
+        ? "💚 Trae invitados y gana $ cada mes"
+        : "Inscríbete e Invita, juntos es mejor!!"
+    }}
+  </footer>
+  <app-login-flow
+    *ngIf="loginflow"
+    [redirectionRoute]="redirectionRoute"
+    [redirectionRouteId]="redirectionRouteId"
+    [entity]="entity"
+    [jsondata]="jsondata"
+    (dialogIsOpen)="resetLoginDialog($event)"
+  ></app-login-flow>
+</div>
+<footer class="footer-ganas" *ngIf="tabarIndex === 3" (click)="invite()">
   Invita a comerciantes con tu enlace
   <mat-icon>ios_share</mat-icon>
 </footer>
-    <qrcode
-      style="display: none"
-      #qrcode
-      [qrdata]="qrdata"
-      [elementType]="'img'"
-      [width]="500"
-      [errorCorrectionLevel]="'M'"
-      [allowEmptyString]="true"
-      colorDark="#000"
-    ></qrcode>
+
+<qrcode
+  style="display: none"
+  #qrcode
+  [qrdata]="qrdata"
+  [elementType]="'img'"
+  [width]="500"
+  [errorCorrectionLevel]="'M'"
+  [allowEmptyString]="true"
+  colorDark="#000"
+></qrcode>
+<!-- <qrcode
+  style="display: none"
+  #qrcode
+  [qrdata]="URI"
+  [elementType]="'img'"
+  [width]="500"
+  [errorCorrectionLevel]="'M'"
+  [allowEmptyString]="true"
+  colorDark="#000"
+></qrcode> -->
 <!-- </app-navigation> -->
