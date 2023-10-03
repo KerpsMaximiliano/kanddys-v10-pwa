@@ -1,0 +1,114 @@
+<div class="container">
+  <header>
+    <div class="close" (click)="back()"><mat-icon class="back-icon"> arrow_back_ios </mat-icon></div>
+    <h2>
+    💚 Embajadores del Club
+    </h2>
+
+    <div class="options-wrapper">
+      
+      <img
+        class="info-button"
+        [src]="assetsFolder + '/icon_info.png'"
+        alt="open internal information"
+      />
+    </div>
+  </header>
+  <main>
+    <div class="content">
+      <div class="search-bar-div">
+        <form class="search-bar-wrapper">
+          <input
+            type="text"
+            name="item-search"
+            class="input search-bar"
+            placeholder="Todos los Comerciantes (3,589) ..."
+            [formControl]="itemSearchbar"
+            (input)="searchItems($event)"
+          />
+    
+          <div class="filters">
+    
+              <div class="option" >💰</div>
+          </div>
+        </form>
+      </div>
+      <div *ngIf="showAllMonths">
+        <section *ngFor="let item of affiliate" >
+          <h2 class="section-title">{{item.month | upperPipe}}</h2>
+          <div class="last-month-section" *ngIf="item.affiliate[0].commissionStatus === 'paid' ">
+            <div
+            class="featured-image"
+            [ngStyle]="{
+              backgroundImage: item?.voucherData.metadata.screenshot
+                ? 'url(' + item.voucherData.metadata.screenshot + ')'
+                : 'url(/assets/images/noimage.png)'
+            }"
+          ></div>
+          <div>
+            <p class="payment-label">Pago que recibiste en {{item.voucherData.createdAt | datePipe}}.</p>
+          </div>
+          </div>
+          <div class="content-cards-container" *ngFor="let affiliate of item.results">
+            <div class="content-card" >
+              <div class="display-flex">
+                <div class="content-card-info">
+                  <p class="content-card-title">
+                    {{ 
+                      affiliate?.reference?.name ? 
+                      affiliate?.reference?.name : 
+                      affiliate?.reference?.owner.email ? 
+                      affiliate?.reference?.owner.email :
+                      affiliate?.reference?.owner.phone
+                    }}</p>
+                  <p class="content-card-extra-info">
+                    {{affiliate?.secondaryCount?.number}} indirectos</p>
+                </div>
+              </div>
+              <div>
+                <p class="content-card-price">${{affiliate.comissionParent | CurrencyPipe}}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div *ngIf="!showAllMonths">
+        <section>
+          <div class="content-cards-container" *ngFor="let affiliate of filteredResults">
+            <div class="content-card" >
+              <div class="display-flex">
+                <div class="content-card-info">
+                  <p class="content-card-title">{{affiliate.reference.name}}</p>
+                  <p class="content-card-extra-info">
+                    {{affiliate.secondaryCount.number}} indirectos</p>
+                </div>
+              </div>
+              <div>
+                <p class="content-card-price">${{affiliate.comissionParent | CurrencyPipe}}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <footer class="bottom-footer" (click)="openDatePicker()">
+    <mat-form-field appearance="fill" style="display: none">
+      <mat-label>Enter a date range</mat-label>
+      <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+        <input matStartDate formControlName="start" placeholder="Start date" />
+        <input
+          matEndDate
+          formControlName="end"
+          (dateChange)="onDateChange()"
+          placeholder="End date"
+        />
+      </mat-date-range-input>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+    </mat-form-field>
+    <p *ngIf="startDateLabel === ''">Filtro por fechas</p>
+    <p *ngIf="startDateLabel !== ''">{{startDateLabel}} a {{endDateLabel}}</p>
+    <p class="benefits">Beneficio: ${{benefit | CurrencyPipe}}</p>
+  </footer>
+</div>

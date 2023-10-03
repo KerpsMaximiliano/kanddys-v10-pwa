@@ -1406,7 +1406,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   openDatePicker() {
     this.datePicker.open();
   }
-
+  
   async onDateChange() {
     if (this.range.get('start').value && this.range.get('end').value) {
       lockUI();

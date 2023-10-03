@@ -46,3 +46,15 @@ export const paymentLogStarPaginate = gql`
     }
   }
 `;
+
+export const paymentLogMerchantPaginate = gql`
+  query paymentLogsMerchant($paginate: PaginationInput!){
+    paymentLogsMerchant(paginate: $paginate){
+      _id
+      ammount
+      reason
+      metadata
+      createdAt
+    }
+  }
+`;
