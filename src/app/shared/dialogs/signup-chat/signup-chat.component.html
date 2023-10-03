@@ -7,7 +7,7 @@
   </header>
   <div class="messages">
     <div class="messages-container" #chatContainer>
-      <ng-container *ngFor="let message of chat?.messages">
+      <ng-container *ngFor="let message of chat?.messages; let i = index">
         <div class="message message-sent" *ngIf="message.sender === 'IA'">
           {{ message.message }}
         </div>
@@ -15,7 +15,7 @@
           <button
             class="button button-edit"
             role="button"
-            *ngIf="!isEdit"
+            *ngIf="isEdit && i === chat?.messages.length"
             (click)="editMessage(message)"
           >
             <img

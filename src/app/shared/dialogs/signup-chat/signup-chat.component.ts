@@ -46,22 +46,30 @@ export class SignupChatComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.welcomeMessage()
+  }
+
+  welcomeMessage() {
     this.chat.messages = [
       {
         sender: 'IA',
         message: "Hola, soy Laia, y te estaba esperando!!",
+        chatId: ""
       },
       {
         sender: 'IA',
-        message: "Necesito que agregues detalles en mi memoria para que la magia de la Inteligencia Artificial te ahorre tiempo en tus compras, ventas y pedidos."
+        message: "Necesito que agregues detalles en mi memoria para que la magia de la Inteligencia Artificial te ahorre tiempo en tus compras, ventas y pedidos.",
+        chatId: ""
       },
       {
         sender: 'IA',
-        message: "También te ayudaré a cotizar, recompensar y premiar a quienes te refieran. Y lo mejor, ¡adiós a responder las mismas preguntas una y otra vez!"
+        message: "También te ayudaré a cotizar, recompensar y premiar a quienes te refieran. Y lo mejor, ¡adiós a responder las mismas preguntas una y otra vez!",
+        chatId: ""
       },
       {
         sender: 'IA',
-        message: "¿Y tú, me estabas esperando?"
+        message: "¿Y tú, me estabas esperando?",
+        chatId: ""
       },
     ]
   }
@@ -70,28 +78,70 @@ export class SignupChatComponent implements OnInit {
    * Envia la respuesta del usuario por input
    *
    */
-  sendMessage() {
+  async sendMessage() {
     const message: string = this.chatFormGroup.get('input').value
-    if (message && isEmail(message) && !this.isEdit) {
-      // this.authService.checkUser(message).then(data => {
-      //   if (data) {
+    const isEmailValid = message && isEmail(message)
+
+    /**Para enviar mensajes que se escriben por primera vez */
+    if (isEmailValid && !this.isEdit) {
       const newMessage = { sender: 'user', message, chatId: '' }
-      this.addMessage(newMessage)
-      // const input = { email: message }
-      // this.authService.signup(input, "none")
-      // }
-      this.hideInput = true
-      // }).catch(() => {
-      //   console.log("El correo no es valido")
-      // })
+      await this.addMessage(newMessage)
+      console.log("Registrando...")
+
+      try {
+        const userRegistered = await this.authService.checkUser(message)
+        if (userRegistered) {
+          await this.addMessage({
+            sender: 'IA',
+            message: "Este correo está registrado. Por favor, intente otro",
+            chatId: ""
+          })
+          return
+        }
+
+        if (!userRegistered) {
+          console.log("usuario no registrado")
+          await this.registerUser(message);
+          await this.addMessage({
+            sender: 'IA',
+            message: "Gracias por reservar con Laia.",
+            chatId: ""
+          })
+          await this.addMessage({
+            sender: 'IA',
+            message: "Te mantendremos informad@ de su entrenamiento.",
+            chatId: ""
+          })
+          this.hideInput = true
+          this.isEdit = true
+          return
+        }
+      } catch (error) {
+        console.error(error)
+      }
     }
 
-    if (message && isEmail(message) && this.isEdit) {
+    /**Para enviar mensajes editados */
+    if (isEmailValid && this.isEdit) {
+      console.log("Editando mensaje...")
       const index = this.chat.messages.findIndex(message => message.sender === 'user')
       this.chat.messages[index].message = message
       this.isEdit = false
+      console.log("Dejando de editar", this.isEdit)
       this.hideInput = true
+      console.log("ocultando input", this.hideInput)
+      return
     }
+  }
+
+  async registerUser(email: string) {
+    const input = { email }
+    await this.authService.signup(input, "none")
+    console.log("Usuario rgistrado")
+  }
+
+  updateListMessages() {
+    this.chat.messages = [...this.chat.messages]
   }
 
   /**
@@ -99,18 +149,8 @@ export class SignupChatComponent implements OnInit {
    *
    * @param message
    */
-  addMessage(message: Message) {
-    const iaResponse = [
-      {
-        sender: 'IA',
-        message: "Gracias por reservar con Laia."
-      },
-      {
-        sender: 'IA',
-        message: "Te mantendremos informad@ de su entrenamiento."
-      },
-    ]
-    this.chat.messages = [...this.chat.messages, message, ...iaResponse]
+  async addMessage(message: Message) {
+    this.chat.messages.push(message)
     this.scrollToBottom()
   }
 
