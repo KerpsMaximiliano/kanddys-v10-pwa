@@ -37,6 +37,9 @@ export class SuperAdminMerchantsComponent implements OnInit {
   everyCampaignSelected = true;
   startDate = '';
   endDate = '';
+  showFilters = false;
+  debts?:boolean = null;
+  merchantDebts:any = []
   constructor(private merchantService: MerchantsService) {}
 
   ngOnInit(): void {
@@ -46,6 +49,7 @@ export class SuperAdminMerchantsComponent implements OnInit {
     this.getMerchantsType();
     this.getMerchantsCountries();
     this.getCampaigns();
+    this.getMerchantsDebts();
   }
 
   async getMerchants() {
@@ -81,11 +85,19 @@ export class SuperAdminMerchantsComponent implements OnInit {
     if (this.startDate != null) {
       input.options.range = input.options.range || {};
       input.options.range.from = this.startDate;
+      // isTotal = false;
     }
 
     if (this.endDate != null) {
       input.options.range = input.options.range || {};
       input.options.range.to = this.endDate;
+      // isTotal = false;
+    }
+
+    if (this.debts != null) {
+      input.findBy = input.findBy || {};
+      input.findBy.haveDebt = this.debts;
+      isTotal = false;
     }
 
     let result = await this.merchantService.merchants(input);
@@ -235,4 +247,14 @@ export class SuperAdminMerchantsComponent implements OnInit {
 
   isCampaignSelected = (campaignId) =>
     this.selectedCampaigns.some((e) => e == campaignId);
+
+    selectDebt(debt) {
+      this.debts = debt;
+      this.getMerchants();
+    } 
+
+    async getMerchantsDebts() {
+      let result = await this.merchantService.merchantQuantityOfFiltersHaveDebt();
+      if (result != undefined) this.merchantDebts = result;
+    }
 }

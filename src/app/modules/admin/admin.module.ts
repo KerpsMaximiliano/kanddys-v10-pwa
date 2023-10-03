@@ -109,6 +109,9 @@ import { TaxEditionComponent } from './pages/tax-edition/tax-edition.component';
 import { BenefitsControlComponent } from './pages/benefits-control/benefits-control.component';
 import { CostsMetricsComponent } from './pages/costs-metrics/costs-metrics.component';
 import { WizardTrainingComponent } from './pages/wizard-training/wizard-training.component';
+import { AffiliateReferalsComponent } from './pages/affiliate-referrals/affiliate-referrals.component';
+import { UpperCasePipe } from 'src/app/core/pipes/upper-case.pipe';
+import { DatePipe } from 'src/app/core/pipes/date.pipe';
 import { SuperAdminMerchantsComponent } from './pages/super-admin-merchants/super-admin-merchants.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -645,6 +648,10 @@ const routes: Routes = [
     component: MonetizationsComponent
   },
   {
+    path: "affiliate-referrals",
+    component: AffiliateReferalsComponent
+  },
+  {
     path: 'taxes',
     component: TaxesComponent
   },
@@ -754,6 +761,9 @@ const routes: Routes = [
     CostsMetricsComponent,
     WizardTrainingComponent,
     OrderImageLoadComponent,
+    AffiliateReferalsComponent,
+    UpperCasePipe,
+    DatePipe,
     TaxesComponent,
     TaxEditionComponent,
     SuperAdminMerchantsComponent,
