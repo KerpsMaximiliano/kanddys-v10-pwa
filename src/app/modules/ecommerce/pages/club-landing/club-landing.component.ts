@@ -37,6 +37,7 @@ import { SpecialDialogComponent } from 'src/app/shared/dialogs/special-dialog/sp
 import { CompareDialogComponent } from 'src/app/shared/dialogs/compare-dialog/compare-dialog.component';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { base64ToBlob } from 'src/app/core/helpers/files.helpers';
+import { SignupChatComponent } from 'src/app/shared/dialogs/signup-chat/signup-chat.component';
 import { AffiliateService } from 'src/app/core/services/affiliate.service';
 import { Merchant } from 'src/app/core/models/merchant';
 import { AffiliateInput } from 'src/app/core/models/affiliate';
@@ -75,7 +76,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   routerParamsSubscription: Subscription = null;
 
   redirectionRoute: string = '/ecommerce/login-landing';
-  redirectionRouteId : string | null = null;
+  redirectionRouteId: string | null = null;
   entity: string = "MerchantAccess";
   jsondata: string = JSON.stringify({
     openNavigation: true,
@@ -91,7 +92,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   curRole = 0;
   tabarIndex = 0;
 
-  user : gapi.auth2.GoogleUser;
+  user: gapi.auth2.GoogleUser;
 
   list = [
     {
@@ -223,24 +224,24 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       }
       switch (role) {
         case "0":
-          
+
           break;
         case "1":
-          
+
           break;
         case "2":
-          
+
           break;
         case "3":
-          
+
           break;
         case "4":
-        
+
           break;
         case "5":
-        
+
           break;
-      
+
         default:
           break;
       }
@@ -261,12 +262,12 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         break;
       case 3:
         this.tabIndex = 0
-        break;  
+        break;
       default:
         this.tabIndex = 1;
         break;
-      }
-      this.isOpen = false;
+    }
+    this.isOpen = false;
   }
 
   shareDialog() {
@@ -360,58 +361,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   openLaiaDialog() {
-    this.bottomSheet.open(OptionsMenuComponent, {
-      data: {
-        title: "LaiaChat con desconocido de la industria floral",
-        description:"Hola, soy Laia, en que te puedo ser mas útil?",
-        options: [
-          {
-            value: "En lo que compras",
-            callback: () => {
-            },
-          },
-          {
-            value: "En lo que vendes",
-            callback: () => {
-            },
-          },
-          {
-            value: "Quisieras vender más",
-            callback: () => {
-            },
-          },
-          {
-            value: "En el seguimiento de lo que vendiste",
-            callback: () => {
-            },
-          },
-          {
-            value: "En el control de tus ingresos y egresos",
-            callback: () => {
-            },
-          },
-        ],
-        styles: {
-          title:{
-            color: "var(--Fondo-de-Pantallas, #F6F6F6)",
-            fontFamily: "Inter",
-            fontSize: "16px",
-          },
-          description: {
-            borderRadius: "57.335px",
-            opacity: "0.8",
-            backgroundColor: "var(--El-verdecito, #87CD9B)",
-            color: "var(--El-mas-oscuro, #181D17)",
-            fontFamily: "Inter",
-            fontSize: "16.107px",
-            width: "215px",
-            padding: "6px 12px",
-          },
-          noDarkOverlay: true,
-          lightBg: true,
-        },
-      },
-    });
+    this.bottomSheet.open(SignupChatComponent, {});
   }
 
   openClubDialog() {
@@ -428,7 +378,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       },
     });
   }
-  openCompareDialog(){
+  openCompareDialog() {
     this.bottomSheet.open(CompareDialogComponent, {
       data: {
         title: "",
@@ -483,7 +433,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   enterClub() {
-    if(!this.headerService.user) this.loginflow = true;
+    if (!this.headerService.user) this.loginflow = true;
     else this.showDialog()
   }
 
@@ -494,7 +444,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   resetLoginDialog(event) {
     this.loginflow = false;
     this.changeDetectorRef.detectChanges();
-    if(this.tabarIndex === 3 && this.headerService.user) {
+    if (this.tabarIndex === 3 && this.headerService.user) {
       this.openLinkDialog();
     }
   }
