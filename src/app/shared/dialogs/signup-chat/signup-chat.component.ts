@@ -1,4 +1,4 @@
-import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { isEmail } from 'src/app/core/helpers/strings.helpers';
@@ -38,7 +38,8 @@ export class SignupChatComponent implements OnInit {
 
   constructor(
     @Inject(MAT_BOTTOM_SHEET_DATA) public data: DialogTemplate,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngAfterViewInit(): void {
@@ -84,44 +85,50 @@ export class SignupChatComponent implements OnInit {
 
     if (isEmailValid) {
       const newMessage = { sender: 'user', message, chatId: '' }
-      await this.addMessage(newMessage)
-
+      await this.addMessage(newMessage);
+      
+      let userRegistered;
       try {
-        const userRegistered = await this.authService.checkUser(message)
-        if (userRegistered) {
-          await this.addMessage({
-            sender: 'IA',
-            message: "Este correo está registrado. Por favor, intente otro",
-            chatId: ""
-          })
-          return
-        }
-
-        if (!userRegistered) {
-          await this.registerUser(message);
-          await this.addMessage({
-            sender: 'IA',
-            message: "Gracias por reservar con Laia.",
-            chatId: ""
-          })
-          await this.addMessage({
-            sender: 'IA',
-            message: "Te mantendremos informad@ de su entrenamiento.",
-            chatId: ""
-          })
-          this.hideInput = true
-          this.isEdit = true
-          return
-        }
+        userRegistered = await this.authService.checkUser(message)
       } catch (error) {
-        console.error(error)
+        console.log(error);
+      }
+      if (userRegistered) {
+        await this.addMessage({
+          sender: 'IA',
+          message: "Este correo está registrado. Por favor, intente otro",
+          chatId: ""
+        })
+        return
+      }
+
+      if (!userRegistered) {
+        await this.registerUser(message);
+        await this.addMessage({
+          sender: 'IA',
+          message: "Gracias por reservar con Laia.",
+          chatId: ""
+        })
+        await this.addMessage({
+          sender: 'IA',
+          message: "Te mantendremos informad@ de su entrenamiento.",
+          chatId: ""
+        })
+        console.log("Ocultando form");
+        this.hideInput = true
+        this.isEdit = true
+        return
       }
     }
   }
 
   async registerUser(email: string) {
-    const input = { email }
-    await this.authService.signup(input, "none")
+    try {
+      const input = { email }
+      await this.authService.signup(input, "none") 
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   async sendEditMessage() {
@@ -148,6 +155,10 @@ export class SignupChatComponent implements OnInit {
    */
   async addMessage(message: Message) {
     this.chat.messages.push(message)
+
+    // Forzar la detección de cambios para actualizar la vista
+    this.cdr.detectChanges();
+    
     this.scrollToBottom()
   }
 
