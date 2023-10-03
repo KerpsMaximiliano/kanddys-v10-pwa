@@ -541,7 +541,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   downloadQr() {
-    const parentElement =
+    setTimeout(() => {
+      const parentElement =
       this.qrcode.nativeElement.querySelector('img').src;
     let blobData = base64ToBlob(parentElement);
     if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
@@ -557,6 +558,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       link.download = "Landing QR Code";
       link.click();
     }
+    }, 1000)
   }
   async getMerchantDefault() {
     const merchantDefault: Merchant = await this.merchantsService.merchantDefault();
