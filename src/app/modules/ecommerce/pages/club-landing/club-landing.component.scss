@@ -277,6 +277,7 @@ main {
   font-style: normal;
   font-weight: 400;
   line-height: 128.023%; /* 15.363px */
+  margin-left: 1em;
 }
 
 .footer-swiper {
@@ -386,23 +387,29 @@ footer {
   width: 100%;
   max-width: 500px;
   margin: 0px auto;
-  bottom: 32px;
+  bottom: 0;
   padding: 10px;
   display: flex;
-  background-color: #181d17;
-  input {
+  justify-content: center;
+  align-items: center;
+  background-color: #403D3D;
+  .input {
     height: 39px;
-    color: white;
+    color: #7B7B7B;
     font-family: InterRegular;
     font-size: 16px;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
     padding: 10px 19px;
-    background-color: #181d17;
+    background-color: #D9D9D9;
     border-radius: 300px;
     border: 2px solid #7b7b7b;
     width: calc(100% - 28px);
+    height: 62px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   button {
     margin-left: 8px;
@@ -450,6 +457,16 @@ footer.no-green {
   padding-right: 17px;
   padding-bottom: 20px;
   width: 100%;
+
+  .container-flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    img {
+      width: 50px;
+      margin-right: 1em;
+    }
+  }
 
   .flex-space-between {
 
