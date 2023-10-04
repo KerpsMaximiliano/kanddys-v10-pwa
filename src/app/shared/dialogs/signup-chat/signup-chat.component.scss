@@ -22,6 +22,10 @@
       border-radius: 12px;
       text-align: left;
       word-break: break-word;
+      font-size: 16px;
+      * {
+        font-size: 16px;
+      }
       font-family: InterRegular;
       &-sent {
         background-color: #87cd9b;
@@ -139,8 +143,7 @@
 }
 
 ::ng-deep.mat-bottom-sheet-container {
-  padding: 10px;
-  padding-top: 0;
+  padding: 0px 20px 10px;
   width: 100%;
   min-width: 90%;
   box-shadow: 0 8px 10px -5px #0003, 0 16px 24px 2px #00000024,
