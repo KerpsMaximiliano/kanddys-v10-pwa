@@ -66,6 +66,8 @@ interface Tabs {
 })
 export class ClubLandingComponent implements OnInit, OnDestroy {
 
+  switchActive: boolean = false;
+
   loginflow: boolean = false;
 
   assetsFolder: string = environment.assetsUrl;
@@ -415,7 +417,13 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   openLaiaDialog() {
-    this.bottomSheet.open(SignupChatComponent, {});
+    this.bottomSheet.open(SignupChatComponent, {
+      data: {
+        login: () => {
+          this.loginflow = true;
+        }
+      }
+    });
   }
 
   openClubDialog() {
@@ -618,5 +626,11 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         this.openLinkDialog(merchant.createMerchant);
       }
     });
+  }
+
+  buttonHandler() {
+    if(!this.headerService.user) {
+      this.loginflow = true;
+    }
   }
 }

@@ -13,7 +13,7 @@
             /> -->
   
         <div class="title" (click)="openMsgDialog()">
-          LaiaChat para www.flores.club
+          La<span>ia</span>Chat <span>contigo</span>
         </div>
       </div>
   
@@ -28,10 +28,9 @@
           </div>
           <!-- <div *ngIf="!headerService.user" (click)="enterClub()">Soy Miembro</div> -->
         </div>
-        <div class="icon" style="color: #c4c5c3" (click)="openNavigation = true">
-          <span (click)="shareDialog()">
+        <div (click)="tabarIndex = 3" class="icon" (click)="openNavigation = true">
+            <p>Gana$</p>
             <mat-icon>ios_share</mat-icon>
-          </span>
         </div>
       </div>
     </div>
@@ -57,7 +56,7 @@
           (click)="tabarIndex = 2"
           [ngClass]="{ active: tabarIndex === 2 }"
         >
-          <div class="text">Memoria de Laia</div>
+          <div class="text">Memorias de La<span>ia</span></div>
         </div>
         <div
           class="tab"
@@ -109,16 +108,51 @@
       <span *ngIf="!tabarIndex" class="line"></span>
       <div class="tab-header" *ngIf="tabarIndex === 2">
         <div class="info-container">
+          <div class="info-container-title-container">
+            <p class="info-container-title">Vende fácilmente </p>
+            <div *ngIf="headerService.user">
+              <mat-icon>add</mat-icon>
+              
+              <mat-icon>ios_share</mat-icon>
+            </div>
+          </div>
+          <p class="info-container-desc info-container-desc-mt">
+            Laia utiliza la IA para acomodar tus artículos a que lo vendas fácilmente a través de enlaces.
+          </p>
+            <p 
+              (click)="buttonHandler()"
+              class="info-container-invited-link info-container-invited-link-mr"
+            >
+              0 Artículos en Memoria
+            </p>
+  
+        </div>
+        <div class="flex-space-between align-center">
+          <p class="ganas-desc ">
+            El comprador paga us$0.30 a Laia.
+          </p>
+          <mat-slide-toggle
+            class="toggle"
+            [checked]="switchActive"
+            (change)="switchActive = !switchActive"
+          ></mat-slide-toggle>
+        </div>
+        <hr />
+        <div class="info-container">
           <p class="info-container-title">Ahorra tiempo en Responder</p>
           <p class="info-container-desc info-container-desc-mt">
             Laia utiliza la IA para formular respuestas según el contenido que
             adiciones a sus memorias.
           </p>
           <div class="flex">
-            <p class="info-container-invited-link info-container-invited-link-mr">
+            <p class="info-container-invited-link info-container-invited-link-mr"
+              (click)="buttonHandler()"
+            >
               0 memorias
             </p>
-            <p class="info-container-invited-link info-container-invited-link-mr">
+            <p class="info-container-invited-link info-container-invited-link-mr"
+              (click)="buttonHandler()"
+            >
               0 chats
             </p>
           </div>
@@ -133,70 +167,35 @@
             Laia conservará en su memoria tus intereses y compras. Con la IA te expondrá ofertas de artículos y comercios parecidos
           </p>
           <div class="flex">
-            <p class="info-container-invited-link info-container-invited-link-mr">
+            <p class="info-container-invited-link info-container-invited-link-mr"
+              (click)="buttonHandler()"
+             >
               0 industrias
             </p>
-            <p class="info-container-invited-link info-container-invited-link-mr">
+            <p class="info-container-invited-link info-container-invited-link-mr"
+              (click)="buttonHandler()"
+            >
               0 cotizaciones
             </p>
-            <p class="info-container-invited-link info-container-invited-link-mr">
+            <p class="info-container-invited-link info-container-invited-link-mr"
+              (click)="buttonHandler()"
+            >
               0 compras
             </p>
-            <p class="info-container-invited-link info-container-invited-link-mr">
+            <p class="info-container-invited-link info-container-invited-link-mr"
+              (click)="buttonHandler()"
+            >
               0 carritos
             </p>
-            <p class="info-container-invited-link info-container-invited-link-mr">
+            <p class="info-container-invited-link info-container-invited-link-mr"
+              (click)="buttonHandler()"
+            >
               0 ofertas flash
             </p>
           </div>
         </div>
         <p class="ganas-desc">
           Invita a los comercios donde compras para ahorrar tiempo y ganar dinero recurrente e ilimitado
-        </p>
-        <hr />
-        <div class="info-container">
-          <div class="info-container-title-container">
-            <p class="info-container-title">Vende fácilmente </p>
-            <div>
-              <mat-icon>add</mat-icon>
-              
-              <mat-icon>ios_share</mat-icon>
-            </div>
-          </div>
-          <p class="info-container-desc info-container-desc-mt">
-            Laia utiliza la IA para acomodar tus artículos a que lo vendas fácilmente a través de enlaces.
-          </p>
-            <p class="info-container-invited-link info-container-invited-link-mr">
-              0 Artículos en Memoria
-            </p>
-  
-        </div>
-        <div class="flex-space-between align-center">
-          <p class="ganas-desc ">
-            El comprador paga us$0.30 a Laia.
-          </p>
-          <img src="../../../../../assets/icons/switch-green.svg" class="switch-img">
-        </div>
-        <hr />
-        <div class="info-container">
-          <p class="info-container-title">Vende más</p>
-          <p class="info-container-desc info-container-desc-mt">
-            Con la IA es que Laia lleva el control de los Premios, Recompensas y Ofertas que expones para incrementar las posibilidades de ventas.
-          </p>
-          <div class="flex-space-between">
-            <p class="info-container-invited-link ">
-              0 premios
-            </p>
-            <p class="info-container-invited-link ">
-              0 recompensas
-            </p>
-            <p class="info-container-invited-link ">
-              0 ofertas
-            </p>
-          </div>
-        </div>
-        <p class="ganas-desc">
-          Laia brindará las respuestas consistentes a tus clientes basada en la información que le adiciones a tus artículos.
         </p>
         <hr />
         <div class="info-container">
@@ -208,7 +207,9 @@
             </p>
           </div>
           <div class="flex-space-between">
-            <p class="info-container-invited-link ">
+            <p class="info-container-invited-link "
+              (click)="buttonHandler()"
+            >
               0 artículos activados
             </p>
           </div>
@@ -222,7 +223,9 @@
             </p>
           </div>
           <div class="flex-space-between">
-            <p class="info-container-invited-link ">
+            <p class="info-container-invited-link "
+              (click)="buttonHandler()"
+            >
               0 recompensas
             </p>
           </div>
@@ -236,7 +239,9 @@
             </p>
           </div>
           <div class="flex-space-between">
-            <p class="info-container-invited-link ">
+            <p class="info-container-invited-link "
+              (click)="buttonHandler()"
+            >
               0 artículos activados
             </p>
           </div>
@@ -250,7 +255,9 @@
             </p>
           </div>
           <div class="flex-space-between">
-            <p class="info-container-invited-link ">
+            <p class="info-container-invited-link "
+              (click)="buttonHandler()"
+            >
               Sin Memorias
             </p>
           </div>
@@ -268,7 +275,9 @@
             </p>
           </div>
           <div class="flex-space-between">
-            <p class="info-container-invited-link ">
+            <p class="info-container-invited-link "
+              (click)="buttonHandler()"
+            >
               Sin Memorias
             </p>
           </div>
@@ -284,7 +293,11 @@
                 Por cada factura que generen tus invitados comerciales ganas
                 dinero. Es un ingreso recurrente y sin límites.
               </p>
-              <p class="info-container-invited-link">0 invitados</p>
+              <p class="info-container-invited-link"
+                (click)="buttonHandler()"
+              >
+                0 invitados
+              </p>
             </div>
           </div>
         </div>
@@ -363,9 +376,6 @@
           </div>-->
       <div class="tabs-container" *ngIf="!tabarIndex" style="margin-top: 2em;">
         <!-- TABS -->
-        <h3 class="footer-swiper-title">
-          TESTIMONIOS DE QUIENES ME ESTAN EDUCANDO
-        </h3>
         <div class="footer-swiper">
           <div class="swiper-custom-container">
             <!-- <swiper [config]="swiperConfig"> -->
@@ -388,7 +398,7 @@
         </div>
       </div>
     </main>
-    <div class="message" *ngIf="!tabarIndex">
+    <div class="message" [ngStyle]="tabarIndex === 3 && {'margin-bottom': '32px'}">
       <div class="input" (click)="openLaiaDialog()">Escribe tu correo electrónico para reservar a Laia</div>
       <!-- <input type="text" placeholder="Escribe tu correo electrónico para reservar a Laia" (click)="openLaiaDialog()"/> -->
       <button>
