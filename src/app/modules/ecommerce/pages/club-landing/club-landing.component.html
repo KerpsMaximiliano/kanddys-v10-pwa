@@ -13,7 +13,20 @@
             /> -->
   
         <div class="title" (click)="openMsgDialog()">
-          LaiaChat para www.flores.club
+          La<span style="color: #87CD9B;">ia</span>Chat
+          <span style="color: #87CD9B;">
+            {{ 
+              !headerService?.user ?
+              'contigo' :
+              headerService.user.name ?
+              'con ' + headerService.user.name :
+              headerService.user.email ?
+              'con ' + headerService.user.email :
+              headerService.user.phone ?
+              'con ' + headerService.user.phone :
+              'contigo'
+            }}
+          </span>
         </div>
       </div>
   
@@ -115,12 +128,15 @@
             adiciones a sus memorias.
           </p>
           <div class="flex">
-            <p class="info-container-invited-link info-container-invited-link-mr">
-              0 memorias
+            <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToLaiaTraining()">
+              Escribe en la Memoria y  prueba a Laia
+            </p>
+            <!-- <p class="info-container-invited-link info-container-invited-link-mr">
+              Escribe en la Memoria y  prueba a Laia
             </p>
             <p class="info-container-invited-link info-container-invited-link-mr">
               0 chats
-            </p>
+            </p> -->
           </div>
         </div>
         <p class="ganas-desc">
@@ -284,7 +300,9 @@
                 Por cada factura que generen tus invitados comerciales ganas
                 dinero. Es un ingreso recurrente y sin límites.
               </p>
-              <p class="info-container-invited-link">0 invitados</p>
+              <p class="info-container-invited-link" (click)="goToReferrals()">
+                {{ !headerService.user ? 'Mira tus invitados' : referralsCount + ' invitados' }}
+              </p>
             </div>
           </div>
         </div>
@@ -296,6 +314,21 @@
         <p class="ganas-desc ganas-desc-ad">
           *Comercios que invitaron a quienes invitaste.
         </p>
+        <hr />
+        <div class="info-container">
+          <p class="info-container-title">Ahorra Tiempo</p>
+          <div class="flex-space-between">
+            <img width="70px" height="70px" src="../../../../../assets/images/sand-clock.png" alt="">
+            <div>
+              <p class="info-container-desc">
+                Ahorra el tiempo de cotizaciones y facturas cuando tus clientes  y proveedores utilizan a LaiaChat.
+              </p>
+              <p class="info-container-invited-link" (click)="goToReferrals()">
+                {{ !headerService.user ? 'Mira tus invitados' : referralsCount + ' invitados' }}
+              </p>
+            </div>
+          </div>
+        </div>
         <!-- <p class="subject">Ganas dinero mensual, recurrente y sin límites cuando invitas al Club.</p>
             <p class="info">Del dinero recolectado cada mes para Laia, TU como Embajador ganas el 15% de cada invitado directo y el 10% de todos los indirectos*</p>
             <p class="small">*Miembros que invitaron a quienes invitaste.</p> -->

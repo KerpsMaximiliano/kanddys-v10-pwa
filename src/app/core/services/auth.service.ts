@@ -184,6 +184,23 @@ export class AuthService {
         useMultipart: true,
       },
     });
+
+    if (localStorage.getItem("affiliateCode")) {
+      const merchant = await this.getMerchant(result.user._id);
+      if (merchant) {
+        const input: AffiliateInput = {
+          reference: merchant._id
+        }
+        try {
+          this.affiliateService.createAffiliate(localStorage.getItem("affiliateCode"), input);
+          localStorage.removeItem("affiliateCode");
+        } catch (error) {
+          console.log(error);
+        }
+
+      }
+    }
+
     return result?.user ? new User(result.user) : undefined;
   }
 
@@ -445,5 +462,27 @@ export class AuthService {
   async getMerchantDefault() {
     const merchantDefault: Merchant = await this.merchantService.merchantDefault();
     return merchantDefault._id;
+  }
+
+  async getMerchant(userId: string)  {
+    try {
+      const result: Merchant[] = await this.merchantService.merchants({
+        findBy: {
+          owner: userId
+        }
+      });
+
+      let merchant;
+      if (result.length === 0) {
+        merchant = await this.merchantService.createMerchant({
+          owner: userId
+        });
+      };
+      merchant = result.find(merchant => merchant.default);
+      if (!merchant) result[0];
+      return merchant; 
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

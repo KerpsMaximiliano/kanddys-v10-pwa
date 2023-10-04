@@ -313,6 +313,14 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     return textareaHeight >= windowHeight;
   }
 
+  back() {
+    return this.router.navigate(['/ecommerce/club-landing'], {
+      queryParams: {
+        tabarIndex: 2
+      }
+    });
+  }
+
   ngOnDestroy() {
     this.queryParamsSubscription.unsubscribe();
     this.memoryTextareaValueChangeSubscription.unsubscribe();

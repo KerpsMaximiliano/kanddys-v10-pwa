@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { GraphQLWrapper } from "../graphql/graphql-wrapper.service";
 import { PaginationInput, PaginationRangeInput } from "../models/saleflow";
-import { affiliateComisionTotalByRange, affiliateTotalpaginate, createAffiliate } from "../graphql/affiliate.gql";
+import { affiliateComisionTotalByRange, affiliatePaginate, affiliateTotalpaginate, createAffiliate } from "../graphql/affiliate.gql";
 import { AffiliateInput } from "../models/affiliate";
 
 @Injectable({ providedIn: 'root' })
@@ -17,6 +17,17 @@ export class AffiliateService {
 
       if (!result || result?.errors) return undefined;
       return result?.affiliateTotalpaginate;
+  }
+
+  async affiliatePaginate (input: PaginationInput, date: String) {
+    const result = await this.graphql.query({
+      query: affiliatePaginate,
+      variables: { input, date },
+      fetchPolicy: 'no-cache',
+    });
+
+      if (!result || result?.errors) return undefined;
+      return result?.affiliatePaginate;
   }
 
   async affiliateComisionTotalByRange (referenceId: String, range: PaginationRangeInput) {
