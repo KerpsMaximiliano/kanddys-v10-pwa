@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-
+import { Location } from '@angular/common';
 import gql from 'graphql-tag';
 
 import { MerchantsService } from 'src/app/core/services/merchants.service';
@@ -45,9 +45,12 @@ export class AffiliateReferalsComponent implements OnInit {
   datesOfYear = [];
   @ViewChild('picker') datePicker: MatDatepicker<Date>;
 
-  constructor(private merchantService: MerchantsService, 
-              private paymentLog: PaymentLogsService,
-              private affiliateService: AffiliateService) { }
+  constructor(
+    private merchantService: MerchantsService, 
+    private paymentLog: PaymentLogsService,
+    private affiliateService: AffiliateService,
+    private location: Location
+  ) { }
 
   async ngOnInit() {
     this.getFirstDayOfMonth();
@@ -67,7 +70,9 @@ export class AffiliateReferalsComponent implements OnInit {
     await this.getBenefits(this.merchant,initialDateRangeBenefit);
   }
 
-  back() { }
+  back() {
+    this.location.back();
+  }
 
   getFirstDayOfMonth() {
     const fechaReferencia = moment();

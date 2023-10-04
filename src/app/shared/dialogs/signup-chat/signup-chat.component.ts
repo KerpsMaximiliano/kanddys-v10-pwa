@@ -115,7 +115,7 @@ export class SignupChatComponent implements OnInit {
 
   async registerUser(email: string) {
     try {
-      const input = { email }
+      const input = { email, password: "123" }
       await this.authService.signup(input, "none")
     } catch (error) {
       console.error(error)

@@ -65,16 +65,16 @@ export class LoginFlowComponent implements OnInit {
                 this.openMagicLinkDialog();
               },
             },
-            {
-              value: 'Usa tu cuenta de Google',
-              callback: async () => {
-                this.googleSigninService.signIn()
-                this.appService.events.subscribe(async (res) => {
-                  console.log(res)
-                  await this.merchantCheck(res.data)
-                })
-              },
-            },
+            // {
+            //   value: 'Usa tu cuenta de Google',
+            //   callback: async () => {
+            //     this.googleSigninService.signIn()
+            //     this.appService.events.subscribe(async (res) => {
+            //       console.log(res)
+            //       await this.merchantCheck(res.data)
+            //     })
+            //   },
+            // },
           ],
         },
         disableClose: true
