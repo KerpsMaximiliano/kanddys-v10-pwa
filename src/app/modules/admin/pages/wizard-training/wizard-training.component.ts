@@ -31,7 +31,7 @@ export class WizardTrainingComponent implements OnInit {
   loadingKnowledge: boolean = false;
   whatsappQrCodeGenerated: boolean = false;
   whatsappConnected: boolean = false;
-  pollingInterval = 15000; // Polling interval in milliseconds (15 seconds)
+  pollingInterval = 5000; // Polling interval in milliseconds (15 seconds)
   abortController = new AbortController();
   signal = this.abortController.signal;
   pollingTimeout;
