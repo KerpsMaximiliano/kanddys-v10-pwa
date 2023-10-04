@@ -208,13 +208,11 @@ export class SaleFlowService {
   }
 
   async updateSaleflow(input: SaleFlowInput, id: string): Promise<SaleFlow> {
-    console.log(input, id);
     const result = await this.graphql.mutate({
       mutation: updateSaleflow,
       variables: { input, id },
     });
     if (!result || result?.errors) return undefined;
-    console.log(result);
     return result.updateSaleflow;
   }
 

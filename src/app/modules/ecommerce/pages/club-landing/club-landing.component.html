@@ -182,9 +182,16 @@
           <p class="info-container-desc info-container-desc-mt">
             Laia utiliza la IA para acomodar tus artículos a que lo vendas fácilmente a través de enlaces.
           </p>
-            <p class="info-container-invited-link info-container-invited-link-mr">
+          <ng-container *ngIf="!headerService?.user">
+            <p class="info-container-invited-link info-container-invited-link-mr" (click)="openMemoriesLoginDialog()">
               0 Artículos en Memoria
             </p>
+          </ng-container>
+          <ng-container *ngIf="headerService?.user">
+            <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToDashboard()">
+              {{ saleflow ? saleflow?.items?.length : '0' }} artículos
+            </p>
+          </ng-container>
   
         </div>
         <div class="flex-space-between align-center">
@@ -193,27 +200,6 @@
           </p>
           <img src="../../../../../assets/icons/switch-green.svg" class="switch-img">
         </div>
-        <hr />
-        <div class="info-container">
-          <p class="info-container-title">Vende más</p>
-          <p class="info-container-desc info-container-desc-mt">
-            Con la IA es que Laia lleva el control de los Premios, Recompensas y Ofertas que expones para incrementar las posibilidades de ventas.
-          </p>
-          <div class="flex-space-between">
-            <p class="info-container-invited-link ">
-              0 premios
-            </p>
-            <p class="info-container-invited-link ">
-              0 recompensas
-            </p>
-            <p class="info-container-invited-link ">
-              0 ofertas
-            </p>
-          </div>
-        </div>
-        <p class="ganas-desc">
-          Laia brindará las respuestas consistentes a tus clientes basada en la información que le adiciones a tus artículos.
-        </p>
         <hr />
         <div class="info-container">
           <p class="info-container-title">Premia las Referencias</p>
@@ -421,7 +407,7 @@
         </div>
       </div>
     </main>
-    <div class="message" *ngIf="!tabarIndex">
+    <div class="message" *ngIf="!tabarIndex && !headerService.user">
       <div class="input" (click)="openLaiaDialog()">Escribe tu correo electrónico para reservar a Laia</div>
       <!-- <input type="text" placeholder="Escribe tu correo electrónico para reservar a Laia" (click)="openLaiaDialog()"/> -->
       <button>
