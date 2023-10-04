@@ -1,7 +1,7 @@
 import { Model } from '../objects/model';
 import { AirtableConfiguration, AirtableConfigurationInput } from './airtable';
 import { SocialMediaModel, SocialMediaModelInput } from './saleflow';
-import { User } from './user';
+import { Role, User } from './user';
 
 export class Category {
   _id: string;
@@ -47,6 +47,7 @@ export class Merchant extends Model<Merchant> {
   receiveNotificationsMainPhone?: boolean;
   secondaryContacts?: string[];
   default?: boolean;
+<<<<<<< HEAD
   roles?: Roles[]
 }
 
@@ -54,6 +55,11 @@ interface Roles {
   _id: string
   code: 'STORE' | 'PROVIDERS' | 'PROVIDER' | 'DEFAULT'
   name: string
+=======
+  createdAt: string;
+  roles:Role[];
+  deliveryLocations:DeliveryLocation[];
+>>>>>>> staging-v3
 }
 
 export class EmployeeContract extends Model<EmployeeContract> {
@@ -92,4 +98,12 @@ export class MerchantInput {
   address?: string;
   slug?: string;
   categories?: string[];
+}
+
+export class DeliveryLocation{
+  country?:Country;
+}
+
+export class  Country {
+  _id:string;
 }

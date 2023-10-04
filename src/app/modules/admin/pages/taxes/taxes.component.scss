@@ -1,0 +1,279 @@
+.container {
+  min-height: 100vh;
+  background: #f6f6f6;
+  display: flex;
+  flex-direction: column;
+
+  header {
+    background-color: #181d17;
+
+    padding: 15px 17px;
+    display: flex;
+    align-items: center;
+    color: #6fcf97;
+    font-family: InterBold;
+    box-shadow: 0px 4px 5px 0px rgba(123, 123, 123, 0.2);
+
+    .close {
+      cursor: pointer;
+      color: #c4c5c3;
+      font-size: 24px;
+      font-family: InterLight;
+    }
+
+    h2 {
+      margin: 0px;
+      padding-left: 17px;
+      font-size: 18.83px;
+      margin-left: 11px;
+      font-weight: 700;
+      line-height: 22.79px;
+      text-align: center;
+    }
+
+    .options-wrapper {
+      margin-left: auto;
+      display: flex;
+      column-gap: 16px;
+    }
+  }
+}
+main {
+  padding: 19px;
+  padding-top: 30px;
+  padding-bottom: 50px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+
+  &.existingItemContainer {
+    padding-top: 18px;
+  }
+
+  .intro-text {
+    color: #7b7b7b;
+    text-align: center;
+    font-family: InterRegular;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    margin: 0px;
+    margin-bottom: 40px;
+  }
+
+  .img-input {
+    width: 146px;
+    height: 166px;
+    flex-shrink: 0;
+    border-radius: 4px 10px 4px 4px;
+    background: #fff;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    img {
+      filter: invert(98%) sepia(0%) saturate(7422%) hue-rotate(181deg) brightness(82%) contrast(88%);
+    }
+  }
+
+  .price-wrapper {
+    border-radius: 4px;
+    overflow: hidden;
+    overflow-x: scroll;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    background-color: white;
+    margin-bottom: 8px;
+    width: 100%;
+    padding: 13px;
+  }
+
+  .field-text {
+    border-radius: 4px;
+    background: #fff;
+    padding: 13px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 8px;
+    position: relative;
+
+    &.hover {
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    label {
+      color: #000;
+      font-size: 13px;
+      font-family: InterLight;
+      font-style: italic;
+      font-weight: 300;
+      margin-bottom: 10px;
+    }
+
+    input,
+    textarea,
+    span {
+      border: none;
+      font-size: 17px;
+      font-family: InterBold;
+
+      &::placeholder {
+        color: #7b7b7b;
+      }
+
+      &:read-only {
+        background-color: #fff;
+        color: #7b7b7b;
+      }
+    }
+
+    textarea {
+      min-height: 71px;
+      resize: vertical;
+    }
+
+    h6 {
+      color: #000;
+      font-size: 13px;
+      font-family: InterLight;
+      font-style: italic;
+      font-weight: normal;
+      margin: 0px;
+      margin-bottom: 10px;
+    }
+
+    h4 {
+      color: #7b7b7b;
+      font-size: 17px;
+      font-family: InterBold;
+      font-style: normal;
+      line-height: normal;
+      margin: 0px;
+    }
+
+    .icon-button {
+      position: absolute;
+      float: right;
+      bottom: 5px;
+      right: 10px;
+      background: none;
+      border: 0;
+      img {
+        cursor: pointer;
+        width: 20px;
+      }
+    }
+  }
+
+  .optional-stuff {
+    margin-top: 52px;
+
+    h3 {
+      color: #000;
+      font-size: 13px;
+      font-family: InterRegular;
+      margin: 0px;
+      font-weight: normal;
+      margin-bottom: 12px;
+    }
+
+    .row {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 14px 18px 13px 18px;
+      border-radius: 4px;
+      background: #fff;
+      margin-top: 12px;
+
+      span {
+        color: #000;
+        font-size: 17px;
+        font-family: InterLight;
+        font-style: italic;
+      }
+
+      img:hover {
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+section {
+  margin-bottom: 40px;
+
+  .section-title {
+    color: #000;
+    font-family: InterLight;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    margin: 0px;
+    padding: 0px;
+    padding-bottom: 12px;
+  }
+
+  .item-field {
+    border-radius: 4px;
+    background: #fff;
+    padding: 13px 18px;
+    padding-right: 16.43px;
+    display: flex;
+    justify-content: space-between;
+
+    &.empty {
+      box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    }
+
+    &:not(:last-child) {
+      margin-bottom: 9px;
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    .field-name {
+      color: #000;
+      font-family: InterLight;
+      font-size: 17px;
+      font-style: italic;
+      font-weight: 300;
+      line-height: normal;
+    }
+
+    .add-icon:hover {
+      cursor: pointer;
+    }
+  }
+  .tax-voucher {
+    color: #7b7b7b;
+    font-size: 17px;
+    font-family: InterRegular;
+    margin: 0px;
+    font-weight: 700;
+    line-height: 20.57px;
+    margin-bottom: 12px;
+  }
+}
+.edition-link {
+  color: #2874AD;
+  font-size: 13px;
+  font-family: InterRegular;
+  font-style: italic;
+  margin: 0px;
+  font-weight: 300;
+  line-height: 15.73px;
+}

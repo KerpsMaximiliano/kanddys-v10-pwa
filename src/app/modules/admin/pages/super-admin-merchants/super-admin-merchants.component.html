@@ -1,0 +1,96 @@
+<div class="container">
+  <div class="header">
+    <div class="flex">
+      <mat-icon>chevron_left</mat-icon>
+      <p>Comerciantes de la Industria Floral</p>
+    </div>
+    <img src="../../../../../assets/icons/info.svg" />
+  </div>
+  <div class="content">
+    <div class="input-filter" (click)="showFilters = !showFilters" >Todos los Comerciantes ({{ totalMerchants }}) ..</div>
+    <div class="filters-container" *ngIf="showFilters">
+      <p [ngClass]="{ selected: everyRoleSelected }" (click)="selectRole(true)">
+        Todos los comerciantes ({{ totalMerchants }})
+      </p>
+      <p
+        (click)="selectRole('STORE')"
+        [ngClass]="{ selected: isRoleSelected('STORE') }"
+      >
+        Tiendas ({{ merchantsQuantityStore() }})
+      </p>
+      <p
+        (click)="selectRole('PROVIDER')"
+        [ngClass]="{ selected: isRoleSelected('PROVIDER') }"
+      >
+        Proveedores ({{ merchantsQuantityProvider() }})
+      </p>
+      <p>Productores (0)</p>
+      <p>Abastecedores (0)</p>
+    </div>
+    <div class="filters-container" *ngIf="showFilters">
+      <p
+        (click)="selectCountry(true)"
+        [ngClass]="{ selected: everyCountrySelected }"
+      >
+        De cualquier país ({{ totalMerchants }})
+      </p>
+      <p
+        *ngFor="let i of countries"
+        (click)="selectCountry(i._id)"
+        [ngClass]="{ selected: isCountrySelected(i._id) }"
+      >
+        {{ i.value }} ({{ getQuantityOfCountry(i) }})
+      </p>
+    </div>
+    <div class="filters-container" *ngIf="showFilters">
+      <p
+        [ngClass]="{ selected: everyCampaignSelected }"
+        (click)="selectCampaign(true)"
+      >
+        Desde cualquier campaña ({{ totalMerchants }})
+      </p>
+      <p *ngFor="let i of campaigns" (click)="selectCampaign(i.campaign?._id)"  [ngClass]="{ selected: isCampaignSelected(i.campaign?._id) }">
+        {{ i.campaign?.name }} ({{ i.count }})
+      </p>
+    </div>
+    <div class="filters-container" *ngIf="showFilters">
+      <p
+        [ngClass]="{ selected: debts==null }"
+        (click)="selectDebt(null)"
+      >
+        No importa si le deben $ a SuperAdmin ({{totalMerchants}})
+      </p>
+      <p  [ngClass]="{ selected: debts==true }" (click)="selectDebt(true)">Le deben ({{merchantDebts[0]?.haveDebt}})</p>
+      <p  [ngClass]="{ selected: debts==false }" (click)="selectDebt(false)">No le deben ({{merchantDebts[0]?.noDebt}})</p>
+    </div>
+    <div *ngFor="let i of months; let k = index">
+      <p class="month-title">DESDE {{ i }}</p>
+      <div class="month-card" *ngFor="let m of getMerchantsMonth(k + 1)">
+        <div class="flex-space-between">
+          <p class="month-card-title">{{ m.name || "Sin nombre" }}</p>
+          <p class="month-card-country country-align-right">
+            {{ getCountry(m) }}
+          </p>
+        </div>
+        <p class="month-card-country">Le vende a {{ saleToText(m) }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer-page">
+<div class="flex">
+  <div class="date-text" >
+    {{(startDate!=null && endDate!=null) ? ((startDate | date:'dd/MMM/yy') + " a " + (endDate | date:'dd/MMM/yy')) : "Filtrar por rango de fechas" }}
+  </div>
+  <mat-datepicker-toggle  [for]="picker" ></mat-datepicker-toggle>
+  <mat-date-range-picker #picker (dateChange)="getMerchants()" ></mat-date-range-picker>
+</div>
+   <p class="total">Total: {{ totalMerchants }}</p> 
+</div>
+  <mat-form-field  appearance="fill" style="position: fixed!important;">
+    <mat-date-range-input [rangePicker]="picker">
+      <input matStartDate placeholder="FechaId" [(ngModel)]="startDate" (dateChange)="getMerchants()">
+      <input matEndDate placeholder="FechaId" [(ngModel)]="endDate" (dateChange)="getMerchants()">
+    </mat-date-range-input>
+
+  </mat-form-field>

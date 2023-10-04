@@ -1,9 +1,11 @@
+/// <reference types="@types/gapi.auth2" />
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { promise } from 'protractor';
 import { Observable, ReplaySubject } from 'rxjs';
 import { AppService } from 'src/app/app.service';
 import { AuthService } from './auth.service';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -20,20 +22,19 @@ export class GoogleSigninService {
     gapi.load('auth2', () => {
       this.auth2 = gapi.auth2.init({
         client_id:
-          '964059680966-lpq9bi386j6s85oeuhnvrq5rvudhqdgn.apps.googleusercontent.com',
-        fetch_basic_profile: false,
+        `${environment.socials.googleId}`,
         scope: 'email',
       });
       console.log(this.auth2);
     });
   }
 
-  public signIn(authLogin: boolean = true) {
+  public async signIn(authLogin: boolean = true) {
     console.log('I am passing signIn');
-
-    var auth2 = gapi.auth2.getAuthInstance();         
+    var auth2 = gapi.auth2.getAuthInstance();
+    console.log(auth2.currentUser.get().getAuthResponse());         
       // Sign the user in, and then retrieve their ID.
-      auth2.signIn().then(() => {
+      await auth2.signIn().then(() => {
         console.log(auth2.currentUser.get().getAuthResponse().id_token);
         this.auth.signinSocial({
           token: auth2.currentUser.get().getAuthResponse().id_token,
@@ -52,7 +53,7 @@ export class GoogleSigninService {
           }
         })
         return auth2.currentUser.get().getBasicProfile();
-      });         
+      })
  }
 
   public signout() {

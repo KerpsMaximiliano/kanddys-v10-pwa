@@ -1,0 +1,63 @@
+<div class="chat-page">
+  <header class="chat-header">
+    <p>
+      Dal<span>ia</span>hChat con
+      <span>{{ "Desconocido" }}</span>
+    </p>
+    <button type="button" role="button">
+      <img src="../../../../../assets/icons/close-button.svg" alt="close" />
+    </button>
+  </header>
+  <div class="messages">
+    <div class="messages-container" #chatContainer>
+      <ng-container *ngFor="let message of chat?.messages">
+        <div class="message message-sent" *ngIf="message.sender === 'IA'">
+          {{ message.message }}
+        </div>
+        <div class="message message-received" *ngIf="message.sender !== 'IA'">
+          {{ message.message }}
+        </div>
+      </ng-container>
+      <div class="group-options" *ngIf="!hideOptions">
+        <button
+          class="option"
+          type="button"
+          role="button"
+          *ngFor="let option of groupOptions; let i = index"
+          (click)="sendOption(i)"
+        >
+          {{ option.text }}
+        </button>
+      </div>
+    </div>
+  </div>
+  <form class="user-input" [formGroup]="chatFormGroup" role="form">
+    <textarea
+      class="user-input-box"
+      placeholder="Escribe algo..."
+      formControlName="input"
+      rows="3"
+      *ngIf="!hideInput"
+    ></textarea>
+    <textarea
+      class="user-input-box"
+      placeholder="Escribe algo..."
+      formControlName="input"
+      rows="3"
+      *ngIf="hideInput"
+      [attr.disabled]="hideInput"
+    ></textarea>
+
+    <button
+      class="submit-button"
+      role="button"
+      [disabled]="!chat"
+      (click)="sendMessage()"
+    >
+      <img
+        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fsend_black.svg"
+        alt="send"
+      />
+    </button>
+  </form>
+</div>

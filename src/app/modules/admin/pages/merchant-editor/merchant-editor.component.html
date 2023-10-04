@@ -1,9 +1,9 @@
 <div class="page-container">
   <header class="page-header">
     <button type="button">
-      <img src="../../../../../assets/icons/icon-close.svg" alt="">
+      <img src="../../../../../assets/icons/triangle.svg" alt="">
     </button>
-    <p>www.floristerias.club ó WeDoWeLike</p>
+    <p>Perfil de Membresía</p>
   </header>
   <form class="page-form">
     <section class="form-group form-full">
@@ -32,6 +32,13 @@
           pattern="[\w\._]{5,30}\+?[\w]{0,10}@[\w\.\~]{3,}\.\w{2,5}"
           [(ngModel)]="email"
         />
+      </div>
+      <div class="input-group" (click)="goViewConfigurationCards()">
+        <label for="layout"
+          >Layout de la exhibición de los artículos en venta</label
+        >
+        <span class="title">Grande (imagen, título, descripción, precio)</span>
+        <span class="subtitle">Cambiar a pequeño (imagen, precio)</span>
       </div>
       <div class="input-group" *ngIf="name || name === ''">
         <label for="name"
@@ -81,6 +88,11 @@
         >
         <span>{{ paymentMethodsString }}</span>
       </div>
+      <div class="input-group" *ngIf="pickupAddressString" (click)="openFormForField('PICK-UP-ADDRESS')">
+        <label for="slug">Dirección de Pick Up</label
+        >
+        <span>{{ pickupAddressString }}</span>
+      </div>
     </section>
     <section class="form-group form-optional">
       <p class="form-title">
@@ -107,13 +119,13 @@
         </div>
         <div class="card">
           <p>Zonas de las entregas por delivery</p>
-          <button type="button">
+          <button type="button" (click)="goDeliveryZonesManager()">
             <img src="../../../../../assets/icons/add-button.svg" alt="" />
           </button>
         </div>
-        <div class="card">
+        <div class="card" *ngIf="pickupAddressString === null">
           <p>Lugar de las entregas por pick up</p>
-          <button type="button">
+          <button type="button" (click)="openFormForField('PICK-UP-ADDRESS')">
             <img src="../../../../../assets/icons/add-button.svg" alt="" />
           </button>
         </div>
@@ -131,7 +143,7 @@
         </div>
         <div class="card">
           <p>Cuentas sociales</p>
-          <button type="button">
+          <button type="button" (click)="goLinksView()">
             <img src="../../../../../assets/icons/add-button.svg" alt="" />
           </button>
         </div>
@@ -148,6 +160,6 @@
     </section>
   </form>
   <footer class="page-footer">
-    <a (click)="save()"><p>Empieza la Membresía del Club de Floristerías</p></a>
+    <a (click)="save()"><p>Salvar</p></a>
   </footer>
 </div>

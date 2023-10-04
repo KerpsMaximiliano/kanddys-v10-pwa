@@ -159,7 +159,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle'; 
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
@@ -234,7 +234,21 @@ import { ConfirmationSimpleComponent } from './dialogs/confirmation-simple/confi
 import { OptionsDialogComponent } from './dialogs/options-dialog/options-dialog.component';
 import { ClubDialogComponent } from './dialogs/club-dialog/club-dialog.component';
 import { SelectRoleDialogComponent } from './dialogs/select-role-dialog/select-role-dialog.component';
+import { CostsDialogComponent } from './dialogs/costs-dialog/costs-dialog.component';
 import { WizardChatbotComponent } from './components/wizard-chatbot/wizard-chatbot.component';
+import { CreateExpenditureDialogComponent } from './dialogs/create-expenditure-dialog/create-expenditure-dialog.component';
+import { CostsMetricsNavigationComponent } from './components/costs-metrics-navigation/costs-metrics-navigation.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MessageDialogComponent } from './dialogs/message-dialog/message-dialog.component';
+import { SpecialDialogComponent } from './dialogs/special-dialog/special-dialog.component';
+import { CompareDialogComponent } from './dialogs/compare-dialog/compare-dialog.component';
+import { NewlineToBrPipe } from '../core/pipes/newline.pipe';
+import { LinkifyPipe } from '../core/pipes/linkify.pipe';
+import { ProfloraLinkDialogComponent } from './dialogs/proflora-link-dialog/proflora-link-dialog.component';
+import { ProfloraDescDialogComponent } from './dialogs/proflora-desc-dialog/proflora-desc-dialog.component';
+import { UpperCasePipe } from '../core/pipes/upper-case.pipe';
+import { LoginFlowComponent } from './components/login-flow/login-flow.component';
+import { SignupChatComponent } from './dialogs/signup-chat/signup-chat.component';
 
 const imports = [
   CommonModule,
@@ -273,6 +287,7 @@ const imports = [
   MatSidenavModule,
   MatSlideToggleModule,
   TranslateModule,
+  MatDatepickerModule
 ];
 const declarations = [
   // Pages
@@ -481,7 +496,19 @@ const declarations = [
   OptionsDialogComponent,
   ClubDialogComponent,
   SelectRoleDialogComponent,
-  WizardChatbotComponent
+  CostsDialogComponent,
+  WizardChatbotComponent,
+  CreateExpenditureDialogComponent,
+  CostsMetricsNavigationComponent,
+  NewlineToBrPipe,
+  LinkifyPipe,
+  ProfloraLinkDialogComponent,
+  ProfloraDescDialogComponent,
+  MessageDialogComponent,
+  SpecialDialogComponent,
+  CompareDialogComponent,
+  LoginFlowComponent,
+  SignupChatComponent
 ];
 
 @NgModule({

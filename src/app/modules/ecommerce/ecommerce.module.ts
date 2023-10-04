@@ -73,6 +73,11 @@ import { MagicLinkSentComponent } from './pages/magic-link-sent/magic-link-sent.
 import { MerchantRegisterComponent } from './pages/merchant-register/merchant-register.component';
 import { LoginLandingComponent } from './pages/login-landing/login-landing.component';
 import { NotificationAccessScreenComponent } from './pages/notification-access-screen/notification-access-screen.component';
+import { AdminArticleDetailComponent } from './pages/admin-article-detail/admin-article-detail.component';
+import { ProfloraCampainComponent } from './pages/proflora-campain/proflora-campain.component';
+import { ChatRoomComponent } from './pages/chat-room/chat-room.component';
+import { DaliahChatComponent } from './pages/daliah-chat/daliah-chat.component';
+import { DaliaTrainingComponent } from './pages/dalia-training/dalia-training.component';
 
 const routes: Routes = [
   {
@@ -114,7 +119,7 @@ const routes: Routes = [
   },
   {
     path: 'order-confirmation/:orderId',
-    component: OrderConfirmationComponent
+    component: OrderConfirmationComponent,
   },
   {
     path: 'contact-landing/:idUser',
@@ -176,7 +181,7 @@ const routes: Routes = [
   },
   {
     path: 'invalid-link',
-    component: InvalidMagicLinkComponent
+    component: InvalidMagicLinkComponent,
   },
   {
     path: 'supplier-items-selector',
@@ -240,7 +245,7 @@ const routes: Routes = [
   },
   {
     path: 'confirm-club-registration',
-    component: ConfirmClubRegistrationComponent
+    component: ConfirmClubRegistrationComponent,
   },
   {
     path: 'confirm-quotation/:quotationId',
@@ -270,13 +275,30 @@ const routes: Routes = [
     path: 'ambassador-store',
     component: AmbassadorStoreComponent,
   },
+  // TODO: Change this
   {
     path: 'provider-items',
-    component: ProviderItemsComponent
+    component: ProviderItemsComponent,
   },
   {
     path: 'club-landing',
-    component: ClubLandingComponent
+    component: ClubLandingComponent,
+  },
+  {
+    path: 'proflora-campaign',
+    component: ProfloraCampainComponent,
+  },
+  {
+    path: 'daliah-chat',
+    component: DaliahChatComponent,
+  },
+  {
+    path: 'daliah-training',
+    component: DaliaTrainingComponent,
+  },
+  {
+    path: 'admin-article-detail/:itemId',
+    component: AdminArticleDetailComponent,
   },
   {
     path: ':merchantSlug',
@@ -415,7 +437,19 @@ const routes: Routes = [
       {
         path: 'giftcard-details',
         component: GiftcardDetailsComponent,
-      }
+      },
+      {
+        path: 'chat-merchant',
+        component: ChatRoomComponent,
+      },
+      {
+        path: 'chat-merchant/:chatId',
+        component: ChatRoomComponent,
+      },
+      {
+        path: 'daliah-training',
+        component: DaliaTrainingComponent,
+      },
     ],
   },
 ];
@@ -473,7 +507,12 @@ const routes: Routes = [
     MagicLinkSentComponent,
     MerchantRegisterComponent,
     LoginLandingComponent,
-    NotificationAccessScreenComponent
+    NotificationAccessScreenComponent,
+    AdminArticleDetailComponent,
+    ProfloraCampainComponent,
+    ChatRoomComponent,
+    DaliahChatComponent,
+    DaliaTrainingComponent,
   ],
   imports: [
     CommonModule,
@@ -483,12 +522,11 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     TranslateModule.forRoot({
       loader: {
-          provide: TranslateLoader,
-          useFactory: (createTranslateLoader),
-          deps: [HttpClient]
-      }
-  })
-
+        provide: TranslateLoader,
+        useFactory: createTranslateLoader,
+        deps: [HttpClient],
+      },
+    }),
   ],
 })
 export class EcommerceModule {}
