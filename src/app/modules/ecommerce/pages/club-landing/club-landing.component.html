@@ -132,12 +132,16 @@
           <p class="info-container-desc info-container-desc-mt">
             Laia utiliza la IA para acomodar tus artículos a que lo vendas fácilmente a través de enlaces.
           </p>
-            <p 
-              (click)="buttonHandler()"
-              class="info-container-invited-link info-container-invited-link-mr"
-            >
+          <ng-container *ngIf="!headerService?.user">
+            <p class="info-container-invited-link info-container-invited-link-mr" (click)="openMemoriesLoginDialog()">
               0 Artículos en Memoria
             </p>
+          </ng-container>
+          <ng-container *ngIf="headerService?.user">
+            <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToDashboard()">
+              {{ saleflow ? saleflow?.items?.length : '0' }} artículos
+            </p>
+          </ng-container>
   
         </div>
         <div class="flex-space-between align-center">
@@ -428,7 +432,7 @@
     <div 
       class="message" 
       [ngStyle]="tabarIndex === 3 && {'margin-bottom': '32px'}" 
-      *ngIf="!tabarIndex && !headerService.user"
+      *ngIf="!headerService.user"
     >
       <div class="input" (click)="openLaiaDialog()">Escribe tu correo electrónico para reservar a Laia</div>
       <!-- <input type="text" placeholder="Escribe tu correo electrónico para reservar a Laia" (click)="openLaiaDialog()"/> -->

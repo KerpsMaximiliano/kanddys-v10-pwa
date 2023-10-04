@@ -271,8 +271,10 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         }
       }
     );
-    await this.getReferrals();
-    await this.getSaleflowDefault();
+    if (this.merchant) {
+      await this.getReferrals();
+      await this.getSaleflowDefault();
+    }
     if (!this.headerService.user) this.openLaiaDialog();
     this.googleSigninService.observable().subscribe((user) => {
       this.user = user;
