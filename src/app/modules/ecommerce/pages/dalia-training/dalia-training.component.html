@@ -42,6 +42,7 @@
             <input
               *ngIf="editingQuestion"
               type="text"
+              id="question-box-input"
               class="question-box-input"
               formControlName="question"
             />
@@ -121,3 +122,12 @@
     </button>
   </section>
 </div>
+
+<app-login-flow
+  *ngIf="showLogin"
+  [redirectionRoute]="loginData.redirectionRoute"
+  [redirectionRouteId]="loginData.redirectionRouteId"
+  [entity]="loginData.entity"
+  [jsondata]="loginData.jsondata"
+  (dialogIsOpen)="saveMemoryInKnowledgeBase()"
+></app-login-flow>
