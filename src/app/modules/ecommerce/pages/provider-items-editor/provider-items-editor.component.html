@@ -98,6 +98,14 @@
     <footer class="bottom-footer" *ngIf="showStockEditor" (click)="toDoTask()">
       <p>Incluir mi disponibilidad</p>
     </footer>
+    <app-login-flow
+          *ngIf="loginflow"
+          [redirectionRoute]="redirectionRoute"
+          [redirectionRouteId]="redirectionRouteId"
+          [entity]="entity"
+          [jsondata]="jsondata"
+          (dialogIsOpen)="resetLoginDialog($event)"
+        ></app-login-flow>
   </div>
   
 </div>
