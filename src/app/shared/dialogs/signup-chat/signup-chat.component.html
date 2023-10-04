@@ -1,15 +1,13 @@
 <div class="chat-dialog">
   <header class="chat-header">
     <p>
-      Dal<span>ia</span>hChat con
-      <span>{{ "contigo" }}</span>
+      La<span>ia</span>Chat <span (click)="callLogin()">{{ 'contigo' }}</span>
     </p>
   </header>
   <div class="messages">
     <div class="messages-container" #chatContainer>
       <ng-container *ngFor="let message of chat?.messages; let i = index">
-        <div class="message message-sent" *ngIf="message.sender === 'IA'">
-          {{ message.message }}
+        <div class="message message-sent" *ngIf="message.sender === 'IA'" [innerHTML]="message.message">
         </div>
         <div class="message message-received" *ngIf="message.sender !== 'IA'">
           <button
@@ -39,11 +37,13 @@
     <input
       type="email"
       class="user-input-box"
-      placeholder="Escribe tu correo electrónico para reservar a Lalia"
+      placeholder="Escribe tu correo electrónico para reservar a Laia"
       formControlName="input"
+      [(ngModel)]="inputValue"
     />
 
     <button
+      [ngClass]="{ 'button-disabled': !inputValue}"
       class="button button-submit"
       role="button"
       [disabled]="!chat"
