@@ -64,7 +64,7 @@ export const bodyWithoutShowItems = `
   bio
   default
   active
-  owner { 
+  owner {
     phone
     email
     name
@@ -97,6 +97,11 @@ export const merchantDefault = gql`
       activity
       bio
       address
+      roles {
+        _id
+        code
+        name
+      }
       contactFooter
       categories {
         _id
@@ -239,7 +244,7 @@ export const merchantAuthorize = gql`
     merchantAuthorize(
       merchantId: $merchantId
     ) { ${bodyWithoutShowItems} }
-  } 
+  }
 `;
 
 export const itemsByMerchant = gql`
