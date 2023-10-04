@@ -1,46 +1,40 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { HeaderService } from 'src/app/core/services/header.service';
-import { SwiperOptions } from 'swiper';
-import { GoogleSigninService } from 'src/app/core/services/google-signin.service';
-import { environment } from 'src/environments/environment';
-import { NgNavigatorShareService } from 'ng-navigator-share';
-import { Location } from '@angular/common';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
-import { MatIcon } from '@angular/material/icon';
-import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
-import { ClubDialogComponent } from 'src/app/shared/dialogs/club-dialog/club-dialog.component';
-import { MessageDialogComponent } from 'src/app/shared/dialogs/message-dialog/message-dialog.component';
-import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NgNavigatorShareService } from 'ng-navigator-share';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { GoogleSigninService } from 'src/app/core/services/google-signin.service';
+import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import { AuthService } from 'src/app/core/services/auth.service';
-import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
-import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { PaginationInput } from 'src/app/core/models/saleflow';
+import { ClubDialogComponent } from 'src/app/shared/dialogs/club-dialog/club-dialog.component';
+import { MessageDialogComponent } from 'src/app/shared/dialogs/message-dialog/message-dialog.component';
+import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
+import { environment } from 'src/environments/environment';
+import { SwiperOptions } from 'swiper';
 
-import {
-  FormComponent,
-  FormData,
-} from 'src/app/shared/dialogs/form/form.component';
-import { FormGroup, Validators } from '@angular/forms';
+import { Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {
-  OptionsDialogComponent,
-  OptionsDialogTemplate,
-} from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import {
+  FormComponent
+} from 'src/app/shared/dialogs/form/form.component';
 
-import { SelectRoleDialogComponent } from 'src/app/shared/dialogs/select-role-dialog/select-role-dialog.component';
-import { SpecialDialogComponent } from 'src/app/shared/dialogs/special-dialog/special-dialog.component';
-import { CompareDialogComponent } from 'src/app/shared/dialogs/compare-dialog/compare-dialog.component';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { AppService } from 'src/app/app.service';
 import { base64ToBlob } from 'src/app/core/helpers/files.helpers';
-import { SignupChatComponent } from 'src/app/shared/dialogs/signup-chat/signup-chat.component';
-import { AffiliateService } from 'src/app/core/services/affiliate.service';
-import { Merchant } from 'src/app/core/models/merchant';
 import { AffiliateInput } from 'src/app/core/models/affiliate';
+import { Merchant } from 'src/app/core/models/merchant';
+import { SaleFlow } from 'src/app/core/models/saleflow';
+import { AffiliateService } from 'src/app/core/services/affiliate.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { CompareDialogComponent } from 'src/app/shared/dialogs/compare-dialog/compare-dialog.component';
+import { SelectRoleDialogComponent } from 'src/app/shared/dialogs/select-role-dialog/select-role-dialog.component';
+import { SignupChatComponent } from 'src/app/shared/dialogs/signup-chat/signup-chat.component';
+import { SpecialDialogComponent } from 'src/app/shared/dialogs/special-dialog/special-dialog.component';
 
 interface ReviewsSwiper {
   title: string;
@@ -77,7 +71,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   queryParamsSubscription: Subscription = null;
   routerParamsSubscription: Subscription = null;
 
-  redirectionRoute: string = '/ecommerce/login-landing';
+  redirectionRoute: string = '/ecommerce/club-landing';
   redirectionRouteId: string | null = null;
   entity: string = "MerchantAccess";
   jsondata: string = JSON.stringify({
@@ -218,11 +212,14 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   };
 
   emailDialogRef: MatDialogRef<FormComponent, any> = null;
-  merchant:string;
+  merchant: string;
+  saleflow: SaleFlow;
+  referralsCount: number = 0;
   @ViewChild('qrcode', { read: ElementRef }) qrcode: ElementRef;
 
   constructor(
     public headerService: HeaderService,
+    private app: AppService,
     private ngNavigatorShareService: NgNavigatorShareService,
     private bottomSheet: MatBottomSheet,
     private itemsService: ItemsService,
@@ -232,15 +229,26 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     private snackbar: MatSnackBar,
     private authService: AuthService,
     private merchantsService: MerchantsService,
+    private saleflowsService: SaleFlowService,
     private route: ActivatedRoute,
     private router: Router,
     private changeDetectorRef: ChangeDetectorRef,
     private clipboard: Clipboard,
     private affiliateService: AffiliateService
-  ) {}
+  ) {
+    const sub = this.app.events
+      .pipe(filter((e) => e.type === 'auth'))
+      .subscribe(async (e) => {
+        if (e.data) {
+          await this.getMerchantDefault();
+          await this.getReferrals();
+          await this.getSaleflowDefault();
+        }
+      });
+  }
 
   async ngOnInit() {
-    this.getMerchantDefault();
+    await this.getMerchantDefault();
     this.queryParamsSubscription = this.route.queryParams.subscribe(
       async ({ affiliateCode, tabarIndex }) => {
         if(affiliateCode){
@@ -263,12 +271,14 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         }
       }
     );
+    await this.getReferrals();
+    await this.getSaleflowDefault();
+    if (!this.headerService.user) this.openLaiaDialog();
     this.googleSigninService.observable().subscribe((user) => {
       this.user = user;
       console.log(user)
       this.changeDetectorRef.detectChanges();
     });
-    this.openLaiaDialog();
   }
 
   showRoleDialog() {
@@ -488,10 +498,10 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     this.close();
   }
 
-  share() {
+  goToReferrals() {
     if (!this.headerService.user) {
       this.loginflow = true;
-    }
+    } else return this.router.navigate(['/admin/affiliate-referrals']);
   }
 
   enterClub() {
@@ -521,12 +531,21 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         slug = res.slug
       })
     }
-    let link = this.URI+this.router.url+'?affiliateCode='+slug
+    let link = `${this.URI}/ecommerce/club-landing?affiliateCode=${slug}`;
     console.log(link)
     let dialogData = {
       title: "Gana dinero cada mes, recurrente y sin limites",
       bottomLabel: "Tu enlace es: " + link,
       options: [
+        {
+          value: "Copiar enlace",
+          callback: () => {
+            this.clipboard.copy(link);
+            this.snackbar.open("Enlace copiado", "Cerrar", {
+              duration: 3000,
+            });
+          },
+        },
         {
           value: "Comparte tu enlace",
           callback: () => {
@@ -573,17 +592,62 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     }, 1000)
   }
   async getMerchantDefault() {
-    const merchantDefault: Merchant = await this.merchantsService.merchantDefault();
-    this.merchant = merchantDefault._id;
+    try {
+      const merchantDefault: Merchant = await this.merchantsService.merchantDefault();
+      this.merchant = merchantDefault._id; 
+    } catch (error) {
+      console.log("error");
+    }
+  }
+
+  async getSaleflowDefault() {
+    try {
+      const saleflowDefault: SaleFlow = await this.saleflowsService.saleflowDefault(
+        this.merchant
+      );
+      this.saleflow = saleflowDefault;
+    } catch (error) {
+      console.log("error");
+    }
+  }
+
+  async getReferrals() {
+    try {
+      const result = await this.affiliateService.affiliatePaginate(
+        {
+          findBy: {
+            parent: this.merchant
+          }
+        },
+        new Date().toString()
+      );
+
+      this.referralsCount = result?.totalResults;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   invite() {
     if(!this.headerService.user) {
-      //this.redirectionRoute = '/ecommerce/club-landing?tabarIndex=3'
+      this.redirectionRoute = '/ecommerce/club-landing?tabarIndex=3';
       this.openLoginDialog();
     } else {
       this.openLinkDialog();
     }
+  }
+
+  openMemoriesLoginDialog() {
+    this.redirectionRoute = '/ecommerce/club-landing?tabarIndex=2';
+    this.loginflow = true;
+  }
+
+  goToLaiaTraining() {
+    return this.router.navigate(['/ecommerce/daliah-training']);
+  }
+
+  goToDashboard() {
+    return this.router.navigate(['/ecommerce/provider-items']);
   }
 
   openLoginDialog() {
@@ -621,7 +685,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
           this.openLinkDialog(merchant.createMerchant);
         }        
       } else {
-        let user = await this.authService.signup({email: result.value.email}, 'none');
+        let user = await this.authService.signup({email: result.value.email, password: "123"}, 'none');
         let merchant = await this.merchantsService.createMerchant({ owner: user._id });
         this.openLinkDialog(merchant.createMerchant);
       }
