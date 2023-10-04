@@ -328,7 +328,7 @@ export class ProviderItemsComponent implements OnInit {
       }
       this.orderService.orderPaginate(pagination)
         .then(orders => {
-          if (orders.length) {
+          if (orders.orderPaginate.length) {
             localStorage.setItem(this.keyTutorialState, 'true')
             this.searchTutorialsOpened = true
           }
