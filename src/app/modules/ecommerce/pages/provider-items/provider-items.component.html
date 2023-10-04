@@ -2,7 +2,7 @@ h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
   <div class="dashboard-page container" (scroll)="infinitePagination()">
     <header class="header" *ngIf="!searchOpened">
       <div class="btn-container principal">
-        <button type="button" mat-icon-button>
+        <button type="button" mat-icon-button (click)="back()">
           <mat-icon>keyboard_arrow_left</mat-icon>
         </button>
         <button class="title" (click)="drawerOpened = true">

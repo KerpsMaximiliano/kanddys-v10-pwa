@@ -1832,4 +1832,12 @@ export class ProviderItemsComponent implements OnInit {
       .listItems(input, false, itemName)
       .then(data => this.itemsFiltering = data.listItems)
   }
+
+  back() {
+    return this.router.navigate(['ecommerce/club-landing'], {
+      queryParams: {
+        tabarIndex: 2
+      }
+    });
+  }
 }

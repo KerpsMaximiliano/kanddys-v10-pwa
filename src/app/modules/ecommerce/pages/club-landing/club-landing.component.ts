@@ -3,6 +3,7 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { GoogleSigninService } from 'src/app/core/services/google-signin.service';
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -23,10 +24,13 @@ import {
 } from 'src/app/shared/dialogs/form/form.component';
 
 import { Clipboard } from '@angular/cdk/clipboard';
+import { AppService } from 'src/app/app.service';
 import { base64ToBlob } from 'src/app/core/helpers/files.helpers';
 import { AffiliateInput } from 'src/app/core/models/affiliate';
 import { Merchant } from 'src/app/core/models/merchant';
+import { SaleFlow } from 'src/app/core/models/saleflow';
 import { AffiliateService } from 'src/app/core/services/affiliate.service';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { CompareDialogComponent } from 'src/app/shared/dialogs/compare-dialog/compare-dialog.component';
 import { SelectRoleDialogComponent } from 'src/app/shared/dialogs/select-role-dialog/select-role-dialog.component';
 import { SignupChatComponent } from 'src/app/shared/dialogs/signup-chat/signup-chat.component';
@@ -207,11 +211,13 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
   emailDialogRef: MatDialogRef<FormComponent, any> = null;
   merchant: string;
+  saleflow: SaleFlow;
   referralsCount: number = 0;
   @ViewChild('qrcode', { read: ElementRef }) qrcode: ElementRef;
 
   constructor(
     public headerService: HeaderService,
+    private app: AppService,
     private ngNavigatorShareService: NgNavigatorShareService,
     private bottomSheet: MatBottomSheet,
     private itemsService: ItemsService,
@@ -221,15 +227,25 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     private snackbar: MatSnackBar,
     private authService: AuthService,
     private merchantsService: MerchantsService,
+    private saleflowsService: SaleFlowService,
     private route: ActivatedRoute,
     private router: Router,
     private changeDetectorRef: ChangeDetectorRef,
     private clipboard: Clipboard,
     private affiliateService: AffiliateService
-  ) {}
+  ) {
+    const sub = this.app.events
+      .pipe(filter((e) => e.type === 'auth'))
+      .subscribe(async (e) => {
+        if (e.data) {
+          await this.getMerchantDefault();
+          await this.getReferrals();
+          await this.getSaleflowDefault();
+        }
+      });
+  }
 
   async ngOnInit() {
-    this.openLaiaDialog();
     await this.getMerchantDefault();
     this.queryParamsSubscription = this.route.queryParams.subscribe(
       async ({ affiliateCode, tabarIndex }) => {
@@ -254,6 +270,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       }
     );
     await this.getReferrals();
+    await this.getSaleflowDefault();
+    if (!this.headerService.user) this.openLaiaDialog();
     this.googleSigninService.observable().subscribe((user) => {
       this.user = user;
       console.log(user)
@@ -512,6 +530,15 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       bottomLabel: "Tu enlace es: " + link,
       options: [
         {
+          value: "Copiar enlace",
+          callback: () => {
+            this.clipboard.copy(link);
+            this.snackbar.open("Enlace copiado", "Cerrar", {
+              duration: 3000,
+            });
+          },
+        },
+        {
           value: "Comparte tu enlace",
           callback: () => {
             this.ngNavigatorShareService.share({
@@ -565,6 +592,17 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     }
   }
 
+  async getSaleflowDefault() {
+    try {
+      const saleflowDefault: SaleFlow = await this.saleflowsService.saleflowDefault(
+        this.merchant
+      );
+      this.saleflow = saleflowDefault;
+    } catch (error) {
+      console.log("error");
+    }
+  }
+
   async getReferrals() {
     try {
       const result = await this.affiliateService.affiliatePaginate(
@@ -584,15 +622,24 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
   invite() {
     if(!this.headerService.user) {
-      this.redirectionRoute = '/ecommerce/club-landing?tabarIndex=3'
+      this.redirectionRoute = '/ecommerce/club-landing?tabarIndex=3';
       this.openLoginDialog();
     } else {
       this.openLinkDialog();
     }
   }
 
+  openMemoriesLoginDialog() {
+    this.redirectionRoute = '/ecommerce/club-landing?tabarIndex=2';
+    this.loginflow = true;
+  }
+
   goToLaiaTraining() {
     return this.router.navigate(['/ecommerce/daliah-training']);
+  }
+
+  goToDashboard() {
+    return this.router.navigate(['/ecommerce/provider-items']);
   }
 
   openLoginDialog() {
