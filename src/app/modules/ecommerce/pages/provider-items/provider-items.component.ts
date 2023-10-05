@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Route, Router } from '@angular/router';
@@ -8,10 +7,7 @@ import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { AppService } from 'src/app/app.service';
 import { urltoFile } from 'src/app/core/helpers/files.helpers';
-import {
-  completeImageURL,
-  isVideo,
-} from 'src/app/core/helpers/strings.helpers';
+import { completeImageURL, isVideo } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item, ItemImageInput, ItemInput } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
@@ -22,18 +18,11 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { OrderService } from 'src/app/core/services/order.service';
 import { QuotationItem } from 'src/app/core/services/quotations.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
-import {
-  FormComponent,
-  FormData,
-} from 'src/app/shared/dialogs/form/form.component';
-import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
-import {
-  OptionsDialogComponent,
-  OptionsDialogTemplate,
-} from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
+import { FormComponent, FormData } from 'src/app/shared/dialogs/form/form.component';
+import { OptionsDialogComponent, OptionsDialogTemplate } from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
 import { environment } from 'src/environments/environment';
 
 
@@ -70,7 +59,9 @@ export class ProviderItemsComponent implements OnInit {
       },
     ];
   activatedSearchFilters: Record<string, boolean> = {};
+  isSwitchActive: boolean = true;
 
+  isSupplier: boolean = true;
   hiddenDashboard: boolean = false
   itemToSearch: string = ''
   itemsFiltering = []
@@ -87,6 +78,28 @@ export class ProviderItemsComponent implements OnInit {
     },
     {
       label: "Ocultos",
+      isActive: false,
+      total: 0
+    }
+  ]
+  buttonFilteringNoSupplier: BtnFiltering[] = [
+    {
+      label: "Todos los exhibidos",
+      isActive: false,
+      total: 0
+    },
+    {
+      label: "Los ocultos",
+      isActive: false,
+      total: 0
+    },
+    {
+      label: "Los que pagan comisión",
+      isActive: false,
+      total: 0
+    },
+    {
+      label: "Menos de 10 disponibles para vender",
       isActive: false,
       total: 0
     }
@@ -136,6 +149,10 @@ export class ProviderItemsComponent implements OnInit {
   };
   numberOfItemsSold: number = 0;
 
+  private keyPresentationState = 'providersPresentationClosed'
+  private keyTutorialState = 'tutorialClosed'
+  private saleFlowId = null;
+
   constructor(
     private headerService: HeaderService,
     private itemsService: ItemsService,
@@ -145,25 +162,37 @@ export class ProviderItemsComponent implements OnInit {
     private dialog: MatDialog,
     private router: Router,
     private route: ActivatedRoute,
-    private bottomSheet: MatBottomSheet,
-    private dialogService: DialogService,
     private authService: AuthService,
-    private snackbar: MatSnackBar
+    private snackbar: MatSnackBar,
+    private orderService: OrderService
   ) { }
 
   async ngOnInit() {
-    if (localStorage.getItem('session-token')) {
+    this.itemSearchbar.valueChanges.subscribe(async () => {
+      this.verifyIfIsSupplier()
+      await this.getItemsISell();
+      await this.getNewPageOfItemsIDontSell(true, false);
+    });
+
+    const existToken = localStorage.getItem('session-token')
+    if (existToken) {
       if (!this.headerService.user) {
         let sub = this.appService.events
           .pipe(filter((e) => e.type === 'auth'))
           .subscribe((e) => {
-            this.executeInitProcesses();
-
+            this.verifyIfIsSupplier()
+            this.getStatusSwitch()
+            setTimeout(() => this.executeInitProcesses(), 500);
             sub.unsubscribe();
           });
-      } else this.executeInitProcesses();
-    } else this.executeInitProcesses();
+      } else {
+        this.executeInitProcesses();
+      }
+    }
 
+    if (!existToken) {
+      this.executeInitProcesses();
+    }
 
   }
 
@@ -175,26 +204,52 @@ export class ProviderItemsComponent implements OnInit {
         if (this.encodedJSONData) {
           this.parseMagicLinkData();
         }
+
         await this.getItemsISell();
         await this.getNumberOfItemsSold();
 
         this.checkIfPresentationWasClosedBefore();
-
-        await this.getNewPageOfItemsIDontSell(true, false);
-
-        this.itemSearchbar.valueChanges.subscribe(async (change) => {
-          await this.getItemsISell();
+        this.checkIfTutorialWasOpen()
+        if (this.isSupplier) {
           await this.getNewPageOfItemsIDontSell(true, false);
-        });
+        }
       }
     );
   }
 
+  /**
+   * Obtiene el estado del switch
+   */
+  getStatusSwitch() {
+    this.merchantsService.merchantDefault()
+      .then((merchantDefault) => {
+        this.saleflowService.saleflowDefault(merchantDefault._id)
+          .then(saleflow => {
+            const status = !saleflow?.status || saleflow?.status === 'open'
+            this.isSwitchActive = status
+            this.saleFlowId = saleflow._id
+          })
+      })
+  }
+
+  /**
+   * Verifica si el usuario es de tipo proveedor o no
+   */
+  verifyIfIsSupplier() {
+    this.merchantsService.merchantDefault()
+      .then(merchantDefault => {
+        this.isSupplier = merchantDefault.roles[0].code !== 'STORE'
+      })
+  }
+
+  /**
+   * Obtiene el numero de items vendidos
+   */
   async getNumberOfItemsSold() {
     if (this.isTheUserAMerchant) {
       const sold = await this.itemsService.itemsQuantitySoldTotal({
         findBy: {
-          type: 'supplier',
+          type: this.isSupplier ? 'supplier' : 'default',
           merchant: this.merchantsService.merchantData._id,
         },
         options: {
@@ -222,24 +277,9 @@ export class ProviderItemsComponent implements OnInit {
     }
   }
 
-  checkIfPresentationWasClosedBefore = () => {
-    let providersPresentationClosed = localStorage.getItem(
-      'providersPresentationClosed'
-    );
-    providersPresentationClosed = providersPresentationClosed
-      ? JSON.parse(providersPresentationClosed)
-      : false;
-
-    if (!providersPresentationClosed && !this.headerService.user) {
-      this.presentationOpened = true;
-    } else {
-      this.openTutorials();
-    }
-  };
-
   openTutorials = () => {
     this.presentationOpened = false;
-    localStorage.setItem('providersPresentationClosed', 'true');
+    localStorage.setItem(this.keyTutorialState, 'true');
 
     if (
       this.headerService.user &&
@@ -249,6 +289,93 @@ export class ProviderItemsComponent implements OnInit {
       this.searchTutorialsOpened = true;
     }
   };
+
+  /**
+ * Revisa si el tutorial fue abierta.y lo abre si no lo estaba
+ */
+  checkIfTutorialWasOpen = () => {
+    const tutorialState = localStorage.getItem(this.keyTutorialState);
+    if (!tutorialState) {
+      this.showTutorialModal();
+    }
+  };
+
+  /**
+   * Revisa si la presentación fue abierta.
+   */
+  checkIfPresentationWasClosedBefore = () => {
+    const tutorialState = localStorage.getItem(this.keyPresentationState);
+    const tutorialStateParsed = tutorialState ? JSON.parse(tutorialState) : false;
+
+    if (!tutorialStateParsed && !this.headerService.user) {
+      this.presentationOpened = true;
+    }
+  };
+
+  /**
+   * Verifica si el merchant ha tenido una orden y muestra el tutorial
+   */
+  showTutorialModal() {
+    this.merchantsService.merchantDefault().then(merchant => {
+      const pagination: PaginationInput = {
+        findBy: {
+          merchant: merchant?._id,
+        },
+        options: {
+          sortBy: 'createdAt:desc',
+          limit: 1,
+        }
+      }
+      this.orderService.orderPaginate(pagination)
+        .then(orders => {
+          if (orders.orderPaginate.length) {
+            localStorage.setItem(this.keyTutorialState, 'true')
+            this.searchTutorialsOpened = true
+          }
+        })
+    })
+  }
+
+  /**
+   * Cierra el tutorial de busqueda. Si las cartas han sido cerradas,
+   * almacena el estado en el localstorage y l
+   * @param cardName nombre de la carta que se cerró
+   */
+  closeSearchTutorial = (cardName: string) => {
+    this.searchTutorialCardsOpened[cardName] = false;
+
+    if (
+      !this.searchTutorialCardsOpened['sold'] &&
+      !this.searchTutorialCardsOpened['orders']
+    ) {
+      this.searchTutorialsOpened = false;
+      localStorage.setItem(this.keyTutorialState, 'true')
+    }
+  };
+
+  closeItemsTutorial = (cardName: string) => {
+    this.itemsTutorialCardsOpened[cardName] = false;
+
+    if (!this.itemsTutorialCardsOpened['price']) {
+      this.itemsTutorialOpened = false;
+    }
+  };
+
+  toggleStoreVisibility() {
+    const input = {
+      status: this.isSwitchActive ? "closed" : "open"
+    }
+
+    this.saleflowService
+      .updateSaleflow(input, this.saleFlowId)
+      .then(() => this.isSwitchActive = !this.isSwitchActive)
+      .catch(error => {
+        console.error(error);
+        const message = 'Ocurrió un error al intentar cambiar la visibilidad de tu tienda, intenta más tarde'
+        this.headerService.showErrorToast(message);
+      })
+
+  }
 
   activateOrDeactivateFilters(filterKey: string) {
     this.activatedSearchFilters[filterKey] =
@@ -266,12 +393,27 @@ export class ProviderItemsComponent implements OnInit {
     }
 
     if (this.isTheUserAMerchant) {
+      // const supplierSpecificItemsPagination: PaginationInput = {
+      //   findBy: {
+      //     type: this.isSupplier ? 'supplier' : 'default',
+      //     parentItem: {
+      //       $ne: null,
+      //     },
+      //     merchant: this.merchantsService.merchantData._id,
+      //   },
+      //   options: {
+      //     sortBy: 'createdAt:desc',
+      //     limit: -1,
+      //     page: 1,
+      //   },
+      // };
       const supplierSpecificItemsPagination: PaginationInput = {
         findBy: {
-          parentItem: {
-            $ne: null,
-          },
+          type: this.isSupplier ? 'supplier' : 'default',
           merchant: this.merchantsService.merchantData._id,
+          _id: {
+            $nin: this.itemsISell.map((item) => item.parentItem),
+          }
         },
         options: {
           sortBy: 'createdAt:desc',
@@ -330,14 +472,10 @@ export class ProviderItemsComponent implements OnInit {
     } else {
       this.paginationState.page++;
     }
-
     const pagination: PaginationInput = {
       findBy: {
         type: 'supplier',
         parentItem: null,
-        _id: {
-          $nin: this.itemsISell.map((item) => item.parentItem),
-        },
       },
       options: {
         sortBy: 'createdAt:desc',
@@ -345,7 +483,20 @@ export class ProviderItemsComponent implements OnInit {
         page: this.paginationState.page,
       },
     };
-
+    // const pagination: PaginationInput = {
+    //   findBy: {
+    //     type: this.isSupplier ? 'supplier' : 'default',
+    //     parentItem: null,
+    //     _id: {
+    //       $nin: this.itemsISell.map((item) => item.parentItem),
+    //     },
+    //   },
+    //   options: {
+    //     sortBy: 'createdAt:desc',
+    //     limit: this.paginationState.pageSize,
+    //     page: this.paginationState.page,
+    //   },
+    // };
     if (this.isTheUserAMerchant) {
       pagination.findBy.merchant = {
         $ne: this.merchantsService.merchantData._id,
@@ -494,7 +645,6 @@ export class ProviderItemsComponent implements OnInit {
     itemIndex: number,
     providedByMe: boolean
   ) {
-    console.log('providedByMe', providedByMe);
     try {
       let newAmount: number;
       if (type === 'add' && providedByMe) {
@@ -557,13 +707,26 @@ export class ProviderItemsComponent implements OnInit {
   async showSearch() {
     this.searchOpened = true;
     setTimeout(() => {
-      (
-        document.querySelector('#search-from-results-view') as HTMLInputElement
-      )?.focus();
+      (document
+        .querySelector('#search-from-results-view') as HTMLInputElement)
+        ?.focus();
     }, 100);
     this.itemsService
-      .itemsQuantityOfFilters(this.merchantsService.merchantData._id, "supplier")
-      .then(data => this.buttonFiltering[2].total = data.hidden)
+      .itemsQuantityOfFilters(this.merchantsService.merchantData._id, 'supplier')
+      .then(data => {
+        if (this.isSupplier) {
+          this.buttonFiltering[2].total = data.hidden
+        } else {
+          // btn para todos los items
+          this.buttonFilteringNoSupplier[0].total = data.all
+          // btn para items ocultos
+          this.buttonFilteringNoSupplier[1].total = data.hidden
+          // btn para items con comisiones
+          this.buttonFilteringNoSupplier[2].total = data.commissionable
+          // btn para menos de 10 items para vender
+          this.buttonFilteringNoSupplier[3].total = data.lowStock
+        }
+      })
 
   }
 
@@ -927,6 +1090,7 @@ export class ProviderItemsComponent implements OnInit {
     price: number,
     item: Item
   ): Promise<ItemInput> => {
+    // const type: TypeItem = this.isSupplier ? 'supplier' : 'default'
     const itemInput: ItemInput = {
       name: item.name,
       layout: item.layout,
@@ -939,7 +1103,7 @@ export class ProviderItemsComponent implements OnInit {
       notificationStock: true,
       notificationStockLimit: item.notificationStockLimit,
       useStock: item.useStock,
-      type: 'supplier',
+      type: "supplier",
     };
 
     if (this.merchantsService.merchantData) {
@@ -1440,25 +1604,6 @@ export class ProviderItemsComponent implements OnInit {
     };
   }
 
-  closeSearchTutorial = (cardName: string) => {
-    this.searchTutorialCardsOpened[cardName] = false;
-
-    if (
-      !this.searchTutorialCardsOpened['sold'] &&
-      !this.searchTutorialCardsOpened['orders']
-    ) {
-      this.searchTutorialsOpened = false;
-    }
-  };
-
-  closeItemsTutorial = (cardName: string) => {
-    this.itemsTutorialCardsOpened[cardName] = false;
-
-    if (!this.itemsTutorialCardsOpened['price']) {
-      this.itemsTutorialOpened = false;
-    }
-  };
-
   async getDefaultMerchantAndSaleflows(user: User): Promise<{
     merchantDefault: Merchant;
     saleflowDefault: SaleFlow;
@@ -1556,11 +1701,15 @@ export class ProviderItemsComponent implements OnInit {
   onChangeBtnFiltering(btnActual: BtnFiltering) {
     const index = this.buttonFiltering.findIndex(btn => btn.label === btnActual.label)
     this.buttonFiltering[index].isActive = this.buttonFiltering[index].isActive
-      ? false
-      : true
-    const isSomeBtnActive = this.buttonFiltering.some(btn => btn.isActive)
-    this.hiddenDashboard = isSomeBtnActive ? true : false
+    this.hiddenDashboard = this.buttonFiltering.some(btn => btn.isActive)
     this.filteringItemsBySearchbar(this.itemToSearch)
+  }
+
+  onChangeBtnFilteringNotSupplier(btnActual: BtnFiltering) {
+    const i = this.buttonFilteringNoSupplier.findIndex(btn => btn.label === btnActual.label)
+    this.buttonFilteringNoSupplier[i].isActive = this.buttonFilteringNoSupplier[i].isActive
+    this.hiddenDashboard = this.buttonFilteringNoSupplier.some(btn => btn.isActive)
+    this.filteringItemsBySearchbarNotSupplier(this.itemToSearch)
   }
 
   onCloseSearchbar() {
@@ -1573,7 +1722,11 @@ export class ProviderItemsComponent implements OnInit {
 
     if (this.itemToSearch) {
       this.hiddenDashboard = true
-      this.filteringItemsBySearchbar(this.itemToSearch)
+      if (this.isSupplier) {
+        this.filteringItemsBySearchbar(this.itemToSearch)
+      } else {
+        this.filteringItemsBySearchbarNotSupplier(this.itemToSearch)
+      }
     }
 
     if (!this.itemToSearch && !isSomeBtnActive) {
@@ -1592,7 +1745,7 @@ export class ProviderItemsComponent implements OnInit {
     const input: PaginationInput = {
       findBy: {
         status,
-        type: 'supplier',
+        type: "supplier",
         _id: {
           $nin: this.itemsISell.map((item) => item.parentItem),
         },
@@ -1627,5 +1780,64 @@ export class ProviderItemsComponent implements OnInit {
     this.saleflowService
       .listItems(input, false, itemName)
       .then(data => this.itemsFiltering = data.listItems)
+  }
+
+  /**
+   *
+   * @param itemName nombre
+   */
+  private filteringItemsBySearchbarNotSupplier(itemName: string) {
+    // Estado del boton para mostrar los items ocultos o activos
+    const status = this.buttonFilteringNoSupplier[1].isActive ? "disabled" : "active"
+
+    const input: PaginationInput = {
+      findBy: {
+        status,
+        type: ['default', null],
+        _id: {
+          $nin: this.itemsISell.map((item) => item.parentItem),
+        },
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: this.paginationState.pageSize,
+        page: this.paginationState.page,
+      },
+    };
+
+    // Button de todos items exhibidos
+    if (this.buttonFilteringNoSupplier[0].isActive) {
+      input.findBy = {
+        ...input.findBy,
+        merchant: {
+          _id: this.merchantsService.merchantData._id
+        },
+      }
+    }
+
+    // Button de items para filtrar por comisiones
+    if (this.buttonFilteringNoSupplier[2].isActive) {
+      input.findBy = {
+        ...input.findBy,
+        allowCommission: true
+      }
+    }
+
+    // Button de items para filtrar los items por menos de 10 stock
+    if (this.buttonFilteringNoSupplier[3].isActive) {
+      input.filter = { maxStock: 10 }
+    }
+
+    this.saleflowService
+      .listItems(input, false, itemName)
+      .then(data => this.itemsFiltering = data.listItems)
+  }
+
+  back() {
+    return this.router.navigate(['ecommerce/club-landing'], {
+      queryParams: {
+        tabarIndex: 2
+      }
+    });
   }
 }

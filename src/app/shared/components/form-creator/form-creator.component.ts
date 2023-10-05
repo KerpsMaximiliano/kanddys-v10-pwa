@@ -168,7 +168,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
   ];
   requiredFieldInterval: any = null;
-
+  returnTo: string;
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -182,6 +182,7 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.returnTo = this.route.snapshot.queryParams['returnTo'];
     this.routeParamsSubscription = this.route.params.subscribe(
       async ({ itemId, formId }) => {
         const user = await this.authService.me();
@@ -884,8 +885,11 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
   async finishFormSubmission(questionsToAdd: ExtendedQuestionInput[]) {
     if (!this.item) {
       this.itemsService.questionsToAddToItem = questionsToAdd;
-
-      this.router.navigate(['ecommerce/item-management']);
+      if(this.returnTo === 'admin-article-detail') {
+        this.router.navigate(['ecommerce/admin-article-detail']);
+      } else {
+        this.router.navigate(['ecommerce/item-management']);
+      }
       //this.router.navigate(['ecommerce/item-management']);
     }
 
@@ -978,7 +982,11 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
           unlockUI();
 
           this.webformsService.formCreationData = null;
-          this.router.navigate(['/ecommerce/item-management/' + this.item._id]);
+          if(this.returnTo === 'admin-article-detail') {
+            this.router.navigate(['ecommerce/admin-article-detail/' + this.item._id]);
+          } else {
+            this.router.navigate(['ecommerce/item-management/' + this.item._id]);
+          }
         } else {
           //console.log('NO SE CREO');
           throw new Error('Ocurrió un error al crear el formulario');
@@ -1154,7 +1162,11 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
         unlockUI();
 
         this.webformsService.formCreationData = null;
-        this.router.navigate(['/ecommerce/item-management/' + this.item._id]);
+        if(this.returnTo === 'admin-article-detail') {
+          this.router.navigate(['ecommerce/admin-article-detail/' + this.item._id]);
+        } else {
+          this.router.navigate(['ecommerce/item-management/' + this.item._id]);
+        }
       } catch (error) {
         unlockUI();
 
@@ -1327,7 +1339,11 @@ export class FormCreatorComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   back() {
-    this.router.navigate(['/ecommerce/item-management/' + this.item?._id]);
+    if(this.returnTo === 'admin-article-detail') {
+      this.router.navigate(['/ecommerce/admin-article-detail/' + this.item?._id]);
+    } else {
+      this.router.navigate(['/ecommerce/item-management/' + this.item?._id]);
+    }
   }
 
   redirectToMediaUploadPage(optionIndex: number) {

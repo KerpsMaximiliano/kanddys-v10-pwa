@@ -1,0 +1,153 @@
+.chat-dialog {
+  display: flex;
+  flex-direction: column;
+
+  .messages {
+    flex: 1;
+    width: 100%;
+
+    &-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: scroll;
+      padding-bottom: 43px;
+    }
+
+    .message {
+      width: 370px;
+      max-width: -moz-fit-content;
+      max-width: fit-content;
+      padding: 10px 15px 10px;
+      border-radius: 12px;
+      text-align: left;
+      word-break: break-word;
+      font-size: 16px;
+      * {
+        font-size: 16px;
+      }
+      font-family: InterRegular;
+      &-sent {
+        background-color: #87cd9b;
+      }
+
+      &-received {
+        position: relative;
+        align-self: flex-end;
+        color: #f6f6f6;
+        background-color: #2874ad;
+        p {
+          margin: 0;
+        }
+      }
+    }
+  }
+}
+
+.chat-header {
+  background: #403d3d;
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 0px 29px 0px;
+
+  p,
+  button {
+    color: #f6f6f6;
+  }
+
+  p {
+    font-family: InterRegular;
+    font-size: 16px;
+    line-height: 19px;
+    margin: 0px;
+    letter-spacing: 0em;
+    text-align: left;
+    span {
+      color: #87cd9b;
+      :last-of-type {
+        cursor: pointer;
+      }
+    }
+  }
+
+  button {
+    appearance: none;
+    border: none;
+    background: none;
+  }
+}
+
+.user-input {
+  position: relative;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding-top: 16px;
+  &-box {
+    height: 62px;
+    width: calc(100% - 47px);
+    appearance: none;
+    background: #d9d9d9;
+    font-family: InterRegular;
+    font-size: 16px;
+    border: 2px solid #7b7b7b;
+    padding: 10px 19px;
+    border-radius: 300px;
+    color: #101410;
+    resize: none;
+    ::placeholder {
+      color: #343333;
+      opacity: 0.5;
+    }
+  }
+}
+
+.button {
+  display: grid;
+  place-items: center;
+  position: absolute;
+  appearance: none;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+
+  &-edit {
+    top: 3px;
+    right: 412px;
+  }
+
+  &-submit {
+    right: 0;
+    bottom: 7px;
+    display: unset;
+  }
+
+  &-disabled {
+    display: none;
+  }
+}
+
+::ng-deep .cdk-overlay-pane {
+  width: 100%;
+  max-width: 500px !important;
+}
+
+.list {
+  color: #ffffff;
+
+  &.full-screen {
+    min-height: 100vh;
+  }
+}
+
+::ng-deep.mat-bottom-sheet-container {
+  padding: 0px 20px 10px;
+  width: 100%;
+  min-width: 90%;
+  box-shadow: 0 8px 10px -5px #0003, 0 16px 24px 2px #00000024,
+    0 6px 30px 5px #0000001f;
+  background: #403d3d;
+  max-height: none;
+}

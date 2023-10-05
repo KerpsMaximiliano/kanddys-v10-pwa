@@ -1,0 +1,60 @@
+<div class="chat-dialog">
+  <header class="chat-header">
+    <p>
+      La<span>ia</span>Chat <span (click)="callLogin()">{{ 'contigo' }}</span>
+    </p>
+  </header>
+  <div class="messages">
+    <div class="messages-container" #chatContainer>
+      <ng-container *ngFor="let message of chat?.messages; let i = index">
+        <div class="message message-sent" *ngIf="message.sender === 'IA'" [innerHTML]="message.message">
+        </div>
+        <div class="message message-received" *ngIf="message.sender !== 'IA'">
+          <button
+            class="button button-edit"
+            role="button"
+            *ngIf="showEditButton"
+            (click)="editMessage()"
+          >
+            <img
+              src="../../../../assets/icons/edit-chat.svg"
+              alt="send"
+              width="32"
+              height="32"
+            />
+          </button>
+          {{ message.message }}
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  <form
+    class="user-input"
+    [formGroup]="chatFormGroup"
+    role="form"
+    *ngIf="!hideInput"
+  >
+    <input
+      type="email"
+      class="user-input-box"
+      placeholder="Escribe tu correo electrónico para reservar a Laia"
+      formControlName="input"
+      [(ngModel)]="inputValue"
+    />
+
+    <button
+      [ngClass]="{ 'button-disabled': !inputValue}"
+      class="button button-submit"
+      role="button"
+      [disabled]="!chat"
+      (click)="!isEdit ? sendMessage() : sendEditMessage()"
+    >
+      <img
+        src="../../../../assets/icons/arrow-with-background.png"
+        alt="send"
+        width="39"
+        height="39"
+      />
+    </button>
+  </form>
+</div>

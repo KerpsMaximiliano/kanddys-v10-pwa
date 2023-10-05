@@ -246,7 +246,9 @@ import { NewlineToBrPipe } from '../core/pipes/newline.pipe';
 import { LinkifyPipe } from '../core/pipes/linkify.pipe';
 import { ProfloraLinkDialogComponent } from './dialogs/proflora-link-dialog/proflora-link-dialog.component';
 import { ProfloraDescDialogComponent } from './dialogs/proflora-desc-dialog/proflora-desc-dialog.component';
+import { UpperCasePipe } from '../core/pipes/upper-case.pipe';
 import { LoginFlowComponent } from './components/login-flow/login-flow.component';
+import { SignupChatComponent } from './dialogs/signup-chat/signup-chat.component';
 
 const imports = [
   CommonModule,
@@ -505,7 +507,8 @@ const declarations = [
   MessageDialogComponent,
   SpecialDialogComponent,
   CompareDialogComponent,
-  LoginFlowComponent
+  LoginFlowComponent,
+  SignupChatComponent
 ];
 
 @NgModule({
@@ -513,6 +516,6 @@ const declarations = [
   imports: [...imports, RouterModule],
   exports: [...declarations, ...imports],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  providers: []
+  providers: [],
 })
 export class SharedModule {}
