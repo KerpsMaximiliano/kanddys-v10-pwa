@@ -116,6 +116,7 @@ import { SuperAdminMerchantsComponent } from './pages/super-admin-merchants/supe
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
+import { ProfileIndustriesComponent } from './pages/profile-industries/profile-industries.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -670,6 +671,10 @@ const routes: Routes = [
   {
     path:'super-admin-merchants',
     component:SuperAdminMerchantsComponent
+  },
+  {
+    path:'profile-industries',
+    component:ProfileIndustriesComponent
   }
 ];
 
@@ -767,6 +772,7 @@ const routes: Routes = [
     TaxesComponent,
     TaxEditionComponent,
     SuperAdminMerchantsComponent,
+    ProfileIndustriesComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [

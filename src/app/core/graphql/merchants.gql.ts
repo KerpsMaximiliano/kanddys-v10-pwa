@@ -697,3 +697,16 @@ query merchantQuantityOfFiltersHaveDebt{
   merchantQuantityOfFiltersHaveDebt
 }`;
 
+export const rolesPublic = gql`
+query rolesPublic{
+  rolesPublic{
+    _id
+    code
+    name
+  }
+}`;
+
+export const merchantAddRole = gql`
+mutation merchantAddRole($roleId:ObjectID!, $id:ObjectID!){
+  merchantAddRole(roleId:$roleId,id:$id)
+}`;

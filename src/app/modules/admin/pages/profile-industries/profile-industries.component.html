@@ -1,0 +1,20 @@
+<div class="container">
+    <div class="header">
+        <mat-icon>chevron_left</mat-icon>
+        <p>
+            Perfil de tu Industria:
+        </p>
+    </div>
+    <div class="content">
+        <input class="filters-button" placeholder="Todas(43).." [(ngModel)]="searchVal" (keyup)="search()"  />
+    <div class="industry-card" *ngFor="let i of industries" (click)="openOptionsDialog(i._id)">
+        <p class="title">
+            {{i.name}}
+        </p>
+        <p class="desc">
+           {{i.description}}
+        </p>
+    </div>
+
+    </div>
+</div>
