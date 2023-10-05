@@ -1,6 +1,15 @@
-import { Component, ElementRef, Inject, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { 
+  Component,
+  ElementRef,
+  Inject,
+  OnInit,
+  ViewChild,
+  ChangeDetectorRef,
+  Output,
+  EventEmitter
+} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
+import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { isEmail } from 'src/app/core/helpers/strings.helpers';
 import { Chat, Message } from 'src/app/core/models/chat';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -14,6 +23,7 @@ interface DialogTemplate {
   }>;
   styles?: Record<string, Record<string, string>>;
   bottomLabel?: string;
+  login?: () => void;
 }
 
 @Component({
@@ -30,15 +40,21 @@ export class SignupChatComponent implements OnInit {
     admins: [],
     isGroup: false,
   };
+
   chatFormGroup: FormGroup = new FormGroup({
     input: new FormControl('', Validators.required),
   });
+
   showEditButton = false;
   hideInput: boolean = false;
   isEdit: boolean = false
+  inputValue: string = '';
+
+  @Output() openLogin: EventEmitter<boolean> = new EventEmitter();
 
   constructor(
     @Inject(MAT_BOTTOM_SHEET_DATA) public data: DialogTemplate,
+    private _bottomSheetRef: MatBottomSheetRef,
     private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) { }
@@ -52,13 +68,18 @@ export class SignupChatComponent implements OnInit {
   }
 
   welcomeMessage() {
-    const message = `Hola, soy Laia, y te estaba esperando!!\n
+    const message = `
+    <p>Hola, soy Laia, y te estaba esperando!!</p>
 
-    Necesito que agregues detalles en mi memoria para que la magia de la Inteligencia Artificial te ahorre tiempo en tus compras, ventas y pedidos.\n
-
-    También te ayudaré a cotizar, recompensar y premiar a quienes te refieran. Y lo mejor, ¡adiós a responder las mismas preguntas una y otra vez!\n
-
-    ¿Y tú, me estabas esperando?`
+    <p>Cuando agregues detalles en mi memoria te ayudaré a que:</p>
+    <ul>
+    <li>Respondamos de forma consistente desde el Website, Shopify, WhatsApp e Instagram.</li>
+    <li>Vendamos. Coticemos. Facturemos. Organicemos los pedidos.</li>
+    <li>Si quieres, premiarémos a quienes venden por nosotros y a los compradores para que vuelvan a comprarnos.</li>
+    <li>Si hay algo en lo que no pueda ayudarte, por favor escríbele a Daviel por WhatsApp (918)815-6444 aquí el url.com</li>
+    </ul>
+    <p>¿Y tú, me estabas esperando?</p>
+    `
     this.addMessage({
       sender: 'IA',
       message,
@@ -164,5 +185,13 @@ export class SignupChatComponent implements OnInit {
     } catch (error) {
       console.error('Error al hacer scroll:', error);
     }
+  }
+
+  callLogin() {
+    this.data.login();
+  }
+
+  close() {
+    this._bottomSheetRef.dismiss();
   }
 }
