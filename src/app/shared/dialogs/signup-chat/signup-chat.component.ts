@@ -9,7 +9,7 @@ import {
   EventEmitter
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
+import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { isEmail } from 'src/app/core/helpers/strings.helpers';
 import { Chat, Message } from 'src/app/core/models/chat';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -54,6 +54,7 @@ export class SignupChatComponent implements OnInit {
 
   constructor(
     @Inject(MAT_BOTTOM_SHEET_DATA) public data: DialogTemplate,
+    private _bottomSheetRef: MatBottomSheetRef,
     private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) { }
@@ -188,5 +189,9 @@ export class SignupChatComponent implements OnInit {
 
   callLogin() {
     this.data.login();
+  }
+
+  close() {
+    this._bottomSheetRef.dismiss();
   }
 }

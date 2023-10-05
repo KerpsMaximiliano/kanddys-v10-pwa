@@ -112,6 +112,7 @@
   border: none;
   border-radius: 50%;
   background: none;
+  transition: all 0.2s ease-in-out;
 
   &-edit {
     top: 3px;
@@ -125,7 +126,7 @@
   }
 
   &-disabled {
-    display: none;
+    filter: brightness(0.5);
   }
 }
 
@@ -140,6 +141,13 @@
   &.full-screen {
     min-height: 100vh;
   }
+}
+
+.flex {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 ::ng-deep.mat-bottom-sheet-container {

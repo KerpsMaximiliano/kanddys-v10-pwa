@@ -123,11 +123,11 @@
         <div class="info-container">
           <div class="info-container-title-container">
             <p class="info-container-title">Vende fácilmente </p>
-            <div *ngIf="headerService.user">
+            <!-- <div *ngIf="headerService.user">
               <mat-icon>add</mat-icon>
               
               <mat-icon>ios_share</mat-icon>
-            </div>
+            </div> -->
           </div>
           <p class="info-container-desc info-container-desc-mt">
             Laia utiliza la IA para acomodar tus artículos a que lo vendas fácilmente a través de enlaces.
@@ -312,7 +312,7 @@
                 dinero. Es un ingreso recurrente y sin límites.
               </p>
               <p class="info-container-invited-link" (click)="goToReferrals()">
-                {{ !headerService.user ? 'Mira tus invitados' : referralsCount + ' invitados' }}
+                {{ !headerService.user ? 'Mira tus invitados' : referralsCount ? referralsCount + ' invitados' : '0 invitados' }}
               </p>
             </div>
           </div>
@@ -335,7 +335,7 @@
                 Ahorra el tiempo de cotizaciones y facturas cuando tus clientes  y proveedores utilizan a LaiaChat.
               </p>
               <p class="info-container-invited-link" (click)="goToReferrals()">
-                {{ !headerService.user ? 'Mira tus invitados' : referralsCount + ' invitados' }}
+                {{ !headerService.user ? 'Mira tus invitados' : referralsCount ? referralsCount + ' invitados' : '0 invitados' }}
               </p>
             </div>
           </div>
