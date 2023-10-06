@@ -7,6 +7,7 @@
   display: flex;
   padding: 15px 20px;
   padding-bottom: 0px;
+  height: 40px;
   align-items: center;
   justify-content: space-between;
 
@@ -35,8 +36,16 @@
     color: var(--fondo-de-pantallas, #f6f6f6);
     font-family: InterRegular;
     font-size: 17px;
+    display: flex;
+    gap: 6px;
     span {
       color: #87cd9b;
+    }
+    p {
+      margin: 0px;
+      span {
+        color: #87cd9b;
+      }
     }
   }
 
@@ -437,6 +446,7 @@ footer {
     border-radius: 50%;
     padding: 0px;
     height: 39px;
+    filter: brightness(0.5);
   }
   @media (max-width: 296px) {
     bottom: 52px;
@@ -578,6 +588,9 @@ hr{
   margin-top: 15px;
   margin-bottom: 0;
   padding: 0px 17px;
+  span {
+    color: #87cd9b;
+  }
 }
 
 .ganas-desc-ad {
