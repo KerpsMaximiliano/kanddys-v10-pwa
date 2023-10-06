@@ -652,3 +652,27 @@ hr{
   }
 }
 
+.memory-options {
+  display: flex;
+  margin-top: 11px;
+
+  .option {
+    background-color: transparent;
+    border: none;
+    padding: 0px;
+    margin-left: 29px;
+    color: #25638F;
+    font-family: InterSemiBold;
+    font-size: 15px;
+    font-style: normal;
+    line-height: normal;
+
+    &:first-child {
+      margin-left: 0px;
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
