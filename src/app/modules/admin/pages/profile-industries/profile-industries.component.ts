@@ -97,7 +97,7 @@ export class ProfileIndustriesComponent implements OnInit {
   search() {
     if (this.searchVal.length > 0)
       this.industries = this.industriesAux.filter((e) =>
-        e.name.includes(this.searchVal)
+        e.name.toLowerCase().includes(this.searchVal.toLowerCase())
       );
     else this.industries = this.industriesAux;
   }
