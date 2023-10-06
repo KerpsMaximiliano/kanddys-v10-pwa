@@ -35,7 +35,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     response: string;
   } = null;
   editingQuestion: boolean = false;
-  laiaPlaceholder = `Ejemplo:\n\nTrabajamos de 8 a 9 de la noche, de lunes a viernes, y de 8 a 12pm los sábados, los domingos estamos cerrados. Trabajamos de 8 a 9 de la noche, de lunes a viernes, y de 8 a 12pm los sábados, los domingos estamos cerrados.\n\nTrabajamos de 8 a 9 de la noche, de lunes a viernes, y de 8 a 12pm los sábados, los domingos estamos cerrados.\n\n`;
+  laiaPlaceholder = `Ejemplo:\n\nTrabajamos de 8 a 9 de la noche, de lunes a viernes, y de 8 a 12pm los sábados, los domingos estamos cerrados.;`
   timeoutDeleteKey: any = null;
   timeoutCutKey: any = null;
   showLogin: boolean = false;

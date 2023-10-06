@@ -15,7 +15,7 @@ export class ReloadComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  close() {
+  /*close() {
     this.ref.close();
-  }
+  }*/
 }
