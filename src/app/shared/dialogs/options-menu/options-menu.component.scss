@@ -47,9 +47,10 @@
 }
 
 .left-border {
-  height: 100%;
+  align-self: stretch;
   width: 2px;
   background-color: #87cd9b;
+  margin: 3px 0;
 }
 
 .option-button {

@@ -24,6 +24,8 @@ interface DialogTemplate {
   styles?: Record<string, Record<string, string>>;
   bottomLabel?: string;
   login?: () => void;
+  phone?: () => void;
+  url?: () => void;
 }
 
 @Component({
@@ -78,7 +80,7 @@ export class SignupChatComponent implements OnInit {
     <li>Vendamos. Coticemos. Facturemos. Organicemos los pedidos.</li>
     <li>Si quieres, premiarémos a quienes venden por nosotros y a los compradores para que vuelvan a comprarnos.</li>
     <li>Si hay algo en lo que no pueda ayudarte, por favor escríbele a Daviel por WhatsApp 
-    <span class="phone-event blue">(918)815-6444</span> aquí el <span class=" url-event blue">url.com</span></li>
+    <span class="phone-event" >(918)815-6444</span> aquí el <span  class=" url-event">url.com</span></li>
     </ul>
     <p>¿Y tú, me estabas esperando?</p>
     `
@@ -87,16 +89,20 @@ export class SignupChatComponent implements OnInit {
       message,
       chatId: ""
     })
-    this.elRef.nativeElement.querySelector('.phone-event').addEventListener('click', this.phoneMethod.bind(this))
-    this.elRef.nativeElement.querySelector('.url-event').addEventListener('click', this.urlMethod.bind(this))
+    let phoneRef = this.elRef.nativeElement.querySelector('.phone-event')
+    phoneRef.addEventListener('click', this.phoneMethod.bind(this))
+    phoneRef.style.color = '#25638F'
+    let urlRef = this.elRef.nativeElement.querySelector('.url-event')
+    urlRef.addEventListener('click', this.urlMethod.bind(this))
+    urlRef.style.color = '#25638F'
   }
 
   phoneMethod() {
-    console.log('phone binding is working')
+    this.data.phone()
   }
 
   urlMethod() {
-    console.log('url binding is working')
+    this.data.url()
   }
 
   /**
@@ -138,13 +144,19 @@ export class SignupChatComponent implements OnInit {
 
           <p>
           Cuando puedas por favor escríbele a Daviel por WhatsApp 
-          <span class="phone-event blue">(918)815-6444</span> 
-          aquí el <span class="url-event blue">url.com</span>
+          <span  class="phone-event">(918)815-6444</span> 
+          aquí el <span  class="url-event">url.com</span>
           para que le dejes saber como entrenarme para Ti y empezar a formar parte de tu equipo.
           </p>
           `,
           chatId: ""
         })
+        let phoneRef = this.elRef.nativeElement.querySelector('.phone-event')
+        phoneRef.addEventListener('click', this.phoneMethod.bind(this))
+        phoneRef.style.color = '#25638F'
+        let urlRef = this.elRef.nativeElement.querySelector('.url-event')
+        urlRef.addEventListener('click', this.urlMethod.bind(this))
+        urlRef.style.color = '#25638F'
       }
     }
   }
