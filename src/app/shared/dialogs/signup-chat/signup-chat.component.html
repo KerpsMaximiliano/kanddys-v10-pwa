@@ -37,13 +37,13 @@
     role="form"
     *ngIf="!hideInput"
   >
-    <input
+    <textarea
       type="email"
       class="user-input-box"
       placeholder="Escribe tu correo electrónico para reservar a Laia"
       formControlName="input"
       [(ngModel)]="inputValue"
-    />
+    ></textarea>
 
     <button
       [ngClass]="{ 'button-disabled': !inputValue}"
