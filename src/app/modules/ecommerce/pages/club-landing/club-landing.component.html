@@ -12,9 +12,9 @@
               (click)="openMsgDialog()"
             /> -->
   
-        <div class="title" (click)="openMsgDialog()">
-          La<span style="color: #87CD9B;">ia</span>Chat
-          <span style="color: #87CD9B;">
+        <div class="title" >
+          <p (click)="openMsgDialog()">La<span style="color: #87CD9B;">ia</span>Chat</p>
+          <span (click)="!headerService.user ? loginflow = true : showRoleDialog()" style="color: #87CD9B;">
             {{ 
               !headerService?.user ?
               'contigo' :
@@ -41,7 +41,7 @@
           </div>
           <!-- <div *ngIf="!headerService.user" (click)="enterClub()">Soy Miembro</div> -->
         </div>
-        <div (click)="tabarIndex = 3" class="icon" (click)="openNavigation = true">
+        <div *ngIf="tabarIndex !== 3" (click)="tabarIndex = 3" class="icon" (click)="openNavigation = true">
             <p>Gana$</p>
             <mat-icon>ios_share</mat-icon>
         </div>
@@ -53,7 +53,7 @@
         <div
           class="tab"
           (click)="tabarIndex = 0"
-          [ngClass]="{ active: !tabarIndex }"
+          [ngClass]="{ active: tabarIndex === 0 }"
         >
           <div class="text">Testimonios</div>
         </div>
@@ -96,14 +96,14 @@
             </div>
           </div>
           -->
-      <p class="explain-text" *ngIf="!tabarIndex">
+      <p class="explain-text" *ngIf="tabarIndex === 0">
         “Te ahorro tiempo comprando, vendiendo y automatizando las respuestas de
         tu WhatsApp, Instagram y Website”
       </p>
-      <div class="green-text" *ngIf="!tabarIndex">
+      <div class="green-text" *ngIf="tabarIndex === 0">
         <p (click)="openCompareDialog()">Compárame con las mejores plataformas</p>
       </div>
-      <div class="footer-swiper" *ngIf="!tabarIndex">
+      <div class="footer-swiper" *ngIf="tabarIndex === 0">
         <div class="slide-item borderless">
           <div class="flex">
             <div class="image">
@@ -118,7 +118,7 @@
           </div>
         </div>
       </div>
-      <span *ngIf="!tabarIndex" class="line"></span>
+      <span *ngIf="tabarIndex === 0" class="line"></span>
       <div class="tab-header" *ngIf="tabarIndex === 2">
         <div class="info-container">
           <div class="info-container-title-container">
@@ -134,7 +134,7 @@
           </p>
           <ng-container *ngIf="!headerService?.user">
             <p class="info-container-invited-link info-container-invited-link-mr" (click)="openMemoriesLoginDialog()">
-              0 Artículos en Memoria
+              Adiciona tu primer articulo
             </p>
           </ng-container>
           <ng-container *ngIf="headerService?.user">
@@ -142,11 +142,13 @@
               {{ saleflow ? saleflow?.items?.length : '0' }} artículos
             </p>
           </ng-container>
-  
         </div>
         <div class="flex-space-between align-center">
-          <p class="ganas-desc ">
-            El comprador paga us$0.30 a Laia.
+          <p *ngIf="switchActive" class="ganas-desc ">
+            El comprador paga US$0.30 a La<span>ia</span>.
+          </p>
+          <p *ngIf="!switchActive" class="ganas-desc ">
+            Pagarás a La<span>ia</span> US$0.30 por cada venta.
           </p>
           <mat-slide-toggle
             class="toggle"
@@ -162,9 +164,20 @@
             adiciones a sus memorias.
           </p>
           <div class="flex">
-            <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToLaiaTraining()">
+            <p 
+              class="info-container-invited-link info-container-invited-link-mr" 
+              (click)="goToLaiaTraining()"
+              *ngIf="!headerService?.user"
+            >
               Escribe en la Memoria y  prueba a Laia
             </p>
+
+            <div *ngIf="headerService.user" class="memory-options">
+              <button class="option" (click)="goToAIMemoriesManagement()">
+                {{ vectorsCount }} memorias
+              </button>
+              <!-- <button class="option">5 chats</button> -->
+            </div>
             <!-- <p class="info-container-invited-link info-container-invited-link-mr">
               Escribe en la Memoria y  prueba a Laia
             </p>
@@ -175,9 +188,15 @@
             </p> -->
           </div>
         </div>
-        <p class="ganas-desc">
-          Responde desde tu propio Website, WhatsApp e Instagram.
-        </p>
+        <div class="flex-space-between align-center" *ngIf="headerService?.user && isUserAdmin()">
+          <p
+            class="ganas-desc"
+            style="cursor: pointer;"
+            (click)="goToWizard()"
+          >
+            Responde desde tu propio Website, WhatsApp e Instagram.
+          </p>
+        </div>
         <hr />
         <div class="info-container">
           <p class="info-container-title">Compras más ágiles</p>
@@ -185,36 +204,11 @@
             Laia conservará en su memoria tus intereses y compras. Con la IA te expondrá ofertas de artículos y comercios parecidos
           </p>
           <div class="flex">
-            <p class="info-container-invited-link info-container-invited-link-mr"
-              (click)="buttonHandler()"
-             >
-              0 industrias
-            </p>
-            <p class="info-container-invited-link info-container-invited-link-mr"
-              (click)="buttonHandler()"
-            >
-              0 cotizaciones
-            </p>
-            <p class="info-container-invited-link info-container-invited-link-mr"
-              (click)="buttonHandler()"
-            >
-              0 compras
-            </p>
-            <p class="info-container-invited-link info-container-invited-link-mr"
-              (click)="buttonHandler()"
-            >
-              0 carritos
-            </p>
-            <p class="info-container-invited-link info-container-invited-link-mr"
-              (click)="buttonHandler()"
-            >
-              0 ofertas flash
+            <p class="info-container-invited-link info-container-invited-link-mr" (click)="buttonHandler()">
+              Crea tu order de compras
             </p>
           </div>
         </div>
-        <p class="ganas-desc">
-          Invita a los comercios donde compras para ahorrar tiempo y ganar dinero recurrente e ilimitado
-        </p>
         <hr />
         <div class="info-container">
           <p class="info-container-title">Premia las Referencias</p>
@@ -225,11 +219,16 @@
             </p>
           </div>
           <div class="flex-space-between">
-            <p class="info-container-invited-link "
-              (click)="buttonHandler()"
-            >
-              0 artículos activados
-            </p>
+            <ng-container *ngIf="!headerService?.user">
+              <p class="info-container-invited-link info-container-invited-link-mr" (click)="openMemoriesLoginDialog()">
+                Adiciona tu primer articulo
+              </p>
+            </ng-container>
+            <ng-container *ngIf="headerService?.user">
+              <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToDashboard()">
+                {{ saleflow ? saleflow?.items?.length : '0' }} artículos activados
+              </p>
+            </ng-container>
           </div>
         </div>
         <div class="info-container" style="margin-top: 1em;">
@@ -241,11 +240,16 @@
             </p>
           </div>
           <div class="flex-space-between">
-            <p class="info-container-invited-link "
-              (click)="buttonHandler()"
-            >
-              0 recompensas
-            </p>
+            <ng-container *ngIf="!headerService?.user">
+              <p class="info-container-invited-link info-container-invited-link-mr" (click)="openMemoriesLoginDialog()">
+                Adiciona tu primer recompensa
+              </p>
+            </ng-container>
+            <ng-container *ngIf="headerService?.user">
+              <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToDashboard()">
+                {{ saleflow ? saleflow?.items?.length : '0' }} recompensas activadas
+              </p>
+            </ng-container>
           </div>
         </div>
         <div class="info-container" style="margin-top: 1em;">
@@ -257,11 +261,16 @@
             </p>
           </div>
           <div class="flex-space-between">
-            <p class="info-container-invited-link "
-              (click)="buttonHandler()"
-            >
-              0 artículos activados
-            </p>
+            <ng-container *ngIf="!headerService?.user">
+              <p class="info-container-invited-link info-container-invited-link-mr" (click)="openMemoriesLoginDialog()">
+                Adiciona tu primer articulo
+              </p>
+            </ng-container>
+            <ng-container *ngIf="headerService?.user">
+              <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToDashboard()">
+                {{ saleflow ? saleflow?.items?.length : '0' }} artículos activados
+              </p>
+            </ng-container>
           </div>
         </div>
         <div class="info-container" style="margin-top: 1em;">
@@ -276,7 +285,7 @@
             <p class="info-container-invited-link "
               (click)="buttonHandler()"
             >
-              Sin Memorias
+              Adiciona el premio
             </p>
           </div>
         </div>
@@ -405,7 +414,7 @@
               Es una manera fácil de invitar en las facturas que le entregas a tus clientes.
             </div>
           </div>-->
-      <div class="tabs-container" *ngIf="!tabarIndex" style="margin-top: 2em;">
+      <div class="tabs-container" *ngIf="tabarIndex === 0" style="margin-top: 2em;">
         <!-- TABS -->
         <div class="footer-swiper">
           <div class="swiper-custom-container">
@@ -419,7 +428,7 @@
                   </div>
                   <div class="info">
                     <div class="name">{{ item.name }}</div>
-                    <div class="role">{{ item.role }}</div>
+                    <!-- <div class="role">{{ item.role }}</div> -->
                   </div>
                 </div>
               </div>

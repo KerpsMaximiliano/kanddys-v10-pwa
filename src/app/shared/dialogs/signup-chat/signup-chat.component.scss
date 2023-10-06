@@ -44,6 +44,10 @@
   }
 }
 
+.blue {
+  color: #25638F;
+}
+
 .chat-header {
   background: #403d3d;
   display: flex;
@@ -158,4 +162,8 @@
     0 6px 30px 5px #0000001f;
   background: #403d3d;
   max-height: none;
+}
+
+::ng-deep .cdk-global-overlay-wrapper {
+  background-color: none;
 }
