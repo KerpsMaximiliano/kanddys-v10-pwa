@@ -4,6 +4,7 @@ import {
   Inject,
   HostListener,
   ElementRef,
+  NgZone
 } from '@angular/core';
 import {
   FormBuilder,
@@ -90,7 +91,8 @@ export class LoginFormComponent implements OnInit {
     private fb: FormBuilder,
     private viewportRuler: ViewportRuler,
     private elementRef: ElementRef,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private ngZone: NgZone
   ) {
     translate.setDefaultLang('en');
     translate.use('en');
@@ -176,9 +178,11 @@ export class LoginFormComponent implements OnInit {
   }
 
   bottomButtonClick(index: number) {
-    console.log('fires')
-    this.data.fields[index].bottomButton.callback();
-    this.bottomSheetRef.dismiss();
+    this.ngZone.run(() => {
+      console.log('fires')
+      this.data.fields[index].bottomButton.callback();
+      this.bottomSheetRef.dismiss();
+    })
   }
 
   // Listen for focusin and focusout events to track keyboard visibility changes
