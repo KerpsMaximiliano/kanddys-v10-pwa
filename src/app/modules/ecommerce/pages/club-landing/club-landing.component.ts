@@ -443,7 +443,13 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       data: {
         login: () => {
           this.loginflow = true;
-        }
+        },
+        phone: () => {
+          console.log('phone callback')
+        },
+        url: () => {
+          console.log('url callback')
+        },
       }
     });
   }
