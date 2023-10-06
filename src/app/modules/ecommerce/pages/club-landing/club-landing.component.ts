@@ -35,6 +35,7 @@ import { CompareDialogComponent } from 'src/app/shared/dialogs/compare-dialog/co
 import { SelectRoleDialogComponent } from 'src/app/shared/dialogs/select-role-dialog/select-role-dialog.component';
 import { SignupChatComponent } from 'src/app/shared/dialogs/signup-chat/signup-chat.component';
 import { SpecialDialogComponent } from 'src/app/shared/dialogs/special-dialog/special-dialog.component';
+import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 
 interface ReviewsSwiper {
   title: string;
@@ -215,6 +216,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   merchant: string;
   saleflow: SaleFlow;
   referralsCount: number = 0;
+  vectorsCount: number = 0;
   @ViewChild('qrcode', { read: ElementRef }) qrcode: ElementRef;
 
   constructor(
@@ -234,7 +236,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     private router: Router,
     private changeDetectorRef: ChangeDetectorRef,
     private clipboard: Clipboard,
-    private affiliateService: AffiliateService
+    private affiliateService: AffiliateService,
+    private gptService: Gpt3Service
   ) {
     const sub = this.app.events
       .pipe(filter((e) => e.type === 'auth'))
@@ -273,6 +276,11 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     if (this.merchant) {
       await this.getReferrals();
       await this.getSaleflowDefault();
+      const embeddingsMetadata = await this.gptService.getMerchantEmbeddingsMetadata();
+
+      if(embeddingsMetadata) {
+        this.vectorsCount = embeddingsMetadata.vectorsCount;
+      }
     }
     if (!this.headerService.user) this.openLaiaDialog();
     this.googleSigninService.observable().subscribe((user) => {
@@ -647,7 +655,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   goToLaiaTraining() {
-    return this.router.navigate(['/ecommerce/daliah-training']);
+    return this.router.navigate(['/ecommerce/laia-training']);
   }
 
   goToDashboard() {
@@ -700,5 +708,9 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     if(!this.headerService.user) {
       this.loginflow = true;
     }
+  }
+
+  goToAIMemoriesManagement() {
+    this.router.navigate(['/ecommerce/laia-memories-management']);
   }
 }

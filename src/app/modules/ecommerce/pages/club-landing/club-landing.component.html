@@ -1,11 +1,11 @@
 <!-- <app-navigation [opened]="openNavigation" (closed)="openNavigation = false"> -->
-  <div class="container">
-    <!-- <div class="close-content" *ngIf="!isFlag">
+<div class="container">
+  <!-- <div class="close-content" *ngIf="!isFlag">
           <span (click)="isFlag=true">X</span>
         </div> -->
-    <div class="header-wrapper">
-      <div class="left-part">
-        <!-- <img
+  <div class="header-wrapper">
+    <div class="left-part">
+      <!-- <img
               [src]="assetsFolder + '/icon_info.png'"
               class="info-button"
               alt="open internal information"
@@ -29,9 +29,10 @@
           </span>
         </div>
       </div>
-  
-      <div class="right-part">
-        <!-- <div class="member">
+    </div>
+
+    <div class="right-part">
+      <!-- <div class="member">
               <div class="user-button" (click)="enterClub()" *ngIf="!headerService.user">Ingresa al club</div>
             </div> -->
   
@@ -45,6 +46,15 @@
             <p>Gana$</p>
             <mat-icon>ios_share</mat-icon>
         </div>
+        <!-- <div *ngIf="!headerService.user" (click)="enterClub()">Soy Miembro</div> -->
+      </div>
+      <div
+        (click)="tabarIndex = 3"
+        class="icon"
+        (click)="openNavigation = true"
+      >
+        <p>Gana$</p>
+        <mat-icon>ios_share</mat-icon>
       </div>
     </div>
   
@@ -64,23 +74,23 @@
         >
           <div class="text">Compra&Venta</div>
         </div> -->
-        <div
-          class="tab"
-          (click)="tabarIndex = 2"
-          [ngClass]="{ active: tabarIndex === 2 }"
-        >
-          <div class="text">Memorias de La<span>ia</span></div>
-        </div>
-        <div
-          class="tab"
-          (click)="tabarIndex = 3"
-          [ngClass]="{ active: tabarIndex === 3 }"
-        >
-          <div class="text">Gana$</div>
-        </div>
+      <div
+        class="tab"
+        (click)="tabarIndex = 2"
+        [ngClass]="{ active: tabarIndex === 2 }"
+      >
+        <div class="text">Memorias de La<span>ia</span></div>
       </div>
-  
-      <!--
+      <div
+        class="tab"
+        (click)="tabarIndex = 3"
+        [ngClass]="{ active: tabarIndex === 3 }"
+      >
+        <div class="text">Gana$</div>
+      </div>
+    </div>
+
+    <!--
             <div class="tab-header">
             <div class="subject" *ngIf="!tabarIndex">
               Dal<span>ia</span>hChat
@@ -150,24 +160,47 @@
           <p *ngIf="!switchActive" class="ganas-desc ">
             Pagarás a La<span>ia</span> US$0.30 por cada venta.
           </p>
-          <mat-slide-toggle
-            class="toggle"
-            [checked]="switchActive"
-            (change)="switchActive = !switchActive"
-          ></mat-slide-toggle>
-        </div>
-        <hr />
-        <div class="info-container">
-          <p class="info-container-title">Ahorra tiempo en Responder</p>
-          <p class="info-container-desc info-container-desc-mt">
-            Laia utiliza la IA para formular respuestas según el contenido que
-            adiciones a sus memorias.
+        </ng-container>
+        <ng-container *ngIf="headerService?.user">
+          <p
+            class="info-container-invited-link info-container-invited-link-mr"
+            (click)="goToDashboard()"
+          >
+            {{ saleflow ? saleflow?.items?.length : "0" }} artículos
           </p>
-          <div class="flex">
-            <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToLaiaTraining()">
-              Escribe en la Memoria y  prueba a Laia
-            </p>
-            <!-- <p class="info-container-invited-link info-container-invited-link-mr">
+        </ng-container>
+      </div>
+      <div class="flex-space-between align-center">
+        <p class="ganas-desc">El comprador paga us$0.30 a Laia.</p>
+        <mat-slide-toggle
+          class="toggle"
+          [checked]="switchActive"
+          (change)="switchActive = !switchActive"
+        ></mat-slide-toggle>
+      </div>
+      <hr />
+      <div class="info-container">
+        <p class="info-container-title">Ahorra tiempo en Responder</p>
+        <p class="info-container-desc info-container-desc-mt">
+          Laia utiliza la IA para formular respuestas según el contenido que
+          adiciones a sus memorias.
+        </p>
+        <div class="flex">
+          <p
+            *ngIf="!headerService.user"
+            class="info-container-invited-link info-container-invited-link-mr"
+            (click)="goToLaiaTraining()"
+          >
+            Escribe en la Memoria y prueba a Laia
+          </p>
+
+          <div *ngIf="headerService.user" class="memory-options">
+            <button class="option" (click)="goToAIMemoriesManagement()">
+              {{ vectorsCount }} memorias
+            </button>
+            <button class="option">5 chats</button>
+          </div>
+          <!-- <p class="info-container-invited-link info-container-invited-link-mr">
               Escribe en la Memoria y  prueba a Laia
             </p>
             <p class="info-container-invited-link info-container-invited-link-mr"
@@ -175,13 +208,13 @@
             >
               0 chats
             </p> -->
-          </div>
         </div>
         <hr />
         <div class="info-container">
           <p class="info-container-title">Compras más ágiles</p>
           <p class="info-container-desc info-container-desc-mt">
-            Laia conservará en su memoria tus intereses y compras. Con la IA te expondrá ofertas de artículos y comercios parecidos
+            Alcanza múltiples comunidades. Incentiva a tus Embajadores a que
+            promocionen y vendan tus artículos.
           </p>
           <div class="flex">
             <p class="info-container-invited-link info-container-invited-link-mr" (click)="buttonHandler()">
@@ -253,94 +286,77 @@
             </ng-container>
           </div>
         </div>
-        <div class="info-container" style="margin-top: 1em;">
-          <p class="info-container-title">Premia las Menciones</p>
-          <div class="container-flex">
-            <img src="../../../../../assets/images/megaphone.png" alt="">
-            <p class="info-container-desc info-container-desc-mt">
-              Pública tu marca en múltiples comunidades. Incentiva a tus Embajadores a que te mencionen en sus propias redes sociales.
+      </div>
+    </div>
+    <div class="tab-header" *ngIf="tabarIndex === 3">
+      <div class="info-container">
+        <p class="info-container-title">Gana Dinero</p>
+        <div class="flex-space-between">
+          <p class="info-container-icon">🤑</p>
+          <div>
+            <p class="info-container-desc">
+              Por cada factura que generen tus invitados comerciales ganas
+              dinero. Es un ingreso recurrente y sin límites.
             </p>
-          </div>
-          <div class="flex-space-between">
-            <p class="info-container-invited-link "
-              (click)="buttonHandler()"
-            >
-              Adiciona el premio
-            </p>
-          </div>
-        </div>
-        <p class="ganas-desc">
-          Participantes pueden subir foto de la mención para los casos de cuentas privadas.
-        </p>
-        <hr />
-        <div class="info-container" style="margin-top: 1em;">
-          <p class="info-container-title">Premia Porque Si!</p>
-          <div class="container-flex">
-            <img src="../../../../../assets/images/star.png" alt="">
-            <p class="info-container-desc info-container-desc-mt">
-              A quién no le gusta los premios? Premia a quienes quieras hacer sentir bien para atraerlo a tu comercio.
-            </p>
-          </div>
-          <div class="flex-space-between">
-            <p class="info-container-invited-link "
-              (click)="buttonHandler()"
-            >
-              Sin Memorias
+            <p class="info-container-invited-link" (click)="goToReferrals()">
+              {{
+                !headerService.user
+                  ? "Mira tus invitados"
+                  : referralsCount
+                  ? referralsCount + " invitados"
+                  : "0 invitados"
+              }}
             </p>
           </div>
         </div>
       </div>
-      <div class="tab-header" *ngIf="tabarIndex === 3">
-        <div class="info-container">
-          <p class="info-container-title">Gana Dinero</p>
-          <div class="flex-space-between">
-            <p class="info-container-icon">🤑</p>
-            <div>
-              <p class="info-container-desc">
-                Por cada factura que generen tus invitados comerciales ganas
-                dinero. Es un ingreso recurrente y sin límites.
-              </p>
-              <p class="info-container-invited-link" (click)="goToReferrals()">
-                {{ !headerService.user ? 'Mira tus invitados' : referralsCount ? referralsCount + ' invitados' : '0 invitados' }}
-              </p>
-            </div>
+      <p class="ganas-desc">
+        Del dinero recolectado cada mes para mantener a Laia, TU como Embajador
+        ganas el 15% de cada comercio invitado directo y el 10% de todos los
+        indirectos*
+      </p>
+      <p class="ganas-desc ganas-desc-ad">
+        *Comercios que invitaron a quienes invitaste.
+      </p>
+      <hr />
+      <div class="info-container">
+        <p class="info-container-title">Ahorra Tiempo</p>
+        <div class="flex-space-between">
+          <img
+            width="70px"
+            height="70px"
+            src="../../../../../assets/images/sand-clock.png"
+            alt=""
+          />
+          <div>
+            <p class="info-container-desc">
+              Ahorra el tiempo de cotizaciones y facturas cuando tus clientes y
+              proveedores utilizan a LaiaChat.
+            </p>
+            <p class="info-container-invited-link" (click)="goToReferrals()">
+              {{
+                !headerService.user
+                  ? "Mira tus invitados"
+                  : referralsCount
+                  ? referralsCount + " invitados"
+                  : "0 invitados"
+              }}
+            </p>
           </div>
         </div>
-        <p class="ganas-desc">
-          Del dinero recolectado cada mes para mantener a Laia, TU como Embajador
-          ganas el 15% de cada comercio invitado directo y el 10% de todos los
-          indirectos*
-        </p>
-        <p class="ganas-desc ganas-desc-ad">
-          *Comercios que invitaron a quienes invitaste.
-        </p>
-        <hr />
-        <div class="info-container">
-          <p class="info-container-title">Ahorra Tiempo</p>
-          <div class="flex-space-between">
-            <img width="70px" height="70px" src="../../../../../assets/images/sand-clock.png" alt="">
-            <div>
-              <p class="info-container-desc">
-                Ahorra el tiempo de cotizaciones y facturas cuando tus clientes  y proveedores utilizan a LaiaChat.
-              </p>
-              <p class="info-container-invited-link" (click)="goToReferrals()">
-                {{ !headerService.user ? 'Mira tus invitados' : referralsCount ? referralsCount + ' invitados' : '0 invitados' }}
-              </p>
-            </div>
-          </div>
-        </div>
-        <!-- <p class="subject">Ganas dinero mensual, recurrente y sin límites cuando invitas al Club.</p>
+      </div>
+      <!-- <p class="subject">Ganas dinero mensual, recurrente y sin límites cuando invitas al Club.</p>
             <p class="info">Del dinero recolectado cada mes para Laia, TU como Embajador ganas el 15% de cada invitado directo y el 10% de todos los indirectos*</p>
             <p class="small">*Miembros que invitaron a quienes invitaste.</p> -->
-        <!-- <button (click)="invite()" class="button">
+      <!-- <button (click)="invite()" class="button">
               <p>Invita con tu enlace</p>
               <mat-icon>ios_share</mat-icon>
             </button>
             <button *ngIf="headerService.user" class="button">
               <p>Mira a tus invitados miembros</p>
             </button> -->
-      </div>
-      <!--
+    </div>
+    <!--
           <div class="tools" *ngIf="!tabarIndex">
             <div class="tool" (click)="openClubDialog()">
               <div class="icon">
@@ -372,7 +388,7 @@
             </div>
           </div>
           -->
-      <!--
+    <!--
           <div class="action-part" *ngIf="tabarIndex">
             <div class="actions">
               <div class="action" (click)="enterClub()">Comparte tu invitación</div>
@@ -413,28 +429,31 @@
                 </div>
               </div>
             </div>
-            <!-- </swiper> -->
           </div>
+          <!-- </swiper> -->
         </div>
       </div>
-    </main>
-    <div 
-      class="message" 
-      [ngStyle]="tabarIndex === 3 && {'margin-bottom': '32px'}" 
-      *ngIf="!headerService.user"
-    >
-      <div class="input" (click)="openLaiaDialog()">Escribe tu correo electrónico para reservar a Laia</div>
-      <!-- <input type="text" placeholder="Escribe tu correo electrónico para reservar a Laia" (click)="openLaiaDialog()"/> -->
-      <button>
-        <img
-          src="../../../../../assets/icons/arrow-with-background.png"
-          alt="send"
-          width="39"
-          height="39"
-        />
-      </button>
     </div>
-    <!-- <footer
+  </main>
+  <div
+    class="message"
+    [ngStyle]="tabarIndex === 3 && { 'margin-bottom': '32px' }"
+    *ngIf="!headerService.user"
+  >
+    <div class="input" (click)="openLaiaDialog()">
+      Escribe tu correo electrónico para reservar a Laia
+    </div>
+    <!-- <input type="text" placeholder="Escribe tu correo electrónico para reservar a Laia" (click)="openLaiaDialog()"/> -->
+    <button>
+      <img
+        src="../../../../../assets/icons/arrow-with-background.png"
+        alt="send"
+        width="39"
+        height="39"
+      />
+    </button>
+  </div>
+  <!-- <footer
       *ngIf="!tabarIndex"
       (click)="share()"
       class="footer no-green"
@@ -446,31 +465,31 @@
           : "Inscríbete e Invita, juntos es mejor!!"
       }}
     </footer> -->
-    <app-login-flow
-      *ngIf="loginflow"
-      [redirectionRoute]="redirectionRoute"
-      [redirectionRouteId]="redirectionRouteId"
-      [entity]="entity"
-      [jsondata]="jsondata"
-      (dialogIsOpen)="resetLoginDialog($event)"
-    ></app-login-flow>
-  </div>
-  <footer class="footer-ganas" *ngIf="tabarIndex === 3" (click)="invite()">
-    Invita a comerciantes con tu enlace
-    <mat-icon>ios_share</mat-icon>
-  </footer>
-  
-  <qrcode
-    style="display: none"
-    #qrcode
-    [qrdata]="qrdata"
-    [elementType]="'img'"
-    [width]="500"
-    [errorCorrectionLevel]="'M'"
-    [allowEmptyString]="true"
-    colorDark="#000"
-  ></qrcode>
-  <!-- <qrcode
+  <app-login-flow
+    *ngIf="loginflow"
+    [redirectionRoute]="redirectionRoute"
+    [redirectionRouteId]="redirectionRouteId"
+    [entity]="entity"
+    [jsondata]="jsondata"
+    (dialogIsOpen)="resetLoginDialog($event)"
+  ></app-login-flow>
+</div>
+<footer class="footer-ganas" *ngIf="tabarIndex === 3" (click)="invite()">
+  Invita a comerciantes con tu enlace
+  <mat-icon>ios_share</mat-icon>
+</footer>
+
+<qrcode
+  style="display: none"
+  #qrcode
+  [qrdata]="qrdata"
+  [elementType]="'img'"
+  [width]="500"
+  [errorCorrectionLevel]="'M'"
+  [allowEmptyString]="true"
+  colorDark="#000"
+></qrcode>
+<!-- <qrcode
     style="display: none"
     #qrcode
     [qrdata]="URI"
@@ -480,4 +499,4 @@
     [allowEmptyString]="true"
     colorDark="#000"
   ></qrcode> -->
-  <!-- </app-navigation> -->
+<!-- </app-navigation> -->

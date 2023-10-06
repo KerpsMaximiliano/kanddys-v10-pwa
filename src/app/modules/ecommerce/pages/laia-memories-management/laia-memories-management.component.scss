@@ -1,0 +1,114 @@
+.container {
+  min-height: 100%;
+  background-color: #181d17;
+
+  header {
+    position: fixed;
+    max-width: 500px;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0px 20px;
+    padding-right: 23px;
+    background-color: #181d17;
+    align-items: center;
+
+    h1 {
+      color: var(--Fondo-de-Pantallas, #f6f6f6);
+      font-family: InterLight;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      margin: 0px;
+      padding: 0px;
+
+      .highlight {
+        color: #87cd9b;
+      }
+    }
+
+    .right {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .add {
+        color: #fff;
+        font-family: FiraSansBold;
+        font-size: 34.705px;
+        font-style: normal;
+        font-weight: normal;
+        line-height: normal;
+        background-color: transparent;
+        padding: 0px;
+        border: none;
+        display: flex;
+        align-items: center;
+      }
+
+      .close {
+        background-color: transparent;
+        padding: 0px;
+        color: #fff;
+        font-family: FiraSansBold;
+        font-size: 19.005px;
+        font-style: normal;
+        font-weight: normal;
+        line-height: normal;
+        border: none;
+        display: flex;
+        align-items: center;
+        margin-left: 32px;
+      }
+    }
+  }
+
+  main {
+    padding: 73px 23px;
+    padding-top: 66px;
+
+    .memory {
+      padding: 17px 22px 29px;
+      height: 132px;
+      border-radius: 15px;
+      border: 1px solid var(--Plomo, #7b7b7b);
+      margin-bottom: 7px;
+
+      &:hover {
+        cursor: pointer;
+      }
+
+      .name {
+        text-transform: uppercase;
+        color: var(--Fondo-de-Pantallas, #f6f6f6);
+        font-family: InterRegular;
+        font-size: 11px;
+        font-style: normal;
+        line-height: normal;
+        margin-bottom: 16px;
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .content {
+        color: var(--Blanco, #fff);
+        font-family: InterRegular;
+        font-size: 16.107px;
+        font-style: normal;
+        line-height: normal;
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+      }
+    }
+  }
+}
