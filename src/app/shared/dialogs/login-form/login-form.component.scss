@@ -1,0 +1,181 @@
+::ng-deep .mat-dialog-container {
+  padding: 0px;
+  background: none;
+  width: 90vw;
+  max-width: 500px !important;
+  margin: auto;
+}
+
+::ng-deep .mat-dialog-actions {
+  margin-bottom: 0px;
+}
+
+.dialog-container {
+  padding: 23px 20px;
+  padding-top: 38px;
+  background-color: #181d17;
+  color: #fff;
+  font-size: 17px;
+  font-family: InterLight;
+  font-style: normal;
+}
+
+.external-field-wrapper {
+  margin-bottom: 54px;
+
+  &:last-child {
+    margin-bottom: 0px;
+  }
+}
+
+.title {
+  color: #fff;
+  font-family: InterRegular;
+  font-size: 19px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  margin: 0px;
+  padding: 0px;
+  margin-bottom: 30px;
+}
+
+.field-wrapper {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 30px;
+  width: 100%;
+
+  label {
+    color: #fff;
+    font-size: 17px;
+    font-family: InterLight;
+    font-style: normal;
+  }
+
+  input {
+    background-color: #181d17;
+    border: none;
+    font-size: 21px;
+    font-family: InterBold;
+    font-style: normal;
+    line-height: normal;
+    color: white;
+    border-bottom: 1px solid #87cd9b;
+    width: 100%;
+
+    &::placeholder {
+      color: #7b7b7b;
+    }
+  }
+
+  .field-button {
+    color: #c4c5c3;
+    font-family: InterLight;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    margin: 0px;
+    padding: 0px;
+  }
+}
+
+.buttons-flex {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+button {
+  padding: 9px 24px;
+  border-radius: 8px;
+  border: none;
+  background-color: #181d17;
+  transition: 0.5s background-color linear;
+  font-size: clamp(14px, 3vw, 17px);
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &.accept {
+    background-color: #87cd9b;
+    color: #181d17;
+    text-align: center;
+    font-family: InterBold;
+    line-height: normal;
+
+    &:hover {
+      background-color: darken($color: #87cd9b, $amount: 5);
+    }
+
+    &:disabled {
+      background-color: darken($color: #a2a3a1, $amount: 10);
+
+      &:hover {
+        cursor: not-allowed;
+        background-color: darken($color: #a2a3a1, $amount: 10);
+      }
+    }
+  }
+
+  &.cancel {
+    color: #c4c5c3;
+  }
+}
+
+.icon-button {
+  position: relative;
+  float: right;
+  bottom: 92px;
+  right: -18px;
+  background: none;
+  border: 0;
+  img {
+    filter: invert(93%) sepia(69%) saturate(7476%) hue-rotate(187deg)
+      brightness(129%) contrast(100%);
+    cursor: pointer;
+    width: 20px;
+  }
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.phone-input-wrapper {
+  width: 100%;
+  margin: auto;
+}
+
+::ng-deep .customPhone {
+  background-color: transparent;
+  color: #ffffff;
+  box-shadow: none;
+  border: none;
+  border-radius: 0;
+  margin: auto;
+  width: 100%;
+  border-bottom: 1px solid #82f18d;
+}
+
+.phone-email-change {
+  all: unset;
+  cursor: pointer;
+  font-family: "InterThin";
+  font-size: 17px;
+  color: #ffffff;
+  font-style: italic;
+  margin-top: 10px;
+}

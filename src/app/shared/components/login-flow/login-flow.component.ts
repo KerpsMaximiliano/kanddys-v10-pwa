@@ -7,7 +7,7 @@ import { OptionsMenuComponent, DialogTemplate } from 'src/app/shared/dialogs/opt
 import { GoogleSigninService } from 'src/app/core/services/google-signin.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
-import { FormComponent, FormData } from 'src/app/shared/dialogs/form/form.component';
+import { LoginFormComponent, FormData } from 'src/app/shared/dialogs/login-form/login-form.component';
 import { FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -49,7 +49,7 @@ export class LoginFlowComponent implements OnInit {
     private appService : AppService
   ) { }
 
-  emailDialogRef: MatDialogRef<FormComponent, any> = null;
+  emailDialogRef: MatBottomSheetRef<LoginFormComponent, any> = null;
 
   ngOnInit(): void {
     this.share()
@@ -187,17 +187,17 @@ export class LoginFlowComponent implements OnInit {
       ],
     };
 
-    this.emailDialogRef = this.dialog.open(FormComponent, {
+    this.emailDialogRef = this.bottomSheet.open(LoginFormComponent, {
       data: fieldsToCreateInEmailDialog,
       disableClose: true,
     });
 
     this.emailDialogRef.backdropClick().subscribe(() => {
       this.dialogIsOpen.emit(false);
-      this.emailDialogRef.close()
+      this.emailDialogRef.dismiss()
     })
 
-    this.emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+    this.emailDialogRef.afterDismissed().subscribe(async (result: FormGroup) => {
       if (result?.controls?.magicLinkEmailOrPhone.valid) {
         const exists = await this.checkIfUserExists(result?.controls?.magicLinkEmailOrPhone.value);
         if (exists) {
@@ -268,14 +268,14 @@ export class LoginFlowComponent implements OnInit {
       ]
     }
 
-    let dialogRef = this.dialog.open(FormComponent, {
+    let dialogRef = this.bottomSheet.open(LoginFormComponent, {
       data: formTemplateUser,
       disableClose: true,
     });
 
   
     if(isUser) {
-      await dialogRef.afterClosed().subscribe((result) => {
+      await dialogRef.afterDismissed().subscribe((result) => {
         this.dialogIsOpen.emit(false);
         if(result.value.name && result.value.lastname) {
           this.authService.signup(
@@ -350,13 +350,13 @@ export class LoginFlowComponent implements OnInit {
       ],
     };
 
-    let dialogRef = this.dialog.open(FormComponent, {
+    let dialogRef = this.bottomSheet.open(LoginFormComponent, {
       data: formTemplateCommerce,
       disableClose: true,
     });
     console.log(isCommerce)
     if (isCommerce) {
-      await dialogRef.afterClosed().subscribe((result) => {
+      await dialogRef.afterDismissed().subscribe((result) => {
         this.dialogIsOpen.emit(false);
         console.log(result)
         if (result.value.phone && result.value.businessName) {
@@ -534,7 +534,7 @@ export class LoginFlowComponent implements OnInit {
   }
 
   private async addPassword (emailOrPhone: string) {
-    this.emailDialogRef.close();
+    this.emailDialogRef.dismiss();
     let fieldsToCreate: FormData = {
       title: {
         text: 'Clave de Acceso:',
@@ -561,12 +561,12 @@ export class LoginFlowComponent implements OnInit {
       ],
     };
 
-    const dialog2Ref = this.dialog.open(FormComponent, {
+    const dialog2Ref = this.bottomSheet.open(LoginFormComponent, {
       data: fieldsToCreate,
       disableClose: true,
     });
 
-    dialog2Ref.afterClosed().subscribe(async (result: FormGroup) => {
+    dialog2Ref.afterDismissed().subscribe(async (result: FormGroup) => {
       try {
         if (result?.controls?.password.valid) {
           let password = result?.value['password'];
@@ -599,7 +599,7 @@ export class LoginFlowComponent implements OnInit {
     });
 
     const switchToMagicLinkDialog = () => {
-      dialog2Ref.close();
+      dialog2Ref.dismiss();
       return this.openMagicLinkDialog();
     };
   };
@@ -660,7 +660,7 @@ export class LoginFlowComponent implements OnInit {
       ],
     };
 
-    this.emailDialogRef = this.dialog.open(FormComponent, {
+    this.emailDialogRef = this.bottomSheet.open(LoginFormComponent, {
       data: fieldsToCreateInEmailDialog,
       disableClose: true,
     });
