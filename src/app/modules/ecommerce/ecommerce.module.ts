@@ -78,6 +78,7 @@ import { ProfloraCampainComponent } from './pages/proflora-campain/proflora-camp
 import { ChatRoomComponent } from './pages/chat-room/chat-room.component';
 import { DaliahChatComponent } from './pages/daliah-chat/daliah-chat.component';
 import { DaliaTrainingComponent } from './pages/dalia-training/dalia-training.component';
+import { LaiaMemoriesManagementComponent } from './pages/laia-memories-management/laia-memories-management.component';
 
 const routes: Routes = [
   {
@@ -293,8 +294,16 @@ const routes: Routes = [
     component: DaliahChatComponent,
   },
   {
-    path: 'daliah-training',
+    path: 'laia-training',
     component: DaliaTrainingComponent,
+  },
+  {
+    path: 'laia-training/:vectorId',
+    component: DaliaTrainingComponent,
+  },
+  {
+    path: 'laia-memories-management',
+    component: LaiaMemoriesManagementComponent,
   },
   {
     path: 'admin-article-detail/:itemId',
@@ -446,10 +455,6 @@ const routes: Routes = [
         path: 'chat-merchant/:chatId',
         component: ChatRoomComponent,
       },
-      {
-        path: 'daliah-training',
-        component: DaliaTrainingComponent,
-      },
     ],
   },
 ];
@@ -513,6 +518,7 @@ const routes: Routes = [
     ChatRoomComponent,
     DaliahChatComponent,
     DaliaTrainingComponent,
+    LaiaMemoriesManagementComponent,
   ],
   imports: [
     CommonModule,

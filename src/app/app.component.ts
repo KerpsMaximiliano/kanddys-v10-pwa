@@ -106,7 +106,7 @@ export class AppComponent implements OnDestroy, OnInit {
   }
 
   openReloadDialog() {
-   this.dialog.open(ReloadComponent, {
+   let dialogRef = this.dialog.open(ReloadComponent, {
       type: 'fullscreen-translucent',
       props: {
          closeEvent: ()=> {
@@ -117,5 +117,8 @@ export class AppComponent implements OnDestroy, OnInit {
       flags: ['no-header'],
       notCancellable: true
    });
+   dialogRef.events.pipe(filter(e => e.type === 'after-close')).subscribe(() => {
+      this.reload();
+   })
  }
 }
