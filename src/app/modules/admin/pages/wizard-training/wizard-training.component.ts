@@ -6,6 +6,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { SaleFlow } from 'src/app/core/models/saleflow';
@@ -43,7 +44,8 @@ export class WizardTrainingComponent implements OnInit {
     private merchantsService: MerchantsService,
     private toastrService: ToastrService,
     private formBuilder: FormBuilder,
-    private whatsappService: WhatsappService
+    private whatsappService: WhatsappService,
+    private router: Router
   ) {}
 
   async ngOnInit() {
@@ -289,5 +291,9 @@ export class WizardTrainingComponent implements OnInit {
       );
       console.log("timeout seteado", this.pollingTimeout);
     }
+  }
+
+  back() {
+    return this.router.navigate(['/ecommerce/club-landing']);
   }
 }

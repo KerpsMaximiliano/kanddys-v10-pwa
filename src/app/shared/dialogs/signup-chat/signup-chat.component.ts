@@ -56,7 +56,8 @@ export class SignupChatComponent implements OnInit {
     @Inject(MAT_BOTTOM_SHEET_DATA) public data: DialogTemplate,
     private _bottomSheetRef: MatBottomSheetRef,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private elRef: ElementRef
   ) { }
 
   ngAfterViewInit(): void {
@@ -67,7 +68,7 @@ export class SignupChatComponent implements OnInit {
     this.welcomeMessage()
   }
 
-  welcomeMessage() {
+  async welcomeMessage() {
     const message = `
     <p>Hola, soy Laia, y te estaba esperando!!</p>
 
@@ -76,15 +77,26 @@ export class SignupChatComponent implements OnInit {
     <li>Respondamos de forma consistente desde el Website, Shopify, WhatsApp e Instagram.</li>
     <li>Vendamos. Coticemos. Facturemos. Organicemos los pedidos.</li>
     <li>Si quieres, premiarémos a quienes venden por nosotros y a los compradores para que vuelvan a comprarnos.</li>
-    <li>Si hay algo en lo que no pueda ayudarte, por favor escríbele a Daviel por WhatsApp (918)815-6444 aquí el url.com</li>
+    <li>Si hay algo en lo que no pueda ayudarte, por favor escríbele a Daviel por WhatsApp 
+    <span class="phone-event blue">(918)815-6444</span> aquí el <span class=" url-event blue">url.com</span></li>
     </ul>
     <p>¿Y tú, me estabas esperando?</p>
     `
-    this.addMessage({
+    await this.addMessage({
       sender: 'IA',
       message,
       chatId: ""
     })
+    this.elRef.nativeElement.querySelector('.phone-event').addEventListener('click', this.phoneMethod.bind(this))
+    this.elRef.nativeElement.querySelector('.url-event').addEventListener('click', this.urlMethod.bind(this))
+  }
+
+  phoneMethod() {
+    console.log('phone binding is working')
+  }
+
+  urlMethod() {
+    console.log('url binding is working')
   }
 
   /**
@@ -121,15 +133,18 @@ export class SignupChatComponent implements OnInit {
         await this.registerUser(message);
         await this.addMessage({
           sender: 'IA',
-          message: "Gracias por reservar con Laia.",
+          message: `
+          <p>Gracias por reservarme.</p>
+
+          <p>
+          Cuando puedas por favor escríbele a Daviel por WhatsApp 
+          <span class="phone-event blue">(918)815-6444</span> 
+          aquí el <span class="url-event blue">url.com</span>
+          para que le dejes saber como entrenarme para Ti y empezar a formar parte de tu equipo.
+          </p>
+          `,
           chatId: ""
         })
-        await this.addMessage({
-          sender: 'IA',
-          message: "Te mantendremos informad@ de su entrenamiento.",
-          chatId: ""
-        })
-        return
       }
     }
   }

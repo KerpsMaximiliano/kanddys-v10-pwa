@@ -2,7 +2,8 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { OptionsDialogComponent, OptionsDialogTemplate } from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
+import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
+import { OptionsMenuComponent, DialogTemplate } from 'src/app/shared/dialogs/options-menu/options-menu.component';
 import { GoogleSigninService } from 'src/app/core/services/google-signin.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
@@ -37,6 +38,7 @@ export class LoginFlowComponent implements OnInit {
   constructor(
     private headerService: HeaderService,
     private dialog: MatDialog,
+    private bottomSheet: MatBottomSheet,
     private googleSigninService: GoogleSigninService,
     private authService: AuthService,
     private snackbar: MatSnackBar,
@@ -55,7 +57,7 @@ export class LoginFlowComponent implements OnInit {
 
   share() {
     if (!this.headerService.user) {
-      let dialogRef = this.dialog.open(OptionsDialogComponent, {
+      let dialogRef = this.bottomSheet.open(OptionsMenuComponent, {
         data: {
           title: 'Correo electrónico:',
           options: [
@@ -82,7 +84,7 @@ export class LoginFlowComponent implements OnInit {
       dialogRef.backdropClick().subscribe(() => {
         console.log('backdrop')
         this.dialogIsOpen.emit(false);
-        dialogRef.close()
+        dialogRef.dismiss()
       })
     }
   }
@@ -141,9 +143,9 @@ export class LoginFlowComponent implements OnInit {
           name: 'magicLinkEmailOrPhone',
           type: 'email',
           placeholder: 'Escribe el correo electrónico..',
-          validators: [Validators.pattern(/[\S]/), Validators.required],
+          validators: [Validators.email, Validators.required],
           inputStyles: {
-            padding: '11px 1px',
+            padding: '11px 6px',
           },
           styles: {
             gap: '0px',
@@ -407,7 +409,7 @@ export class LoginFlowComponent implements OnInit {
   private async existingUserLoginFlow(credentials: any, isFormValid: boolean) {
     const emailOrPhone = credentials;
 
-    let optionsDialogTemplate: OptionsDialogTemplate = {
+    let optionsDialogTemplate: DialogTemplate = {
       // TODO - Validar si es correo o telefono (actualmente se da por entendido que es solo correo)
       title: `Bienvenido de vuelta ${credentials}, prefieres:`,
       options: [
@@ -482,14 +484,14 @@ export class LoginFlowComponent implements OnInit {
       ],
     };
 
-    this.dialog.open(OptionsDialogComponent, {
+    this.bottomSheet.open(OptionsMenuComponent, {
       data: optionsDialogTemplate,
       disableClose: true,
     });
   }
 
   private typeOfMerchantFlow(credentials: any) {
-    let optionsDialogTemplate: OptionsDialogTemplate = {
+    let optionsDialogTemplate: DialogTemplate = {
       title: `¿Qué tipo de comercio tienes?`,
       options: [
         {
@@ -525,7 +527,7 @@ export class LoginFlowComponent implements OnInit {
       ],
     };
 
-    this.dialog.open(OptionsDialogComponent, {
+    this.dialog.open(OptionsMenuComponent, {
       data: optionsDialogTemplate,
       disableClose: true,
     });
