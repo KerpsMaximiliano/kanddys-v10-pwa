@@ -114,17 +114,19 @@
         font-size: 16.107px;
         font-style: normal;
         line-height: normal;
-        padding: 30px 21px;
 
         resize: none; /* Disable manual resizing */
         overflow-y: hidden; /* Hide vertical scrollbar initially */
         min-height: 50px; /* Set a minimum height */
         width: 100%; /* Optionally set a width */
         font-size: 16px; /* Adjust font size as needed */
-        padding: 10px; /* Add padding for better appearance */
+        padding: 20px 20px 10px; /* Add padding for better appearance */
         box-sizing: border-box; /* Include padding and border in height calculation */
 
         transition: 1s ease-in-out linear;
+        ::placeholder {
+          opacity: 0.5;
+        }
       }
 
       .see-more {
@@ -186,7 +188,7 @@
     }
 
     .sender {
-      color: var(--El-verdecito, #87cd9b);
+      color: var(--Plomito, #c4c5c3);
       font-family: InterRegular;
       font-size: 12px;
       font-style: normal;
