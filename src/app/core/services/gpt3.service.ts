@@ -122,6 +122,7 @@ export class Gpt3Service {
       const result = await this.graphql.query({
         query: fetchAllDataInVectorDatabaseNamespace,
         variables: { prompt, saleflowId },
+        fetchPolicy: 'no-cache'
       });
       return result?.fetchAllDataInVectorDatabaseNamespace;
     } catch (error) {
