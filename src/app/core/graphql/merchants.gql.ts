@@ -710,3 +710,8 @@ export const merchantAddRole = gql`
 mutation merchantAddRole($roleId:ObjectID!, $id:ObjectID!){
   merchantAddRole(roleId:$roleId,id:$id)
 }`;
+
+export const merchantRemoveRole = gql`
+mutation merchantRemoveRole($roleId:ObjectID!, $id:ObjectID!){
+  merchantRemoveRole(roleId:$roleId,id:$id)
+}`;

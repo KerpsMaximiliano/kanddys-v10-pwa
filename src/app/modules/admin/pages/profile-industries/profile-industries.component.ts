@@ -89,9 +89,19 @@ export class ProfileIndustriesComponent implements OnInit {
 
   async addRole(roleCode) {
     let role = this.roles.find((e) => e.code == roleCode);
+    await this.getMerchant();
+    if(this.merchant.roles.some(e=>e._id!=role._id)){
+      await this.merchant.roles.forEach(async e => {
+        await this.removeRole(e._id);
+      });
+    }
     if(!this.merchant.roles.some(e=>e._id==role._id))
      await this.merchantsService.merchantAddRole(role._id,this.merchant._id);
     
+  }
+
+  async removeRole(roleId) {
+     await this.merchantsService.merchantRemoveRole(roleId,this.merchant._id);  
   }
 
   search() {

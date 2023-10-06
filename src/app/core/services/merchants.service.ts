@@ -63,6 +63,7 @@ import {
   merchantQuantityOfFiltersHaveDebt,
   merchantAddRole,
   rolesPublic,
+  merchantRemoveRole,
 } from './../graphql/merchants.gql';
 import {
   EmployeeContract,
@@ -773,6 +774,17 @@ export class MerchantsService {
 
     if (!result || result?.errors) return undefined;
     return result?.merchantAddRole;
+  }
+
+  async merchantRemoveRole (roleId,id) {
+    const result = await this.graphql.mutate({
+      mutation: merchantRemoveRole,
+      variables: {roleId,id },
+      fetchPolicy: 'no-cache',
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result?.merchantRemoveRole;
   }
   
 }
