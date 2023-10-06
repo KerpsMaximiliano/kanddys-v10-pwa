@@ -1,5 +1,5 @@
 <div class="dialog-container" [ngStyle]="data.containerStyles" [formGroup]="formGroup">
-  <div mat-dialog-content>
+  <div>
     <h2 class="title" *ngIf="data.title" [ngStyle]="data.title.styles">
       {{ data.title.text }}
     </h2>
@@ -27,9 +27,10 @@
 
             <ng-container *ngIf="field.submitButton">
               <button
+                [disabled]="!formGroup.valid"
                 class="field-button"
                 (click)="close(formGroup)"
-                [ngStyle]="field.submitButton.styles"
+                [ngStyle]="formGroup.valid ? field.submitButton.styles : field.submitButton.disabledStyles"
               >
                 {{ field.submitButton.text }}
               </button>
@@ -42,7 +43,8 @@
             <ng-container *ngIf="field.bottomButton">
               <button
                 class="field-button"
-                (click)="field.bottomButton.callback()"
+                [disabled]="!formGroup.valid"
+                (click)="bottomButtonClick(i)"
                 [ngStyle]="field.bottomButton.containerStyles"
               >
                 {{ field.bottomButton.text }}
@@ -174,7 +176,7 @@
       </div>
     </ng-container>
   </div>
-  <div mat-dialog-actions class="buttons-flex" *ngIf="!data.hideBottomButtons">
+  <div class="buttons-flex" *ngIf="!data.hideBottomButtons">
     <button class="cancel cancel-form-dialog" (click)="close()">
       <ng-container
         *ngIf="
@@ -191,7 +193,7 @@
     </button>
     <button
       class="accept"
-      [mat-dialog-close]="formGroup"
+      (click)="close(formGroup)"
       [disabled]="!formGroup.valid"
     >
       <ng-container

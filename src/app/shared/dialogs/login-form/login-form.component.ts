@@ -44,6 +44,7 @@ interface Field {
   submitButton?: {
     text?: string;
     styles?: Record<string, string>;
+    disabledStyles?: Record<string, string>;
   };
   bottomTexts?: Array<{
     text?: string;
@@ -172,6 +173,12 @@ export class LoginFormComponent implements OnInit {
     this.phoneOrEmailVisible = previousValue === 'phone' ? 'email' : 'phone';
 
     this.updateFieldValue(index, '');
+  }
+
+  bottomButtonClick(index: number) {
+    console.log('fires')
+    this.data.fields[index].bottomButton.callback();
+    this.bottomSheetRef.dismiss();
   }
 
   // Listen for focusin and focusout events to track keyboard visibility changes
