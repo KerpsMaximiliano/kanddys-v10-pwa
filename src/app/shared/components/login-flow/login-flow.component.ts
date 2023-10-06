@@ -486,7 +486,7 @@ export class LoginFlowComponent implements OnInit {
 
     this.bottomSheet.open(OptionsMenuComponent, {
       data: optionsDialogTemplate,
-      disableClose: true,
+      disableClose: false,
     });
   }
 
