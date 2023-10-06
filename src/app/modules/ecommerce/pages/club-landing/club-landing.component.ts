@@ -87,7 +87,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   mainTitle = "HERRAMIENTAS GRATIS  PARA PROVEEDORES"
   isOpen = false;
   curRole = 0;
-  tabarIndex = 0;
+  tabarIndex : number | undefined = undefined;
 
   user: gapi.auth2.GoogleUser;
 
@@ -254,6 +254,9 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     await this.getMerchantDefault();
     this.queryParamsSubscription = this.route.queryParams.subscribe(
       async ({ affiliateCode, tabarIndex }) => {
+        if (tabarIndex) {
+          this.tabarIndex = parseInt(tabarIndex);
+        }
         if(affiliateCode){
           if(this.merchant){
             const input: AffiliateInput = {
@@ -263,14 +266,10 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
               await this.affiliateService.createAffiliate(affiliateCode, input);
             }catch(error){
               console.log(error);
-              
             }
           }else{
             localStorage.setItem('affiliateCode', affiliateCode);
           }
-        }
-        if (tabarIndex) {
-          this.tabarIndex = parseInt(tabarIndex);
         }
       }
     );
@@ -289,6 +288,9 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       console.log(user)
       this.changeDetectorRef.detectChanges();
     });
+    if(this.tabarIndex === undefined) {
+      this.tabarIndex = 0;
+    }
   }
 
   showRoleDialog() {

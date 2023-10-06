@@ -11,22 +11,23 @@
               alt="open internal information"
               (click)="openMsgDialog()"
             /> -->
-
-      <div class="title" (click)="openMsgDialog()">
-        La<span style="color: #87cd9b">ia</span>Chat
-        <span style="color: #87cd9b">
-          {{
-            !headerService?.user
-              ? "contigo"
-              : headerService.user.name
-              ? "con " + headerService.user.name
-              : headerService.user.email
-              ? "con " + headerService.user.email
-              : headerService.user.phone
-              ? "con " + headerService.user.phone
-              : "contigo"
-          }}
-        </span>
+  
+        <div class="title" >
+          <p (click)="openMsgDialog()">La<span style="color: #87CD9B;">ia</span>Chat</p>
+          <span (click)="!headerService.user ? loginflow = true : showRoleDialog()" style="color: #87CD9B;">
+            {{ 
+              !headerService?.user ?
+              'contigo' :
+              headerService.user.name ?
+              'con ' + headerService.user.name :
+              headerService.user.email ?
+              'con ' + headerService.user.email :
+              headerService.user.phone ?
+              'con ' + headerService.user.phone :
+              'contigo'
+            }}
+          </span>
+        </div>
       </div>
     </div>
 
@@ -34,10 +35,16 @@
       <!-- <div class="member">
               <div class="user-button" (click)="enterClub()" *ngIf="!headerService.user">Ingresa al club</div>
             </div> -->
-
-      <div class="close">
-        <div *ngIf="headerService.user" (click)="showRoleDialog()">
-          {{ userID }}
+  
+        <div class="close">
+          <div *ngIf="headerService.user" (click)="showRoleDialog()">
+            {{ userID }}
+          </div>
+          <!-- <div *ngIf="!headerService.user" (click)="enterClub()">Soy Miembro</div> -->
+        </div>
+        <div *ngIf="tabarIndex !== 3" (click)="tabarIndex = 3" class="icon" (click)="openNavigation = true">
+            <p>Gana$</p>
+            <mat-icon>ios_share</mat-icon>
         </div>
         <!-- <div *ngIf="!headerService.user" (click)="enterClub()">Soy Miembro</div> -->
       </div>
@@ -50,18 +57,17 @@
         <mat-icon>ios_share</mat-icon>
       </div>
     </div>
-  </div>
-
-  <main>
-    <div class="tab-bar flex">
-      <div
-        class="tab"
-        (click)="tabarIndex = 0"
-        [ngClass]="{ active: !tabarIndex }"
-      >
-        <div class="text">Testimonios</div>
-      </div>
-      <!-- <div
+  
+    <main>
+      <div class="tab-bar flex">
+        <div
+          class="tab"
+          (click)="tabarIndex = 0"
+          [ngClass]="{ active: tabarIndex === 0 }"
+        >
+          <div class="text">Testimonios</div>
+        </div>
+        <!-- <div
           class="tab"
           (click)="tabarIndex = 1"
           [ngClass]="{ active: tabarIndex === 1 }"
@@ -100,53 +106,59 @@
             </div>
           </div>
           -->
-    <p class="explain-text" *ngIf="!tabarIndex">
-      “Te ahorro tiempo comprando, vendiendo y automatizando las respuestas de
-      tu WhatsApp, Instagram y Website”
-    </p>
-    <div class="green-text" *ngIf="!tabarIndex">
-      <p (click)="openCompareDialog()">Compárame con las mejores plataformas</p>
-    </div>
-    <div class="footer-swiper" *ngIf="!tabarIndex">
-      <div class="slide-item borderless">
-        <div class="flex">
-          <div class="image">
-            <img
-              width="80px"
-              src="../../../../../assets/images/laia.png"
-              alt=""
-            />
-          </div>
-          <div class="info">
-            <div class="name">La<span>ia</span></div>
-            <div class="role">
-              Asistente Virtual que utiliza Inteligencia Artificial
+      <p class="explain-text" *ngIf="tabarIndex === 0">
+        “Te ahorro tiempo comprando, vendiendo y automatizando las respuestas de
+        tu WhatsApp, Instagram y Website”
+      </p>
+      <div class="green-text" *ngIf="tabarIndex === 0">
+        <p (click)="openCompareDialog()">Compárame con las mejores plataformas</p>
+      </div>
+      <div class="footer-swiper" *ngIf="tabarIndex === 0">
+        <div class="slide-item borderless">
+          <div class="flex">
+            <div class="image">
+              <img width="80px" src="../../../../../assets/images/laia.png" alt="" />
+            </div>
+            <div class="info">
+              <div class="name">La<span>ia</span></div>
+              <div class="role">
+                Asistente Virtual que utiliza Inteligencia Artificial
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <span *ngIf="!tabarIndex" class="line"></span>
-    <div class="tab-header" *ngIf="tabarIndex === 2">
-      <div class="info-container">
-        <div class="info-container-title-container">
-          <p class="info-container-title">Vende fácilmente</p>
-          <!-- <div *ngIf="headerService.user">
+      <span *ngIf="tabarIndex === 0" class="line"></span>
+      <div class="tab-header" *ngIf="tabarIndex === 2">
+        <div class="info-container">
+          <div class="info-container-title-container">
+            <p class="info-container-title">Vende fácilmente </p>
+            <!-- <div *ngIf="headerService.user">
               <mat-icon>add</mat-icon>
               
               <mat-icon>ios_share</mat-icon>
             </div> -->
+          </div>
+          <p class="info-container-desc info-container-desc-mt">
+            Laia utiliza la IA para acomodar tus artículos a que lo vendas fácilmente a través de enlaces.
+          </p>
+          <ng-container *ngIf="!headerService?.user">
+            <p class="info-container-invited-link info-container-invited-link-mr" (click)="openMemoriesLoginDialog()">
+              Adiciona tu primer articulo
+            </p>
+          </ng-container>
+          <ng-container *ngIf="headerService?.user">
+            <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToDashboard()">
+              {{ saleflow ? saleflow?.items?.length : '0' }} artículos
+            </p>
+          </ng-container>
         </div>
-        <p class="info-container-desc info-container-desc-mt">
-          Laia utiliza la IA para acomodar tus artículos a que lo vendas
-          fácilmente a través de enlaces.
-        </p>
-        <ng-container *ngIf="!headerService?.user">
-          <p
-            class="info-container-invited-link info-container-invited-link-mr"
-            (click)="openMemoriesLoginDialog()"
-          >
-            0 Artículos en Memoria
+        <div class="flex-space-between align-center">
+          <p *ngIf="switchActive" class="ganas-desc ">
+            El comprador paga US$0.30 a La<span>ia</span>.
+          </p>
+          <p *ngIf="!switchActive" class="ganas-desc ">
+            Pagarás a La<span>ia</span> US$0.30 por cada venta.
           </p>
         </ng-container>
         <ng-container *ngIf="headerService?.user">
@@ -197,133 +209,82 @@
               0 chats
             </p> -->
         </div>
-      </div>
-      <p class="ganas-desc">
-        Responde desde tu propio Website, WhatsApp e Instagram.
-      </p>
-      <hr />
-      <div class="info-container">
-        <p class="info-container-title">Compras más ágiles</p>
-        <p class="info-container-desc info-container-desc-mt">
-          Laia conservará en su memoria tus intereses y compras. Con la IA te
-          expondrá ofertas de artículos y comercios parecidos
-        </p>
-        <div class="flex">
-          <p
-            class="info-container-invited-link info-container-invited-link-mr"
-            (click)="buttonHandler()"
-          >
-            0 industrias
-          </p>
-          <p
-            class="info-container-invited-link info-container-invited-link-mr"
-            (click)="buttonHandler()"
-          >
-            0 cotizaciones
-          </p>
-          <p
-            class="info-container-invited-link info-container-invited-link-mr"
-            (click)="buttonHandler()"
-          >
-            0 compras
-          </p>
-          <p
-            class="info-container-invited-link info-container-invited-link-mr"
-            (click)="buttonHandler()"
-          >
-            0 carritos
-          </p>
-          <p
-            class="info-container-invited-link info-container-invited-link-mr"
-            (click)="buttonHandler()"
-          >
-            0 ofertas flash
-          </p>
-        </div>
-      </div>
-      <p class="ganas-desc">
-        Invita a los comercios donde compras para ahorrar tiempo y ganar dinero
-        recurrente e ilimitado
-      </p>
-      <hr />
-      <div class="info-container">
-        <p class="info-container-title">Premia las Referencias</p>
-        <div class="container-flex">
-          <img src="../../../../../assets/images/gift.png" alt="" />
+        <hr />
+        <div class="info-container">
+          <p class="info-container-title">Compras más ágiles</p>
           <p class="info-container-desc info-container-desc-mt">
             Alcanza múltiples comunidades. Incentiva a tus Embajadores a que
             promocionen y vendan tus artículos.
           </p>
+          <div class="flex">
+            <p class="info-container-invited-link info-container-invited-link-mr" (click)="buttonHandler()">
+              Crea tu order de compras
+            </p>
+          </div>
         </div>
-        <div class="flex-space-between">
-          <p class="info-container-invited-link" (click)="buttonHandler()">
-            0 artículos activados
-          </p>
+        <hr />
+        <div class="info-container">
+          <p class="info-container-title">Premia las Referencias</p>
+          <div class="container-flex">
+            <img src="../../../../../assets/images/gift.png" alt="">
+            <p class="info-container-desc info-container-desc-mt">
+              Alcanza múltiples comunidades. Incentiva a tus Embajadores a que promocionen y vendan tus artículos.
+            </p>
+          </div>
+          <div class="flex-space-between">
+            <ng-container *ngIf="!headerService?.user">
+              <p class="info-container-invited-link info-container-invited-link-mr" (click)="openMemoriesLoginDialog()">
+                Adiciona tu primer articulo
+              </p>
+            </ng-container>
+            <ng-container *ngIf="headerService?.user">
+              <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToDashboard()">
+                {{ saleflow ? saleflow?.items?.length : '0' }} artículos activados
+              </p>
+            </ng-container>
+          </div>
         </div>
-      </div>
-      <div class="info-container" style="margin-top: 1em">
-        <p class="info-container-title">Recompensa las Compras</p>
-        <div class="container-flex">
-          <img src="../../../../../assets/images/heart.png" alt="" />
-          <p class="info-container-desc info-container-desc-mt">
-            Fideliza a tus compradores. Convierte a tus compradores regulares en
-            compradores recurrentes.
-          </p>
+        <div class="info-container" style="margin-top: 1em;">
+          <p class="info-container-title">Recompensa las Compras</p>
+          <div class="container-flex">
+            <img src="../../../../../assets/images/heart.png" alt="">
+            <p class="info-container-desc info-container-desc-mt">
+              Fideliza a tus compradores. Convierte a tus compradores regulares en compradores recurrentes.
+            </p>
+          </div>
+          <div class="flex-space-between">
+            <ng-container *ngIf="!headerService?.user">
+              <p class="info-container-invited-link info-container-invited-link-mr" (click)="openMemoriesLoginDialog()">
+                Adiciona tu primer recompensa
+              </p>
+            </ng-container>
+            <ng-container *ngIf="headerService?.user">
+              <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToDashboard()">
+                {{ saleflow ? saleflow?.items?.length : '0' }} recompensas activadas
+              </p>
+            </ng-container>
+          </div>
         </div>
-        <div class="flex-space-between">
-          <p class="info-container-invited-link" (click)="buttonHandler()">
-            0 recompensas
-          </p>
-        </div>
-      </div>
-      <div class="info-container" style="margin-top: 1em">
-        <p class="info-container-title">Incrementa la Urgencia</p>
-        <div class="container-flex">
-          <img src="../../../../../assets/images/alert.png" alt="" />
-          <p class="info-container-desc info-container-desc-mt">
-            Crea ofertas. Motiva las compras con precios exclusivos que duran
-            solo 24 horas.
-          </p>
-        </div>
-        <div class="flex-space-between">
-          <p class="info-container-invited-link" (click)="buttonHandler()">
-            0 artículos activados
-          </p>
-        </div>
-      </div>
-      <div class="info-container" style="margin-top: 1em">
-        <p class="info-container-title">Premia las Menciones</p>
-        <div class="container-flex">
-          <img src="../../../../../assets/images/megaphone.png" alt="" />
-          <p class="info-container-desc info-container-desc-mt">
-            Pública tu marca en múltiples comunidades. Incentiva a tus
-            Embajadores a que te mencionen en sus propias redes sociales.
-          </p>
-        </div>
-        <div class="flex-space-between">
-          <p class="info-container-invited-link" (click)="buttonHandler()">
-            Sin Memorias
-          </p>
-        </div>
-      </div>
-      <p class="ganas-desc">
-        Participantes pueden subir foto de la mención para los casos de cuentas
-        privadas.
-      </p>
-      <hr />
-      <div class="info-container" style="margin-top: 1em">
-        <p class="info-container-title">Premia Porque Si!</p>
-        <div class="container-flex">
-          <img src="../../../../../assets/images/star.png" alt="" />
-          <p class="info-container-desc info-container-desc-mt">
-            A quién no le gusta los premios? Premia a quienes quieras hacer
-            sentir bien para atraerlo a tu comercio.
-          </p>
-        </div>
-        <div class="flex-space-between">
-          <p class="info-container-invited-link" (click)="buttonHandler()">
-            Sin Memorias
-          </p>
+        <div class="info-container" style="margin-top: 1em;">
+          <p class="info-container-title">Incrementa la Urgencia</p>
+          <div class="container-flex">
+            <img src="../../../../../assets/images/alert.png" alt="">
+            <p class="info-container-desc info-container-desc-mt">
+              Crea ofertas. Motiva las compras con precios exclusivos que duran solo 24 horas.
+            </p>
+          </div>
+          <div class="flex-space-between">
+            <ng-container *ngIf="!headerService?.user">
+              <p class="info-container-invited-link info-container-invited-link-mr" (click)="openMemoriesLoginDialog()">
+                Adiciona tu primer articulo
+              </p>
+            </ng-container>
+            <ng-container *ngIf="headerService?.user">
+              <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToDashboard()">
+                {{ saleflow ? saleflow?.items?.length : '0' }} artículos activados
+              </p>
+            </ng-container>
+          </div>
         </div>
       </div>
     </div>
@@ -449,21 +410,22 @@
               Es una manera fácil de invitar en las facturas que le entregas a tus clientes.
             </div>
           </div>-->
-    <div class="tabs-container" *ngIf="!tabarIndex" style="margin-top: 2em">
-      <!-- TABS -->
-      <div class="footer-swiper">
-        <div class="swiper-custom-container">
-          <!-- <swiper [config]="swiperConfig"> -->
-          <div *ngFor="let item of list">
-            <div class="slide-item">
-              <div class="slide-content">{{ item.text }}</div>
-              <div class="flex">
-                <div class="image">
-                  <!-- <img src="../../../../../assets/images/avatar.svg" alt="" /> -->
-                </div>
-                <div class="info">
-                  <div class="name">{{ item.name }}</div>
-                  <div class="role">{{ item.role }}</div>
+      <div class="tabs-container" *ngIf="tabarIndex === 0" style="margin-top: 2em;">
+        <!-- TABS -->
+        <div class="footer-swiper">
+          <div class="swiper-custom-container">
+            <!-- <swiper [config]="swiperConfig"> -->
+            <div *ngFor="let item of list">
+              <div class="slide-item">
+                <div class="slide-content">{{ item.text }}</div>
+                <div class="flex">
+                  <div class="image">
+                    <!-- <img src="../../../../../assets/images/avatar.svg" alt="" /> -->
+                  </div>
+                  <div class="info">
+                    <div class="name">{{ item.name }}</div>
+                    <div class="role">{{ item.role }}</div>
+                  </div>
                 </div>
               </div>
             </div>
