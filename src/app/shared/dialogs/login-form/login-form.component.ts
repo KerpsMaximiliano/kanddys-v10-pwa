@@ -13,7 +13,7 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { ViewportRuler } from '@angular/cdk/overlay';
 import { environment } from 'src/environments/environment';
@@ -86,8 +86,8 @@ export class LoginFormComponent implements OnInit {
   phoneOrEmailVisible: 'phone' | 'email' = 'phone';
 
   constructor(
-    public bottomSheetRef: MatBottomSheetRef<LoginFormComponent>,
-    @Inject(MAT_BOTTOM_SHEET_DATA) public data: FormData,
+    public dialogRef: MatDialogRef<LoginFormComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: FormData,
     private fb: FormBuilder,
     private viewportRuler: ViewportRuler,
     private elementRef: ElementRef,
@@ -163,8 +163,8 @@ export class LoginFormComponent implements OnInit {
   }
 
   close(data?: any): void {
-    if (!data) this.bottomSheetRef.dismiss();
-    else this.bottomSheetRef.dismiss(data);
+    if (!data) this.dialogRef.close();
+    else this.dialogRef.close(data);
   }
 
   updateFieldValue(index: number, value: any) {
@@ -181,7 +181,7 @@ export class LoginFormComponent implements OnInit {
     this.ngZone.run(() => {
       console.log('fires')
       this.data.fields[index].bottomButton.callback();
-      this.bottomSheetRef.dismiss();
+      this.dialogRef.close();
     })
   }
 

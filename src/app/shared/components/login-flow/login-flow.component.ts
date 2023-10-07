@@ -50,7 +50,7 @@ export class LoginFlowComponent implements OnInit {
     private appService: AppService
   ) { }
 
-  emailDialogRef: MatBottomSheetRef<LoginFormComponent, any> = null;
+  emailDialogRef: MatDialogRef<LoginFormComponent, any> = null;
 
   ngOnInit(): void {
     this.share()
@@ -204,17 +204,20 @@ export class LoginFlowComponent implements OnInit {
       ],
     };
 
-    this.emailDialogRef = this.bottomSheet.open(LoginFormComponent, {
+    this.emailDialogRef = this.dialog.open(LoginFormComponent, {
       data: fieldsToCreateInEmailDialog,
+      position: {
+        bottom: '0px'
+      },
       disableClose: true,
     });
 
     this.emailDialogRef.backdropClick().subscribe(() => {
       this.dialogIsOpen.emit(false);
-      this.emailDialogRef.dismiss()
+      this.emailDialogRef.close()
     })
 
-    this.emailDialogRef.afterDismissed().subscribe(async (result: FormGroup) => {
+    this.emailDialogRef.afterClosed().subscribe(async (result: FormGroup) => {
       if (result?.controls?.magicLinkEmailOrPhone.valid) {
         const exists = await this.checkIfUserExists(result?.controls?.magicLinkEmailOrPhone.value);
         if (exists) {
@@ -365,6 +368,7 @@ export class LoginFlowComponent implements OnInit {
           validators: [Validators.required],
         },
       ],
+
     };
 
     let dialogRef = this.dialog.open(FormComponent, {
@@ -553,7 +557,7 @@ export class LoginFlowComponent implements OnInit {
   }
 
   private async addPassword(emailOrPhone: string) {
-    this.emailDialogRef.dismiss();
+    this.emailDialogRef.close();
     let fieldsToCreate: FormData = {
       title: {
         text: 'Clave de Acceso:',
@@ -679,7 +683,7 @@ export class LoginFlowComponent implements OnInit {
       ],
     };
 
-    this.emailDialogRef = this.bottomSheet.open(LoginFormComponent, {
+    this.emailDialogRef = this.dialog.open(LoginFormComponent, {
       data: fieldsToCreateInEmailDialog,
       disableClose: true,
     });

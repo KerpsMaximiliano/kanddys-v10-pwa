@@ -1,7 +1,10 @@
+::ng-deep .cdk-overlay-pane {
+  margin-top: auto !important;
+}
+
 ::ng-deep .mat-dialog-container {
   padding: 0px;
   background: none;
-  width: 90vw;
   max-width: 500px !important;
   margin: auto;
 }
