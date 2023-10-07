@@ -27,6 +27,7 @@ import { environment } from 'src/environments/environment';
 
 
 type btnFilterName = 'exhibits' | 'noExhibits' | 'hidden' | 'byCommission' | 'lowStock'
+type consumerType = 'supplier' | 'default'
 
 @Component({
   selector: 'app-provider-items',
@@ -63,7 +64,7 @@ export class ProviderItemsComponent implements OnInit {
   itemsFiltering = []
 
   /**Button for filtering */
-  btnSupplierState = {
+  btnConsumerState = {
     supplier: false,
     default: false
   }
@@ -210,12 +211,20 @@ export class ProviderItemsComponent implements OnInit {
   }
 
   /**
+   * Cambia el estado del consumidor de supplier o default
+   */
+  onChangeConsumerState(selected: consumerType) {
+    this.btnConsumerState[selected] = !this.btnConsumerState[selected]
+    this.filteringItemsBySearchbar(this.itemToSearch)
+  }
+
+  /**
    * Verifica si el usuario es de tipo proveedor o no
    */
   verifyIfIsSupplier() {
     this.merchantsService.merchantDefault()
       .then(merchantDefault => {
-        this.isSupplier = merchantDefault.roles[0].code !== 'STORE'
+        this.isSupplier = merchantDefault.roles[1].code !== 'STORE'
       })
   }
 
@@ -1638,14 +1647,15 @@ export class ProviderItemsComponent implements OnInit {
   }
 
   /**
+   * Al hacer click en un boton, filtrará segun el boton seleccionado.
+   * Además ocultará el dashboard si algun de los filtros están activos
    *
-   * @param selected
+   * @param {btnFilterName} selected nombre del button del filtrado seleccionado
    */
   onChangeBtnFiltering(selected: btnFilterName) {
     this.btnFilterState[selected] = !this.btnFilterState[selected]
-    const valuesFiltering = Object.values(this.btnFilterState)
-    this.hiddenDashboard = valuesFiltering.some(value => value)
-    this.filteringItemsBySearchbar(this.itemToSearch, selected)
+    this.hiddenDashboard = Object.values(this.btnFilterState).some(value => value)
+    this.filteringItemsBySearchbar(this.itemToSearch)
   }
 
   onCloseSearchbar() {
@@ -1653,12 +1663,14 @@ export class ProviderItemsComponent implements OnInit {
   }
 
   /**
+   * Busca en el searchbar con o sin el filtrado.
+   * Ocultará o mostrará el dashboard segun si algun filtro está activo
    *
-   * @param event
+   * @param {EventTarget} event evento del input
    */
   onFilteringItemsBySearchbar(event: any) {
     this.itemToSearch = event.target.value
-    const isSomeBtnActive = Object.values(this.btnFilterState)
+    const isSomeBtnActive = Object.values(this.btnFilterState).some(value => value)
 
     if (this.itemToSearch) {
       this.hiddenDashboard = true
@@ -1674,7 +1686,7 @@ export class ProviderItemsComponent implements OnInit {
    * Filtrado de items por la barra de búsqueda
    * @param itemToSearch item a buscar
    */
-  private filteringItemsBySearchbar(itemName: string, key?: btnFilterName) {
+  private filteringItemsBySearchbar(itemName: string) {
     const input: PaginationInput = {
       findBy: {
         status: this.btnFilterState.hidden ? "disabled" : "active",
@@ -1689,9 +1701,7 @@ export class ProviderItemsComponent implements OnInit {
       },
     };
 
-
-    // Button de items exhibidos
-    if (this.btnFilterState[key]) {
+    if (this.btnFilterState.exhibits) {
       input.findBy = {
         ...input.findBy,
         merchant: {
@@ -1700,8 +1710,7 @@ export class ProviderItemsComponent implements OnInit {
       }
     }
 
-    // Button de items no exhibidos
-    if (this.btnFilterState[key]) {
+    if (this.btnFilterState.noExhibits) {
       input.findBy = {
         ...input.findBy,
         parentItem: {
@@ -1710,8 +1719,7 @@ export class ProviderItemsComponent implements OnInit {
       }
     }
 
-    // Button de items para filtrar por comisiones
-    if (this.btnFilterState[key]) {
+    if (this.btnFilterState.byCommission) {
       input.findBy = {
         ...input.findBy,
         allowCommission: true
@@ -1719,11 +1727,30 @@ export class ProviderItemsComponent implements OnInit {
     }
 
     // Button de items para filtrar los items por menos de 10 stock
-    if (this.btnFilterState[key]) {
+    if (this.btnFilterState.lowStock) {
       input.filter = { maxStock: 10 }
     }
 
-    console.log(this.btnFilterState)
+    if (this.btnConsumerState.supplier) {
+      input.findBy = {
+        ...input.findBy,
+        type: 'supplier'
+      }
+    }
+
+    if (this.btnConsumerState.default) {
+      input.findBy = {
+        ...input.findBy,
+        type: 'default'
+      }
+    }
+
+    if (this.btnConsumerState.supplier && this.btnConsumerState.default) {
+      input.findBy = {
+        ...input.findBy,
+        type: ['supplier', 'default']
+      }
+    }
 
     this.saleflowService.listItems(input, false, itemName)
       .then(data => this.itemsFiltering = data.listItems)

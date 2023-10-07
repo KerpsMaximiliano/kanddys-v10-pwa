@@ -59,11 +59,17 @@ h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
       </form>
 
       <div *ngIf="isSupplier" class="filtering-options card">
-        <button [ngClass]="{ active: btnSupplierState.supplier }">
-          Supplier
+        <button
+          [ngClass]="{ active: btnConsumerState.supplier }"
+          (click)="onChangeConsumerState('supplier')"
+        >
+          Articulos para floristerias
         </button>
-        <button [ngClass]="{ active: btnSupplierState.default }">
-          No Supplier
+        <button
+          [ngClass]="{ active: btnConsumerState.default }"
+          (click)="onChangeConsumerState('default')"
+        >
+          Consumidores finales
         </button>
       </div>
 
