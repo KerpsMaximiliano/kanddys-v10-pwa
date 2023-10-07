@@ -26,11 +26,7 @@ import { OptionsDialogComponent, OptionsDialogTemplate } from 'src/app/shared/di
 import { environment } from 'src/environments/environment';
 
 
-interface BtnFiltering {
-  label: string,
-  isActive: boolean,
-  total: number
-}
+type btnFilterName = 'exhibits' | 'noExhibits' | 'hidden' | 'byCommission' | 'lowStock'
 
 @Component({
   selector: 'app-provider-items',
@@ -65,50 +61,26 @@ export class ProviderItemsComponent implements OnInit {
   hiddenDashboard: boolean = false
   itemToSearch: string = ''
   itemsFiltering = []
-  buttonFiltering: BtnFiltering[] = [
-    {
-      label: "Exhibidos",
-      isActive: false,
-      total: 0
-    },
-    {
-      label: "No Exhibidos",
-      isActive: false,
-      total: 0
-    },
-    {
-      label: "Ocultos",
-      isActive: false,
-      total: 0
-    }
-  ]
-  buttonFilteringNoSupplier: BtnFiltering[] = [
-    {
-      label: "Todos los exhibidos",
-      isActive: false,
-      total: 0
-    },
-    {
-      label: "Los ocultos",
-      isActive: false,
-      total: 0
-    },
-    {
-      label: "Los que pagan comisión",
-      isActive: false,
-      total: 0
-    },
-    {
-      label: "Menos de 10 disponibles para vender",
-      isActive: false,
-      total: 0
-    }
-  ]
 
+  /**Button for filtering */
   btnSupplierState = {
     supplier: false,
     default: false
   }
+
+  btnFilterState = {
+    exhibits: false,
+    noExhibits: false,
+    hidden: false,
+    byCommission: false,
+    lowStock: false,
+  }
+
+  /** Total items */
+  totalHidden: number = 0
+  totalAllItems: number = 0
+  totalItemsByCommission: number = 0
+  totalItemsByLowStock: number = 0
 
   //Pagination-specific variables
   paginationState: {
@@ -398,20 +370,6 @@ export class ProviderItemsComponent implements OnInit {
     }
 
     if (this.isTheUserAMerchant) {
-      // const supplierSpecificItemsPagination: PaginationInput = {
-      //   findBy: {
-      //     type: this.isSupplier ? 'supplier' : 'default',
-      //     parentItem: {
-      //       $ne: null,
-      //     },
-      //     merchant: this.merchantsService.merchantData._id,
-      //   },
-      //   options: {
-      //     sortBy: 'createdAt:desc',
-      //     limit: -1,
-      //     page: 1,
-      //   },
-      // };
       const supplierSpecificItemsPagination: PaginationInput = {
         findBy: {
           type: this.isSupplier ? 'supplier' : 'default',
@@ -458,7 +416,6 @@ export class ProviderItemsComponent implements OnInit {
       )?.listItems;
 
       if (supplierSpecificItems) this.itemsISell = supplierSpecificItems;
-      this.buttonFiltering[0].total = this.itemsISell.length
     }
   }
 
@@ -488,20 +445,7 @@ export class ProviderItemsComponent implements OnInit {
         page: this.paginationState.page,
       },
     };
-    // const pagination: PaginationInput = {
-    //   findBy: {
-    //     type: this.isSupplier ? 'supplier' : 'default',
-    //     parentItem: null,
-    //     _id: {
-    //       $nin: this.itemsISell.map((item) => item.parentItem),
-    //     },
-    //   },
-    //   options: {
-    //     sortBy: 'createdAt:desc',
-    //     limit: this.paginationState.pageSize,
-    //     page: this.paginationState.page,
-    //   },
-    // };
+
     if (this.isTheUserAMerchant) {
       pagination.findBy.merchant = {
         $ne: this.merchantsService.merchantData._id,
@@ -620,7 +564,6 @@ export class ProviderItemsComponent implements OnInit {
       if (itemsQueryResult.length === 0 && !triggeredFromScroll) {
         this.itemsIDontSell = [];
       }
-      this.buttonFiltering[1].total = this.itemsIDontSell.length
     });
   }
 
@@ -719,18 +662,10 @@ export class ProviderItemsComponent implements OnInit {
     this.itemsService
       .itemsQuantityOfFilters(this.merchantsService.merchantData._id, 'supplier')
       .then(data => {
-        if (this.isSupplier) {
-          this.buttonFiltering[2].total = data.hidden
-        } else {
-          // btn para todos los items
-          this.buttonFilteringNoSupplier[0].total = data.all
-          // btn para items ocultos
-          this.buttonFilteringNoSupplier[1].total = data.hidden
-          // btn para items con comisiones
-          this.buttonFilteringNoSupplier[2].total = data.commissionable
-          // btn para menos de 10 items para vender
-          this.buttonFilteringNoSupplier[3].total = data.lowStock
-        }
+        this.totalHidden = data.hidden
+        this.totalAllItems = data.all
+        this.totalItemsByCommission = data.commissionable
+        this.totalItemsByLowStock = data.lowStock
       })
 
   }
@@ -1095,7 +1030,6 @@ export class ProviderItemsComponent implements OnInit {
     price: number,
     item: Item
   ): Promise<ItemInput> => {
-    // const type: TypeItem = this.isSupplier ? 'supplier' : 'default'
     const itemInput: ItemInput = {
       name: item.name,
       layout: item.layout,
@@ -1703,35 +1637,32 @@ export class ProviderItemsComponent implements OnInit {
     window.location.href = whatsappLink;
   }
 
-  onChangeBtnFiltering(btnActual: BtnFiltering) {
-    const index = this.buttonFiltering.findIndex(btn => btn.label === btnActual.label)
-    this.buttonFiltering[index].isActive = this.buttonFiltering[index].isActive
-    this.hiddenDashboard = this.buttonFiltering.some(btn => btn.isActive)
-    this.filteringItemsBySearchbar(this.itemToSearch)
-  }
-
-  onChangeBtnFilteringNotSupplier(btnActual: BtnFiltering) {
-    const i = this.buttonFilteringNoSupplier.findIndex(btn => btn.label === btnActual.label)
-    this.buttonFilteringNoSupplier[i].isActive = this.buttonFilteringNoSupplier[i].isActive
-    this.hiddenDashboard = this.buttonFilteringNoSupplier.some(btn => btn.isActive)
-    this.filteringItemsBySearchbarNotSupplier(this.itemToSearch)
+  /**
+   *
+   * @param selected
+   */
+  onChangeBtnFiltering(selected: btnFilterName) {
+    this.btnFilterState[selected] = !this.btnFilterState[selected]
+    const valuesFiltering = Object.values(this.btnFilterState)
+    this.hiddenDashboard = valuesFiltering.some(value => value)
+    this.filteringItemsBySearchbar(this.itemToSearch, selected)
   }
 
   onCloseSearchbar() {
     this.searchOpened = false
   }
 
+  /**
+   *
+   * @param event
+   */
   onFilteringItemsBySearchbar(event: any) {
     this.itemToSearch = event.target.value
-    const isSomeBtnActive = this.buttonFiltering.some(btn => btn.isActive)
+    const isSomeBtnActive = Object.values(this.btnFilterState)
 
     if (this.itemToSearch) {
       this.hiddenDashboard = true
-      if (this.isSupplier) {
-        this.filteringItemsBySearchbar(this.itemToSearch)
-      } else {
-        this.filteringItemsBySearchbarNotSupplier(this.itemToSearch)
-      }
+      this.filteringItemsBySearchbar(this.itemToSearch)
     }
 
     if (!this.itemToSearch && !isSomeBtnActive) {
@@ -1743,13 +1674,10 @@ export class ProviderItemsComponent implements OnInit {
    * Filtrado de items por la barra de búsqueda
    * @param itemToSearch item a buscar
    */
-  private filteringItemsBySearchbar(itemName: string) {
-    // Si el boton de "oculto" está activo, será "disabled". Caso contrario "active"
-    const status = this.buttonFiltering[2].isActive ? "disabled" : "active"
-
+  private filteringItemsBySearchbar(itemName: string, key?: btnFilterName) {
     const input: PaginationInput = {
       findBy: {
-        status,
+        status: this.btnFilterState.hidden ? "disabled" : "active",
         _id: {
           $nin: this.itemsISell.map((item) => item.parentItem),
         },
@@ -1761,8 +1689,9 @@ export class ProviderItemsComponent implements OnInit {
       },
     };
 
+
     // Button de items exhibidos
-    if (this.buttonFiltering[0].isActive) {
+    if (this.btnFilterState[key]) {
       input.findBy = {
         ...input.findBy,
         merchant: {
@@ -1772,7 +1701,7 @@ export class ProviderItemsComponent implements OnInit {
     }
 
     // Button de items no exhibidos
-    if (this.buttonFiltering[1].isActive) {
+    if (this.btnFilterState[key]) {
       input.findBy = {
         ...input.findBy,
         parentItem: {
@@ -1781,45 +1710,8 @@ export class ProviderItemsComponent implements OnInit {
       }
     }
 
-    this.saleflowService
-      .listItems(input, false, itemName)
-      .then(data => this.itemsFiltering = data.listItems)
-  }
-
-  /**
-   *
-   * @param itemName nombre
-   */
-  private filteringItemsBySearchbarNotSupplier(itemName: string) {
-    // Estado del boton para mostrar los items ocultos o activos
-    const status = this.buttonFilteringNoSupplier[1].isActive ? "disabled" : "active"
-
-    const input: PaginationInput = {
-      findBy: {
-        status,
-        _id: {
-          $nin: this.itemsISell.map((item) => item.parentItem),
-        },
-      },
-      options: {
-        sortBy: 'createdAt:desc',
-        limit: this.paginationState.pageSize,
-        page: this.paginationState.page,
-      },
-    };
-
-    // Button de todos items exhibidos
-    if (this.buttonFilteringNoSupplier[0].isActive) {
-      input.findBy = {
-        ...input.findBy,
-        merchant: {
-          _id: this.merchantsService.merchantData._id
-        },
-      }
-    }
-
     // Button de items para filtrar por comisiones
-    if (this.buttonFilteringNoSupplier[2].isActive) {
+    if (this.btnFilterState[key]) {
       input.findBy = {
         ...input.findBy,
         allowCommission: true
@@ -1827,12 +1719,13 @@ export class ProviderItemsComponent implements OnInit {
     }
 
     // Button de items para filtrar los items por menos de 10 stock
-    if (this.buttonFilteringNoSupplier[3].isActive) {
+    if (this.btnFilterState[key]) {
       input.filter = { maxStock: 10 }
     }
 
-    this.saleflowService
-      .listItems(input, false, itemName)
+    console.log(this.btnFilterState)
+
+    this.saleflowService.listItems(input, false, itemName)
       .then(data => this.itemsFiltering = data.listItems)
   }
 

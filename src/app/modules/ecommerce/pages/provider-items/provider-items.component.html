@@ -69,21 +69,58 @@ h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
 
       <div *ngIf="isSupplier" class="filtering-options card">
         <button
-          *ngFor="let btn of buttonFiltering"
-          [ngClass]="{ active: btn.isActive }"
-          (click)="onChangeBtnFiltering(btn)"
+          type="button"
+          [ngClass]="{ active: btnFilterState.exhibits }"
+          (click)="onChangeBtnFiltering('exhibits')"
         >
-          {{ btn.label }} ({{ btn.total }})
+          Exhibidos ({{ itemsISell.length }})
+        </button>
+        <button
+          type="button"
+          [ngClass]="{ active: btnFilterState.noExhibits }"
+          (click)="onChangeBtnFiltering('noExhibits')"
+        >
+          No Exhibidos ({{ itemsIDontSell.length }})
+        </button>
+
+        <button
+          type="button"
+          [ngClass]="{ active: btnFilterState.hidden }"
+          (click)="onChangeBtnFiltering('hidden')"
+        >
+          Ocultos ({{ totalHidden }})
         </button>
       </div>
 
       <div *ngIf="!isSupplier" class="filtering-options card card-store">
         <button
-          *ngFor="let btn of buttonFilteringNoSupplier"
-          [ngClass]="{ active: btn.isActive }"
-          (click)="onChangeBtnFilteringNotSupplier(btn)"
+          type="button"
+          [ngClass]="{ active: btnFilterState.exhibits }"
+          (click)="onChangeBtnFiltering('exhibits')"
         >
-          {{ btn.label }} ({{ btn.total }})
+          Todos los exhibidos ({{ totalAllItems }})
+        </button>
+        <button
+          type="button"
+          [ngClass]="{ active: btnFilterState.hidden }"
+          (click)="onChangeBtnFiltering('hidden')"
+        >
+          Los ocultos ({{ totalHidden }})
+        </button>
+
+        <button
+          type="button"
+          [ngClass]="{ active: btnFilterState.byCommission }"
+          (click)="onChangeBtnFiltering('byCommission')"
+        >
+          Los que pagan comisión ({{ totalItemsByCommission }})
+        </button>
+        <button
+          type="button"
+          [ngClass]="{ active: btnFilterState.lowStock }"
+          (click)="onChangeBtnFiltering('lowStock')"
+        >
+          Menos de 10 disponibles para vender ({{ totalItemsByLowStock }})
         </button>
       </div>
     </div>
