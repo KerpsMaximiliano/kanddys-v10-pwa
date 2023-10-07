@@ -105,6 +105,11 @@ export class ProviderItemsComponent implements OnInit {
     }
   ]
 
+  btnSupplierState = {
+    supplier: false,
+    default: false
+  }
+
   //Pagination-specific variables
   paginationState: {
     pageSize: number;
@@ -1745,7 +1750,6 @@ export class ProviderItemsComponent implements OnInit {
     const input: PaginationInput = {
       findBy: {
         status,
-        type: "supplier",
         _id: {
           $nin: this.itemsISell.map((item) => item.parentItem),
         },
@@ -1793,7 +1797,6 @@ export class ProviderItemsComponent implements OnInit {
     const input: PaginationInput = {
       findBy: {
         status,
-        type: ['default', null],
         _id: {
           $nin: this.itemsISell.map((item) => item.parentItem),
         },
