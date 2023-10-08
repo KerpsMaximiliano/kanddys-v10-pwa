@@ -337,14 +337,19 @@ export class ProviderItemsComponent implements OnInit {
       status: this.isSwitchActive ? "closed" : "open"
     }
 
-    this.saleflowService
-      .updateSaleflow(input, this.saleFlowId)
-      .then(() => this.isSwitchActive = !this.isSwitchActive)
-      .catch(error => {
-        console.error(error);
-        const message = 'Ocurrió un error al intentar cambiar la visibilidad de tu tienda, intenta más tarde'
-        this.headerService.showErrorToast(message);
-      })
+    const isValidMerchant = this.merchantsService.verifyMerchant(this.merchantsService.merchantDefault)
+    const isValidMerchantSaleflow = this.merchantsService.verifyMerchantSaleFlow(this.saleflowService.saleflowData)
+
+    // if (isValidMerchant && isValidMerchantSaleflow) {
+    //   this.saleflowService
+    //     .updateSaleflow(input, this.saleFlowId)
+    //     .then(() => this.isSwitchActive = !this.isSwitchActive)
+    //     .catch(error => {
+    //       console.error(error);
+    //       const message = 'Ocurrió un error al intentar cambiar la visibilidad de tu tienda, intenta más tarde'
+    //       this.headerService.showErrorToast(message);
+    //     })
+    // }
 
   }
 
