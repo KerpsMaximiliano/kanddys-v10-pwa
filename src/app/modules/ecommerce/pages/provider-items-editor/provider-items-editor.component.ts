@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item, ItemInput } from 'src/app/core/models/item';
 import { Merchant } from 'src/app/core/models/merchant';
 import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
+import { FilesService } from 'src/app/core/services/files.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
@@ -41,12 +42,16 @@ export class ProviderItemsEditorComponent implements OnInit {
   entity: string = "MerchantAccess";
   preItemId: string;
   jsondata: string;
-  saleFlowDefault:string;
+  saleFlowDefault: string;
+  itemImage:any;
+  imageFromService:string;
 
   constructor(private route: ActivatedRoute,
     private itemService: ItemsService,
     private merchant: MerchantsService,
-    private saleflowService: SaleFlowService) { }
+    private saleflowService: SaleFlowService,
+    private filesService: FilesService,
+    private router:Router) { }
 
   async ngOnInit() {
     this.route.params.subscribe(async (params) => {
@@ -70,19 +75,29 @@ export class ProviderItemsEditorComponent implements OnInit {
     }
     await this.getMerchantDefault();
     await this.getSaleFlowDefault();
+    const imageService = await this.filesService.getFile();
+    if(imageService) this.imageFromService = imageService;
+    await this.getImageForItem();
+    console.log(this.itemImage);
+    
+    
   }
 
   back() {
 
   }
 
-  async validateLoginFromLink(){
+  async validateLoginFromLink() {
     let parsedData;
     this.route.queryParams.subscribe(async ({ jsondata }) => {
-      parsedData = JSON.parse(decodeURIComponent(jsondata));
+      if(jsondata){
+        parsedData = JSON.parse(decodeURIComponent(jsondata));
+      }
     });
-    this.preItemId = parsedData.itemId;
-    await this.addItemToSaleFlow();
+    if(parsedData){
+      this.preItemId = parsedData.itemId;
+      await this.addItemToSaleFlow();
+    }
   }
 
   async getItemData() {
@@ -183,6 +198,15 @@ export class ProviderItemsEditorComponent implements OnInit {
       }
     }
 
+    if(this.itemImage){
+      const type = this.itemImage.split(';')[0].split(':')[1];
+      const imageBlob = this.filesService.dataURItoBlob(this.itemImage);
+      const imageFile = new File([imageBlob], this.articleName.value, { type: type });
+      itemDataInput.images = [{
+        file:imageFile
+      }]
+    } 
+
     if (this.merchantId) {
       const { createItem } = await this.itemService.createItem(
         itemDataInput
@@ -194,15 +218,21 @@ export class ProviderItemsEditorComponent implements OnInit {
         this.saleFlowId
       );
       unlockUI();
+      console.log("paso por aca");
+      await this.router.navigate(['/ecommerce/provider-items']);
     } else {
       if (!this.preItemId) {
-        const preItem = await this.itemService.createPreItem(itemDataInput);
-        this.preItemId = preItem.createPreItem._id;
-        this.jsondata = JSON.stringify({
-          itemId: this.preItemId
-        });
-        this.loginflow = true;
-        unlockUI();
+        const preItem = await this.createPreItem(itemDataInput);
+        if (preItem) {
+          this.preItemId = preItem.createPreItem._id;
+          this.jsondata = JSON.stringify({
+            itemId: this.preItemId
+          });
+          this.loginflow = true;
+          unlockUI();
+        } else {
+          unlockUI();
+        }
       } else {
         this.jsondata = JSON.stringify({
           itemId: this.preItemId
@@ -232,8 +262,19 @@ export class ProviderItemsEditorComponent implements OnInit {
         description: this.articleDescription.value
       }
     }
+    
+    if(this.itemImage){
+      const type = this.itemImage.split(';')[0].split(':')[1];
+      const imageBlob = this.filesService.dataURItoBlob(this.itemImage);
+      const imageFile = new File([imageBlob], this.articleName.value, { type: type });
+      itemDataInput.images = [{
+        file:imageFile
+      }]
+    } 
+    
     await this.itemService.updateItem(itemDataInput, this.articleId);
     unlockUI();
+    this.router.navigate(['/ecommerce/provider-items']);
   }
   async createSaleFlow() {
     try {
@@ -247,10 +288,10 @@ export class ProviderItemsEditorComponent implements OnInit {
     }
   }
 
-  async setSaleFlowDefault(saleFlowId){
-    try{
+  async setSaleFlowDefault(saleFlowId) {
+    try {
       await this.saleflowService.setDefaultSaleflow(this.merchantId, saleFlowId);
-    }catch(error){
+    } catch (error) {
       console.log(error);
       unlockUI();
     }
@@ -267,89 +308,129 @@ export class ProviderItemsEditorComponent implements OnInit {
   }
 
   async resetLoginDialog(event) {
+    this.loginflow = false;
     lockUI();
     await this.addItemToSaleFlow();
   }
 
-  async addItemToSaleFlow(){
+  async addItemToSaleFlow() {
     const me = await this.validationLogin();
     if (me) {
       await this.getMerchantDefault();
       if (this.merchantId) {
-        try{
+        try {
           const saleflowDefault = await this.saleflowService.saleflowDefault(
             this.merchantId
           );
           this.saleFlowDefault = saleflowDefault._id;
-        }catch(error){
+        } catch (error) {
           console.log(error);
           unlockUI();
         }
-        
-        if(this.saleFlowDefault){
+
+        if (this.saleFlowDefault) {
           await this.authCreatedItem();
-          try{
+          try {
             await this.saleflowService.addItemToSaleFlow(
               {
                 item: this.preItemId,
               },
               this.saleFlowDefault
             );
-          }catch(error){
+          } catch (error) {
             console.log(error);
             unlockUI();
           }
           unlockUI();
-        }else{
+        } else {
           const saleFlowId = await this.createSaleFlow();
           await this.setSaleFlowDefault(saleFlowId);
           await this.authCreatedItem();
-          try{
+          try {
             await this.saleflowService.addItemToSaleFlow(
               {
                 item: this.preItemId,
               },
               this.saleFlowId
             );
-          }catch(error){
+          } catch (error) {
             console.log(error);
             unlockUI();
           }
           unlockUI();
+          this.router.navigate(['/ecommerce/provider-items']);
         }
         unlockUI();
+        this.router.navigate(['/ecommerce/provider-items']);
       } else {
         await this.createMerchantDefault(me);
         const saleFlowId = await this.createSaleFlow();
         await this.setSaleFlowDefault(saleFlowId);
         await this.authCreatedItem();
-        try{
+        try {
           await this.saleflowService.addItemToSaleFlow(
             {
               item: this.preItemId,
             },
             this.saleFlowId
           );
-        }catch(error){
+        } catch (error) {
           console.log(error);
           unlockUI();
         }
         unlockUI();
+        this.router.navigate(['/ecommerce/provider-items']);
       }
-    }else{
+    } else {
       unlockUI();
     }
   }
 
-  async authCreatedItem(){
-    try{
+  async authCreatedItem() {
+    try {
       await this.itemService.authItem(
         this.merchantId,
         this.preItemId
       );
-    }catch(error){
+    } catch (error) {
       console.log(error);
       unlockUI();
     }
   }
+
+  async createPreItem(itemDataInput) {
+    try {
+      const preItem = await this.itemService.createPreItem(itemDataInput);
+      return preItem;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getImageForItem(){
+
+    if(this.itemData && this.itemData.images[0]?.value){
+      this.itemImage = this.itemData.images[0]?.value;
+    }
+    else if(this.imageFromService){
+      this.itemImage = this.imageFromService;
+    }
+  }
+
+  async getImg(e) {
+    const inputElement = e.target as HTMLInputElement;
+    if (inputElement.files && inputElement.files[0]) {
+      const selectedFile = inputElement.files[0];
+      const toBase64 = selectedFile => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(selectedFile);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+    });
+    const base64Data = await toBase64(selectedFile);
+    this.itemImage = base64Data;
+    
+    } 
+}
+
 }

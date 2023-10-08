@@ -35,6 +35,8 @@ import { CompareDialogComponent } from 'src/app/shared/dialogs/compare-dialog/co
 import { SelectRoleDialogComponent } from 'src/app/shared/dialogs/select-role-dialog/select-role-dialog.component';
 import { SignupChatComponent } from 'src/app/shared/dialogs/signup-chat/signup-chat.component';
 import { SpecialDialogComponent } from 'src/app/shared/dialogs/special-dialog/special-dialog.component';
+import { URL } from 'url';
+import { FilesService } from 'src/app/core/services/files.service';
 
 interface ReviewsSwiper {
   title: string;
@@ -216,7 +218,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   saleflow: SaleFlow;
   referralsCount: number = 0;
   @ViewChild('qrcode', { read: ElementRef }) qrcode: ElementRef;
-
+  
   constructor(
     public headerService: HeaderService,
     private app: AppService,
@@ -234,7 +236,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     private router: Router,
     private changeDetectorRef: ChangeDetectorRef,
     private clipboard: Clipboard,
-    private affiliateService: AffiliateService
+    private affiliateService: AffiliateService,
+    private filesService: FilesService
   ) {
     const sub = this.app.events
       .pipe(filter((e) => e.type === 'auth'))
@@ -251,18 +254,18 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     await this.getMerchantDefault();
     this.queryParamsSubscription = this.route.queryParams.subscribe(
       async ({ affiliateCode, tabarIndex }) => {
-        if(affiliateCode){
-          if(this.merchant){
+        if (affiliateCode) {
+          if (this.merchant) {
             const input: AffiliateInput = {
               reference: this.merchant
             }
-            try{
+            try {
               await this.affiliateService.createAffiliate(affiliateCode, input);
-            }catch(error){
+            } catch (error) {
               console.log(error);
-              
+
             }
-          }else{
+          } else {
             localStorage.setItem('affiliateCode', affiliateCode);
           }
         }
@@ -525,7 +528,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
   async openLinkDialog(merchant?: Merchant) {
     let slug;
-    if(merchant) {
+    if (merchant) {
       console.log(merchant)
       slug = merchant.slug;
     } else {
@@ -576,27 +579,27 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   downloadQr() {
     setTimeout(() => {
       const parentElement =
-      this.qrcode.nativeElement.querySelector('img').src;
-    let blobData = base64ToBlob(parentElement);
-    if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
-      //IE
-      (window.navigator as any).msSaveOrOpenBlob(blobData, 'Landing QR Code');
-    } else {
-      // chrome
-      const blob = new Blob([blobData], { type: 'image/png' });
-      const url = window.URL.createObjectURL(blob);
-      // window.open(url);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = "Landing QR Code";
-      link.click();
-    }
+        this.qrcode.nativeElement.querySelector('img').src;
+      let blobData = base64ToBlob(parentElement);
+      if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
+        //IE
+        (window.navigator as any).msSaveOrOpenBlob(blobData, 'Landing QR Code');
+      } else {
+        // chrome
+        const blob = new Blob([blobData], { type: 'image/png' });
+        const url = window.URL.createObjectURL(blob);
+        // window.open(url);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = "Landing QR Code";
+        link.click();
+      }
     }, 1000)
   }
   async getMerchantDefault() {
     try {
       const merchantDefault: Merchant = await this.merchantsService.merchantDefault();
-      this.merchant = merchantDefault._id; 
+      this.merchant = merchantDefault._id;
     } catch (error) {
       console.log("error");
     }
@@ -631,7 +634,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   invite() {
-    if(!this.headerService.user) {
+    if (!this.headerService.user) {
       this.redirectionRoute = '/ecommerce/club-landing?tabarIndex=3';
       this.openLoginDialog();
     } else {
@@ -655,7 +658,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   openLoginDialog() {
     let dialogRef = this.dialog.open(FormComponent, {
       data: {
-        title:{ text: "🤑 Correo electronico que guardará el dinero:"},
+        title: { text: "🤑 Correo electronico que guardará el dinero:" },
         fields: [
           {
             name: "email",
@@ -670,13 +673,13 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       }
     });
     dialogRef.afterClosed().subscribe(async (result) => {
-      if(!result.value.email) return;
+      if (!result.value.email) return;
       const exists = await this.authService.checkUser(result.value.email);
-      if(exists) {
+      if (exists) {
         let merchants = await this.merchantsService.merchants({ findBy: { owner: exists._id } });
-        if(merchants.length > 0) {
+        if (merchants.length > 0) {
           let defaultMerchant = merchants.find(merchant => merchant.default);
-          if(defaultMerchant) {
+          if (defaultMerchant) {
             this.openLinkDialog(defaultMerchant);
           } else {
             this.openLinkDialog(merchants[0])
@@ -685,9 +688,9 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
           let merchant = await this.merchantsService.createMerchant({ owner: exists._id });
           console.log(merchant)
           this.openLinkDialog(merchant.createMerchant);
-        }        
+        }
       } else {
-        let user = await this.authService.signup({email: result.value.email, password: "123"}, 'none');
+        let user = await this.authService.signup({ email: result.value.email, password: "123" }, 'none');
         let merchant = await this.merchantsService.createMerchant({ owner: user._id });
         this.openLinkDialog(merchant.createMerchant);
       }
@@ -695,8 +698,26 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   buttonHandler() {
-    if(!this.headerService.user) {
+    if (!this.headerService.user) {
       this.loginflow = true;
     }
+  }
+
+  async getImg(e) {
+      console.log("🚀 ~ file: club-landing.component.ts:707 ~ ClubLandingComponent ~ getImg ~ e:", e)
+      const inputElement = e.target as HTMLInputElement;
+      if (inputElement.files && inputElement.files[0]) {
+        const selectedFile = inputElement.files[0];
+        const toBase64 = selectedFile => new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(selectedFile);
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+      });
+      const base64Data = await toBase64(selectedFile);
+      this.filesService.setFile(base64Data);
+      this.router.navigate(['/ecommerce/provider-items-editor']);
+      } 
+  
   }
 }

@@ -8,12 +8,13 @@
         <div
           class="image"
           [ngStyle]="{
-            backgroundImage:
-              itemData && itemData.images[0]?.value
-                ? 'url(' + itemData.images[0].value + ')'
-                : 'url(/assets/images/noimage.png)'
+            backgroundImage: itemImage ? 'url(' + itemImage + ')'
+            : 'url(/assets/images/noimage.png)'
           }"
-        ></div>
+          (click)="uploader.click()"
+        >
+        <input id="imgInput" accept="image/*" type="file" hidden #uploader (change)="getImg($event)">
+      </div>
         <div class="article">
           <div class="input-container">
             <input 

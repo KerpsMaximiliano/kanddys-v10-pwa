@@ -576,6 +576,7 @@ export class LoginFlowComponent implements OnInit {
             password,
             true
           );
+          console.log("🚀 ~ file: login-flow.component.ts:579 ~ LoginFlowComponent ~ dialog2Ref.afterClosed ~ session:", session)
 
           if (!session) throw new Error('invalid credentials');
 
