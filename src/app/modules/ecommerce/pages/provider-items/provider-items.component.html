@@ -1,4 +1,4 @@
-h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
+h3h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
   <div class="dashboard-page container" (scroll)="infinitePagination()">
     <header class="header" *ngIf="!searchOpened">
       <div class="btn-container principal">
@@ -58,7 +58,7 @@ h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
         />
       </form>
 
-      <div *ngIf="isSupplier" class="filtering-options card">
+      <div class="filtering-options card">
         <button
           [ngClass]="{ active: btnConsumerState.supplier }"
           (click)="onChangeConsumerState('supplier')"
@@ -201,7 +201,7 @@ h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
 
       <!-- Articulos no exhibidos -->
       <section
-        *ngIf="itemsIDontSell?.length > 0 && !hiddenDashboard && isSupplier"
+        *ngIf="itemsIDontSell?.length > 0 && !hiddenDashboard && !isUserLogged"
       >
         <h3>ARTICULOS QUE NECESITAN LAS FLORISTERIAS MIEMBROS</h3>
 

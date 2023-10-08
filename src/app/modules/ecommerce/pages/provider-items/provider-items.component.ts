@@ -127,6 +127,8 @@ export class ProviderItemsComponent implements OnInit {
   };
   numberOfItemsSold: number = 0;
 
+  isUserLogged = false
+
   private keyPresentationState = 'providersPresentationClosed'
   private keyTutorialState = 'tutorialClosed'
   private saleFlowId = null;
@@ -148,13 +150,14 @@ export class ProviderItemsComponent implements OnInit {
   async ngOnInit() {
     this.itemSearchbar.valueChanges.subscribe(async () => {
       this.verifyIfIsSupplier()
-      await this.getItemsISell();
+      await this.fetchItemsToSell();
       await this.getNewPageOfItemsIDontSell(true, false);
     });
 
     const existToken = localStorage.getItem('session-token')
     if (existToken) {
       if (!this.headerService.user) {
+        this.isUserLogged = true
         let sub = this.appService.events
           .pipe(filter((e) => e.type === 'auth'))
           .subscribe((e) => {
@@ -183,12 +186,13 @@ export class ProviderItemsComponent implements OnInit {
           this.parseMagicLinkData();
         }
 
-        await this.getItemsISell();
-        await this.getNumberOfItemsSold();
-
         this.checkIfPresentationWasClosedBefore();
         this.checkIfTutorialWasOpen()
-        if (this.isSupplier) {
+
+        await this.getNumberOfItemsSold();
+        if (this.isUserLogged) {
+          await this.fetchItemsToSell();
+        } else {
           await this.getNewPageOfItemsIDontSell(true, false);
         }
       }
@@ -222,28 +226,9 @@ export class ProviderItemsComponent implements OnInit {
    * Verifica si el usuario es de tipo proveedor o no
    */
   verifyIfIsSupplier() {
-    this.merchantsService.merchantDefault()
-      .then(merchantDefault => {
-        this.isSupplier = merchantDefault.roles[1].code !== 'STORE'
-      })
-  }
-
-  /**
-   * Obtiene el numero de items vendidos
-   */
-  async getNumberOfItemsSold() {
-    if (this.isTheUserAMerchant) {
-      const sold = await this.itemsService.itemsQuantitySoldTotal({
-        findBy: {
-          type: this.isSupplier ? 'supplier' : 'default',
-          merchant: this.merchantsService.merchantData._id,
-        },
-        options: {
-          limit: -1,
-        },
-      });
-      this.numberOfItemsSold = sold?.total;
-    }
+    this.merchantsService.merchantDefault().then(merchantDefault => {
+      this.isSupplier = merchantDefault.roles[1].code !== 'STORE'
+    })
   }
 
   async infinitePagination() {
@@ -324,7 +309,8 @@ export class ProviderItemsComponent implements OnInit {
 
   /**
    * Cierra el tutorial de busqueda. Si las cartas han sido cerradas,
-   * almacena el estado en el localstorage y l
+   * almacena el estado en el localstorage
+   *
    * @param cardName nombre de la carta que se cerró
    */
   closeSearchTutorial = (cardName: string) => {
@@ -370,18 +356,35 @@ export class ProviderItemsComponent implements OnInit {
     //this.inicializeItems(true, false);
   }
 
-  async getItemsISell() {
-    if (this.isTheUserAMerchant === null) {
-      const isAMerchant =
-        await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+  /**
+ * Obtiene el numero de items vendidos
+ */
+  async getNumberOfItemsSold() {
+    if (this.isTheUserAMerchant) {
+      const sold = await this.itemsService.itemsQuantitySoldTotal({
+        findBy: {
+          merchant: this.merchantsService.merchantData._id,
+        },
+        options: {
+          limit: -1,
+        },
+      });
+      this.numberOfItemsSold = sold?.total;
+    }
+  }
 
+  /**
+   * Obtiene todos los items para vender
+   */
+  async fetchItemsToSell() {
+    if (!this.isTheUserAMerchant) {
+      const isAMerchant = await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
       this.isTheUserAMerchant = isAMerchant;
     }
 
     if (this.isTheUserAMerchant) {
       const supplierSpecificItemsPagination: PaginationInput = {
         findBy: {
-          type: this.isSupplier ? 'supplier' : 'default',
           merchant: this.merchantsService.merchantData._id,
           _id: {
             $nin: this.itemsISell.map((item) => item.parentItem),
@@ -394,7 +397,7 @@ export class ProviderItemsComponent implements OnInit {
         },
       };
 
-      if (this.itemSearchbar.value && this.itemSearchbar.value !== '') {
+      if (this.itemSearchbar.value) {
         let regexQueries: Array<any> = [
           {
             name: {
@@ -424,10 +427,15 @@ export class ProviderItemsComponent implements OnInit {
         await this.itemsService.listItems(supplierSpecificItemsPagination)
       )?.listItems;
 
-      if (supplierSpecificItems) this.itemsISell = supplierSpecificItems;
+      if (supplierSpecificItems) {
+        this.itemsISell = supplierSpecificItems;
+      }
     }
   }
 
+  /**
+   * Obtiene todos los items que no se venden
+   */
   async getNewPageOfItemsIDontSell(
     restartPagination = false,
     triggeredFromScroll = false,
