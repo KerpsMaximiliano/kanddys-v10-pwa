@@ -320,6 +320,7 @@ h3h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
           *ngIf="firstItem && itemsTutorialOpened"
           [src]="assetsFolder + '/card-arrow-up.svg'"
           alt=""
+          loading="lazy"
         />
       </div>
     </div>
@@ -335,6 +336,7 @@ h3h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
               (click)="changeAmount(item, 'infinite', itemIndex, providedByMe)"
               [src]="assetsFolder + '/infinity2.png'"
               alt="infinite stock"
+              loading="lazy"
             />
           </ng-container>
 
@@ -383,6 +385,7 @@ h3h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
             (click)="changeAmount(item, 'add', itemIndex, providedByMe)"
             [src]="assetsFolder + '/infinity2.png'"
             alt="infinite stock"
+            loading="lazy"
           />
         </ng-container>
       </div>
@@ -606,6 +609,7 @@ h3h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
       *ngIf="topImage"
       [ngStyle]="topImageStyles"
       [src]="topImage"
+      loading="lazy"
     />
 
     <span

@@ -60,7 +60,6 @@ export class ProviderItemsComponent implements OnInit {
 
   isSupplier: boolean = true;
   hiddenDashboard: boolean = false
-  itemToSearch: string = ''
   itemsFiltering = []
 
   /**Button for filtering */
@@ -151,7 +150,7 @@ export class ProviderItemsComponent implements OnInit {
     this.itemSearchbar.valueChanges.subscribe(async () => {
       this.verifyIfIsSupplier()
       await this.fetchItemsToSell();
-      await this.getNewPageOfItemsIDontSell(true, false);
+      await this.fetchNewPageOfItemsIDontSell(true, false);
     });
 
     const existToken = localStorage.getItem('session-token')
@@ -193,7 +192,7 @@ export class ProviderItemsComponent implements OnInit {
         if (this.isUserLogged) {
           await this.fetchItemsToSell();
         } else {
-          await this.getNewPageOfItemsIDontSell(true, false);
+          await this.fetchNewPageOfItemsIDontSell(true, false);
         }
       }
     );
@@ -219,7 +218,7 @@ export class ProviderItemsComponent implements OnInit {
    */
   onChangeConsumerState(selected: consumerType) {
     this.btnConsumerState[selected] = !this.btnConsumerState[selected]
-    this.filteringItemsBySearchbar(this.itemToSearch)
+    this.filteringItemsBySearchbar(this.itemSearchbar.value)
   }
 
   /**
@@ -227,7 +226,7 @@ export class ProviderItemsComponent implements OnInit {
    */
   verifyIfIsSupplier() {
     this.merchantsService.merchantDefault().then(merchantDefault => {
-      this.isSupplier = merchantDefault.roles[1].code !== 'STORE'
+      this.isSupplier = merchantDefault.roles[0].code !== 'STORE'
     })
   }
 
@@ -243,7 +242,7 @@ export class ProviderItemsComponent implements OnInit {
         this.paginationState.status === 'complete' &&
         !this.reachTheEndOfPagination
       ) {
-        await this.getNewPageOfItemsIDontSell(false, true, true);
+        await this.fetchNewPageOfItemsIDontSell(false, true, true);
       }
     }
   }
@@ -397,32 +396,6 @@ export class ProviderItemsComponent implements OnInit {
         },
       };
 
-      if (this.itemSearchbar.value) {
-        let regexQueries: Array<any> = [
-          {
-            name: {
-              __regex: {
-                pattern: this.itemSearchbar.value,
-                options: 'gi',
-              },
-            },
-          },
-          {
-            description: {
-              __regex: {
-                pattern: this.itemSearchbar.value,
-                options: 'gi',
-              },
-            },
-          },
-        ];
-
-        supplierSpecificItemsPagination.findBy = {
-          ...supplierSpecificItemsPagination.findBy,
-          $or: regexQueries,
-        };
-      }
-
       const supplierSpecificItems: Array<Item> = (
         await this.itemsService.listItems(supplierSpecificItemsPagination)
       )?.listItems;
@@ -436,7 +409,7 @@ export class ProviderItemsComponent implements OnInit {
   /**
    * Obtiene todos los items que no se venden
    */
-  async getNewPageOfItemsIDontSell(
+  async fetchNewPageOfItemsIDontSell(
     restartPagination = false,
     triggeredFromScroll = false,
     getTotalNumberOfItems = false,
@@ -1663,7 +1636,7 @@ export class ProviderItemsComponent implements OnInit {
   onChangeBtnFiltering(selected: btnFilterName) {
     this.btnFilterState[selected] = !this.btnFilterState[selected]
     this.hiddenDashboard = Object.values(this.btnFilterState).some(value => value)
-    this.filteringItemsBySearchbar(this.itemToSearch)
+    this.filteringItemsBySearchbar(this.itemSearchbar.value)
   }
 
   onCloseSearchbar() {
@@ -1677,21 +1650,24 @@ export class ProviderItemsComponent implements OnInit {
    * @param {EventTarget} event evento del input
    */
   onFilteringItemsBySearchbar(event: any) {
-    this.itemToSearch = event.target.value
+    this.itemSearchbar.setValue(event.target.value)
     const isSomeBtnActive = Object.values(this.btnFilterState).some(value => value)
 
-    if (this.itemToSearch) {
+    if (this.itemSearchbar.value) {
       this.hiddenDashboard = true
-      this.filteringItemsBySearchbar(this.itemToSearch)
+      this.filteringItemsBySearchbar(this.itemSearchbar.value)
     }
 
-    if (!this.itemToSearch && !isSomeBtnActive) {
+    if (!this.itemSearchbar.value && !isSomeBtnActive) {
       this.hiddenDashboard = false
     }
   }
 
   /**
    * Filtrado de items por la barra de búsqueda
+   * Puede obtener un filtrado más especifico dependiendo de si
+   * alguno de los botones de filtrado han sido activados
+   *
    * @param itemToSearch item a buscar
    */
   private filteringItemsBySearchbar(itemName: string) {
