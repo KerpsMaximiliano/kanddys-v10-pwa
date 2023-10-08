@@ -127,6 +127,7 @@ export class ProviderItemsComponent implements OnInit {
   numberOfItemsSold: number = 0;
 
   isUserLogged = false
+  isUserVerified = false
 
   private keyPresentationState = 'providersPresentationClosed'
   private keyTutorialState = 'tutorialClosed'
@@ -202,15 +203,24 @@ export class ProviderItemsComponent implements OnInit {
    * Obtiene el estado del switch
    */
   getStatusSwitch() {
-    this.merchantsService.merchantDefault()
-      .then((merchantDefault) => {
-        this.saleflowService.saleflowDefault(merchantDefault._id)
-          .then(saleflow => {
-            const status = !saleflow?.status || saleflow?.status === 'open'
-            this.isSwitchActive = status
-            this.saleFlowId = saleflow._id
-          })
+    this.merchantsService.merchantDefault().then((merchant) => {
+      const isValidMerchant = this.merchantsService.verifyMerchant(merchant)
+      if (!isValidMerchant) {
+        return
+      }
+
+      this.saleflowService.saleflowDefault(merchant._id).then(saleflow => {
+        const isValidSaleflow = this.merchantsService.verifyMerchantSaleFlow(saleflow)
+        if (!isValidSaleflow) {
+          this.isSwitchActive = false
+        } else {
+          const status = !saleflow?.status || saleflow?.status === 'open'
+          this.isSwitchActive = status
+          this.saleFlowId = saleflow._id
+          this.isUserVerified = true
+        }
       })
+    })
   }
 
   /**
@@ -333,24 +343,20 @@ export class ProviderItemsComponent implements OnInit {
   };
 
   toggleStoreVisibility() {
-    const input = {
-      status: this.isSwitchActive ? "closed" : "open"
+    if (this.isUserVerified) {
+      const input = {
+        status: this.isSwitchActive ? "closed" : "open"
+      }
+
+      this.saleflowService
+        .updateSaleflow(input, this.saleFlowId)
+        .then(() => this.isSwitchActive = !this.isSwitchActive)
+        .catch(error => {
+          console.error(error);
+          const message = 'Ocurrió un error al intentar cambiar la visibilidad de tu tienda, intenta más tarde'
+          this.headerService.showErrorToast(message);
+        })
     }
-
-    const isValidMerchant = this.merchantsService.verifyMerchant(this.merchantsService.merchantDefault)
-    const isValidMerchantSaleflow = this.merchantsService.verifyMerchantSaleFlow(this.saleflowService.saleflowData)
-
-    // if (isValidMerchant && isValidMerchantSaleflow) {
-    //   this.saleflowService
-    //     .updateSaleflow(input, this.saleFlowId)
-    //     .then(() => this.isSwitchActive = !this.isSwitchActive)
-    //     .catch(error => {
-    //       console.error(error);
-    //       const message = 'Ocurrió un error al intentar cambiar la visibilidad de tu tienda, intenta más tarde'
-    //       this.headerService.showErrorToast(message);
-    //     })
-    // }
-
   }
 
   activateOrDeactivateFilters(filterKey: string) {

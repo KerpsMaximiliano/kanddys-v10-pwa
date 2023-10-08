@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { Item, RangeDate } from '../models/item';
 import { ItemOrder } from '../models/order';
-import { PaginationInput, PaginationRangeInput } from '../models/saleflow';
+import { PaginationInput, PaginationRangeInput, SaleFlow } from '../models/saleflow';
 import { Tag } from '../models/tags';
 import { RecurrentUserData, User, UserInput } from '../models/user';
 import { ViewsMerchant } from '../models/views-merchant';
@@ -751,14 +751,25 @@ export class MerchantsService {
     return result?.merchantQuantityOfFiltersHaveDebt;
   }
 
-  verifyMerchant(merchant: any): boolean {
-    console.log(merchant)
-    return merchant?._id && merchant?.slug && merchant?.roles.length > 0
+  verifyMerchant(merchant: Merchant): boolean {
+    return merchant._id && merchant.slug && merchant.roles.length > 0
   }
 
-  verifyMerchantSaleFlow(saleflow): boolean {
-    console.log(saleflow)
-    return true
+  verifyMerchantSaleFlow(saleflow: SaleFlow): boolean {
+    if (!saleflow || !saleflow.module) {
+      return false;
+    }
+
+    const { paymentMethod, delivery } = saleflow.module;
+    if (!paymentMethod.isActive || !paymentMethod.paymentModule._id) {
+      return false;
+    }
+
+    if (!delivery.isActive || !delivery.pickUpLocations.length || !delivery.pickUpLocations[0]?.nickName) {
+      return false;
+    }
+
+    return true;
   }
 }
 
