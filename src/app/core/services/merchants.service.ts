@@ -741,7 +741,7 @@ export class MerchantsService {
     return result?.merchantQuantityOfFiltersCampaign;
   }
 
-  async merchantQuantityOfFiltersHaveDebt(){
+  async merchantQuantityOfFiltersHaveDebt() {
     const result = await this.graphql.query({
       query: merchantQuantityOfFiltersHaveDebt,
       fetchPolicy: 'no-cache',
@@ -749,6 +749,16 @@ export class MerchantsService {
 
     if (!result || result?.errors) return undefined;
     return result?.merchantQuantityOfFiltersHaveDebt;
+  }
+
+  verifyMerchant(merchant: any): boolean {
+    console.log(merchant)
+    return merchant?._id && merchant?.slug && merchant?.roles.length > 0
+  }
+
+  verifyMerchantSaleFlow(saleflow): boolean {
+    console.log(saleflow)
+    return true
   }
 }
 
