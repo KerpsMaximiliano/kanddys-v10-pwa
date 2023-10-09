@@ -1,33 +1,60 @@
 <div class="container">
-  <div class="messages">
-    <ng-container *ngFor="let message of chat?.messages">
-      <div
-        class="message-sent"
-        *ngIf="message.sender === headerService.user._id"
-      >
-        {{ message.message }}
+  <header>
+    <ng-container *ngIf="isTheUserTheMerchant">
+      <div class="header-title">
+        La<span class="highlight">ia</span>Chat con
+        <span class="highlight">ClienteID</span>
       </div>
-      <div
-        class="message-received"
-        *ngIf="message.sender !== headerService.user._id"
-      >
-        {{ message.message }}
-      </div>
+      <div class="close-button" (click)="goBackToMyChats()">X</div>
     </ng-container>
-  </div>
+    <ng-container *ngIf="!isTheUserTheMerchant">
+      <div class="header-title">
+        La<span class="highlight">ia</span>Chat con
+        <span class="highlight">MerchantID</span>
+      </div>
 
-  <form [formGroup]="chatFormGroup">
-    <textarea
-      class="user-input-box"
-      placeholder="Escribe algo..."
-      formControlName="input"
-    ></textarea>
+      <div class="close-button" (click)="(null)">X</div>
+    </ng-container>
+  </header>
 
-    <button class="submit-button" [disabled]="!chat" (click)="sendQuestion()">
+  <main>
+    <div class="messages" id="messages">
+      <ng-container *ngFor="let message of chat?.messages">
+        <div
+          class="question-box-wrapper"
+          *ngIf="message.sender === headerService.user._id"
+        >
+          <div class="content">
+            <div class="question-box">
+              {{ message.message }}
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="response-box-wrapper"
+          *ngIf="message.sender !== headerService.user._id"
+        >
+          <div class="content">
+            <div class="response-box">{{ message.message }}</div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </main>
+
+  <section class="input-area" [formGroup]="chatFormGroup">
+    <textarea formControlName="input" placeholder="Escríbe"></textarea>
+
+    <button>
       <img
-        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fsend_black.svg"
-        alt="send"
+        [ngClass]="{
+          notAllowed: !chatFormGroup.get('input').value
+        }"
+        [src]="assetsFolder + '/sumit-icon-arrecho.png'"
+        alt="edit question"
+        (click)="chatFormGroup.get('input').value ? sendMessage() : null"
       />
     </button>
-  </form>
+  </section>
 </div>

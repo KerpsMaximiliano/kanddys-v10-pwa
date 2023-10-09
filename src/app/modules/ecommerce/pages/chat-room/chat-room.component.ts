@@ -1,27 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Socket, io } from 'socket.io-client';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { environment } from 'src/environments/environment';
+import { Chat, Message } from 'src/app/core/models/chat';
 
-const SERVER_URL = 'http://localhost:8000'; // Replace with your server URL
-
-interface Chat {
-  name?: string;
-  description?: string;
-  owners: Array<string>;
-  messages: Array<any>;
-  admins: Array<string>;
-  isGroup: boolean;
-  _id: string;
-}
-
-interface Message {
-  message: string;
-  sender: string;
-  chatId: string;
-}
+const SERVER_URL = environment.chatAPI.url; // Replace with your server URL
 
 @Component({
   selector: 'app-chat-room',
@@ -36,11 +23,14 @@ export class ChatRoomComponent implements OnInit {
   });
   conversationId: null = null;
   isTheUserTheMerchant: boolean = false;
+  assetsFolder: string = environment.assetsUrl;
 
   constructor(
     public headerService: HeaderService,
+    private merchantsService: MerchantsService,
     private route: ActivatedRoute,
-    private gpt3Service: Gpt3Service
+    private gpt3Service: Gpt3Service,
+    private router: Router
   ) {}
 
   async ngOnInit() {
@@ -73,20 +63,25 @@ export class ChatRoomComponent implements OnInit {
         }
         this.socket.on('GET_OR_CREATE_CHAT', (chat) => {
           this.chat = chat;
+
+          if (!chatId)
+            this.router.navigate([
+              'ecommerce/' +
+                this.headerService.saleflow.merchant.slug +
+                '/chat-merchant/' +
+                this.chat._id,
+            ]);
+
+          setTimeout(() => {
+            this.scrollToBottom();
+          }, 300);
         });
 
         this.socket.on('MESSAGE_SEND', (messageReceived: Message) => {
-          console.log("messageReceived", messageReceived);
-          console.log("myUser", this.headerService.user);
           this.chat.messages.push(messageReceived);
+
+          this.scrollToBottom();
         });
-
-        /*
-        this.socket.emit('CHAT_LIST');
-
-        this.socket.on('CHAT_LIST', (data) => {
-          console.log('DATA LIST', data);
-        });*/
 
         this.socket.on('ERROR', (data) => {
           console.error('ERROR', data);
@@ -99,11 +94,15 @@ export class ChatRoomComponent implements OnInit {
     });
   }
 
-  async sendQuestion() {
+  async sendMessage() {
     this.socket.emit('MESSAGE_SEND', {
       chatId: this.chat._id,
       message: this.chatFormGroup.get('input').value,
     });
+
+    setTimeout(() => {
+      this.chatFormGroup.get('input').setValue('');
+    }, 200);
 
     if (!this.isTheUserTheMerchant) {
       await this.gpt3Service.requestResponseFromKnowledgeBase(
@@ -114,5 +113,15 @@ export class ChatRoomComponent implements OnInit {
         this.socket.id
       );
     }
+  }
+
+  scrollToBottom() {
+    const scrollableDiv = document.getElementById('messages');
+    // Scroll to the bottom
+    scrollableDiv.scrollTop = scrollableDiv.scrollHeight;
+  }
+
+  goBackToMyChats() {
+    this.router.navigate(['admin/laia-chats']);
   }
 }

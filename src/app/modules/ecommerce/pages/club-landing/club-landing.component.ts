@@ -728,6 +728,10 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     this.router.navigate(['/ecommerce/laia-memories-management']);
   }
 
+  goToChatsManagement() {
+    this.router.navigate(['/admin/laia-chats']);
+  }
+
   goToWizard() {
     return this.router.navigate(['/admin/wizard-training']);
   }

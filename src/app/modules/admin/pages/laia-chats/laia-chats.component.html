@@ -1,0 +1,71 @@
+<div class="container">
+  <header>
+    <img
+      class="back-icon"
+      [src]="assetsURL + '/arrow-left-white.svg'"
+      alt="go back"
+    />
+
+    <h1>Chats con la<span>ia</span></h1>
+  </header>
+
+  <main>
+    <form class="search-bar-wrapper" style="margin-bottom: 21px">
+      <input
+        type="text"
+        name="item-search"
+        class="input search-bar"
+        placeholder="Todos los chats"
+        [formControl]="itemSearchbar"
+      />
+
+      <div class="filters">
+        <div class="option" [routerLink]="'/admin/benefits-control'">💰</div>
+      </div>
+    </form>
+
+    <section class="chat-grouped" *ngFor="let chatsByPeriod of chatsByMonth">
+      <h3>{{ chatsByPeriod.month.label }}</h3>
+
+      <div
+        class="chat-card"
+        (click)="goToChatDetail(chat)"
+        *ngFor="let chat of chatsByPeriod.chats"
+      >
+        <div class="top">
+          <h5>
+            {{
+              chat.receiver?.name ||
+                chat.receiver?.email ||
+                chat.receiver?.phone
+            }}
+          </h5>
+          <span class="date">{{
+            getCreationDateDifferenceAsItsSaid(chat.updatedAt)
+          }}</span>
+        </div>
+
+        <p class="bottom">
+          {{
+            chat.lastMessageWritten
+              ? chat.lastMessageWritten
+              : "Todavía no han escrito nada"
+          }}
+        </p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<ng-template #chatCard>
+  <div class="chat-card">
+    <div class="top">
+      <h5>ReceptorID</h5>
+      <span class="date">HoraIDdeUltimoEscrito</span>
+    </div>
+
+    <p class="bottom">
+      Lo último escritoID que irá en dos lineas como wl WahtsApp
+    </p>
+  </div>
+</ng-template>
