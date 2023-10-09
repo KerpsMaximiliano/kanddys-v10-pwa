@@ -164,9 +164,20 @@
             adiciones a sus memorias.
           </p>
           <div class="flex">
-            <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToLaiaTraining()">
+            <p 
+              class="info-container-invited-link info-container-invited-link-mr" 
+              (click)="goToLaiaTraining()"
+              *ngIf="!headerService?.user"
+            >
               Escribe en la Memoria y  prueba a Laia
             </p>
+
+            <div *ngIf="headerService.user" class="memory-options">
+              <button class="option" (click)="goToAIMemoriesManagement()">
+                {{ vectorsCount }} memorias
+              </button>
+              <!-- <button class="option">5 chats</button> -->
+            </div>
             <!-- <p class="info-container-invited-link info-container-invited-link-mr">
               Escribe en la Memoria y  prueba a Laia
             </p>
@@ -176,6 +187,15 @@
               0 chats
             </p> -->
           </div>
+        </div>
+        <div class="flex-space-between align-center" *ngIf="headerService?.user && isUserAdmin()">
+          <p
+            class="ganas-desc"
+            style="cursor: pointer;"
+            (click)="goToWizard()"
+          >
+            Responde desde tu propio Website, WhatsApp e Instagram.
+          </p>
         </div>
         <hr />
         <div class="info-container">
@@ -408,7 +428,7 @@
                   </div>
                   <div class="info">
                     <div class="name">{{ item.name }}</div>
-                    <div class="role">{{ item.role }}</div>
+                    <!-- <div class="role">{{ item.role }}</div> -->
                   </div>
                 </div>
               </div>

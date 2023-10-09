@@ -1,6 +1,7 @@
 <app-navigation [opened]="openNavigation" (closed)="openNavigation = false">
   <div class="container">
     <div class="header">
+      <mat-icon class="back-icon" (click)="back()"> arrow_back_ios </mat-icon>
       <div
         class="flex"
         (click)="openNavigation = true"
