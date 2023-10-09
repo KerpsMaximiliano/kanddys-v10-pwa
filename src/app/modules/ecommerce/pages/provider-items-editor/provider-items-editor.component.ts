@@ -129,8 +129,10 @@ export class ProviderItemsEditorComponent implements OnInit {
 
 
   stockEditor() {
-    this.showCurrencyEditor = false;
-    this.showStockEditor = true;
+    if(this.currency > 0){
+      this.showCurrencyEditor = false;
+      this.showStockEditor = true;
+    }
   }
 
   reduceStock() {
@@ -218,7 +220,6 @@ export class ProviderItemsEditorComponent implements OnInit {
         this.saleFlowId
       );
       unlockUI();
-      console.log("paso por aca");
       await this.router.navigate(['/ecommerce/provider-items']);
     } else {
       if (!this.preItemId) {
@@ -290,7 +291,8 @@ export class ProviderItemsEditorComponent implements OnInit {
 
   async setSaleFlowDefault(saleFlowId) {
     try {
-      await this.saleflowService.setDefaultSaleflow(this.merchantId, saleFlowId);
+      const saleFlowDefault = await this.saleflowService.setDefaultSaleflow(this.merchantId, saleFlowId);
+      return saleFlowDefault.saleflowSetDefault._id;
     } catch (error) {
       console.log(error);
       unlockUI();
@@ -309,7 +311,6 @@ export class ProviderItemsEditorComponent implements OnInit {
 
   async resetLoginDialog(event) {
     this.loginflow = false;
-    lockUI();
     await this.addItemToSaleFlow();
   }
 
@@ -365,14 +366,15 @@ export class ProviderItemsEditorComponent implements OnInit {
       } else {
         await this.createMerchantDefault(me);
         const saleFlowId = await this.createSaleFlow();
-        await this.setSaleFlowDefault(saleFlowId);
+        const saleFlowDefault = await this.setSaleFlowDefault(saleFlowId);
+        console.log("🚀 ~ file: provider-items-editor.component.ts:371 ~ ProviderItemsEditorComponent ~ addItemToSaleFlow ~ saleFlowDefault:", saleFlowDefault)
         await this.authCreatedItem();
         try {
           await this.saleflowService.addItemToSaleFlow(
             {
               item: this.preItemId,
             },
-            this.saleFlowId
+            saleFlowDefault
           );
         } catch (error) {
           console.log(error);
