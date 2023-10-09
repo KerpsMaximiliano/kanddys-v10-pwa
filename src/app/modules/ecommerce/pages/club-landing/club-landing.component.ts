@@ -37,6 +37,7 @@ import { SignupChatComponent } from 'src/app/shared/dialogs/signup-chat/signup-c
 import { SpecialDialogComponent } from 'src/app/shared/dialogs/special-dialog/special-dialog.component';
 import { URL } from 'url';
 import { FilesService } from 'src/app/core/services/files.service';
+import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 
 interface ReviewsSwiper {
   title: string;
@@ -88,7 +89,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   mainTitle = "HERRAMIENTAS GRATIS  PARA PROVEEDORES"
   isOpen = false;
   curRole = 0;
-  tabarIndex = 0;
+  tabarIndex : number | undefined = 2;
 
   user: gapi.auth2.GoogleUser;
 
@@ -97,73 +98,73 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       text: '\"Laia, nos impulsa a avanzar para no quedarnos atrás\"',
       avatar: '',
       name: 'José Miguel Caffaro',
-      role: 'Proveedor de flores frescas, follajes y bases'
+      // role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
       text: '\".. es una manera genial de simplificar el proceso de compra desde las plataformas sociales\"',
       avatar: '',
       name: 'Valentina Vargas',
-      role: 'Proveedor de flores frescas, follajes y bases'
+      // role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
       text: '\".. convierto a los seguidores en compradores de manera rápida y sencilla\"',
       avatar: '',
       name: 'Mateo López',
-      role: 'Proveedor de flores frescas, follajes y bases'
+      // role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
       text: '\".. puedo subir sus productos de manera rápida y sencilla\"',
       avatar: '',
       name: 'Sofía Martínez',
-      role: 'Proveedor de flores frescas, follajes y bases'
+      // role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
       text: '\".. los clientes no tienen que descargar ninguna aplicación, eso simplifica la experiencia de compra\"',
       avatar: '',
       name: 'Luciana Fernández',
-      role: 'Proveedor de flores frescas, follajes y bases'
+      // role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
       text: '\".. puedo acceder a una red amplia de proveedores de flores en un abrir y cerrar de ojos.\"',
       avatar: '',
       name: 'Tomás Gómez',
-      role: 'Proveedor de flores frescas, follajes y bases'
+      // role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
       text: '\"¡Esta función de Cotización Eficiente con Proveedores en la aplicación es como tener un equipo de compras personal a tu disposición!\"',
       avatar: '',
       name: 'Aitana Sánchez',
-      role: 'Proveedor de flores frescas, follajes y bases'
+      // role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
       text: '\".. es como si los proveedores compitieran por ofrecerme las mejores ofertas, lo cual me siento confiado de donde comprar\"',
       avatar: '',
       name: 'Emiliano Torres',
-      role: 'Proveedor de flores frescas, follajes y bases'
+      // role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
       text: '\".. me permite conectarme con un montón de proveedores y pedir cotizaciones en cuestión de minutos\"',
       avatar: '',
       name: 'Camila Díaz',
-      role: 'Proveedor de flores frescas, follajes y bases'
+      // role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
       text: '\".. significa que puedo tomar decisiones más inteligentes y aumentar mis ganancias\"',
       avatar: '',
       name: 'Matías Vidal',
-      role: 'Proveedor de flores frescas, follajes y bases'
+      // role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
       text: '\".. puedo pedir cotizaciones y luego simplemente comparar y elegir la opción más conveniente\"',
       avatar: '',
       name: 'Julieta García',
-      role: 'Proveedor de flores frescas, follajes y bases'
+      // role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
       text: '\".. no solo ahorro dinero, sino que también ahorro tiempo al evitar largas negociaciones, realmente es un ganar-ganar\"',
       avatar: '',
       name: 'Nicolás Herrera',
-      role: 'Proveedor de flores frescas, follajes y bases'
+      // role: 'Proveedor de flores frescas, follajes y bases'
     }
   ];
 
@@ -217,6 +218,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   merchant: string;
   saleflow: SaleFlow;
   referralsCount: number = 0;
+  vectorsCount: number = 0;
   @ViewChild('qrcode', { read: ElementRef }) qrcode: ElementRef;
   
   constructor(
@@ -237,7 +239,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     private changeDetectorRef: ChangeDetectorRef,
     private clipboard: Clipboard,
     private affiliateService: AffiliateService,
-    private filesService: FilesService
+    private filesService: FilesService,
+    private gptService: Gpt3Service
   ) {
     const sub = this.app.events
       .pipe(filter((e) => e.type === 'auth'))
@@ -254,8 +257,11 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     await this.getMerchantDefault();
     this.queryParamsSubscription = this.route.queryParams.subscribe(
       async ({ affiliateCode, tabarIndex }) => {
-        if (affiliateCode) {
-          if (this.merchant) {
+        if (tabarIndex) {
+          this.tabarIndex = parseInt(tabarIndex);
+        }
+        if(affiliateCode){
+          if(this.merchant){
             const input: AffiliateInput = {
               reference: this.merchant
             }
@@ -263,20 +269,21 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
               await this.affiliateService.createAffiliate(affiliateCode, input);
             } catch (error) {
               console.log(error);
-
             }
           } else {
             localStorage.setItem('affiliateCode', affiliateCode);
           }
-        }
-        if (tabarIndex) {
-          this.tabarIndex = parseInt(tabarIndex);
         }
       }
     );
     if (this.merchant) {
       await this.getReferrals();
       await this.getSaleflowDefault();
+      const embeddingsMetadata = await this.gptService.getMerchantEmbeddingsMetadata();
+
+      if(embeddingsMetadata) {
+        this.vectorsCount = embeddingsMetadata.vectorsCount;
+      }
     }
     if (!this.headerService.user) this.openLaiaDialog();
     this.googleSigninService.observable().subscribe((user) => {
@@ -284,6 +291,9 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       console.log(user)
       this.changeDetectorRef.detectChanges();
     });
+    if(this.tabarIndex === undefined) {
+      this.tabarIndex = 2;
+    }
   }
 
   showRoleDialog() {
@@ -648,7 +658,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   goToLaiaTraining() {
-    return this.router.navigate(['/ecommerce/daliah-training']);
+    return this.router.navigate(['/ecommerce/laia-training']);
   }
 
   goToDashboard() {
@@ -717,7 +727,22 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       const base64Data = await toBase64(selectedFile);
       this.filesService.setFile(base64Data);
       this.router.navigate(['/ecommerce/provider-items-editor']);
-      } 
+      }
+  }
   
+  isUserAdmin() {
+    if (this.headerService?.user) 
+      return this.headerService.user?.roles?.some(
+        (role) => role.code === 'ADMIN'
+      );
+    else return false;
+  }
+
+  goToAIMemoriesManagement() {
+    this.router.navigate(['/ecommerce/laia-memories-management']);
+  }
+
+  goToWizard() {
+    return this.router.navigate(['/admin/wizard-training']);
   }
 }

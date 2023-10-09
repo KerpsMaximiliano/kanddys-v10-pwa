@@ -3,13 +3,12 @@
 }
 ::ng-deep .cdk-overlay-pane {
   max-width: 500px;
-  width: 95vw !important;
   height: fit-content !important;
 }
 ::ng-deep .mat-dialog-container {
   padding: 0px;
   background-color: #181D17;
-  max-width: 480px !important;
+  width: 95%;
   margin: auto;
 }
 .container {
