@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Socket, io } from 'socket.io-client';
@@ -7,6 +7,11 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { environment } from 'src/environments/environment';
 import { Chat, Message } from 'src/app/core/models/chat';
+import { Merchant } from 'src/app/core/models/merchant';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { UsersService } from 'src/app/core/services/users.service';
+import { User } from 'src/app/core/models/user';
+import { Subscription } from 'rxjs';
 
 const SERVER_URL = environment.chatAPI.url; // Replace with your server URL
 
@@ -15,82 +20,159 @@ const SERVER_URL = environment.chatAPI.url; // Replace with your server URL
   templateUrl: './chat-room.component.html',
   styleUrls: ['./chat-room.component.scss'],
 })
-export class ChatRoomComponent implements OnInit {
+export class ChatRoomComponent implements OnInit, OnDestroy {
   private socket: Socket;
   chat: Chat;
   chatFormGroup: FormGroup = new FormGroup({
     input: new FormControl('', Validators.required),
   });
-  conversationId: null = null;
   isTheUserTheMerchant: boolean = false;
+  loggedAsAMerchant: boolean = false;
   assetsFolder: string = environment.assetsUrl;
+  typeOfReceiver: 'MERCHANT' | 'REGULAR_USER' = 'MERCHANT';
+  embeddingsMetadata: {
+    vectorsCount: number;
+    automaticModeActivated?: boolean;
+    merchant: Merchant;
+  } = null;
+  usersWithAssistantActivated: Record<string, boolean> = {};
+  fromStore: boolean = false;
+  chatUsers: Record<string, User> = {};
+  queryParamsSubscription: Subscription;
+  routeParamsSubscription: Subscription;
 
   constructor(
     public headerService: HeaderService,
-    private merchantsService: MerchantsService,
     private route: ActivatedRoute,
     private gpt3Service: Gpt3Service,
+    private sanitizer: DomSanitizer,
+    private usersService: UsersService,
     private router: Router
   ) {}
 
   async ngOnInit() {
-    this.route.params.subscribe(({ chatId }) => {
-      if (
-        this.headerService.saleflow.merchant.owner._id ===
-        this.headerService.user?._id
-      )
-        this.isTheUserTheMerchant = true;
+    this.routeParamsSubscription = this.route.params.subscribe(({ chatId }) => {
+      this.queryParamsSubscription = this.route.queryParams.subscribe(
+        async ({ fromStore }) => {
+          this.fromStore = fromStore ? JSON.parse(fromStore) : false;
 
-      this.socket = io(SERVER_URL, {
-        extraHeaders: {
-          token: localStorage.getItem('session-token'),
-        },
-      });
+          if (
+            this.headerService.saleflow.merchant.owner._id ===
+            this.headerService.user?._id
+          ) {
+            this.isTheUserTheMerchant = true;
+            this.typeOfReceiver = 'REGULAR_USER';
+          } else {
+            this.typeOfReceiver = 'MERCHANT';
+          }
 
-      // client-side
-      this.socket.on('connect', () => {
-        // Send a message to the server
-        if (!chatId) {
-          this.socket.emit('GET_OR_CREATE_CHAT', {
-            owners: [this.socket.id],
-            userId: this.headerService.saleflow.merchant.owner._id,
-          });
-        } else {
-          this.socket.emit('GET_OR_CREATE_CHAT', {
-            owners: [this.socket.id],
-            chatId: chatId,
-          });
+          this.headerService
+            .checkIfUserIsAMerchantAndFetchItsData()
+            .then((isAMerchant) => (this.loggedAsAMerchant = isAMerchant));
+
+          await this.initSocketClientEventListeners(chatId);
         }
-        this.socket.on('GET_OR_CREATE_CHAT', (chat) => {
-          this.chat = chat;
+      );
+    });
+  }
 
-          if (!chatId)
-            this.router.navigate([
+  async initSocketClientEventListeners(chatId: string) {
+    this.socket = io(SERVER_URL, {
+      extraHeaders: {
+        token: localStorage.getItem('session-token'),
+      },
+    });
+
+    // client-side
+    this.socket.on('connect', () => {
+      // Send a message to the server
+      if (!chatId) {
+        this.socket.emit('GET_OR_CREATE_CHAT', {
+          owners: [this.socket.id],
+          userId: this.headerService.saleflow.merchant.owner._id,
+        });
+      } else {
+        this.socket.emit('GET_OR_CREATE_CHAT', {
+          owners: [this.socket.id],
+          chatId: chatId,
+        });
+      }
+      this.socket.on('GET_OR_CREATE_CHAT', (chat) => {
+        this.chat = chat;
+
+        this.chat.messages.forEach(
+          (message) =>
+            (message.message = this.transformChatResponse(
+              message.message as any
+            ))
+        );
+
+        if (!chatId)
+          this.router.navigate(
+            [
               'ecommerce/' +
                 this.headerService.saleflow.merchant.slug +
                 '/chat-merchant/' +
                 this.chat._id,
-            ]);
+            ],
+            {
+              queryParams: {
+                fromStore: this.fromStore,
+              },
+            }
+          );
+        else if (this.chat.drafts.length) {
+          const myDraft = this.chat.drafts.find(
+            (draft) => draft.userId === this.headerService.user._id
+          );
+          this.chatFormGroup.get('input').setValue(myDraft.content);
+        }
 
-          setTimeout(() => {
-            this.scrollToBottom();
-          }, 300);
-        });
-
-        this.socket.on('MESSAGE_SEND', (messageReceived: Message) => {
-          this.chat.messages.push(messageReceived);
-
+        setTimeout(() => {
           this.scrollToBottom();
-        });
+        }, 300);
 
-        this.socket.on('ERROR', (data) => {
-          console.error('ERROR', data);
-        });
+        this.getAssistantActivationStatusForChatUsers();
+
+        this.usersService
+          .paginateUsers({
+            findBy: {
+              id: this.chat.owners.map((owner) => owner.userId),
+            },
+          })
+          .then((users: Array<User>) => {
+            users.forEach((user) => {
+              if (user._id === this.headerService.user._id)
+                this.chatUsers['SENDER'] = user;
+              else this.chatUsers['RECEIVER'] = user;
+            });
+          });
       });
 
-      this.socket.on('disconnect', () => {
-        console.log('desconectado'); // undefined
+      this.socket.on('MESSAGE_SEND', (messageReceived: Message) => {
+        this.chat.messages.push(messageReceived);
+
+        setTimeout(() => {
+          this.scrollToBottom();
+        }, 300);
       });
+
+      this.socket.on(
+        'DRAFT',
+        (draftReceived: { content: string; userId: string }) => {
+          if (draftReceived.userId === this.headerService.user._id) {
+            this.chatFormGroup.get('input').setValue(draftReceived.content);
+          }
+        }
+      );
+
+      this.socket.on('ERROR', (data) => {
+        console.error('ERROR', data);
+      });
+    });
+
+    this.socket.on('disconnect', () => {
+      console.log('desconectado'); // undefined
     });
   }
 
@@ -104,15 +186,12 @@ export class ChatRoomComponent implements OnInit {
       this.chatFormGroup.get('input').setValue('');
     }, 200);
 
-    if (!this.isTheUserTheMerchant) {
-      await this.gpt3Service.requestResponseFromKnowledgeBase(
-        this.chatFormGroup.get('input').value,
-        this.headerService.saleflow._id,
-        this.conversationId ? this.conversationId : null,
-        this.chat._id,
-        this.socket.id
-      );
-    }
+    await this.gpt3Service.requestResponseFromKnowledgeBase(
+      this.chatFormGroup.get('input').value,
+      this.chatUsers['RECEIVER']._id,
+      this.chat._id,
+      this.socket.id
+    );
   }
 
   scrollToBottom() {
@@ -121,7 +200,48 @@ export class ChatRoomComponent implements OnInit {
     scrollableDiv.scrollTop = scrollableDiv.scrollHeight;
   }
 
-  goBackToMyChats() {
-    this.router.navigate(['admin/laia-chats']);
+  goBack() {
+    if (this.fromStore)
+      this.router.navigate([
+        'ecommerce/' + this.headerService.saleflow.merchant?.slug + '/store',
+      ]);
+    else this.router.navigate(['admin/laia-chats']);
+  }
+
+  async changeAssistantResponseMode() {
+    try {
+      await this.gpt3Service.changeAssistantResponseMode();
+      await this.getAssistantActivationStatusForChatUsers();
+    } catch (error) {
+      console.error(error);
+      this.headerService.showErrorToast();
+    }
+  }
+
+  async getAssistantActivationStatusForChatUsers() {
+    const embeddingsMetadataByUser =
+      await this.gpt3Service.doUsersHaveAssistantActivated(
+        this.chat.owners.map((owner) => owner.userId)
+      );
+
+    console.log('usersWithAssistantActivated', embeddingsMetadataByUser);
+
+    this.usersWithAssistantActivated = embeddingsMetadataByUser;
+  }
+
+  transformChatResponse(response: string) {
+    const linkPattern = /\[([^[]+)\]\(([^)]+)\)/g;
+
+    // Replace [Link](URL) with <a href="URL">Link</a> tags
+    let transformedValue = response.replace(linkPattern, '<a href="$2">$1</a>');
+
+    transformedValue = transformedValue.replace(/\n/g, '<br />');
+
+    return this.sanitizer.bypassSecurityTrustHtml(transformedValue);
+  }
+
+  ngOnDestroy(): void {
+    this.routeParamsSubscription?.unsubscribe();
+    this.queryParamsSubscription?.unsubscribe();
   }
 }

@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import {
+  changeAssistantResponseMode,
   createEmbeddingsForMyMerchantItems,
   deleteVectorInKnowledgeBase,
+  doUsersHaveAssistantActivated,
   feedFileToKnowledgeBase,
   feedKnowledgeBaseWithTextData,
   fetchAllDataInVectorDatabaseNamespace,
@@ -101,15 +103,14 @@ export class Gpt3Service {
 
   async requestResponseFromKnowledgeBase(
     prompt: string,
-    saleflowId: string,
-    conversationId: string,
+    userId: string,
     chatRoomId?: string,
-    socketId?: string
+    socketId?: string,
   ) {
     try {
       const result = await this.graphql.query({
         query: requestResponseFromKnowledgeBase,
-        variables: { prompt, saleflowId, conversationId, chatRoomId, socketId },
+        variables: { prompt, userId, chatRoomId, socketId},
       });
       return result?.requestResponseFromKnowledgeBase;
     } catch (error) {
@@ -131,6 +132,7 @@ export class Gpt3Service {
 
   async getMerchantEmbeddingsMetadata(): Promise<{
     vectorsCount: number;
+    automaticModeActivated?: boolean;
     merchant: Merchant;
   }> {
     try {
@@ -138,6 +140,36 @@ export class Gpt3Service {
         query: getMerchantEmbeddingsMetadata,
       });
       return result?.getMerchantEmbeddingsMetadata;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async doUsersHaveAssistantActivated(
+    users: Array<string>
+  ): Promise<Record<string, boolean>> {
+    try {
+      const result = await this.graphql.query({
+        query: doUsersHaveAssistantActivated,
+        variables: { users },
+        fetchPolicy: 'no-cache'
+      });
+      return result?.doUsersHaveAssistantActivated;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async changeAssistantResponseMode(): Promise<{
+    vectorsCount: number;
+    automaticModeActivated?: boolean;
+    merchant: Merchant;
+  }> {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: changeAssistantResponseMode,
+      });
+      return result?.changeAssistantResponseMode;
     } catch (error) {
       console.error(error);
     }

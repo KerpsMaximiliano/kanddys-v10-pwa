@@ -1,33 +1,72 @@
 <div class="container">
   <header>
-    <ng-container *ngIf="isTheUserTheMerchant">
-      <div class="header-title">
-        La<span class="highlight">ia</span>Chat con
-        <span class="highlight">ClienteID</span>
-      </div>
-      <div class="close-button" (click)="goBackToMyChats()">X</div>
-    </ng-container>
-    <ng-container *ngIf="!isTheUserTheMerchant">
-      <div class="header-title">
-        La<span class="highlight">ia</span>Chat con
-        <span class="highlight">MerchantID</span>
-      </div>
+    <div class="top">
+      <ng-container *ngIf="isTheUserTheMerchant">
+        <div class="header-title">
+          La<span class="highlight">ia</span>Chat con
+          <span class="highlight">{{
+            chatUsers["RECEIVER"]
+              ? chatUsers["RECEIVER"].name ||
+                chatUsers["RECEIVER"].email ||
+                chatUsers["RECEIVER"].phone
+              : "Cargando..."
+          }}</span>
+        </div>
+        <div class="close-button" (click)="goBack()">X</div>
+      </ng-container>
+      <ng-container *ngIf="!isTheUserTheMerchant">
+        <div class="header-title">
+          La<span class="highlight">ia</span>Chat con
+          <span class="highlight">
+            {{
+              headerService.saleflow.merchant.name ||
+                headerService.saleflow.merchant.owner.email ||
+                headerService.saleflow.merchant.owner.phone
+            }}
+          </span>
+        </div>
 
-      <div class="close-button" (click)="(null)">X</div>
-    </ng-container>
+        <div class="close-button" (click)="loggedAsAMerchant ? goBack() : null">
+          X
+        </div>
+      </ng-container>
+    </div>
+
+    <div class="bottom" *ngIf="isTheUserTheMerchant">
+      <span>
+        {{
+          usersWithAssistantActivated[chatUsers['SENDER']?._id]
+            ? "Dalia está contestando sin tu permiso"
+            : "Dalia te preguntará antes de contestar"
+        }}</span
+      >
+      <img
+        (click)="changeAssistantResponseMode()"
+        [src]="
+          assetsFolder +
+          (usersWithAssistantActivated[chatUsers['SENDER']?._id]
+            ? '/toggle-on.svg'
+            : '/toggle-off.svg')
+        "
+      />
+    </div>
   </header>
 
   <main>
-    <div class="messages" id="messages">
+    <div
+      class="messages"
+      [ngClass]="{
+        isAdmin: isTheUserTheMerchant
+      }"
+      id="messages"
+    >
       <ng-container *ngFor="let message of chat?.messages">
         <div
           class="question-box-wrapper"
           *ngIf="message.sender === headerService.user._id"
         >
           <div class="content">
-            <div class="question-box">
-              {{ message.message }}
-            </div>
+            <div class="question-box" [innerHTML]="message.message"></div>
           </div>
         </div>
 
@@ -36,7 +75,7 @@
           *ngIf="message.sender !== headerService.user._id"
         >
           <div class="content">
-            <div class="response-box">{{ message.message }}</div>
+            <div class="response-box" [innerHTML]="message.message"></div>
           </div>
         </div>
       </ng-container>

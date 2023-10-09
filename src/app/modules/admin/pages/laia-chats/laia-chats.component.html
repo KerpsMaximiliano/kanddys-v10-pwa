@@ -4,6 +4,7 @@
       class="back-icon"
       [src]="assetsURL + '/arrow-left-white.svg'"
       alt="go back"
+      (click)="goBack()"
     />
 
     <h1>Chats con la<span>ia</span></h1>
@@ -24,36 +25,45 @@
       </div>
     </form>
 
-    <section class="chat-grouped" *ngFor="let chatsByPeriod of chatsByMonth">
-      <h3>{{ chatsByPeriod.month.label }}</h3>
+    <ng-container *ngIf="chatsByMonthCopy?.length === 0">
+      <div class="empty">No tienes ningún chat todavía</div>
+    </ng-container>
 
-      <div
-        class="chat-card"
-        (click)="goToChatDetail(chat)"
-        *ngFor="let chat of chatsByPeriod.chats"
+    <ng-container *ngIf="chatsByMonthCopy?.length > 0">
+      <section
+        class="chat-grouped"
+        *ngFor="let chatsByPeriod of chatsByMonthCopy"
       >
-        <div class="top">
-          <h5>
-            {{
-              chat.receiver?.name ||
-                chat.receiver?.email ||
-                chat.receiver?.phone
-            }}
-          </h5>
-          <span class="date">{{
-            getCreationDateDifferenceAsItsSaid(chat.updatedAt)
-          }}</span>
-        </div>
+        <h3>{{ chatsByPeriod.month.label }}</h3>
 
-        <p class="bottom">
-          {{
-            chat.lastMessageWritten
-              ? chat.lastMessageWritten
-              : "Todavía no han escrito nada"
-          }}
-        </p>
-      </div>
-    </section>
+        <div
+          class="chat-card"
+          (click)="goToChatDetail(chat)"
+          *ngFor="let chat of chatsByPeriod.chats"
+        >
+          <div class="top">
+            <h5>
+              {{
+                chat.receiver?.name ||
+                  chat.receiver?.email ||
+                  chat.receiver?.phone
+              }}
+            </h5>
+            <span class="date">{{
+              getCreationDateDifferenceAsItsSaid(chat.updatedAt)
+            }}</span>
+          </div>
+
+          <p class="bottom">
+            {{
+              chat.lastMessageWritten
+                ? chat.lastMessageWritten
+                : "Todavía no han escrito nada"
+            }}
+          </p>
+        </div>
+      </section>
+    </ng-container>
   </main>
 </div>
 

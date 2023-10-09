@@ -139,6 +139,11 @@
     font-style: italic;
     font-weight: 400;
     line-height: normal;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
   }
 }
 
@@ -157,4 +162,15 @@
     padding: 0px;
     margin-bottom: 11px;
   }
+}
+
+.empty {
+  margin-top: 5px;
+    color: #7b7b7b;
+    font-family: InterRegular;
+    font-size: 15px;
+    font-style: italic;
+    font-weight: 400;
+    text-align: center;
+    width: 100%;
 }

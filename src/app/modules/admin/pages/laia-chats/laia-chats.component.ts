@@ -16,6 +16,16 @@ interface ExtendedChat extends Chat {
   receiverId?: string;
 }
 
+interface ChatsByMonth {
+  id: string;
+  month: {
+    number: number;
+    label: string;
+  };
+  year: number;
+  chats: Array<ExtendedChat>;
+}
+
 @Component({
   selector: 'app-laia-chats',
   templateUrl: './laia-chats.component.html',
@@ -24,17 +34,10 @@ interface ExtendedChat extends Chat {
 export class LaiaChatsComponent implements OnInit {
   assetsURL = environment.assetsUrl;
   itemSearchbar: FormControl = new FormControl('');
-  chats: Array<ExtendedChat> = [];
   usersById: Record<string, User> = {};
-  chatsByMonth: Array<{
-    id: string;
-    month: {
-      number: number;
-      label: string;
-    };
-    year: number;
-    chats: Array<ExtendedChat>;
-  }> = [];
+  chats: Array<ExtendedChat> = [];
+  chatsByMonth: Array<ChatsByMonth> = [];
+  chatsByMonthCopy: Array<ChatsByMonth> = [];
   monthsByNumber = {
     1: 'Enero',
     2: 'Febrero',
@@ -90,10 +93,6 @@ export class LaiaChatsComponent implements OnInit {
       }
 
       this.chats.forEach((chat, index) => {
-        const creationDate = new Date(chat.createdAt);
-        const month = creationDate.getMonth() + 1;
-        const year = creationDate.getFullYear();
-
         const userId = chat.owners.find(
           (owner) => owner.userId !== this.headersService.user._id
         ).userId;
@@ -102,37 +101,71 @@ export class LaiaChatsComponent implements OnInit {
           chat.receiver = this.usersById[userId];
         }
 
-        if (this.chatsByMonth.length === 0)
-          this.chatsByMonth.push({
-            id: month + '-' + year,
-            month: {
-              number: month,
-              label: this.monthsByNumber[month],
-            },
-            year,
-            chats: [],
-          });
+        this.chatsByMonth = this.groupChatsByMonth(chat, this.chatsByMonth);
 
-        if (
-          this.chatsByMonth.length > 0 &&
-          this.chatsByMonth[this.chatsByMonth.length - 1].month.number === month
-        ) {
-          this.chatsByMonth[this.chatsByMonth.length - 1].chats.push(chat);
-        } else {
-          this.chatsByMonth.push({
-            id: month + '-' + year,
-            month: {
-              number: month,
-              label: this.monthsByNumber[month],
-            },
-            year,
-            chats: [],
-          });
+        this.chatsByMonthCopy = JSON.parse(JSON.stringify(this.chatsByMonth));
+      });
 
-          this.chatsByMonth[this.chatsByMonth.length - 1].chats.push(chat);
-        }
+      this.itemSearchbar.valueChanges.subscribe((change: string) => {
+        const newValue = change.toLowerCase();
+        const chats = this.chats.filter(
+          (chat) =>
+            chat.receiver.name?.toLowerCase().includes(newValue) ||
+            chat.receiver.email?.toLowerCase().includes(newValue) ||
+            chat.receiver.phone?.toLowerCase().includes(newValue) ||
+            chat.lastMessageWritten?.toLowerCase().includes(newValue)
+        );
+
+        this.chatsByMonthCopy = [];
+
+        chats.forEach((chat) => {
+          const filteredChatsByMonth = this.groupChatsByMonth(
+            chat,
+            this.chatsByMonthCopy
+          );
+
+          this.chatsByMonthCopy = filteredChatsByMonth;
+        });
       });
     }
+  }
+
+  groupChatsByMonth(chat: Chat, object: Array<ChatsByMonth>) {
+    const creationDate = new Date(chat.createdAt);
+    const month = creationDate.getMonth() + 1;
+    const year = creationDate.getFullYear();
+
+    if (object.length === 0)
+      object.push({
+        id: month + '-' + year,
+        month: {
+          number: month,
+          label: this.monthsByNumber[month],
+        },
+        year,
+        chats: [],
+      });
+
+    if (
+      object.length > 0 &&
+      object[this.chatsByMonth.length - 1].month.number === month
+    ) {
+      object[this.chatsByMonth.length - 1].chats.push(chat);
+    } else {
+      object.push({
+        id: month + '-' + year,
+        month: {
+          number: month,
+          label: this.monthsByNumber[month],
+        },
+        year,
+        chats: [],
+      });
+
+      object[this.chatsByMonth.length - 1].chats.push(chat);
+    }
+
+    return object;
   }
 
   getCreationDateDifferenceAsItsSaid(dateISOString) {
@@ -148,16 +181,19 @@ export class LaiaChatsComponent implements OnInit {
   }
 
   async goToChatDetail(chat: ExtendedChat) {
-    lockUI();
-
-    const merchantDefault = await this.merchantsService.merchantDefault(
-      chat.receiver._id
-    );
-
-    unlockUI();
-
     this.router.navigate([
-      'ecommerce/' + merchantDefault?.slug + '/chat-merchant/' + chat._id,
+      'ecommerce/' +
+        this.merchantsService.merchantData?.slug +
+        '/chat-merchant/' +
+        chat._id,
     ]);
+  }
+
+  goBack() {
+    this.router.navigate(['/ecommerce/club-landing'], {
+      queryParams: {
+        tabarIndex: 2,
+      },
+    });
   }
 }
