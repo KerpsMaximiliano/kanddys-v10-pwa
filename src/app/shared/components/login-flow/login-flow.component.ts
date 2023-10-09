@@ -584,12 +584,12 @@ export class LoginFlowComponent implements OnInit {
       ],
     };
 
-    const dialog2Ref = this.bottomSheet.open(LoginFormComponent, {
+    const dialog2Ref = this.dialog.open(LoginFormComponent, {
       data: fieldsToCreate,
       disableClose: true,
     });
 
-    dialog2Ref.afterDismissed().subscribe(async (result: FormGroup) => {
+    dialog2Ref.afterClosed().subscribe(async (result: FormGroup) => {
       try {
         if (result?.controls?.password.valid) {
           let password = result?.value['password'];
@@ -622,7 +622,7 @@ export class LoginFlowComponent implements OnInit {
     });
 
     const switchToMagicLinkDialog = () => {
-      dialog2Ref.dismiss();
+      dialog2Ref.close();
       return this.openMagicLinkDialog();
     };
   };
