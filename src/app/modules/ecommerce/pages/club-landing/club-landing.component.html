@@ -123,7 +123,7 @@
         <div class="info-container">
           <div class="info-container-title-container">
             <p class="info-container-title">Vende fácilmente </p>
-            <div *ngIf="headerService.user" (click)="uploader.click()">
+            <div (click)="uploader.click()">
               <mat-icon>add</mat-icon>
               <input id="imgInput" accept="image/*" type="file" hidden #uploader (change)="getImg($event)">
               <mat-icon>ios_share</mat-icon>
