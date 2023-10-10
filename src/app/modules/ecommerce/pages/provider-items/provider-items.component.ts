@@ -55,7 +55,6 @@ export class ProviderItemsComponent implements OnInit {
         key: 'providedByMe',
       },
     ];
-  activatedSearchFilters: Record<string, boolean> = {};
   isSwitchActive: boolean = true;
 
   isSupplier: boolean = true;
@@ -106,7 +105,6 @@ export class ProviderItemsComponent implements OnInit {
 
   //Subscriptions
   queryParamsSubscription: Subscription;
-  saleflowLoadedSubscription: Subscription;
 
   //magicLink-specific variables
   encodedJSONData: string;
@@ -160,19 +158,19 @@ export class ProviderItemsComponent implements OnInit {
         this.isUserLogged = true
         let sub = this.appService.events
           .pipe(filter((e) => e.type === 'auth'))
-          .subscribe((e) => {
+          .subscribe(async (e) => {
             this.verifyIfIsSupplier()
             this.getStatusSwitch()
-            setTimeout(() => this.executeInitProcesses(), 500);
+            await this.executeInitProcesses()
             sub.unsubscribe();
           });
       } else {
-        this.executeInitProcesses();
+        await this.executeInitProcesses();
       }
     }
 
     if (!existToken) {
-      this.executeInitProcesses();
+      await this.executeInitProcesses();
     }
 
   }
@@ -189,12 +187,22 @@ export class ProviderItemsComponent implements OnInit {
         this.checkIfPresentationWasClosedBefore();
         this.checkIfTutorialWasOpen()
 
+
         await this.getNumberOfItemsSold();
         if (this.isUserLogged) {
           await this.fetchItemsToSell();
         } else {
           await this.fetchNewPageOfItemsIDontSell(true, false);
         }
+
+        this.itemsService
+          .itemsQuantityOfFilters(this.merchantsService.merchantData._id)
+          .then(data => {
+            this.totalHidden = data.hidden
+            this.totalAllItems = data.all
+            this.totalItemsByCommission = data.commissionable
+            this.totalItemsByLowStock = data.lowStock
+          })
       }
     );
   }
@@ -356,14 +364,10 @@ export class ProviderItemsComponent implements OnInit {
           const message = 'Ocurrió un error al intentar cambiar la visibilidad de tu tienda, intenta más tarde'
           this.headerService.showErrorToast(message);
         })
+    } else {
+      const message = 'Te falto datos para completar en tu perfil para activar esta función'
+      this.headerService.showErrorToast(message);
     }
-  }
-
-  activateOrDeactivateFilters(filterKey: string) {
-    this.activatedSearchFilters[filterKey] =
-      !this.activatedSearchFilters[filterKey];
-
-    //this.inicializeItems(true, false);
   }
 
   /**
@@ -446,72 +450,6 @@ export class ProviderItemsComponent implements OnInit {
         page: this.paginationState.page,
       },
     };
-
-    if (this.isTheUserAMerchant) {
-      pagination.findBy.merchant = {
-        $ne: this.merchantsService.merchantData._id,
-      };
-    }
-
-    if (this.activatedSearchFilters['hidden']) {
-      pagination.findBy.status = 'hidden';
-    }
-
-    if (this.activatedSearchFilters['toBeApproved']) {
-      pagination.findBy.approvedByAdmin = {
-        $ne: true,
-      };
-    }
-
-    if (
-      this.activatedSearchFilters['notMine'] &&
-      !this.activatedSearchFilters['mine']
-    ) {
-      pagination.findBy.merchant = {
-        $ne: this.merchantsService.merchantData._id,
-      };
-    }
-
-    if (
-      this.activatedSearchFilters['mine'] &&
-      !this.activatedSearchFilters['notMine']
-    ) {
-      pagination.findBy.merchant = this.merchantsService.merchantData._id;
-    }
-
-    if (
-      this.activatedSearchFilters['mine'] &&
-      this.activatedSearchFilters['notMine']
-    )
-      pagination.findBy.merchant = {
-        $ne: null,
-      };
-
-    if (this.itemSearchbar.value && this.itemSearchbar.value !== '') {
-      let regexQueries: Array<any> = [
-        {
-          name: {
-            __regex: {
-              pattern: this.itemSearchbar.value,
-              options: 'gi',
-            },
-          },
-        },
-        {
-          description: {
-            __regex: {
-              pattern: this.itemSearchbar.value,
-              options: 'gi',
-            },
-          },
-        },
-      ];
-
-      pagination.findBy = {
-        ...pagination.findBy,
-        $or: regexQueries,
-      };
-    }
 
     this.renderItemsPromise = this.saleflowService.listItems(pagination, true);
 
@@ -660,15 +598,6 @@ export class ProviderItemsComponent implements OnInit {
         .querySelector('#search-from-results-view') as HTMLInputElement)
         ?.focus();
     }, 100);
-    this.itemsService
-      .itemsQuantityOfFilters(this.merchantsService.merchantData._id, 'supplier')
-      .then(data => {
-        this.totalHidden = data.hidden
-        this.totalAllItems = data.all
-        this.totalItemsByCommission = data.commissionable
-        this.totalItemsByLowStock = data.lowStock
-      })
-
   }
 
   urlIsVideo(url: string) {
@@ -713,9 +642,6 @@ export class ProviderItemsComponent implements OnInit {
     try {
       lockUI();
       const createdItemId = parsedData.createdItem;
-
-      const item = await this.itemsService.item(createdItemId);
-
       const saleflowDefault = await this.saleflowService.saleflowDefault(
         this.merchantsService.merchantData._id
       );
@@ -1686,7 +1612,7 @@ export class ProviderItemsComponent implements OnInit {
       findBy: {
         status: this.btnFilterState.hidden ? "disabled" : "active",
         _id: {
-          $nin: this.itemsISell.map((item) => item.parentItem),
+          $nin: this.itemsISell.map((item) => item.parentItem).filter(item => item),
         },
       },
       options: {

@@ -1,10 +1,10 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
-import { Item, RangeDate } from '../models/item';
+import { Item } from '../models/item';
 import { ItemOrder } from '../models/order';
-import { PaginationInput, PaginationRangeInput, SaleFlow } from '../models/saleflow';
+import { PaginationInput, SaleFlow } from '../models/saleflow';
 import { Tag } from '../models/tags';
 import { RecurrentUserData, User, UserInput } from '../models/user';
 import { ViewsMerchant } from '../models/views-merchant';
@@ -16,7 +16,6 @@ import {
   merchants,
   addMerchant,
   createMerchant,
-  createMerchant2,
   updateMerchant,
   merchantDefault,
   setDefaultMerchant,
@@ -33,7 +32,6 @@ import {
   uploadAirtableAttachments,
   usersOrderMerchant,
   incomeMerchant,
-  merchantDefault2,
   ordersByMerchantHot,
   merchantByName,
   merchantBySlug,
@@ -58,7 +56,6 @@ import {
   dataCountries,
   merchantQuantityOfFiltersRole,
   merchantQuantityOfFiltersCountry,
-  campaigns,
   merchantQuantityOfFiltersCampaign,
   merchantQuantityOfFiltersHaveDebt,
 } from './../graphql/merchants.gql';
