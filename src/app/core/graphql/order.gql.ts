@@ -449,6 +449,12 @@ export const ordersByUser = gql`
   }
 `;
 
+export const orderIncomeCompletedByUser = gql`
+  query orderIncomeCompletedByUser($paginate: PaginationInput) {
+    orderIncomeCompletedByUser(paginate: $paginate)
+  }
+`;
+
 export const ordersByUserSearchParam = gql`
   query ordersByUserSearchParam(
     $merchantId: ObjectID!
