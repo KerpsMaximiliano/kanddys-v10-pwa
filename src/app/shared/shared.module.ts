@@ -249,6 +249,7 @@ import { ProfloraDescDialogComponent } from './dialogs/proflora-desc-dialog/prof
 import { UpperCasePipe } from '../core/pipes/upper-case.pipe';
 import { LoginFlowComponent } from './components/login-flow/login-flow.component';
 import { SignupChatComponent } from './dialogs/signup-chat/signup-chat.component';
+import { LoginFormComponent } from './dialogs/login-form/login-form.component';
 
 const imports = [
   CommonModule,
@@ -508,7 +509,8 @@ const declarations = [
   SpecialDialogComponent,
   CompareDialogComponent,
   LoginFlowComponent,
-  SignupChatComponent
+  SignupChatComponent,
+  LoginFormComponent
 ];
 
 @NgModule({
