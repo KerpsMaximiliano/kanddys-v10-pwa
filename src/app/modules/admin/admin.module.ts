@@ -117,6 +117,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { ProfileIndustriesComponent } from './pages/profile-industries/profile-industries.component';
+import { LaiaChatsComponent } from './pages/laia-chats/laia-chats.component';
 
 const routes: Routes = [
   { path: 'create-item', redirectTo: 'create-article', pathMatch: 'full' },
@@ -474,6 +475,10 @@ const routes: Routes = [
         path: 'wizard-training',
         component: WizardTrainingComponent
       },
+      {
+        path: 'laia-chats',
+        component: LaiaChatsComponent
+      }
     ],
   },
   {
@@ -773,6 +778,7 @@ const routes: Routes = [
     TaxEditionComponent,
     SuperAdminMerchantsComponent,
     ProfileIndustriesComponent,
+    LaiaChatsComponent,
   ],
   exports: [ArticleCreatorComponent],
   imports: [

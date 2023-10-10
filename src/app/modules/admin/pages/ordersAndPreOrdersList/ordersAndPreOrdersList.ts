@@ -869,9 +869,10 @@ export class OrdersAndPreOrdersList implements OnInit {
     const day = dateObj.getDate();
     const month = dateObj.getMonth();
     const hour = dateObj.getHours();
+    const minutes = dateObj.getMinutes();
 
     moment.locale('es');
-    return moment([year, month, day, hour]).fromNow();
+    return moment([year, month, day, hour, minutes]).fromNow();
   }
 
   formatDateID(dateid: string) {

@@ -35,7 +35,7 @@ interface DialogTemplate {
 })
 export class SignupChatComponent implements OnInit {
   @ViewChild('chatContainer') private chatContainer: ElementRef;
-  chat: Chat = {
+  chat: any = {
     _id: '',
     owners: [],
     messages: [],
