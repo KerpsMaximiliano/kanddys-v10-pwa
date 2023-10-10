@@ -40,6 +40,13 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   chatUsers: Record<string, User> = {};
   queryParamsSubscription: Subscription;
   routeParamsSubscription: Subscription;
+  inputValueChangesSubscription: Subscription;
+  typingTimeout: any;
+  typing: {
+    sender: string;
+  } = null;
+  online: boolean = true;
+  socketConnected: boolean = true;
 
   constructor(
     public headerService: HeaderService,
@@ -70,6 +77,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
             .checkIfUserIsAMerchantAndFetchItsData()
             .then((isAMerchant) => (this.loggedAsAMerchant = isAMerchant));
 
+          this.fireUpPageEventListeners();
           await this.initSocketClientEventListeners(chatId);
         }
       );
@@ -85,6 +93,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
 
     // client-side
     this.socket.on('connect', () => {
+      this.socketConnected = true;
       // Send a message to the server
       if (!chatId) {
         this.socket.emit('GET_OR_CREATE_CHAT', {
@@ -147,10 +156,21 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
               else this.chatUsers['RECEIVER'] = user;
             });
           });
+
+        this.inputValueChangesSubscription = this.chatFormGroup
+          .get('input')
+          .valueChanges.subscribe((change) => {
+            this.socket.emit('TYPING', this.chat._id);
+            clearTimeout(this.typingTimeout);
+            this.typingTimeout = setTimeout(() => {
+              this.socket.emit('STOPPED_TYPING', this.chat._id);
+            }, 2000);
+          });
       });
 
       this.socket.on('MESSAGE_SEND', (messageReceived: Message) => {
         this.chat.messages.push(messageReceived);
+        this.typing = null;
 
         setTimeout(() => {
           this.scrollToBottom();
@@ -166,13 +186,43 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
         }
       );
 
+      this.socket.on(
+        'TYPING',
+        (typingData: { chatId: string; sender: string }) => {
+          if (typingData.sender !== this.headerService.user._id) {
+            this.typing = {
+              sender: typingData.sender,
+            };
+          } else this.typing = null;
+        }
+      );
+
+      this.socket.on(
+        'STOPPED_TYPING',
+        (typingData: { chatId: string; sender: string }) => {
+          if (typingData.sender !== this.headerService.user._id)
+            this.typing = null;
+        }
+      );
+
       this.socket.on('ERROR', (data) => {
         console.error('ERROR', data);
       });
     });
 
     this.socket.on('disconnect', () => {
-      console.log('desconectado'); // undefined
+      this.socketConnected = false;
+    });
+  }
+
+  async fireUpPageEventListeners() {
+    window.addEventListener('online', () => {
+      // Code to execute when the browser goes online
+      this.online = true;
+    });
+
+    window.addEventListener('offline', () => {
+      this.online = false;
     });
   }
 
@@ -243,5 +293,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.routeParamsSubscription?.unsubscribe();
     this.queryParamsSubscription?.unsubscribe();
+    this.inputValueChangesSubscription.unsubscribe();
+    clearTimeout(this.typingTimeout);
   }
 }
