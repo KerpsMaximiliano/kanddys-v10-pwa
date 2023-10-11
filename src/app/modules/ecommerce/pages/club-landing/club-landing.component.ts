@@ -1,4 +1,11 @@
-import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
@@ -19,9 +26,7 @@ import { Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
-import {
-  FormComponent
-} from 'src/app/shared/dialogs/form/form.component';
+import { FormComponent } from 'src/app/shared/dialogs/form/form.component';
 
 import { Clipboard } from '@angular/cdk/clipboard';
 import { AppService } from 'src/app/app.service';
@@ -35,6 +40,9 @@ import { CompareDialogComponent } from 'src/app/shared/dialogs/compare-dialog/co
 import { SelectRoleDialogComponent } from 'src/app/shared/dialogs/select-role-dialog/select-role-dialog.component';
 import { SignupChatComponent } from 'src/app/shared/dialogs/signup-chat/signup-chat.component';
 import { SpecialDialogComponent } from 'src/app/shared/dialogs/special-dialog/special-dialog.component';
+import { URL } from 'url';
+import { FilesService } from 'src/app/core/services/files.service';
+import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 
 interface ReviewsSwiper {
   title: string;
@@ -59,7 +67,6 @@ interface Tabs {
   styleUrls: ['./club-landing.component.scss'],
 })
 export class ClubLandingComponent implements OnInit, OnDestroy {
-
   switchActive: boolean = false;
 
   loginflow: boolean = false;
@@ -73,96 +80,96 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
   redirectionRoute: string = '/ecommerce/club-landing';
   redirectionRouteId: string | null = null;
-  entity: string = "MerchantAccess";
+  entity: string = 'MerchantAccess';
   jsondata: string = JSON.stringify({
     openNavigation: true,
   });
 
   isFlag = false;
   tabIndex = 0;
-  userID = ""
+  userID = '';
   isVendor = false;
   isProvider = false;
-  mainTitle = "HERRAMIENTAS GRATIS  PARA PROVEEDORES"
+  mainTitle = 'HERRAMIENTAS GRATIS  PARA PROVEEDORES';
   isOpen = false;
   curRole = 0;
-  tabarIndex = 0;
+  tabarIndex: number | undefined = 2;
 
   user: gapi.auth2.GoogleUser;
 
   list = [
     {
-      text: '\"Laia, nos impulsa a avanzar para no quedarnos atrás\"',
+      text: '"Laia, nos impulsa a avanzar para no quedarnos atrás"',
       avatar: '',
       name: 'José Miguel Caffaro',
-      role: 'Proveedor de flores frescas, follajes y bases'
+      // role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
-      text: '\".. es una manera genial de simplificar el proceso de compra desde las plataformas sociales\"',
+      text: '".. es una manera genial de simplificar el proceso de compra desde las plataformas sociales"',
       avatar: '',
       name: 'Valentina Vargas',
-      role: 'Proveedor de flores frescas, follajes y bases'
+      // role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
-      text: '\".. convierto a los seguidores en compradores de manera rápida y sencilla\"',
+      text: '".. convierto a los seguidores en compradores de manera rápida y sencilla"',
       avatar: '',
       name: 'Mateo López',
-      role: 'Proveedor de flores frescas, follajes y bases'
+      // role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
-      text: '\".. puedo subir sus productos de manera rápida y sencilla\"',
+      text: '".. puedo subir sus productos de manera rápida y sencilla"',
       avatar: '',
       name: 'Sofía Martínez',
-      role: 'Proveedor de flores frescas, follajes y bases'
+      // role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
-      text: '\".. los clientes no tienen que descargar ninguna aplicación, eso simplifica la experiencia de compra\"',
+      text: '".. los clientes no tienen que descargar ninguna aplicación, eso simplifica la experiencia de compra"',
       avatar: '',
       name: 'Luciana Fernández',
-      role: 'Proveedor de flores frescas, follajes y bases'
+      // role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
-      text: '\".. puedo acceder a una red amplia de proveedores de flores en un abrir y cerrar de ojos.\"',
+      text: '".. puedo acceder a una red amplia de proveedores de flores en un abrir y cerrar de ojos."',
       avatar: '',
       name: 'Tomás Gómez',
-      role: 'Proveedor de flores frescas, follajes y bases'
+      // role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
-      text: '\"¡Esta función de Cotización Eficiente con Proveedores en la aplicación es como tener un equipo de compras personal a tu disposición!\"',
+      text: '"¡Esta función de Cotización Eficiente con Proveedores en la aplicación es como tener un equipo de compras personal a tu disposición!"',
       avatar: '',
       name: 'Aitana Sánchez',
-      role: 'Proveedor de flores frescas, follajes y bases'
+      // role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
-      text: '\".. es como si los proveedores compitieran por ofrecerme las mejores ofertas, lo cual me siento confiado de donde comprar\"',
+      text: '".. es como si los proveedores compitieran por ofrecerme las mejores ofertas, lo cual me siento confiado de donde comprar"',
       avatar: '',
       name: 'Emiliano Torres',
-      role: 'Proveedor de flores frescas, follajes y bases'
+      // role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
-      text: '\".. me permite conectarme con un montón de proveedores y pedir cotizaciones en cuestión de minutos\"',
+      text: '".. me permite conectarme con un montón de proveedores y pedir cotizaciones en cuestión de minutos"',
       avatar: '',
       name: 'Camila Díaz',
-      role: 'Proveedor de flores frescas, follajes y bases'
+      // role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
-      text: '\".. significa que puedo tomar decisiones más inteligentes y aumentar mis ganancias\"',
+      text: '".. significa que puedo tomar decisiones más inteligentes y aumentar mis ganancias"',
       avatar: '',
       name: 'Matías Vidal',
-      role: 'Proveedor de flores frescas, follajes y bases'
+      // role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
-      text: '\".. puedo pedir cotizaciones y luego simplemente comparar y elegir la opción más conveniente\"',
+      text: '".. puedo pedir cotizaciones y luego simplemente comparar y elegir la opción más conveniente"',
       avatar: '',
       name: 'Julieta García',
-      role: 'Proveedor de flores frescas, follajes y bases'
+      // role: 'Proveedor de flores frescas, follajes y bases'
     },
     {
-      text: '\".. no solo ahorro dinero, sino que también ahorro tiempo al evitar largas negociaciones, realmente es un ganar-ganar\"',
+      text: '".. no solo ahorro dinero, sino que también ahorro tiempo al evitar largas negociaciones, realmente es un ganar-ganar"',
       avatar: '',
       name: 'Nicolás Herrera',
-      role: 'Proveedor de flores frescas, follajes y bases'
-    }
+      // role: 'Proveedor de flores frescas, follajes y bases'
+    },
   ];
 
   activeTabIndex: number = 0;
@@ -215,8 +222,10 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   merchant: string;
   saleflow: SaleFlow;
   referralsCount: number = 0;
+  vectorsCount: number = 0;
+  chatsCount: number = 0;
   @ViewChild('qrcode', { read: ElementRef }) qrcode: ElementRef;
-
+  
   constructor(
     public headerService: HeaderService,
     private app: AppService,
@@ -234,7 +243,9 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     private router: Router,
     private changeDetectorRef: ChangeDetectorRef,
     private clipboard: Clipboard,
-    private affiliateService: AffiliateService
+    private affiliateService: AffiliateService,
+    private filesService: FilesService,
+    private gptService: Gpt3Service
   ) {
     const sub = this.app.events
       .pipe(filter((e) => e.type === 'auth'))
@@ -251,63 +262,78 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     await this.getMerchantDefault();
     this.queryParamsSubscription = this.route.queryParams.subscribe(
       async ({ affiliateCode, tabarIndex }) => {
-        if(affiliateCode){
-          if(this.merchant){
-            const input: AffiliateInput = {
-              reference: this.merchant
-            }
-            try{
-              await this.affiliateService.createAffiliate(affiliateCode, input);
-            }catch(error){
-              console.log(error);
-              
-            }
-          }else{
-            localStorage.setItem('affiliateCode', affiliateCode);
-          }
-        }
         if (tabarIndex) {
           this.tabarIndex = parseInt(tabarIndex);
+        }
+        if (affiliateCode) {
+          if (this.merchant) {
+            const input: AffiliateInput = {
+              reference: this.merchant,
+            };
+            try {
+              await this.affiliateService.createAffiliate(affiliateCode, input);
+            } catch (error) {
+              console.log(error);
+            }
+          } else {
+            localStorage.setItem('affiliateCode', affiliateCode);
+          }
         }
       }
     );
     if (this.merchant) {
       await this.getReferrals();
       await this.getSaleflowDefault();
+
+      await Promise.all([
+        this.gptService.getMerchantEmbeddingsMetadata(),
+        fetch(environment.chatAPI.url + '/numberOfChats', {
+          headers: {
+            token: localStorage.getItem('session-token'),
+          },
+        }),
+      ]).then(async ([embeddingsMetadata, numberOfChatResponse]) => {
+        if (embeddingsMetadata) {
+          this.vectorsCount = embeddingsMetadata.vectorsCount;
+        }
+
+        if (numberOfChatResponse) {
+          const data = await numberOfChatResponse.json();
+          this.chatsCount =
+            typeof data?.numberOfChats === 'number' ? data?.numberOfChats : 0;
+        }
+      });
     }
     if (!this.headerService.user) this.openLaiaDialog();
     this.googleSigninService.observable().subscribe((user) => {
       this.user = user;
-      console.log(user)
+      console.log(user);
       this.changeDetectorRef.detectChanges();
     });
+    if (this.tabarIndex === undefined) {
+      this.tabarIndex = 2;
+    }
   }
 
   showRoleDialog() {
     const dialogRef = this.dialog.open(SelectRoleDialogComponent, {});
-    dialogRef.afterClosed().subscribe(role => {
+    dialogRef.afterClosed().subscribe((role) => {
       if (role != undefined) {
-        this.setRole(parseInt(role))
-        return
+        this.setRole(parseInt(role));
+        return;
       }
       switch (role) {
-        case "0":
-
+        case '0':
           break;
-        case "1":
-
+        case '1':
           break;
-        case "2":
-
+        case '2':
           break;
-        case "3":
-
+        case '3':
           break;
-        case "4":
-
+        case '4':
           break;
-        case "5":
-
+        case '5':
           break;
 
         default:
@@ -320,16 +346,16 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     this.curRole = role;
     switch (role) {
       case 0:
-        this.tabIndex = 0
+        this.tabIndex = 0;
         break;
       case 1:
-        this.tabIndex = 1
+        this.tabIndex = 1;
         break;
       case 2:
-        this.tabIndex = 1
+        this.tabIndex = 1;
         break;
       case 3:
-        this.tabIndex = 0
+        this.tabIndex = 0;
         break;
       default:
         this.tabIndex = 1;
@@ -341,47 +367,49 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   shareDialog() {
     const dialogRef = this.bottomSheet.open(OptionsMenuComponent, {
       data: {
-        title: "Compartir enlace",
+        title: 'Compartir enlace',
         options: [
           {
-            value: "Copiar enlace",
+            value: 'Copiar enlace',
             callback: () => {
               this.clipboard.copy(this.link);
-              this.snackbar.open("Enlace copiado", "Cerrar", {
+              this.snackbar.open('Enlace copiado', 'Cerrar', {
                 duration: 3000,
               });
             },
           },
           {
-            value: "Compartir enlace",
+            value: 'Compartir enlace',
             callback: () => {
               this.ngNavigatorShareService.share({
-                title: "Compartir enlace de www.flores.club",
+                title: 'Compartir enlace de www.flores.club',
                 url: `${this.link}`,
               });
             },
           },
           {
-            value: "Enviar por WhatsApp",
+            value: 'Enviar por WhatsApp',
             callback: () => {
               const message = `${this.link}`;
-              window.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+              window.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(
+                message
+              )}`;
             },
           },
           {
-            value: "Enviar por correo electrónico",
+            value: 'Enviar por correo electrónico',
             callback: () => {
               window.location.href = `mailto:?body=${this.link}`;
             },
           },
           {
-            value: "Descargar QR",
+            value: 'Descargar QR',
             callback: () => {
               this.qrdata = this.link;
-              this.downloadQr()
-            }
-          }
-        ]
+              this.downloadQr();
+            },
+          },
+        ],
       },
     });
   }
@@ -390,32 +418,34 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(SpecialDialogComponent, {});
     const link = `${this.URI}/ecommerce/club-landing`;
 
-    dialogRef.afterClosed().subscribe(role => {
+    dialogRef.afterClosed().subscribe((role) => {
       if (!role) {
         // this.setRole(parseInt(role))
-        return
+        return;
       }
-      console.log(role)
+      console.log(role);
       switch (role) {
-        case "0":
+        case '0':
           this.ngNavigatorShareService.share({
             title: '',
             url: `${link}`,
           });
           break;
-        case "1":
+        case '1':
           this.ngNavigatorShareService.share({
             title: '',
             url: `${link}`,
           });
           break;
-        case "2":
+        case '2':
           const message = `${link}`;
           const phone = '19188156444';
-          window.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+          window.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(
+            message
+          )}`;
           break;
-        case "3":
-          window.location.href = "mailto:"
+        case '3':
+          window.location.href = 'mailto:';
           break;
         default:
           break;
@@ -433,48 +463,54 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       data: {
         login: () => {
           this.loginflow = true;
-        }
-      }
+        },
+        phone: () => {
+          console.log('phone callback');
+        },
+        url: () => {
+          console.log('url callback');
+        },
+      },
     });
   }
 
   openClubDialog() {
     this.bottomSheet.open(ClubDialogComponent, {
       data: {
-        title: "",
+        title: '',
         styles: {
           fullScreen: true,
         },
         tabIndex: this.tabIndex,
         callback: (e: number) => {
           this.tabIndex = e;
-        }
+        },
       },
     });
   }
   openCompareDialog() {
     this.bottomSheet.open(CompareDialogComponent, {
       data: {
-        title: "",
+        title: '',
         styles: {
           fullScreen: true,
         },
         tabIndex: this.tabIndex,
         callback: (e: number) => {
           this.tabIndex = e;
-        }
+        },
       },
     });
   }
   openMsgDialog() {
     const dialogRef = this.dialog.open(MessageDialogComponent, {});
 
-    dialogRef.afterClosed().subscribe(role => {
+    dialogRef.afterClosed().subscribe((role) => {
       if (!role) {
         // this.setRole(parseInt(role))
-        return
+        return;
       }
-      console.log(role)
+      console.log(role);
     });
   }
 
@@ -484,7 +520,9 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     if (link.isDummy) {
       const message = `Hola, me interesa esta funcionalidad: ${link.text}`;
       const phone = '19188156444';
-      window.location.href = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
+      window.location.href = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(
+        message
+      )}`;
       return;
     }
 
@@ -508,7 +546,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
   enterClub() {
     if (!this.headerService.user) this.loginflow = true;
-    else this.showDialog()
+    else this.showDialog();
   }
 
   ngOnDestroy(): void {
@@ -525,40 +563,40 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
   async openLinkDialog(merchant?: Merchant) {
     let slug;
-    if(merchant) {
-      console.log(merchant)
+    if (merchant) {
+      console.log(merchant);
       slug = merchant.slug;
     } else {
       await this.merchantsService.merchantDefault().then((res) => {
-        slug = res.slug
-      })
+        slug = res.slug;
+      });
     }
     let link = `${this.URI}/ecommerce/club-landing?affiliateCode=${slug}`;
-    console.log(link)
+    console.log(link);
     let dialogData = {
-      title: "Gana dinero cada mes, recurrente y sin limites",
-      bottomLabel: "Tu enlace es: " + link,
+      title: 'Gana dinero cada mes, recurrente y sin limites',
+      bottomLabel: 'Tu enlace es: ' + link,
       options: [
         {
-          value: "Copiar enlace",
+          value: 'Copiar enlace',
           callback: () => {
             this.clipboard.copy(link);
-            this.snackbar.open("Enlace copiado", "Cerrar", {
+            this.snackbar.open('Enlace copiado', 'Cerrar', {
               duration: 3000,
             });
           },
         },
         {
-          value: "Comparte tu enlace",
+          value: 'Comparte tu enlace',
           callback: () => {
             this.ngNavigatorShareService.share({
-              title: "Compartir enlace de www.flores.club",
+              title: 'Compartir enlace de www.flores.club',
               url: `${link}`,
             });
           },
         },
         {
-          value: "Descarga el QR",
+          value: 'Descarga el QR',
           callback: () => {
             this.qrdata = link;
             this.downloadQr();
@@ -570,46 +608,45 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     let dialogRef = this.bottomSheet.open(OptionsMenuComponent, {
       data: dialogData,
     });
-    console.log(dialogRef)
+    console.log(dialogRef);
   }
 
   downloadQr() {
     setTimeout(() => {
-      const parentElement =
-      this.qrcode.nativeElement.querySelector('img').src;
-    let blobData = base64ToBlob(parentElement);
-    if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
-      //IE
-      (window.navigator as any).msSaveOrOpenBlob(blobData, 'Landing QR Code');
-    } else {
-      // chrome
-      const blob = new Blob([blobData], { type: 'image/png' });
-      const url = window.URL.createObjectURL(blob);
-      // window.open(url);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = "Landing QR Code";
-      link.click();
-    }
-    }, 1000)
+      const parentElement = this.qrcode.nativeElement.querySelector('img').src;
+      let blobData = base64ToBlob(parentElement);
+      if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
+        //IE
+        (window.navigator as any).msSaveOrOpenBlob(blobData, 'Landing QR Code');
+      } else {
+        // chrome
+        const blob = new Blob([blobData], { type: 'image/png' });
+        const url = window.URL.createObjectURL(blob);
+        // window.open(url);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'Landing QR Code';
+        link.click();
+      }
+    }, 1000);
   }
   async getMerchantDefault() {
     try {
-      const merchantDefault: Merchant = await this.merchantsService.merchantDefault();
-      this.merchant = merchantDefault._id; 
+      const merchantDefault: Merchant =
+        await this.merchantsService.merchantDefault();
+      this.merchant = merchantDefault._id;
     } catch (error) {
-      console.log("error");
+      console.log('error');
     }
   }
 
   async getSaleflowDefault() {
     try {
-      const saleflowDefault: SaleFlow = await this.saleflowsService.saleflowDefault(
-        this.merchant
-      );
+      const saleflowDefault: SaleFlow =
+        await this.saleflowsService.saleflowDefault(this.merchant);
       this.saleflow = saleflowDefault;
     } catch (error) {
-      console.log("error");
+      console.log('error');
     }
   }
 
@@ -618,8 +655,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       const result = await this.affiliateService.affiliatePaginate(
         {
           findBy: {
-            parent: this.merchant
-          }
+            parent: this.merchant,
+          },
         },
         new Date().toString()
       );
@@ -631,7 +668,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   invite() {
-    if(!this.headerService.user) {
+    if (!this.headerService.user) {
       this.redirectionRoute = '/ecommerce/club-landing?tabarIndex=3';
       this.openLoginDialog();
     } else {
@@ -645,7 +682,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   goToLaiaTraining() {
-    return this.router.navigate(['/ecommerce/daliah-training']);
+    return this.router.navigate(['/ecommerce/laia-training']);
   }
 
   goToDashboard() {
@@ -655,48 +692,94 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   openLoginDialog() {
     let dialogRef = this.dialog.open(FormComponent, {
       data: {
-        title:{ text: "🤑 Correo electronico que guardará el dinero:"},
+        title: { text: '🤑 Correo electronico que guardará el dinero:' },
         fields: [
           {
-            name: "email",
-            placeholder: "Escribe..",
-            type: "text",
+            name: 'email',
+            placeholder: 'Escribe..',
+            type: 'text',
             validations: [Validators.required, Validators.email],
-          }
+          },
         ],
         buttonsTexts: {
-          accept: "Generar el enlace",
-        }
-      }
+          accept: 'Generar el enlace',
+        },
+      },
     });
     dialogRef.afterClosed().subscribe(async (result) => {
-      if(!result.value.email) return;
+      if (!result.value.email) return;
       const exists = await this.authService.checkUser(result.value.email);
-      if(exists) {
-        let merchants = await this.merchantsService.merchants({ findBy: { owner: exists._id } });
-        if(merchants.length > 0) {
-          let defaultMerchant = merchants.find(merchant => merchant.default);
-          if(defaultMerchant) {
+      if (exists) {
+        let merchants = await this.merchantsService.merchants({
+          findBy: { owner: exists._id },
+        });
+        if (merchants.length > 0) {
+          let defaultMerchant = merchants.find((merchant) => merchant.default);
+          if (defaultMerchant) {
             this.openLinkDialog(defaultMerchant);
           } else {
-            this.openLinkDialog(merchants[0])
+            this.openLinkDialog(merchants[0]);
           }
         } else {
-          let merchant = await this.merchantsService.createMerchant({ owner: exists._id });
-          console.log(merchant)
+          let merchant = await this.merchantsService.createMerchant({
+            owner: exists._id,
+          });
+          console.log(merchant);
           this.openLinkDialog(merchant.createMerchant);
-        }        
+        }
       } else {
-        let user = await this.authService.signup({email: result.value.email, password: "123"}, 'none');
-        let merchant = await this.merchantsService.createMerchant({ owner: user._id });
+        let user = await this.authService.signup(
+          { email: result.value.email, password: '123' },
+          'none'
+        );
+        let merchant = await this.merchantsService.createMerchant({
+          owner: user._id,
+        });
         this.openLinkDialog(merchant.createMerchant);
       }
     });
   }
 
   buttonHandler() {
-    if(!this.headerService.user) {
+    if (!this.headerService.user) {
       this.loginflow = true;
     }
+  }
+
+  async getImg(e) {
+      console.log("🚀 ~ file: club-landing.component.ts:707 ~ ClubLandingComponent ~ getImg ~ e:", e)
+      const inputElement = e.target as HTMLInputElement;
+      if (inputElement.files && inputElement.files[0]) {
+        const selectedFile = inputElement.files[0];
+        const toBase64 = selectedFile => new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(selectedFile);
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+      });
+      const base64Data = await toBase64(selectedFile);
+      this.filesService.setFile(base64Data);
+      this.router.navigate(['/ecommerce/provider-items-editor']);
+      }
+  }
+  
+  isUserAdmin() {
+    if (this.headerService?.user)
+      return this.headerService.user?.roles?.some(
+        (role) => role.code === 'ADMIN'
+      );
+    else return false;
+  }
+
+  goToAIMemoriesManagement() {
+    this.router.navigate(['/ecommerce/laia-memories-management']);
+  }
+
+  goToChatsManagement() {
+    this.router.navigate(['/admin/laia-chats']);
+  }
+
+  goToWizard() {
+    return this.router.navigate(['/admin/wizard-training']);
   }
 }

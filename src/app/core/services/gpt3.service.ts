@@ -1,12 +1,16 @@
 import { Injectable } from '@angular/core';
 import {
+  changeAssistantResponseMode,
   createEmbeddingsForMyMerchantItems,
   deleteVectorInKnowledgeBase,
+  doUsersHaveAssistantActivated,
   feedFileToKnowledgeBase,
   feedKnowledgeBaseWithTextData,
   fetchAllDataInVectorDatabaseNamespace,
   generateCompletionForMerchant,
   generateResponseForTemplate,
+  getMerchantEmbeddingsMetadata,
+  getVectorByIdInKnowledgeBase,
   imageObjectRecognition,
   requestQAResponse,
   requestResponseFromKnowledgeBase,
@@ -14,6 +18,7 @@ import {
 } from '../graphql/gpt3.gql';
 import { environment } from 'src/environments/environment';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
+import { Merchant } from '../models/merchant';
 
 @Injectable({
   providedIn: 'root',
@@ -45,13 +50,16 @@ export class Gpt3Service {
     return result?.feedFileToKnowledgeBase;
   }
 
-  async feedKnowledgeBaseWithTextData(text: string): Promise<{
+  async feedKnowledgeBaseWithTextData(
+    text: string,
+    memoryName?: string
+  ): Promise<{
     namespace: string;
     vector: any;
   }> {
     const result = await this.graphql.mutate({
       mutation: feedKnowledgeBaseWithTextData,
-      variables: { text },
+      variables: { text, memoryName },
     });
 
     return result?.feedKnowledgeBaseWithTextData;
@@ -59,14 +67,15 @@ export class Gpt3Service {
 
   async updateVectorInKnowledgeBase(
     id: string,
-    text: string
+    text: string,
+    name?: string
   ): Promise<{
     namespace: string;
     vector: any;
   }> {
     const result = await this.graphql.mutate({
       mutation: updateVectorInKnowledgeBase,
-      variables: { id, text },
+      variables: { id, text, name },
     });
 
     return result?.updateVectorInKnowledgeBase;
@@ -94,15 +103,14 @@ export class Gpt3Service {
 
   async requestResponseFromKnowledgeBase(
     prompt: string,
-    saleflowId: string,
-    conversationId: string,
+    userId: string,
     chatRoomId?: string,
-    socketId?: string
+    socketId?: string,
   ) {
     try {
       const result = await this.graphql.query({
         query: requestResponseFromKnowledgeBase,
-        variables: { prompt, saleflowId, conversationId, chatRoomId, socketId },
+        variables: { prompt, userId, chatRoomId, socketId},
       });
       return result?.requestResponseFromKnowledgeBase;
     } catch (error) {
@@ -115,8 +123,66 @@ export class Gpt3Service {
       const result = await this.graphql.query({
         query: fetchAllDataInVectorDatabaseNamespace,
         variables: { prompt, saleflowId },
+        fetchPolicy: 'no-cache'
       });
       return result?.fetchAllDataInVectorDatabaseNamespace;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async getMerchantEmbeddingsMetadata(): Promise<{
+    vectorsCount: number;
+    automaticModeActivated?: boolean;
+    merchant: Merchant;
+  }> {
+    try {
+      const result = await this.graphql.query({
+        query: getMerchantEmbeddingsMetadata,
+      });
+      return result?.getMerchantEmbeddingsMetadata;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async doUsersHaveAssistantActivated(
+    users: Array<string>
+  ): Promise<Record<string, boolean>> {
+    try {
+      const result = await this.graphql.query({
+        query: doUsersHaveAssistantActivated,
+        variables: { users },
+        fetchPolicy: 'no-cache'
+      });
+      return result?.doUsersHaveAssistantActivated;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async changeAssistantResponseMode(): Promise<{
+    vectorsCount: number;
+    automaticModeActivated?: boolean;
+    merchant: Merchant;
+  }> {
+    try {
+      const result = await this.graphql.mutate({
+        mutation: changeAssistantResponseMode,
+      });
+      return result?.changeAssistantResponseMode;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async getVectorByIdInKnowledgeBase(id: string) {
+    try {
+      const result = await this.graphql.query({
+        query: getVectorByIdInKnowledgeBase,
+        variables: { id },
+      });
+      return result?.getVectorByIdInKnowledgeBase;
     } catch (error) {
       console.error(error);
     }

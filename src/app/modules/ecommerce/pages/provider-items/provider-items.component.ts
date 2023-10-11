@@ -1694,4 +1694,7 @@ export class ProviderItemsComponent implements OnInit {
       }
     });
   }
+  goToArticleDetail(id){
+    this.router.navigate(['ecommerce/admin-article-detail/' + id]);
+  }
 }

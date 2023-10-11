@@ -9,7 +9,7 @@ import {
   EventEmitter
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
+import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { isEmail } from 'src/app/core/helpers/strings.helpers';
 import { Chat, Message } from 'src/app/core/models/chat';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -24,6 +24,8 @@ interface DialogTemplate {
   styles?: Record<string, Record<string, string>>;
   bottomLabel?: string;
   login?: () => void;
+  phone?: () => void;
+  url?: () => void;
 }
 
 @Component({
@@ -33,7 +35,7 @@ interface DialogTemplate {
 })
 export class SignupChatComponent implements OnInit {
   @ViewChild('chatContainer') private chatContainer: ElementRef;
-  chat: Chat = {
+  chat: any = {
     _id: '',
     owners: [],
     messages: [],
@@ -54,8 +56,10 @@ export class SignupChatComponent implements OnInit {
 
   constructor(
     @Inject(MAT_BOTTOM_SHEET_DATA) public data: DialogTemplate,
+    private _bottomSheetRef: MatBottomSheetRef,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private elRef: ElementRef
   ) { }
 
   ngAfterViewInit(): void {
@@ -66,7 +70,7 @@ export class SignupChatComponent implements OnInit {
     this.welcomeMessage()
   }
 
-  welcomeMessage() {
+  async welcomeMessage() {
     const message = `
     <p>Hola, soy Laia, y te estaba esperando!!</p>
 
@@ -75,15 +79,30 @@ export class SignupChatComponent implements OnInit {
     <li>Respondamos de forma consistente desde el Website, Shopify, WhatsApp e Instagram.</li>
     <li>Vendamos. Coticemos. Facturemos. Organicemos los pedidos.</li>
     <li>Si quieres, premiarémos a quienes venden por nosotros y a los compradores para que vuelvan a comprarnos.</li>
-    <li>Si hay algo en lo que no pueda ayudarte, por favor escríbele a Daviel por WhatsApp (918)815-6444 aquí el url.com</li>
+    <li>Si hay algo en lo que no pueda ayudarte, por favor escríbele a Daviel por WhatsApp 
+    <span class="phone-event" >(918)815-6444</span> aquí el <span  class=" url-event">url.com</span></li>
     </ul>
     <p>¿Y tú, me estabas esperando?</p>
     `
-    this.addMessage({
+    await this.addMessage({
       sender: 'IA',
       message,
       chatId: ""
     })
+    let phoneRef = this.elRef.nativeElement.querySelector('.phone-event')
+    phoneRef.addEventListener('click', this.phoneMethod.bind(this))
+    phoneRef.style.color = '#25638F'
+    let urlRef = this.elRef.nativeElement.querySelector('.url-event')
+    urlRef.addEventListener('click', this.urlMethod.bind(this))
+    urlRef.style.color = '#25638F'
+  }
+
+  phoneMethod() {
+    this.data.phone()
+  }
+
+  urlMethod() {
+    this.data.url()
   }
 
   /**
@@ -120,15 +139,24 @@ export class SignupChatComponent implements OnInit {
         await this.registerUser(message);
         await this.addMessage({
           sender: 'IA',
-          message: "Gracias por reservar con Laia.",
+          message: `
+          <p>Gracias por reservarme.</p>
+
+          <p>
+          Cuando puedas por favor escríbele a Daviel por WhatsApp 
+          <span  class="phone-event">(918)815-6444</span> 
+          aquí el <span  class="url-event">url.com</span>
+          para que le dejes saber como entrenarme para Ti y empezar a formar parte de tu equipo.
+          </p>
+          `,
           chatId: ""
         })
-        await this.addMessage({
-          sender: 'IA',
-          message: "Te mantendremos informad@ de su entrenamiento.",
-          chatId: ""
-        })
-        return
+        let phoneRef = this.elRef.nativeElement.querySelector('.phone-event')
+        phoneRef.addEventListener('click', this.phoneMethod.bind(this))
+        phoneRef.style.color = '#25638F'
+        let urlRef = this.elRef.nativeElement.querySelector('.url-event')
+        urlRef.addEventListener('click', this.urlMethod.bind(this))
+        urlRef.style.color = '#25638F'
       }
     }
   }
@@ -188,5 +216,9 @@ export class SignupChatComponent implements OnInit {
 
   callLogin() {
     this.data.login();
+  }
+
+  close() {
+    this._bottomSheetRef.dismiss();
   }
 }
