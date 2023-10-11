@@ -95,6 +95,7 @@ export class ProviderItemsComponent implements OnInit {
 
   //Items variables
   totalItemsHidden: number = 0
+  allItemsID: any = []
   itemsISell: Array<Item> = [];
   itemsIDontSell: Array<Item> = [];
   renderItemsPromise: Promise<{ listItems: Item[] }>;
@@ -129,6 +130,7 @@ export class ProviderItemsComponent implements OnInit {
 
   private keyPresentationState = 'providersPresentationClosed'
   private keyTutorialState = 'tutorialClosed'
+  private merchantId = null;
   private saleFlowId = null;
 
   constructor(
@@ -158,10 +160,11 @@ export class ProviderItemsComponent implements OnInit {
         this.isUserLogged = true
         let sub = this.appService.events
           .pipe(filter((e) => e.type === 'auth'))
-          .subscribe(async (e) => {
+          .subscribe(async () => {
             this.verifyIfIsSupplier()
-            this.getStatusSwitch()
-            await this.executeInitProcesses()
+            this.getStatusSwitch().then(async () => {
+              await this.executeInitProcesses()
+            })
             sub.unsubscribe();
           });
       } else {
@@ -208,27 +211,34 @@ export class ProviderItemsComponent implements OnInit {
   }
 
   /**
-   * Obtiene el estado del switch
+   * Obtiene el estado del switch consultando el merchant. Si el merchant es valido,
+   * obtendrá los datos del saleflpw. Y si este ultimo es válido, recibirá el estado
+   * del switch si está activo o inactivo.
+   *
+   * Si no hay merchant, no hace nada
    */
-  getStatusSwitch() {
-    this.merchantsService.merchantDefault().then((merchant) => {
-      const isValidMerchant = this.merchantsService.verifyMerchant(merchant)
-      if (!isValidMerchant) {
-        return
-      }
+  async getStatusSwitch() {
+    const merchant = await this.merchantsService.merchantDefault()
+    this.merchantId = merchant._id
+    const isValidMerchant = this.merchantsService.verifyMerchant(merchant)
+    if (!isValidMerchant) {
+      return
+    }
 
-      this.saleflowService.saleflowDefault(merchant._id).then(saleflow => {
-        const isValidSaleflow = this.merchantsService.verifyMerchantSaleFlow(saleflow)
-        if (!isValidSaleflow) {
-          this.isSwitchActive = false
-        } else {
-          const status = !saleflow?.status || saleflow?.status === 'open'
-          this.isSwitchActive = status
-          this.saleFlowId = saleflow._id
-          this.isUserVerified = true
-        }
-      })
-    })
+    const saleflow = await this.saleflowService.saleflowDefault(merchant._id)
+    this.allItemsID = saleflow.items
+      .map(item => item.item._id)
+      .filter(item => item)
+
+    const isValidSaleflow = this.merchantsService.verifyMerchantSaleFlow(saleflow)
+    if (!isValidSaleflow) {
+      this.isSwitchActive = false
+    } else {
+      const status = !saleflow?.status || saleflow?.status === 'open'
+      this.isSwitchActive = status
+      this.saleFlowId = saleflow._id
+      this.isUserVerified = true
+    }
   }
 
   /**
@@ -401,7 +411,7 @@ export class ProviderItemsComponent implements OnInit {
         findBy: {
           merchant: this.merchantsService.merchantData._id,
           _id: {
-            $nin: this.itemsISell.map((item) => item.parentItem),
+            $nin: this.allItemsID,
           }
         },
         options: {
