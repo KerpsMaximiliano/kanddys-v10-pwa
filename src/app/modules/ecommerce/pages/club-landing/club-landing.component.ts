@@ -16,23 +16,23 @@ import { GoogleSigninService } from 'src/app/core/services/google-signin.service
 import { HeaderService } from 'src/app/core/services/header.service';
 import { ItemsService } from 'src/app/core/services/items.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { OrderService } from 'src/app/core/services/order.service';
 import { ClubDialogComponent } from 'src/app/shared/dialogs/club-dialog/club-dialog.component';
 import { MessageDialogComponent } from 'src/app/shared/dialogs/message-dialog/message-dialog.component';
 import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
-
+import { truncateString } from 'src/app/core/helpers/strings.helpers';
 import { Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { FormComponent } from 'src/app/shared/dialogs/form/form.component';
-
 import { Clipboard } from '@angular/cdk/clipboard';
 import { AppService } from 'src/app/app.service';
 import { base64ToBlob } from 'src/app/core/helpers/files.helpers';
 import { AffiliateInput } from 'src/app/core/models/affiliate';
-import { Merchant } from 'src/app/core/models/merchant';
+import { Merchant, Roles } from 'src/app/core/models/merchant';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { AffiliateService } from 'src/app/core/services/affiliate.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
@@ -41,6 +41,7 @@ import { SelectRoleDialogComponent } from 'src/app/shared/dialogs/select-role-di
 import { SignupChatComponent } from 'src/app/shared/dialogs/signup-chat/signup-chat.component';
 import { SpecialDialogComponent } from 'src/app/shared/dialogs/special-dialog/special-dialog.component';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
+import { OptionsDialogComponent } from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
 
 interface ReviewsSwiper {
   title: string;
@@ -65,9 +66,19 @@ interface Tabs {
   styleUrls: ['./club-landing.component.scss'],
 })
 export class ClubLandingComponent implements OnInit, OnDestroy {
-  switchActive: boolean = false;
+
+
+  merchantRole: Roles | null = null;
+  roles : Roles[] = [];
+
+  paymentSwitch: boolean = false;
+  statusSwitch: boolean = false;
 
   loginflow: boolean = false;
+
+  exhibitTarget: string = 'al consumidor final';
+
+  sales: number | null = null;
 
   assetsFolder: string = environment.assetsUrl;
   URI: string = environment.uri;
@@ -232,6 +243,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     private itemsService: ItemsService,
     private dialogService: DialogService,
     private googleSigninService: GoogleSigninService,
+    private orderService: OrderService,
     private dialog: MatDialog,
     private snackbar: MatSnackBar,
     private authService: AuthService,
@@ -281,7 +293,6 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     if (this.merchant) {
       await this.getReferrals();
       await this.getSaleflowDefault();
-
       await Promise.all([
         this.gptService.getMerchantEmbeddingsMetadata(),
         fetch(environment.chatAPI.url + '/numberOfChats', {
@@ -301,7 +312,6 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         }
       });
     }
-    if (!this.headerService.user) this.openLaiaDialog();
     this.googleSigninService.observable().subscribe((user) => {
       this.user = user;
       console.log(user);
@@ -561,7 +571,6 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   async openLinkDialog(merchant?: Merchant) {
     let slug;
     if (merchant) {
-      console.log(merchant);
       slug = merchant.slug;
     } else {
       await this.merchantsService.merchantDefault().then((res) => {
@@ -622,16 +631,40 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         // window.open(url);
         const link = document.createElement('a');
         link.href = url;
-        link.download = 'Landing QR Code';
+        link.download = "Landing QR Code";
         link.click();
       }
-    }, 1000);
+    }, 1000)
   }
   async getMerchantDefault() {
     try {
-      const merchantDefault: Merchant =
-        await this.merchantsService.merchantDefault();
+      const merchantDefault: Merchant = await this.merchantsService.merchantDefault();
       this.merchant = merchantDefault._id;
+      this.orderService.ordersTotal(
+        ['to confirm', 'completed'],
+        this.merchant
+      ).then((res) => {
+        this.sales = res.length;
+      })
+      this.merchantsService.rolesPublic().then((res) => {
+        console.log(res);
+        this.roles = res;
+      })
+      if(merchantDefault.roles.length > 0) {
+        this.merchantRole = merchantDefault.roles[0];
+        if(this.merchantRole.code === 'STORE') {
+          this.exhibitTarget = 'al consumidor final';
+        }
+        if(this.merchantRole.code === 'PROVIDER') {
+          this.exhibitTarget = 'a floristerías';
+        }
+        if(this.merchantRole.code === 'SUPPLIER') {
+          this.exhibitTarget = 'a wholesalers';
+        }
+        if(this.merchantRole.code === 'PRODUCTOR') {
+          this.exhibitTarget = 'a fincas';
+        }
+      }
     } catch (error) {
       console.log('error');
     }
@@ -689,7 +722,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   openLoginDialog() {
     let dialogRef = this.dialog.open(FormComponent, {
       data: {
-        title: { text: '🤑 Correo electronico que guardará el dinero:' },
+        title: { text: "🤑 Correo electronico que guardará el dinero:" },
         fields: [
           {
             name: 'email',
@@ -707,11 +740,9 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       if (!result.value.email) return;
       const exists = await this.authService.checkUser(result.value.email);
       if (exists) {
-        let merchants = await this.merchantsService.merchants({
-          findBy: { owner: exists._id },
-        });
+        let merchants = await this.merchantsService.merchants({ findBy: { owner: exists._id } });
         if (merchants.length > 0) {
-          let defaultMerchant = merchants.find((merchant) => merchant.default);
+          let defaultMerchant = merchants.find(merchant => merchant.default);
           if (defaultMerchant) {
             this.openLinkDialog(defaultMerchant);
           } else {
@@ -761,5 +792,83 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
   goToWizard() {
     return this.router.navigate(['/admin/wizard-training']);
+  }
+
+  truncateString(word) {
+    return truncateString(word, 12);
+  }
+
+  toggleStoreVisibility() {
+    const input = {
+      status: this.statusSwitch ? "closed" : "open"
+    }
+
+    this.saleflowsService
+      .updateSaleflow(input, this.saleflow._id)
+      .then(() => this.statusSwitch = !this.statusSwitch)
+      .catch(error => {
+        console.error(error);
+        const message = 'Ocurrió un error al intentar cambiar la visibilidad de tu tienda, intenta más tarde'
+        this.headerService.showErrorToast(message);
+      })
+  }
+
+  openExhibitDialog() {
+    const roleSwitch = async (role : number) => {
+      console.log(this.merchantRole)
+      console.log(this.roles)
+      if(this.merchantRole) {
+        await this.merchantsService.merchantRemoveRole(this.merchantRole._id, this.merchant).then((res)=> {
+          console.log(res)
+        })
+        this.merchantsService.merchantAddRole( this.roles[role]._id, this.merchant).then((res)=> {
+          console.log(res)
+        })
+      } else {
+        this.merchantsService.merchantAddRole(this.roles[role]._id, this.merchant).then((res)=> {
+          console.log(res)
+          this.merchantRole = this.roles[role]
+        })
+      }
+    }
+    this.dialog.open(OptionsDialogComponent, {
+      data: {
+        title: '¿A quién le vendes?',
+        options: [
+          {
+            value: 'Consumidor final',
+            callback: () => {
+              let index = this.roles.findIndex((role) => role.code === 'STORE')
+              roleSwitch(index)
+              this.exhibitTarget = 'al consumidor final';
+            }
+          },
+          {
+            value: 'Floristerías',
+            callback: () => {
+              let index = this.roles.findIndex((role) => role.code === 'PROVIDER')
+              roleSwitch(index)
+              this.exhibitTarget = 'a floristerías';
+            }
+          },
+          {
+            value: 'Wholesalers',
+            callback: () => {
+              let index = this.roles.findIndex((role) => role.code === 'SUPPLIER')
+              roleSwitch(index)
+              this.exhibitTarget = 'a wholesalers';
+            }
+          },
+          {
+            value: 'Fincas',
+            callback: () => {
+              let index = this.roles.findIndex((role) => role.code === 'PRODUCTOR')
+              roleSwitch(index)
+              this.exhibitTarget = 'a fincas';
+            }
+          },
+        ]
+      }
+    })
   }
 }
