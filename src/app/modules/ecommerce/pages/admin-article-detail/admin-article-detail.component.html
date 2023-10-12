@@ -5,7 +5,6 @@
     </div>
     <div class="subnav right">
       <mat-slide-toggle
-        class="toggle"
         [checked]="active"
         (change)="updateItem('toggle')"
       >
@@ -35,7 +34,7 @@
     <div class="category">
       <h2>Precios</h2>
       <div class="info-card">
-        <h3>Precio normal exhibido en MerchantID</h3>
+        <h3>Precio normal</h3>
         <p>{{item?.pricing | currency}}</p>
       </div>
       <div class="add-card">
@@ -44,46 +43,83 @@
       </div>
     </div>
     <div class="category">
-      <h2>Categories</h2>
-      <!--<div class="info-card">
-        <h3>Precio normal exhibido en MerchantID</h3>
-        <p>{{item?.pricing | currency}}</p>
-      </div>-->
-      <div class="add-card">
-        <p class="plus">+</p>
-        <p>Adiciona un Grupo</p>
+      <h2>Categorias</h2>
+      <div *ngIf="isHashtagExist && hashtagSelected?.keyword" class="info-card"(click)="openDialog('hashtag')">
+        <h3>Hashtag</h3>
+        <p>{{itemHashtagInput?.value}}</p>
       </div>
-      <div class="add-card">
+      <div *ngIf="itemCategoriesIds.length > 0" class="info-card" (click)="openCategoriesDialog()">
+        <h3>Categorias donde se exhibiendo</h3>
+        <p>{{categoriesString}}</p>
+      </div>
+      <div *ngIf="itemCategoriesIds.length === 0" class="add-card" (click)="openCategoriesDialog()">
+        <p class="plus">+</p>
+        <p>Adiciona una Categoria</p>
+      </div>
+      <div *ngIf="!hashtagSelected" class="add-card" (click)="openDialog('hashtag')">
         <p class="plus">+</p>
         <p>Adiciona un hashtag</p>
       </div>
     </div>
     <div class="category">
       <h2>Compra</h2>
-      <!--<div class="info-card">
-        <h3>Precio normal exhibido en MerchantID</h3>
-        <p>{{item?.pricing | currency}}</p>
-      </div>-->
-      <div class="add-card">
-        <p class="plus">+</p>
-        <p>Tiempo Aproximado de Entrega</p>
+      <div *ngIf="numberOfRequiredQuestions > 0 || numberOfOptionalQuestions > 0" class="info-card" (click)="gotoWebform()">
+        <h3>Formulario de preguntas</h3>
+        <p *ngIf="numberOfRequiredQuestions > 0 && numberOfOptionalQuestions > 0" class="display-text">
+          {{
+            numberOfRequiredQuestions + (numberOfRequiredQuestions > 1 ? ' preguntas requeridas y ' : ' pregunta requerida y ') +  
+            numberOfOptionalQuestions + (numberOfOptionalQuestions > 1 ? ' preguntas opcionales y ' : ' pregunta opcional')
+          }}
+        </p>
+        <p *ngIf="numberOfRequiredQuestions > 0 && numberOfOptionalQuestions === 0" class="display-text">
+          {{
+            numberOfRequiredQuestions + (numberOfRequiredQuestions > 1 ? ' preguntas requeridas' : ' pregunta requerida')
+          }}
+        </p>
+        <p *ngIf="numberOfRequiredQuestions === 0 && numberOfOptionalQuestions > 0" class="display-text">
+          {{
+            numberOfOptionalQuestions + (numberOfOptionalQuestions > 1 ? ' preguntas opcionales' : ' pregunta opcional')
+          }}
+        </p>
       </div>
-      <div class="add-card">
+      <div 
+        class="add-card" 
+        *ngIf="numberOfRequiredQuestions === 0 && numberOfOptionalQuestions === 0"  
+        (click)="gotoWebform()"
+      >
         <p class="plus">+</p>
         <p>Preguntas al Comprador</p>
       </div>
     </div>
     <div class="category">
-      <h2>Categories</h2>
-      <!--<div class="info-card">
-        <h3>Precio normal exhibido en MerchantID</h3>
-        <p>{{item?.pricing | currency}}</p>
-      </div>-->
-      <div class="add-card">
-        <p class="plus">+</p>
-        <p>Adiciona un Grupo</p>
+      <h2>Entrega</h2>
+      <div *ngIf="deliveryTimeStart || deliveryTimeEnd" class="info-card"(click)="openDialog('deliverytime')">
+        <h3>Tiempo de Entrega</h3>
+        <p *ngIf="deliveryTimeStart && deliveryTimeEnd">
+          Desde {{deliveryTimeStart}} horas hasta {{deliveryTimeEnd}} horas
+        </p>
+        <p *ngIf="deliveryTimeStart && !deliveryTimeEnd">
+          {{deliveryTimeStart}} horas
+        </p>
+        <p *ngIf="deliveryTimeEnd && !deliveryTimeStart">
+          {{deliveryTimeEnd}} horas
+        </p>
       </div>
-      <div class="add-card">
+      <div class="costs-list" *ngFor="let expenditure of expenditures">
+        <div class="info-card" (click)="openDialog('expenditure-update', expenditure._id)">
+          <h3>Costo: {{expenditure.name}}</h3>
+          <p>{{expenditure.amount | currency}}</p>
+        </div>
+      </div>
+      <div 
+        *ngIf="!deliveryTimeStart && !deliveryTimeEnd" 
+        class="add-card" 
+        (click)="openDialog('deliverytime')"
+      >
+        <p class="plus">+</p>
+        <p>Tiempo Aproximado de Entrega</p>
+      </div>
+      <div class="add-card" (click)="openDialog('cost')">
         <p class="plus">+</p>
         <p>Costo de la Venta</p>
       </div>
@@ -93,47 +129,6 @@
     <div class="info-card">
       <p class="card-title">Precio normal exhibido en MerchantID</p>
       <p class="display-text">{{item?.pricing | currency}}</p>
-    </div>
-    <div *ngIf="isHashtagExist && hashtagSelected?.keyword" class="info-card"(click)="openDialog('hashtag')">
-      <p class="card-title">Hashtag</p>
-      <p class="display-text">{{itemHashtagInput?.value}}</p>
-    </div>
-    <div *ngIf="deliveryTimeStart || deliveryTimeEnd" class="info-card"(click)="openDialog('deliverytime')">
-      <p class="card-title">Tiempo de Entrega</p>
-      <p *ngIf="deliveryTimeStart && deliveryTimeEnd" class="display-text" >
-        Desde {{deliveryTimeStart}} horas hasta {{deliveryTimeEnd}} horas
-      </p>
-      <p *ngIf="deliveryTimeStart && !deliveryTimeEnd" class="display-text">
-        {{deliveryTimeStart}} horas
-      </p>
-      <p *ngIf="deliveryTimeEnd && !deliveryTimeStart" class="display-text">
-        {{deliveryTimeEnd}} horas
-      </p>
-    </div>
-    <div *ngIf="numberOfRequiredQuestions > 0 || numberOfOptionalQuestions > 0" class="info-card" (click)="gotoWebform()">
-      <p class="card-title">Formulario de preguntas</p>
-      <p *ngIf="numberOfRequiredQuestions > 0 && numberOfOptionalQuestions > 0" class="display-text">
-        {{
-          numberOfRequiredQuestions + (numberOfRequiredQuestions > 1 ? ' preguntas requeridas y ' : ' pregunta requerida y ') +  
-          numberOfOptionalQuestions + (numberOfOptionalQuestions > 1 ? ' preguntas opcionales y ' : ' pregunta opcional')
-        }}
-      </p>
-      <p *ngIf="numberOfRequiredQuestions > 0 && numberOfOptionalQuestions === 0" class="display-text">
-        {{
-          numberOfRequiredQuestions + (numberOfRequiredQuestions > 1 ? ' preguntas requeridas' : ' pregunta requerida')
-        }}
-      </p>
-      <p *ngIf="numberOfRequiredQuestions === 0 && numberOfOptionalQuestions > 0" class="display-text">
-        {{
-          numberOfOptionalQuestions + (numberOfOptionalQuestions > 1 ? ' preguntas opcionales' : ' pregunta opcional')
-        }}
-      </p>
-    </div>
-    <div class="container" *ngFor="let expenditure of expenditures">
-        <div class="info-card" (click)="openDialog('expenditure-update', expenditure._id)">
-          <p class="card-title">Costo: {{expenditure.name}}</p>
-          <p class="display-text">{{expenditure.amount | currency}}</p>
-        </div>
     </div>
   </div>
   <div *ngIf="tabIndex  === 2" class="container">
@@ -183,7 +178,7 @@
     </p>
     <div class="input-card">
       <p class="input-text">⏰ Tiempo aproximado de entrega</p>
-      <button class="input-button" (click)="openDialog('deliverytime')">
+      <button class="input-button" >
         <img
           src="../../../../../assets/icons/add-button.svg"
           alt="add item"
@@ -196,11 +191,11 @@
       FUNCIONALIDADES OPCIONALES
     </p>
     <div 
-      *ngIf="numberOfRequiredQuestions === 0 && numberOfOptionalQuestions === 0" 
+      
       class="input-card"
     >
       <p class="input-text">¿Te tiene que responder algo el comprador antes de pagarte por este artículo?</p>
-      <button class="input-button" (click)="gotoWebform()">
+      <button class="input-button" >
         <img
           src="../../../../../assets/icons/add-button.svg"
           alt="add item"
@@ -209,7 +204,7 @@
     </div>
     <div class="input-card last">
       <p class="input-text">¿Quieres incluir el costo de vender este artículo en tu reporte de los beneficios?</p>
-      <button class="input-button" (click)="openDialog('cost')">
+      <button class="input-button" >
         <img
           src="../../../../../assets/icons/add-button.svg"
           alt="add item"
@@ -217,7 +212,7 @@
       </button>
     </div>
   </div>-->
-  <div *ngIf="tabIndex === 3" class="container dropdown">
+  <div *ngIf="tabIndex === 3" class="container">
     <div class="metric">
       <h4>Cantidad de veces Vendido</h4>
       <p>{{ totalSells }} veces, ${{ totalIncome }}</p>
@@ -245,9 +240,7 @@
     class="bottom-bar"
     [ngStyle]="{'background-color': active ? 'var(--El-verdecito, #87CD9B)' : 'var(--MoKito, #936105)'}"
   >
-    <p class="center" *ngIf="tabIndex !== 3">Salvar Cambios</p>
-    <ng-container *ngIf="tabIndex === 3">
-      <p 
+    <p 
       class="preview"
       [ngStyle]="{'color': active ? '#181D17' : '#FFF'}"
       (click)="goToItemDetail()"
@@ -261,6 +254,5 @@
     >
       {{active ? 'Comparte con Compradores' : 'Oculto en todas las Vitrinas'}}
     </p>
-    </ng-container>
   </div>
 </div>

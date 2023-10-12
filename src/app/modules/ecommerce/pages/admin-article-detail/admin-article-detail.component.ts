@@ -8,8 +8,9 @@ import { OrderService } from 'src/app/core/services/order.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { environment } from 'src/environments/environment';
 import { MatDialog } from '@angular/material/dialog';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { FormComponent, FormData } from 'src/app/shared/dialogs/form/form.component';
-import { Validators, FormControl } from '@angular/forms';
+import { Validators, FormControl, FormGroup } from '@angular/forms';
 import { Code, CodeInput } from 'src/app/core/models/codes';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { NgNavigatorShareService } from 'ng-navigator-share';
@@ -20,7 +21,9 @@ import {
   ItemImageInput,
   ItemInput,
 } from 'src/app/core/models/item';
-
+import { TagFilteringComponent } from 'src/app/shared/dialogs/tag-filtering/tag-filtering.component';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { CommunityCategory } from 'src/app/core/models/community-categories';
 
 @Component({
   selector: 'app-admin-article-detail',
@@ -55,10 +58,19 @@ export class AdminArticleDetailComponent implements OnInit {
   hashtagSelected: any = null;
   isHashtagExist: boolean = false
   isHashtagUpdated: boolean = false
+
+  allCategories: Array<ItemCategory> = [];
+  categoriesInItem: Record<string, boolean> = {};
+  categoryById: Record<string, CommunityCategory> = {};
+  itemCategoriesIds: Array<string> = [];
+  categoriesString: string = '';
+  categoriesToCreate: Array<ItemCategory> = [];
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private MatDialog: MatDialog,
+    private _bottomSheet: MatBottomSheet,
     private itemsService: ItemsService,
     private merchantsService: MerchantsService,
     private codesService: CodesService,
@@ -96,6 +108,7 @@ export class AdminArticleDetailComponent implements OnInit {
     }
     await this.getBuyers();
     this.saveTemporalItemInMemory();
+    await this.getCategories();
   }
 
   async getBuyers() {
@@ -446,4 +459,152 @@ export class AdminArticleDetailComponent implements OnInit {
       url: `${environment.uri}/ecommerce/admin-article-detail/${this.item._id}`,
     })
   }
+
+  async getCategories() {
+    this.categoriesString = '';
+    this.itemCategoriesIds = [];
+    const categories = (
+      await this.itemsService.itemCategories(
+        this.merchantId,
+        {
+          options: {
+            limit: -1,
+          },
+        }
+      )
+    )?.itemCategoriesList;
+
+    this.allCategories = categories;
+
+    for (const category of this.allCategories) {
+      this.categoryById[category._id] = category;
+    }
+
+    const categoryIdsInItem =
+      this.item && this.item.category
+        ? this.item.category.map((category) => category._id)
+        : [];
+
+    if (this.item) {
+      for (const category of this.allCategories) {
+        if (categoryIdsInItem.includes(category._id)) {
+          this.itemCategoriesIds.push(category._id);
+        }
+      }
+    }
+
+    if (this.itemCategoriesIds.length > 0)
+      this.categoriesString = this.itemCategoriesIds
+        .map((categoryId) => this.categoryById[categoryId].name)
+        .join(', ');
+    else this.categoriesString = null;
+  }
+
+  openCategoriesDialog = () => {
+    const bottomSheetRef = this._bottomSheet.open(TagFilteringComponent, {
+      data: {
+        title: '¿En cual sub-vitrina?',
+        titleIcon: {
+          show: false,
+        },
+        categories: this.headerService.user
+          ? this.allCategories.map((category) => ({
+            _id: category._id,
+            name: category.name,
+            selected: this.itemCategoriesIds.includes(category._id),
+          }))
+          : this.categoriesToCreate.map((category) => ({
+            _id: category._id,
+            name: category.name,
+            selected: this.itemCategoriesIds.includes(category._id),
+          })),
+        rightIcon: {
+          iconName: 'add',
+          callback: (data) => {
+            let fieldsToCreate: FormData = {
+              fields: [
+                {
+                  name: 'new-category',
+                  placeholder: 'Nueva categoría',
+                  type: 'text',
+                  validators: [Validators.pattern(/[\S]/), Validators.required],
+                },
+              ],
+            };
+
+            unlockUI();
+
+            bottomSheetRef.dismiss();
+
+            const dialogRef = this.MatDialog.open(FormComponent, {
+              data: fieldsToCreate,
+              disableClose: true,
+            });
+
+            dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+              if (!result?.controls['new-category'].valid) {
+                this.headerService.showErrorToast('Categoría inválida');
+              } else {
+                if (this.headerService.user) {
+                  const categoryName = result?.value['new-category'];
+
+                  lockUI();
+                  await this.itemsService.createItemCategory(
+                    {
+                      merchant: this.merchantId,
+                      name: categoryName,
+                      active: true,
+                    },
+                    false
+                  );
+
+                  await this.getCategories();
+
+                  unlockUI();
+
+                  this.openCategoriesDialog();
+                } else {
+                  this.categoriesToCreate.push({
+                    _id: 'created-category-' + result?.value['new-category'],
+                    name: result?.value['new-category'],
+                    merchant: null,
+                  } as any);
+                  this.categoryById[
+                    'created-category-' + result?.value['new-category']
+                  ] = {
+                    _id: 'created-category-' + result?.value['new-category'],
+                    name: result?.value['new-category'],
+                    merchant: null,
+                  } as any;
+
+                  this.openCategoriesDialog();
+                }
+              }
+            });
+          },
+        },
+      },
+    });
+
+    bottomSheetRef.instance.selectionOutput.subscribe(
+      async (categoriesAdded: Array<string>) => {
+        if (this.item) {
+          await this.itemsService.updateItem(
+            {
+              category: categoriesAdded,
+            },
+            this.item._id
+          );
+        }
+
+        this.itemCategoriesIds = categoriesAdded;
+
+        if (this.itemCategoriesIds.length > 0)
+          this.categoriesString = this.itemCategoriesIds
+            .map((categoryId) => this.categoryById[categoryId].name)
+            .join(', ');
+        else this.categoriesString = null;
+      }
+    );
+  };
 }
