@@ -161,6 +161,7 @@ const orderData = `
   }
   identification
   notifications
+  orderType
 `;
 
 const shortOrderData = `
