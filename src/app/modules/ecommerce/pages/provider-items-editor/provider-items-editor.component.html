@@ -93,8 +93,11 @@
       ></div>
       <div *ngIf="infinite" class="modify-button-cero" (click)="setInfinite()" >{{stock}}</div>
     </div>
-    <footer class="bottom-footer" *ngIf="showCurrencyEditor" (click)="stockEditor()">
+    <footer class="bottom-footer" *ngIf="updateFullStep" (click)="stockEditor()">
       <p>Incluir mi precio</p>
+    </footer>
+    <footer class="bottom-footer" *ngIf="showCurrencyEditor" (click)="toDoTask()">
+      <p>Salvar el precio</p>
     </footer>
     <footer class="bottom-footer" *ngIf="showStockEditor" (click)="toDoTask()">
       <p>Incluir mi disponibilidad</p>
