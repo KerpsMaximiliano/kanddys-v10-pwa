@@ -1,30 +1,95 @@
 <div class="main-container">
   <nav>
-    <div *ngIf="!dropdown" class="subnav">
+    <div class="subnav">
       <a class="exit"> X </a>
     </div>
     <div class="subnav right">
       <mat-slide-toggle
-        *ngIf="!dropdown"
         class="toggle"
         [checked]="active"
         (change)="updateItem('toggle')"
       >
       </mat-slide-toggle>
-      <img 
-        class="icon" 
-        title="icon" 
-        [src]="!dropdown ?  env +'/info-icon.svg' :  env +'/dropdown_icon.png'" 
-        (click)="dropdown = !dropdown"
-      />
     </div>
   </nav>
-  <div *ngIf="!dropdown" class="article-info">
+  <div class="article-info">
     <img alt="" class="article-img" [src]="item?.images[0].value" />
     <p class="article-name">{{item?.name}}</p>
     <p class="article-description">{{item?.description}}</p>
   </div>
-  <div *ngIf="!dropdown" class="container">
+  <div class="tab-bar">
+    <p 
+      (click)="tabIndex = 1"
+      [class]="{'active': tabIndex === 1}"
+    >DATOS</p>
+    <p 
+      (click)="tabIndex = 2"
+      [class]="{'active': tabIndex === 2}"
+    >🌼 VITRINA</p>
+    <p 
+      (click)="tabIndex = 3"
+      [class]="{'active': tabIndex === 3}"
+    >RESULTADOS</p>
+  </div>
+  <main *ngIf="tabIndex === 2">
+    <div class="category">
+      <h2>Precios</h2>
+      <div class="info-card">
+        <h3>Precio normal exhibido en MerchantID</h3>
+        <p>{{item?.pricing | currency}}</p>
+      </div>
+      <div class="add-card">
+        <p class="plus">+</p>
+        <p>Adiciona ID</p>
+      </div>
+    </div>
+    <div class="category">
+      <h2>Categories</h2>
+      <!--<div class="info-card">
+        <h3>Precio normal exhibido en MerchantID</h3>
+        <p>{{item?.pricing | currency}}</p>
+      </div>-->
+      <div class="add-card">
+        <p class="plus">+</p>
+        <p>Adiciona un Grupo</p>
+      </div>
+      <div class="add-card">
+        <p class="plus">+</p>
+        <p>Adiciona un hashtag</p>
+      </div>
+    </div>
+    <div class="category">
+      <h2>Compra</h2>
+      <!--<div class="info-card">
+        <h3>Precio normal exhibido en MerchantID</h3>
+        <p>{{item?.pricing | currency}}</p>
+      </div>-->
+      <div class="add-card">
+        <p class="plus">+</p>
+        <p>Tiempo Aproximado de Entrega</p>
+      </div>
+      <div class="add-card">
+        <p class="plus">+</p>
+        <p>Preguntas al Comprador</p>
+      </div>
+    </div>
+    <div class="category">
+      <h2>Categories</h2>
+      <!--<div class="info-card">
+        <h3>Precio normal exhibido en MerchantID</h3>
+        <p>{{item?.pricing | currency}}</p>
+      </div>-->
+      <div class="add-card">
+        <p class="plus">+</p>
+        <p>Adiciona un Grupo</p>
+      </div>
+      <div class="add-card">
+        <p class="plus">+</p>
+        <p>Costo de la Venta</p>
+      </div>
+    </div>
+  </main>
+  <!--<div *ngIf="tabIndex === 1" class="container">
     <div class="info-card">
       <p class="card-title">Precio normal exhibido en MerchantID</p>
       <p class="display-text">{{item?.pricing | currency}}</p>
@@ -71,7 +136,7 @@
         </div>
     </div>
   </div>
-  <div *ngIf="!dropdown" class="container">
+  <div *ngIf="tabIndex  === 2" class="container">
     <p class="data-title">
       🌼 VITRINA
     </p>
@@ -112,7 +177,7 @@
       </button>
     </div>
   </div>
-  <div *ngIf="!dropdown && !deliveryTimeStart && !deliveryTimeEnd" class="container">
+  <div *ngIf="" class="container">
     <p class="data-title">
       OPCIONAL- DATOS QUE LOS COMPRADORES CONSIDERAN IMPORTANTES
     </p>
@@ -126,7 +191,7 @@
       </button>
     </div>
   </div>
-  <div *ngIf="!dropdown" class="container">
+  <div class="container">
     <p class="data-title">
       FUNCIONALIDADES OPCIONALES
     </p>
@@ -151,8 +216,8 @@
         />
       </button>
     </div>
-  </div>
-  <div *ngIf="dropdown" class="container dropdown">
+  </div>-->
+  <div *ngIf="tabIndex === 3" class="container dropdown">
     <div class="metric">
       <h4>Cantidad de veces Vendido</h4>
       <p>{{ totalSells }} veces, ${{ totalIncome }}</p>
@@ -161,12 +226,10 @@
       <h4>Cantidad de compradores diferentes</h4>
       <p>{{buyers}}</p>
     </div>
-    <!-- Esta card será dummy hasta que se implemente la query en el backend
     <div class="metric">
       <h4>Comprador que mas lo ha comprado</h4>
       <p>CompradorID</p>
     </div>
-    -->
     <div class="metric">
       <h4>Posicion segun las ventas</h4>
       <p>
@@ -178,21 +241,13 @@
       </p>
     </div>
   </div>
-  <div *ngIf="dropdown" class="bubble-button-wrapper">
-    <div
-      class="bubble-button"
-      *ngIf="dropdown === true"
-      (click)="dropdown = false"
-    >
-      <img [src]="env + '/dropdown_icon.png'" alt="wizard" />
-    </div>
-  </div>
-  <div 
-    *ngIf="!dropdown" 
+  <div
     class="bottom-bar"
     [ngStyle]="{'background-color': active ? 'var(--El-verdecito, #87CD9B)' : 'var(--MoKito, #936105)'}"
   >
-    <p 
+    <p class="center" *ngIf="tabIndex !== 3">Salvar Cambios</p>
+    <ng-container *ngIf="tabIndex === 3">
+      <p 
       class="preview"
       [ngStyle]="{'color': active ? '#181D17' : '#FFF'}"
       (click)="goToItemDetail()"
@@ -206,5 +261,6 @@
     >
       {{active ? 'Comparte con Compradores' : 'Oculto en todas las Vitrinas'}}
     </p>
+    </ng-container>
   </div>
 </div>

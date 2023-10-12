@@ -4,12 +4,12 @@
   align-items: center;
   width: 100%;
   background: #F2F2F2;
-  height: 100%;
 }
 
 nav {
   display: flex;
-  position: fixed;
+  position: sticky;
+  top: 0;
   width: 100%;
   max-width: 500px;
   height: 46px;
@@ -18,6 +18,25 @@ nav {
   align-items: center;
   justify-content: space-between;
   padding: 0 15px;
+}
+
+.tab-bar {
+  width: 100%;
+  padding: 10px 0 0 26px;
+  display: flex;
+  gap: 22px;
+  p {
+    color: #000;
+    font-family: InterLight;
+    font-size: 13px;
+    margin: 0;
+  }
+  .active {
+    text-decoration: underline;
+    text-decoration-color: #87CD9B;
+    text-decoration-thickness: 3px;
+    text-underline-offset: 4px;
+  }
 }
 
 .subnav {
@@ -47,10 +66,6 @@ nav {
 
 .toggle {
   margin-right: 30px;
-}
-
-.icon {
-  filter: brightness(0) saturate(100%);
 }
 
 :host ::ng-deep .mat-slide-toggle .mat-slide-toggle-bar {
@@ -127,40 +142,62 @@ nav {
   width: 357px;
 }
 
-.info-card {
-  margin: 0 21px 0 21px;
-  height: 80px;
-  border-radius: 4px;
-  background: #FFF;
-  padding: 0 13px 0 13px;
-  input {
-        border: none;
-        font-size: 17px;
-        font-family: InterBold;
-        &::placeholder {
-          color: #7b7b7b;
-        }
-        &:read-only {
-          background-color: #fff;
-          color: #7b7b7b;
-        }
+main {
+  padding: 43px 18px 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  width: 100%;
+  .category {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    h2 {
+      color: #272727;
+      font-family: InterBold;
+      font-size: 17px;
+      margin: 0 0 5px;
     }
-}
-
-.card-title {
-  color: #000;
-  font-family: InterLight;
-  font-size: 13px;
-  font-style: italic;
-  padding-top: 14px;
-}
-
-.display-text {
-  color: #7B7B7B;
-  font-family: InterBold;
-  font-size: 17px;
-  margin: 0;
-  border: none;
+    .info-card {
+      height: 80px;
+      border-radius: 4px;
+      background: #FFF;
+      padding: 0 13px;
+      h3 {
+        color: #000;
+        font-family: InterLight;
+        font-size: 13px;
+        font-style: italic;
+        font-weight: 300;
+      }
+      p {
+        color: #7B7B7B;
+        font-family: InterBold;
+        font-size: 17px;
+        margin: 0;
+        border: none;
+      }
+    }
+    .add-card {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      height: 75px;
+      border-radius: 4px;
+      background: #C4C5C3;
+      p {
+        color: var(--Verde-Oscurito, #3B654A);
+        font-family: InterMedium;
+        font-size: 17px;  
+      }
+      .plus {
+        margin-left: 14px;
+        text-align: center;
+        font-size: 51px;
+        line-height: 105.023%;
+      }
+    }
+  }
 }
 
 .data-title {
@@ -207,11 +244,10 @@ nav {
 
 .container {
   width: 100%;
-  margin-top: 21px;
-}
-
-.container.dropdown {
-  margin-top: 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 40px 18px;
 }
 
 .metric {
@@ -278,7 +314,7 @@ nav {
 .bottom-bar {
   display: flex;
   align-items: center;
-  position: fixed;
+  position: sticky;
   width: inherit;
   max-width: 500px;
   bottom: 0px;
@@ -289,6 +325,12 @@ nav {
   height: 28px;
   p {
     cursor: pointer;
+  }
+  .center {
+    color: #000;
+    font-family: InterBold;
+    font-size: 17px; 
+    margin: 0 auto;
   }
 }
 

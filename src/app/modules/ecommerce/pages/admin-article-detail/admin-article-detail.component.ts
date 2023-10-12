@@ -33,9 +33,10 @@ export class AdminArticleDetailComponent implements OnInit {
   merchantId: string;
   merchantSlug: string;
 
+  tabIndex: number = 2;
+
   env: string = environment.assetsUrl;
   active: boolean = false;
-  dropdown: boolean = false;
   itemId: string;
   deliveryTimeStart: number;
   deliveryTimeEnd: number;
