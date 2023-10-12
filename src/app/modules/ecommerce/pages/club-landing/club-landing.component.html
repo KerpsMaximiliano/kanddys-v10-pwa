@@ -232,16 +232,17 @@
       >
         Mensaje
         <img
-          [src]="headerService.user ? 
-          '../../../../../assets/icons/chat-icon-light.svg' : 
-          '../../../../../assets/icons/chat-icon-dark.svg'"
+          class="audio-freq"
+          src="{{assetsFolder}}/audio-freq.png"
+          [ngClass]="{ 'brighter': headerService.user }"
           alt="img"
         >
       </div>
       <!-- <input type="text" placeholder="Escribe tu correo electrónico para reservar a Laia" (click)="openLaiaDialog()"/> -->
         <img
           alt="arrow"
-          src="../../../../../assets/icons/arrow-no-background.svg"
+          class="arrow"
+          src="{{assetsFolder}}/transparent-arrow-up.png"
         >
     </div>
     <!-- <footer
