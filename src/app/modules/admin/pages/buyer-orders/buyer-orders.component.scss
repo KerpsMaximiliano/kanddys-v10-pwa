@@ -208,22 +208,8 @@ input::placeholder {
     background-color: transparent;
     height: 29px;
   }
-
-  // mat-form-field{
-  //   height: 29px;
-  //   display: flex !important;
-  //   flex-wrap: nowrap;
-  // }
 }
 
-
-// ::ng-deep mat-form-field, .mat-form-field-type-mat-date-range-input, .mat-form-field-infix{
-//   display:flex !important;
-// }
-
-// ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-wrapper{
-//   display:flex !important;
-// } 
 .mat-start-date-input {
   font-size: 14px;
   padding: 8px;
@@ -231,12 +217,12 @@ input::placeholder {
 }
 
 ::ng-deep mat-datepicker-toggle{
-line-height: 29px !important;
-height: 29px !important;
-button{
   line-height: 29px !important;
-max-height: 29px !important;
-}
+  height: 29px !important;
+  button{
+    line-height: 29px !important;
+    max-height: 29px !important;
+  }
 }
 
 ::ng-deep .mat-datepicker-content {
@@ -244,10 +230,12 @@ max-height: 29px !important;
   width: 100vw!important;
   
 }
+
 ::ng-deep .mat-datepicker-content .mat-calendar {
   height: auto!important;
   width: auto!important;
 }
+
 ::ng-deep .cdk-overlay-pane {
   bottom: 32px!important;
   left: calc(50vw - 250px)!important;

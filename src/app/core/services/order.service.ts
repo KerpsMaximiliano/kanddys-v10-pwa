@@ -684,10 +684,10 @@ export class OrderService {
     return result?.ordersIncomeMerchantByUser;
   }
 
-  async createOrderExternal(input : ItemOrderExternalInput) {
+  async createOrderExternal(input : ItemOrderExternalInput, merchant: boolean = true) {
     const result = await this.graphql.mutate({
       mutation: createOrderExternal,
-      variables: { input },
+      variables: { isMerchant: merchant, input },
       fetchPolicy: 'no-cache',
       context:{ useMultipart: true }
     });
