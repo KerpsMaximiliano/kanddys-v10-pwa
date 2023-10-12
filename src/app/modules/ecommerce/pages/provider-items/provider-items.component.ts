@@ -55,10 +55,10 @@ export class ProviderItemsComponent implements OnInit {
         key: 'providedByMe',
       },
     ];
-  isSwitchActive: boolean = true;
+  isSwitchActive = false;
 
-  isSupplier: boolean = true;
-  hiddenDashboard: boolean = false
+  isSupplier = true;
+  hiddenDashboard = false;
   itemsFiltering = []
 
   /**Button for filtering */
@@ -174,6 +174,8 @@ export class ProviderItemsComponent implements OnInit {
 
     if (!existToken) {
       await this.executeInitProcesses();
+      await this.fetchNewPageOfItemsIDontSell(true, false);
+
     }
 
   }
@@ -190,24 +192,21 @@ export class ProviderItemsComponent implements OnInit {
         this.checkIfPresentationWasClosedBefore();
         this.checkIfTutorialWasOpen()
 
-
         await this.getNumberOfItemsSold();
-        if (this.isUserLogged) {
-          await this.fetchItemsToSell();
-        } else {
-          await this.fetchNewPageOfItemsIDontSell(true, false);
-        }
-
-        this.itemsService
-          .itemsQuantityOfFilters(this.merchantsService.merchantData._id)
-          .then(data => {
-            this.totalHidden = data.hidden
-            this.totalAllItems = data.all
-            this.totalItemsByCommission = data.commissionable
-            this.totalItemsByLowStock = data.lowStock
-          })
+        await this.fetchItemsToSell();
+        await this.fetchQuantifyFilters();
       }
     );
+  }
+
+  async fetchQuantifyFilters() {
+    const merchantTotal = await this.itemsService
+      .itemsQuantityOfFilters(this.merchantId)
+    this.totalHidden = merchantTotal.hidden
+    this.totalAllItems = merchantTotal.all
+    this.totalItemsByCommission = merchantTotal.commissionable
+    this.totalItemsByLowStock = merchantTotal.lowStock
+
   }
 
   /**
@@ -226,6 +225,7 @@ export class ProviderItemsComponent implements OnInit {
     }
 
     const saleflow = await this.saleflowService.saleflowDefault(merchant._id)
+    console.log(saleflow.items)
     this.allItemsID = saleflow.items
       .map(item => item.item._id)
       .filter(item => item)
@@ -270,7 +270,11 @@ export class ProviderItemsComponent implements OnInit {
         this.paginationState.status === 'complete' &&
         !this.reachTheEndOfPagination
       ) {
-        await this.fetchNewPageOfItemsIDontSell(false, true, true);
+        if (this.isSupplier) {
+          await this.fetchItemsToSell();
+        } else {
+          await this.fetchNewPageOfItemsIDontSell(false, true, true);
+        }
       }
     }
   }
@@ -407,10 +411,11 @@ export class ProviderItemsComponent implements OnInit {
     }
 
     if (this.isTheUserAMerchant) {
-      const supplierSpecificItemsPagination: PaginationInput = {
+      const pagination: PaginationInput = {
         findBy: {
           merchant: this.merchantsService.merchantData._id,
           _id: {
+            // $nin: this.itemsISell.map((item) => item.parentItem).filter(item => item)
             $nin: this.allItemsID,
           }
         },
@@ -421,13 +426,9 @@ export class ProviderItemsComponent implements OnInit {
         },
       };
 
-      const supplierSpecificItems: Array<Item> = (
-        await this.itemsService.listItems(supplierSpecificItemsPagination)
-      )?.listItems;
-
-      if (supplierSpecificItems) {
-        this.itemsISell = supplierSpecificItems;
-      }
+      const data = await this.saleflowService.listItems(pagination, true);
+      console.log(data.listItems)
+      this.itemsISell = data.listItems
     }
   }
 
@@ -1694,7 +1695,7 @@ export class ProviderItemsComponent implements OnInit {
       }
     });
   }
-  goToArticleDetail(id){
+  goToArticleDetail(id) {
     this.router.navigate(['ecommerce/admin-article-detail/' + id]);
   }
 }
