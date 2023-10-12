@@ -40,6 +40,8 @@ import { CompareDialogComponent } from 'src/app/shared/dialogs/compare-dialog/co
 import { SelectRoleDialogComponent } from 'src/app/shared/dialogs/select-role-dialog/select-role-dialog.component';
 import { SignupChatComponent } from 'src/app/shared/dialogs/signup-chat/signup-chat.component';
 import { SpecialDialogComponent } from 'src/app/shared/dialogs/special-dialog/special-dialog.component';
+import { URL } from 'url';
+import { FilesService } from 'src/app/core/services/files.service';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 
 interface ReviewsSwiper {
@@ -223,7 +225,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   vectorsCount: number = 0;
   chatsCount: number = 0;
   @ViewChild('qrcode', { read: ElementRef }) qrcode: ElementRef;
-
+  
   constructor(
     public headerService: HeaderService,
     private app: AppService,
@@ -242,6 +244,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     private changeDetectorRef: ChangeDetectorRef,
     private clipboard: Clipboard,
     private affiliateService: AffiliateService,
+    private filesService: FilesService,
     private gptService: Gpt3Service
   ) {
     const sub = this.app.events
@@ -743,6 +746,23 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     }
   }
 
+  async getImg(e) {
+      console.log("🚀 ~ file: club-landing.component.ts:707 ~ ClubLandingComponent ~ getImg ~ e:", e)
+      const inputElement = e.target as HTMLInputElement;
+      if (inputElement.files && inputElement.files[0]) {
+        const selectedFile = inputElement.files[0];
+        const toBase64 = selectedFile => new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(selectedFile);
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+      });
+      const base64Data = await toBase64(selectedFile);
+      this.filesService.setFile(base64Data);
+      this.router.navigate(['/ecommerce/provider-items-editor']);
+      }
+  }
+  
   isUserAdmin() {
     if (this.headerService?.user)
       return this.headerService.user?.roles?.some(

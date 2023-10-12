@@ -73,6 +73,7 @@ import { MagicLinkSentComponent } from './pages/magic-link-sent/magic-link-sent.
 import { MerchantRegisterComponent } from './pages/merchant-register/merchant-register.component';
 import { LoginLandingComponent } from './pages/login-landing/login-landing.component';
 import { NotificationAccessScreenComponent } from './pages/notification-access-screen/notification-access-screen.component';
+import { ProviderItemsEditorComponent } from './pages/provider-items-editor/provider-items-editor.component';
 import { AdminArticleDetailComponent } from './pages/admin-article-detail/admin-article-detail.component';
 import { ProfloraCampainComponent } from './pages/proflora-campain/proflora-campain.component';
 import { ChatRoomComponent } from './pages/chat-room/chat-room.component';
@@ -280,6 +281,14 @@ const routes: Routes = [
   {
     path: 'provider-items',
     component: ProviderItemsComponent,
+  },
+  {
+    path: 'provider-items-editor/:articleId',
+    component: ProviderItemsEditorComponent
+  },
+  {
+    path: 'provider-items-editor',
+    component: ProviderItemsEditorComponent
   },
   {
     path: 'club-landing',
@@ -513,6 +522,7 @@ const routes: Routes = [
     MerchantRegisterComponent,
     LoginLandingComponent,
     NotificationAccessScreenComponent,
+    ProviderItemsEditorComponent,
     AdminArticleDetailComponent,
     ProfloraCampainComponent,
     ChatRoomComponent,

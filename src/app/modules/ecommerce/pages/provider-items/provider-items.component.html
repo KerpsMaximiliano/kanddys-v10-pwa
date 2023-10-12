@@ -232,7 +232,7 @@ h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
       'tutorial-highlighted': firstItem && itemsTutorialOpened
     }"
   >
-    <div class="left-column" (click)="(null)">
+    <div class="left-column" (click)="goToArticleDetail(item._id)">
       <div
         class="product-image"
         [ngStyle]="{
@@ -250,8 +250,8 @@ h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
     </div>
 
     <div class="middle-column fixedWidth" (click)="(null)">
-      <div class="item-name">{{ item.name }}</div>
-      <div class="item-description">{{ item.description }}</div>
+      <div class="item-name" (click)="goToArticleDetail(item._id)">{{ item.name }}</div>
+      <div class="item-description" (click)="goToArticleDetail(item._id)">{{ item.description }}</div>
       <div class="item-price" (click)="editPrice(item, itemIndex)">
         <ng-container *ngIf="item.pricing !== null && providedByMe">
           ${{ item.pricing | number : "1.2-2" }}

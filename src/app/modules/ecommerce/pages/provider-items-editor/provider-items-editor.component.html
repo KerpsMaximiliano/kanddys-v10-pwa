@@ -1,0 +1,113 @@
+<div class="container">
+  <header>
+    <div class="close" (click)="back()">X</div>
+  </header>
+  <div class="content">
+    <div class="items-container">
+      <div class="article-content flex">
+        <div
+          class="image"
+          [ngStyle]="{
+            backgroundImage: itemImage ? 'url(' + itemImage + ')'
+            : 'url(/assets/images/noimage.png)'
+          }"
+          (click)="uploader.click()"
+        >
+        <input id="imgInput" accept="image/*" type="file" hidden #uploader (change)="getImg($event)">
+      </div>
+        <div class="article">
+          <div class="input-container">
+            <input 
+              type="text" 
+              class="article-id"
+              [formControl]="articleName"
+              placeholder="Sin nombre">
+          </div>
+          <div class="input-container">
+            <textarea 
+              rows="3" 
+              cols="33"
+              class="context"
+              [formControl]="articleDescription"
+              placeholder="Opcional, adiciona una descripción"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="edition-message" *ngIf="showCurrencyEditor">
+      <p class="message">Si eres proveedor, adiciona el precio de venta:</p>
+    </div>
+    <div class="edition-message" *ngIf="showStockEditor">
+      <p class="message">Adiciona la cantidad que tienes disponible:</p>
+    </div>
+    <div class="number-space" *ngIf="showCurrencyEditor">
+        <app-currency-input
+        [innerLabelStyles]="{
+          fontFamily: 'InterLight',
+          fontStyle: 'italic',
+          fontSize: '13px'
+        }"
+        [fieldStyles]="{
+          boxShadow: 'none',
+          backgroundColor: 'transparent',
+          borderRadius: '6px',
+          padding: '8px 0px',
+          lineHeight: '46px'
+        }"
+        [initialValue]="pricing"
+        [formattedPricing]="placeholder"
+        placeholderColor="#7B7B7B"
+        (onInputEvent)="updateItemPrice($event)"
+        [labelLarge]="true"
+      ></app-currency-input>
+    </div>
+    <div class="stock-space" *ngIf="showStockEditor">
+      <div class="modify-button-reduce" (click)="reduceStock()">-</div>
+      <input
+        *ngIf="!infinite"
+        type="number"
+        (blur)="(true)"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        class="input-stock"
+        [formControl]="changeStock"
+        min="0"
+        placeholder="0"
+        onkeydown="return event.keyCode !== 69 && event.keyCode !== 189 && event.keyCode !== 187 && event.keyCode !== 107 && event.keyCode !== 109 && event.keyCode !== 37 && event.keyCode !== 39 && event.keyCode !== 45 && event.keyCode !== 95 && event.keyCode !== 106 && event.keyCode !== 47 && event.keyCode !== 58 && event.keyCode !== 40 && event.keyCode !== 38"
+      />
+      <div
+        *ngIf="infinite"
+        class="input-infinite"
+        [ngStyle]="{
+          backgroundImage: 'url(' + infiniteIcon + ')'
+        }"
+      ></div>
+      <div class="modify-button-add" (click)="increaseStock()">+</div>
+      <div
+        *ngIf="!infinite"
+        class="modify-button-infinite"
+        [ngStyle]="{
+          backgroundImage: 'url(' + infiniteIcon + ')'
+        }"
+        (click)="setInfinite()"
+      ></div>
+      <div *ngIf="infinite" class="modify-button-cero" (click)="setInfinite()" >{{stock}}</div>
+    </div>
+    <footer class="bottom-footer" *ngIf="showCurrencyEditor" (click)="stockEditor()">
+      <p>Incluir mi precio</p>
+    </footer>
+    <footer class="bottom-footer" *ngIf="showStockEditor" (click)="toDoTask()">
+      <p>Incluir mi disponibilidad</p>
+    </footer>
+    <app-login-flow
+          *ngIf="loginflow"
+          [redirectionRoute]="redirectionRoute"
+          [redirectionRouteId]="redirectionRouteId"
+          [entity]="entity"
+          [jsondata]="jsondata"
+          (dialogIsOpen)="resetLoginDialog($event)"
+        ></app-login-flow>
+  </div>
+  
+</div>
+
