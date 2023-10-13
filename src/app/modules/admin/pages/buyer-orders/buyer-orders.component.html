@@ -44,12 +44,12 @@
             <p class="month-title">{{ ordersByMoth.month }}</p>
             <div class="month-card" *ngFor="let order of ordersByMoth.orders">
                 <div class="flex-space-between" [style.marginBottom.px]="5">
-                    <p class="month-card-title">{{ order.items[0].saleflow.name || "Sin nombre" }}</p>
+                    <p class="month-card-title">{{ order?.items[0]?.saleflow?.name || "Sin nombre" }}</p>
                     <p class="month-card-subtotal">${{calcTotal(order.subtotals).toFixed(2)}}</p>
                 </div>
                 <div class="flex-space-between">
                     <p class="month-card-subtitle">
-                        {{ order.items.length }} artículos
+                        {{ order?.items?.length }} artículos
                     </p>
                     <svg *ngIf="order?.orderType === 'external'" width="21" height="16" viewBox="0 0 28 21" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g clip-path="url(#clip0_3593_5570)">
