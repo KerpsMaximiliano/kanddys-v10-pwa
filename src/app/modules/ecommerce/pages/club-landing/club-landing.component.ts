@@ -780,6 +780,10 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   goToWizard() {
-    return this.router.navigate(['/admin/wizard-training']);
+    return this.router.navigate(['/admin/wizard-training'], {
+      queryParams: {
+        triggerWhatsappClient: true
+      }
+    });
   }
 }
