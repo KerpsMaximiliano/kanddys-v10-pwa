@@ -161,6 +161,7 @@ const orderData = `
   }
   identification
   notifications
+  orderType
 `;
 
 const shortOrderData = `
@@ -446,6 +447,12 @@ export const ordersByUser = gql`
     ordersByUser(pagination: $pagination) {
       ${orderData}
     }
+  }
+`;
+
+export const orderIncomeCompletedByUser = gql`
+  query orderIncomeCompletedByUser($paginate: PaginationInput) {
+    orderIncomeCompletedByUser(paginate: $paginate)
   }
 `;
 
@@ -850,8 +857,8 @@ export const ordersIncomeMerchantByUser = gql`
 `;
 
 export const createOrderExternal = gql`
-  mutation createOrderExternal($input: ItemOrderExternalInput!) {
-    createOrderExternal(input: $input) {
+  mutation createOrderExternal($isMerchant: Boolean!, $input: ItemOrderExternalInput!) {
+    createOrderExternal(isMerchant: $isMerchant, input: $input) {
       _id
     }
   }
