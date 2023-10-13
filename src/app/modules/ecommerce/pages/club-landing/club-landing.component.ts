@@ -230,6 +230,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
   emailDialogRef: MatDialogRef<FormComponent, any> = null;
   merchant: string;
+  merchantSlug: string;
   saleflow: SaleFlow;
   referralsCount: number = 0;
   vectorsCount: number = 0;
@@ -373,9 +374,43 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     this.isOpen = false;
   }
 
-  shareDialog() {
-    const dialogRef = this.bottomSheet.open(OptionsMenuComponent, {
-      data: {
+  shareDialog(store = false) {
+    let data; 
+    if(store) {
+      let storeLink = `${this.URI}/ecommerce/${this.merchantSlug}/store`;
+      data = {
+        title: 'Comparte el Enlace de Ventas:',
+        options: [
+          {
+            value: 'Copia',
+            callback: () => {
+              this.clipboard.copy(storeLink);
+              this.snackbar.open('Enlace copiado', 'Cerrar', {
+                duration: 3000,
+              });
+            },
+          },
+          {
+            value: 'Comparte',
+            callback: () => {
+              this.ngNavigatorShareService.share({
+                title: 'Compartir enlace de www.flores.club',
+                url: `${storeLink}`,
+              });
+            },
+          },
+          {
+            value: 'Descarga el QR',
+            callback: () => {
+              this.qrdata = storeLink;
+              this.downloadQr();
+            },
+          },
+        ],
+        bottomLabel: 'Enlace: ' + storeLink,
+      };
+    } else {
+      data = {
         title: 'Compartir enlace',
         options: [
           {
@@ -419,7 +454,10 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
             },
           },
         ],
-      },
+      };
+    }
+    const dialogRef = this.bottomSheet.open(OptionsMenuComponent, {
+      data: data,
     });
   }
 
@@ -642,6 +680,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     try {
       const merchantDefault: Merchant = await this.merchantsService.merchantDefault();
       this.merchant = merchantDefault._id;
+      this.merchantSlug = merchantDefault.slug;
       this.orderService.ordersTotal(
         ['to confirm', 'completed'],
         this.merchant
