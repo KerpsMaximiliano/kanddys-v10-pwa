@@ -21,16 +21,73 @@
       </div>
   
       <div class="right-part">
-        <div class="close">
+        <div class="close" *ngIf="showGanas === true" (click)="showGanas = false">
+          X
         </div>
-        <div *ngIf="headerService.user" class="icon" (click)="openNavigation = true">
+        <div *ngIf="headerService.user && showGanas === false" class="icon" (click)="showGanas = true">
             <p>Gana$</p>
             <mat-icon>ios_share</mat-icon>
         </div>
       </div>
     </div>
-  
     <main>
+      <div class="tab-header" *ngIf="showGanas===true">
+        <div class="info-container">
+          <p class="info-container-title">Gana Dinero</p>
+          <div class="flex-space-between">
+            <p class="info-container-icon">🤑</p>
+            <div>
+              <p class="info-container-desc">
+                Por cada factura que generen tus invitados comerciales ganas
+                dinero. Es un ingreso recurrente y sin límites.
+              </p>
+              <p class="info-container-invited-link" (click)="goToReferrals()">
+                {{
+                  !headerService.user
+                    ? "Mira tus invitados"
+                    : referralsCount
+                    ? referralsCount + " invitados"
+                    : "0 invitados"
+                }}
+              </p>
+            </div>
+          </div>
+        </div>
+        <p class="ganas-desc">
+          Del dinero recolectado cada mes para mantener a Laia, TU como Embajador
+          ganas el 15% de cada comercio invitado directo y el 10% de todos los
+          indirectos*
+        </p>
+        <p class="ganas-desc ganas-desc-ad">
+          *Comercios que invitaron a quienes invitaste.
+        </p>
+        <hr />
+        <div class="info-container">
+          <p class="info-container-title">Ahorra Tiempo</p>
+          <div class="flex-space-between">
+            <img
+              width="70px"
+              height="70px"
+              src="../../../../../assets/images/sand-clock.png"
+              alt=""
+            />
+            <div>
+              <p class="info-container-desc">
+                Ahorra el tiempo de cotizaciones y facturas cuando tus clientes y
+                proveedores utilizan a LaiaChat.
+              </p>
+              <p class="info-container-invited-link" (click)="goToReferrals()">
+                {{
+                  !headerService.user
+                    ? "Mira tus invitados"
+                    : referralsCount
+                    ? referralsCount + " invitados"
+                    : "0 invitados"
+                }}
+              </p>
+            </div>
+          </div>
+        </div>
       <!--
       <div class="footer-swiper" *ngIf="tabarIndex === 0">
         <div class="slide-item borderless">
@@ -47,7 +104,7 @@
           </div>
         </div>
       </div>-->
-      <div class="tab-header">
+      <div class="tab-header" *ngIf="showGanas === false">
         <div class="info-container">
           <div class="info-container-title-container">
             <p class="info-container-title">Vende fácilmente </p>

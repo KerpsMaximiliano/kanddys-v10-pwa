@@ -67,6 +67,7 @@ interface Tabs {
 })
 export class ClubLandingComponent implements OnInit, OnDestroy {
 
+  showGanas: boolean = false;
 
   merchantRole: Roles | null = null;
   roles : Roles[] = [];
@@ -675,6 +676,11 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       const saleflowDefault: SaleFlow =
         await this.saleflowsService.saleflowDefault(this.merchant);
       this.saleflow = saleflowDefault;
+      if(this.saleflow.status === 'open') {
+        this.statusSwitch = true;
+      } else {
+        this.statusSwitch = false;
+      }
     } catch (error) {
       console.log('error');
     }
@@ -821,7 +827,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         await this.merchantsService.merchantRemoveRole(this.merchantRole._id, this.merchant).then((res)=> {
           console.log(res)
         })
-        this.merchantsService.merchantAddRole( this.roles[role]._id, this.merchant).then((res)=> {
+        this.merchantsService.merchantAddRole(this.roles[role]._id, this.merchant).then((res)=> {
           console.log(res)
         })
       } else {
