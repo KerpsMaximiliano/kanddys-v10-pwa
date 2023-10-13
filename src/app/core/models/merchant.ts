@@ -52,9 +52,9 @@ export class Merchant extends Model<Merchant> {
   deliveryLocations: DeliveryLocation[];
 }
 
-interface Roles {
+export interface Roles {
   _id: string
-  code: 'STORE' | 'PROVIDERS' | 'PROVIDER' | 'DEFAULT'
+  code: string
   name: string
 }
 
