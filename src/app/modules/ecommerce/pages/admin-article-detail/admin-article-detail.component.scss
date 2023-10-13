@@ -314,7 +314,7 @@ main {
 .bottom-bar {
   display: flex;
   align-items: center;
-  position: sticky;
+  position: fixed;
   width: inherit;
   max-width: 500px;
   bottom: 0px;
