@@ -102,7 +102,7 @@ export class ProviderItemsEditorComponent implements OnInit {
   }
 
   back() {
-
+    return this.router.navigate(['/ecommerce/provider-items']);
   }
 
   async validateLoginFromLink() {
