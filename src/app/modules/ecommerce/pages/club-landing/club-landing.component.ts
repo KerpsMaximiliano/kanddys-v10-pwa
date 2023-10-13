@@ -77,8 +77,6 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
   loginflow: boolean = false;
 
-  exhibitTarget: string = 'al consumidor final';
-
   sales: number | null = null;
 
   assetsFolder: string = environment.assetsUrl;
@@ -652,19 +650,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         this.roles = res;
       })
       if(merchantDefault.roles.length > 0) {
+        console.log(merchantDefault.roles)
         this.merchantRole = merchantDefault.roles[0];
-        if(this.merchantRole.code === 'STORE') {
-          this.exhibitTarget = 'al consumidor final';
-        }
-        if(this.merchantRole.code === 'PROVIDER') {
-          this.exhibitTarget = 'a floristerías';
-        }
-        if(this.merchantRole.code === 'SUPPLIER') {
-          this.exhibitTarget = 'a wholesalers';
-        }
-        if(this.merchantRole.code === 'PRODUCTOR') {
-          this.exhibitTarget = 'a fincas';
-        }
       }
     } catch (error) {
       console.log('error');
@@ -829,6 +816,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         })
         this.merchantsService.merchantAddRole(this.roles[role]._id, this.merchant).then((res)=> {
           console.log(res)
+          console.log(this.roles[role])
+          this.merchantRole = this.roles[role]
         })
       } else {
         this.merchantsService.merchantAddRole(this.roles[role]._id, this.merchant).then((res)=> {
@@ -846,7 +835,6 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
             callback: () => {
               let index = this.roles.findIndex((role) => role.code === 'STORE')
               roleSwitch(index)
-              this.exhibitTarget = 'al consumidor final';
             }
           },
           {
@@ -854,7 +842,6 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
             callback: () => {
               let index = this.roles.findIndex((role) => role.code === 'PROVIDER')
               roleSwitch(index)
-              this.exhibitTarget = 'a floristerías';
             }
           },
           {
@@ -862,7 +849,6 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
             callback: () => {
               let index = this.roles.findIndex((role) => role.code === 'SUPPLIER')
               roleSwitch(index)
-              this.exhibitTarget = 'a wholesalers';
             }
           },
           {
@@ -870,7 +856,6 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
             callback: () => {
               let index = this.roles.findIndex((role) => role.code === 'PRODUCTOR')
               roleSwitch(index)
-              this.exhibitTarget = 'a fincas';
             }
           },
         ]

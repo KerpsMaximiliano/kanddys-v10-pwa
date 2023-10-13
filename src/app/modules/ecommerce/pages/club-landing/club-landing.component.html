@@ -88,6 +88,7 @@
             </div>
           </div>
         </div>
+      </div>
       <!--
       <div class="footer-swiper" *ngIf="tabarIndex === 0">
         <div class="slide-item borderless">
@@ -130,7 +131,7 @@
               {{ saleflow ? saleflow?.items?.length : '0' }} artículos
             </p>
             <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToDashboard()">
-              {{ sales ? sales : '0' }} ventas<!--not sure if correct parameter-->
+              {{ sales ? sales : '0' }} ventas
             </p>
             <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToDashboard()">
               Facturar
@@ -154,7 +155,13 @@
           <p class="ganas-desc left">
             Tus articulos se exhibirán 
             <span (click)="openExhibitDialog()">
-              {{exhibitTarget}}.
+              {{this.merchantRole.code === 'PRODUCTOR' ?
+                'a fincas' :
+                this.merchantRole.code === 'PROVIDER' ?
+                'a floristerías' :
+                this.merchantRole.code === 'SUPPLIER' ?
+                'a wholesalers' : 'al consumidor final'
+              }}.
             </span>
           </p>
           <hr />
