@@ -45,6 +45,8 @@ export class ProviderItemsEditorComponent implements OnInit {
   saleFlowDefault: string;
   itemImage:any;
   imageFromService:string;
+  canChangeStock:boolean = false;
+  updateFullStep:boolean = false;
 
   constructor(private route: ActivatedRoute,
     private itemService: ItemsService,
@@ -55,9 +57,12 @@ export class ProviderItemsEditorComponent implements OnInit {
 
   async ngOnInit() {
     this.route.params.subscribe(async (params) => {
+      console.log("🚀 ~ file: provider-items-editor.component.ts:64 ~ ProviderItemsEditorComponent ~ this.route.params.subscribe ~ params:", params)
       const { articleId } = params;
       this.articleId = articleId;
     });
+    await this.getQueryParams();
+    
 
     await this.validateLoginFromLink();
 
@@ -72,19 +77,32 @@ export class ProviderItemsEditorComponent implements OnInit {
       this.placeholder = String(this.itemData.pricing);
       this.useStock = this.itemData.useStock;
       this.infinite = !this.useStock;
+      if(!this.canChangeStock){
+        this.updateFullStep = true;
+      }else{
+        this.showCurrencyEditor = false;
+        this.showStockEditor = true;
+      }
+    }else{
+
     }
     await this.getMerchantDefault();
     await this.getSaleFlowDefault();
     const imageService = await this.filesService.getFile();
     if(imageService) this.imageFromService = imageService;
     await this.getImageForItem();
-    console.log(this.itemImage);
     
     
   }
 
-  back() {
+  async getQueryParams(){
+    this.route.queryParams.subscribe((data)=>{
+        data && data.stockEdition ? this.canChangeStock = data.stockEdition: false;
+     })
+  }
 
+  back() {
+    return this.router.navigate(['/ecommerce/provider-items']);
   }
 
   async validateLoginFromLink() {
@@ -171,7 +189,13 @@ export class ProviderItemsEditorComponent implements OnInit {
   }
 
   async toDoTask() {
-    if (this.articleId) {
+    if(this.canChangeStock){
+      this.showCurrencyEditor = false;
+      this.updateFullStep = false;
+      this.showStockEditor = true;
+      await this.updateItem();
+    }
+    else if (this.articleId) {
       await this.updateItem();
     } else {
       await this.createItem();
@@ -185,8 +209,6 @@ export class ProviderItemsEditorComponent implements OnInit {
       itemDataInput = {
         merchant: this.merchantId,
         pricing: this.currency,
-        useStock: true,
-        stock: parseInt(this.changeStock.value),
         name: this.articleName.value,
         description: this.articleDescription.value
       }
@@ -194,7 +216,6 @@ export class ProviderItemsEditorComponent implements OnInit {
       itemDataInput = {
         merchant: this.merchantId,
         pricing: this.currency,
-        useStock: false,
         name: this.articleName.value,
         description: this.articleDescription.value
       }
@@ -277,6 +298,7 @@ export class ProviderItemsEditorComponent implements OnInit {
     unlockUI();
     this.router.navigate(['/ecommerce/provider-items']);
   }
+
   async createSaleFlow() {
     try {
       const saleflow = await this.saleflowService.createSaleflow({
