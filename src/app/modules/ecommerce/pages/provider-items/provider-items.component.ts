@@ -199,8 +199,10 @@ export class ProviderItemsComponent implements OnInit {
             this.getStatusSwitch();
             await this.executeInitProcesses();
             setTimeout(async () => {
-              await this.fetchItemsForSell();
-              await this.fetchQuantifyFilters();
+              if (this.merchantData?._id) {
+                await this.fetchItemsForSell();
+                await this.fetchQuantifyFilters();
+              }
             }, 1000);
           })
         subscription.unsubscribe();
@@ -235,11 +237,17 @@ export class ProviderItemsComponent implements OnInit {
    * o por bajo precio
    */
   async fetchQuantifyFilters() {
-    const merchantTotal = await this.itemsService.itemsQuantityOfFilters(this.merchantData._id)
-    this.totalHidden = merchantTotal.hidden
-    this.totalAllItems = merchantTotal.all
-    this.totalItemsByCommission = merchantTotal.commissionable
-    this.totalItemsByLowStock = merchantTotal.lowStock
+    try {
+      const merchantTotal = await this.itemsService.itemsQuantityOfFilters(this.merchantData._id)
+      if (merchantTotal) {
+        this.totalHidden = merchantTotal.hidden
+        this.totalAllItems = merchantTotal.all
+        this.totalItemsByCommission = merchantTotal.commissionable
+        this.totalItemsByLowStock = merchantTotal.lowStock
+      }
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   /**
@@ -275,7 +283,7 @@ export class ProviderItemsComponent implements OnInit {
    * @returns {Boolean} un boleano que indica si es supplier o no
    */
   verifyIfIsSupplier(merchant: Merchant): boolean {
-    return merchant.roles[0].code !== 'STORE'
+    return merchant.roles[0]?.code !== 'STORE'
   }
 
   /**
