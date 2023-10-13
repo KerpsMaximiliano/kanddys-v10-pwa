@@ -34,7 +34,10 @@
     <div class="category">
       <h2>Precios</h2>
       <div class="info-card">
-        <h3>Precio normal</h3>
+        <div class="title">
+          <h3>Precio normal</h3>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
         <p>{{item?.pricing | currency}}</p>
       </div>
       <!--<div class="add-card">
@@ -45,11 +48,17 @@
     <div class="category">
       <h2>Categorias</h2>
       <div *ngIf="isHashtagExist && hashtagSelected?.keyword" class="info-card"(click)="openDialog('hashtag')">
-        <h3>Hashtag</h3>
+        <div class="title">
+          <h3>Hashtag</h3>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
         <p>{{itemHashtagInput?.value}}</p>
       </div>
       <div *ngIf="itemCategoriesIds.length > 0" class="info-card" (click)="openCategoriesDialog()">
-        <h3>Categorias donde se exhibiendo</h3>
+        <div class="title">
+          <h3>Categorias donde se exhibiendo</h3>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
         <p>{{categoriesString}}</p>
       </div>
       <div *ngIf="itemCategoriesIds.length === 0" class="add-card" (click)="openCategoriesDialog()">
@@ -64,7 +73,10 @@
     <div class="category">
       <h2>Compra</h2>
       <div *ngIf="numberOfRequiredQuestions > 0 || numberOfOptionalQuestions > 0" class="info-card" (click)="gotoWebform()">
-        <h3>Formulario de preguntas</h3>
+        <div class="title">
+          <h3>Formulario de preguntas</h3>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
         <p *ngIf="numberOfRequiredQuestions > 0 && numberOfOptionalQuestions > 0" class="display-text">
           {{
             numberOfRequiredQuestions + (numberOfRequiredQuestions > 1 ? ' preguntas requeridas y ' : ' pregunta requerida y ') +  
@@ -94,7 +106,10 @@
     <div class="category">
       <h2>Entrega</h2>
       <div *ngIf="deliveryTimeStart || deliveryTimeEnd" class="info-card"(click)="openDialog('deliverytime')">
-        <h3>Tiempo de Entrega</h3>
+        <div class="title">
+          <h3>Tiempo de Entrega</h3>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
         <p *ngIf="deliveryTimeStart && deliveryTimeEnd">
           Desde {{deliveryTimeStart}} horas hasta {{deliveryTimeEnd}} horas
         </p>
@@ -107,7 +122,10 @@
       </div>
       <div class="costs-list" *ngFor="let expenditure of expenditures">
         <div class="info-card" (click)="openDialog('expenditure-update', expenditure._id)">
-          <h3>Costo: {{expenditure.name}}</h3>
+          <div class="title">
+            <h3>Costo: {{expenditure.name}}</h3>
+            <mat-icon>chevron_right</mat-icon>
+          </div>
           <p>{{expenditure.amount | currency}}</p>
         </div>
       </div>
