@@ -167,6 +167,44 @@
           <hr />
         </ng-container>
         <div class="info-container">
+          <p class="info-container-title">Ahorra tiempo en Responder</p>
+          <p class="info-container-desc info-container-desc-mt">
+            Laia utiliza la IA para formular respuestas según el contenido que
+            adiciones a sus memorias.
+          </p>
+          <div class="flex">
+            <p
+              class="info-container-invited-link info-container-invited-link-mr"
+              (click)="goToLaiaTraining()"
+              *ngIf="!headerService?.user"
+            >
+              Escribe en la Memoria
+            </p>
+            <div *ngIf="headerService.user" class="memory-options">
+              <p 
+                class="info-container-invited-link info-container-invited-link-mr"
+                (click)="goToAIMemoriesManagement()"
+              >
+                {{ vectorsCount }} memorias
+              </p>
+              <p 
+                class="info-container-invited-link info-container-invited-link-mr"
+                (click)="goToChatsManagement()"
+              >
+                {{ chatsCount }} chats
+              </p>
+            </div>
+          </div>
+        </div>
+        <p 
+          class="ganas-desc center" 
+          style="cursor: pointer" 
+          (click)="goToWizard()"
+        >
+          Responde desde tu propio Website, <span>WhatsApp</span> e Instagram.
+        </p>
+        <hr />
+        <div class="info-container">
           <p class="info-container-title">Compras ágiles</p>
           <p class="info-container-desc info-container-desc-mt">
             Crea y comparte carritos (ordenes de compras) para ahorrarte tiempo.
@@ -294,7 +332,7 @@
         class="input" 
         (click)="openLaiaDialog()"
       >
-        Mensaje
+        {{headerService.user ? 'Como te ayudaría Laia (la IA)?' : 'Mensaje'}}
         <img
           class="audio-freq"
           src="{{assetsFolder}}/audio-freq.png"
