@@ -95,7 +95,6 @@ export class ProviderItemsComponent implements OnInit {
 
   //Items variables
   totalItemsHidden: number = 0
-  allItemsID: any = []
   itemsISell: Array<Item> = [];
   itemsIDontSell: Array<Item> = [];
   renderItemsPromise: Promise<{ listItems: Item[] }>;
@@ -130,8 +129,8 @@ export class ProviderItemsComponent implements OnInit {
 
   private keyPresentationState = 'providersPresentationClosed'
   private keyTutorialState = 'tutorialClosed'
-  private merchantId = null;
-  private saleFlowId = null;
+  private merchantData: Merchant | null = null;
+  private saleflowData: SaleFlow | null = null;
 
   constructor(
     private headerService: HeaderService,
@@ -148,42 +147,74 @@ export class ProviderItemsComponent implements OnInit {
   ) { }
 
   async ngOnInit() {
-    this.itemSearchbar.valueChanges.subscribe(async () => {
-      this.verifyIfIsSupplier()
-      await this.fetchItemsToSell();
-      await this.fetchNewPageOfItemsIDontSell(true, false);
-    });
-
     const existToken = localStorage.getItem('session-token')
     if (existToken) {
       if (!this.headerService.user) {
-        this.isUserLogged = true
-        let sub = this.appService.events
-          .pipe(filter((e) => e.type === 'auth'))
-          .subscribe(async () => {
-            this.verifyIfIsSupplier()
-            this.getStatusSwitch().then(async () => {
-              await this.executeInitProcesses()
-            })
-            sub.unsubscribe();
-          });
+        this.handleUserSubscription()
       } else {
+        this.isUserLogged = true
         await this.executeInitProcesses();
       }
     }
 
     if (!existToken) {
       await this.executeInitProcesses();
-      await this.fetchNewPageOfItemsIDontSell(true, false);
+      await this.fetchItemsForNotSell(true, false);
 
     }
 
+    this.initInputValueChanges()
   }
 
+  /**
+   * Inicializa la detección de cambios en el input
+   */
+  initInputValueChanges() {
+    this.itemSearchbar.valueChanges.subscribe(async () => {
+      if (this.isUserLogged) {
+        await this.fetchItemsForSell();
+      }
+      await this.fetchItemsForNotSell(true, false);
+    });
+  }
+
+  /**
+   * Maneja la suscripción del usuario.
+   *
+   * Se encarga de suscribirse a los eventos de la aplicación relacionados
+   * con la autenticación del usuario. Cuando se recibe un evento de autenticación
+   * se ejecutan una serie de tareas para configurar y procesar la sesión del usuario.
+   */
+  handleUserSubscription() {
+    const subscription = this.appService.events
+      .pipe(filter((e) => e.type === 'auth'))
+      .subscribe(async ({ data }) => {
+        this.getDefaultMerchantAndSaleflows(data.user)
+          .then(async ({ merchantDefault, saleflowDefault }) => {
+            this.merchantData = merchantDefault;
+            this.saleflowData = saleflowDefault
+            this.isUserLogged = true
+
+            this.isSupplier = this.verifyIfIsSupplier(this.merchantData);
+            this.getStatusSwitch();
+            await this.executeInitProcesses();
+            setTimeout(async () => {
+              await this.fetchItemsForSell();
+              await this.fetchQuantifyFilters();
+            }, 1000);
+          })
+        subscription.unsubscribe();
+      });
+  }
+
+  /**
+   * Inicializa el proceso para obtener los datos a mostrar en pantalla, como los items
+   * del merchant, la cantidad de items vendidos, el estado para mostrar el modal del
+   * tutorial
+   */
   async executeInitProcesses() {
     this.queryParamsSubscription = this.route.queryParams.subscribe(
-      async ({ jsondata, supplierMode }) => {
-        supplierMode = JSON.parse(supplierMode || 'false');
+      async ({ jsondata }) => {
         this.encodedJSONData = jsondata;
         if (this.encodedJSONData) {
           this.parseMagicLinkData();
@@ -193,20 +224,22 @@ export class ProviderItemsComponent implements OnInit {
         this.checkIfTutorialWasOpen()
 
         await this.getNumberOfItemsSold();
-        await this.fetchItemsToSell();
-        await this.fetchQuantifyFilters();
       }
     );
   }
 
+
+  /**
+   * Obtiene el total de items segun el tipo de filtro.
+   * Entre los tipos de filtros estan: items ocutlos, todos, por comision
+   * o por bajo precio
+   */
   async fetchQuantifyFilters() {
-    const merchantTotal = await this.itemsService
-      .itemsQuantityOfFilters(this.merchantId)
+    const merchantTotal = await this.itemsService.itemsQuantityOfFilters(this.merchantData._id)
     this.totalHidden = merchantTotal.hidden
     this.totalAllItems = merchantTotal.all
     this.totalItemsByCommission = merchantTotal.commissionable
     this.totalItemsByLowStock = merchantTotal.lowStock
-
   }
 
   /**
@@ -216,27 +249,13 @@ export class ProviderItemsComponent implements OnInit {
    *
    * Si no hay merchant, no hace nada
    */
-  async getStatusSwitch() {
-    const merchant = await this.merchantsService.merchantDefault()
-    this.merchantId = merchant._id
-    const isValidMerchant = this.merchantsService.verifyMerchant(merchant)
+  getStatusSwitch() {
+    const isValidMerchant = this.merchantsService.verifyValidMerchant()
     if (!isValidMerchant) {
-      return
-    }
-
-    const saleflow = await this.saleflowService.saleflowDefault(merchant._id)
-    console.log(saleflow.items)
-    this.allItemsID = saleflow.items
-      .map(item => item.item._id)
-      .filter(item => item)
-
-    const isValidSaleflow = this.merchantsService.verifyMerchantSaleFlow(saleflow)
-    if (!isValidSaleflow) {
       this.isSwitchActive = false
     } else {
-      const status = !saleflow?.status || saleflow?.status === 'open'
+      const status = !this.saleflowData?.status || this.saleflowData?.status === 'open'
       this.isSwitchActive = status
-      this.saleFlowId = saleflow._id
       this.isUserVerified = true
     }
   }
@@ -250,19 +269,26 @@ export class ProviderItemsComponent implements OnInit {
   }
 
   /**
-   * Verifica si el usuario es de tipo proveedor o no
+   * Verifica si el usuario es de tipo proveedor o no.
+   *
+   * @params merchant - datos del merchant
+   * @returns {Boolean} un boleano que indica si es supplier o no
    */
-  verifyIfIsSupplier() {
-    this.merchantsService.merchantDefault().then(merchantDefault => {
-      this.isSupplier = merchantDefault.roles[0].code !== 'STORE'
-    })
+  verifyIfIsSupplier(merchant: Merchant): boolean {
+    return merchant.roles[0].code !== 'STORE'
   }
 
+  /**
+   * Función para realizar paginación infinita en una página de dashboard.
+   * Se encarga de cargar más elementos cuando el usuario llega al final de la página.
+   */
   async infinitePagination() {
     const targetClass = '.dashboard-page';
     const page = document.querySelector(targetClass);
     const pageScrollHeight = page.scrollHeight;
     const verticalScroll = window.innerHeight + page.scrollTop;
+
+    // Calcula la diferencia entre la posición vertical y la altura total de la página
     const difference = Math.abs(verticalScroll - pageScrollHeight);
 
     if (verticalScroll >= pageScrollHeight || difference <= 50) {
@@ -270,10 +296,10 @@ export class ProviderItemsComponent implements OnInit {
         this.paginationState.status === 'complete' &&
         !this.reachTheEndOfPagination
       ) {
-        if (this.isSupplier) {
-          await this.fetchItemsToSell();
+        if (this.isUserLogged) {
+          await this.fetchItemsForSell(false, true);
         } else {
-          await this.fetchNewPageOfItemsIDontSell(false, true, true);
+          await this.fetchItemsForNotSell(false, true);
         }
       }
     }
@@ -364,22 +390,29 @@ export class ProviderItemsComponent implements OnInit {
     }
   };
 
+
   toggleStoreVisibility() {
     if (this.isUserVerified) {
       const input = {
         status: this.isSwitchActive ? "closed" : "open"
       }
 
-      this.saleflowService
-        .updateSaleflow(input, this.saleFlowId)
+      this.saleflowService.updateSaleflow(input, this.saleflowData._id)
         .then(() => this.isSwitchActive = !this.isSwitchActive)
         .catch(error => {
           console.error(error);
           const message = 'Ocurrió un error al intentar cambiar la visibilidad de tu tienda, intenta más tarde'
           this.headerService.showErrorToast(message);
         })
-    } else {
+    }
+
+    if (!this.isUserVerified) {
       const message = 'Te falto datos para completar en tu perfil para activar esta función'
+      this.headerService.showErrorToast(message);
+    }
+
+    if (!this.isUserLogged) {
+      const message = 'Debes iniciar sesión para activar esta función'
       this.headerService.showErrorToast(message);
     }
   }
@@ -404,42 +437,43 @@ export class ProviderItemsComponent implements OnInit {
   /**
    * Obtiene todos los items para vender
    */
-  async fetchItemsToSell() {
-    if (!this.isTheUserAMerchant) {
-      const isAMerchant = await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
-      this.isTheUserAMerchant = isAMerchant;
+  async fetchItemsForSell(
+    restartPagination = false,
+    triggeredFromScroll = false,
+  ) {
+    this.paginationState.status = 'loading';
+
+    if (restartPagination) {
+      this.reachTheEndOfPagination = false;
+      this.paginationState.page = 1;
+      this.itemsISell = [];
+    } else {
+      this.paginationState.page++;
     }
 
-    if (this.isTheUserAMerchant) {
-      const pagination: PaginationInput = {
-        findBy: {
-          merchant: this.merchantsService.merchantData._id,
-          _id: {
-            // $nin: this.itemsISell.map((item) => item.parentItem).filter(item => item)
-            $nin: this.allItemsID,
-          }
-        },
-        options: {
-          sortBy: 'createdAt:desc',
-          limit: -1,
-          page: 1,
-        },
-      };
+    const pagination: PaginationInput = {
+      findBy: {
+        merchant: this.merchantData._id,
+        _id: {
+          $nin: this.saleflowData.items.map((item) => item.item._id)
+        }
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: -1,
+        page: 1,
+      },
+    };
 
-      const data = await this.saleflowService.listItems(pagination, true);
-      console.log(data.listItems)
-      this.itemsISell = data.listItems
-    }
+    await this.processPaginationItems(pagination, triggeredFromScroll, this.itemsISell)
   }
 
   /**
    * Obtiene todos los items que no se venden
    */
-  async fetchNewPageOfItemsIDontSell(
+  async fetchItemsForNotSell(
     restartPagination = false,
     triggeredFromScroll = false,
-    getTotalNumberOfItems = false,
-    createCopyOfAllItems = false
   ) {
     this.paginationState.status = 'loading';
 
@@ -462,59 +496,7 @@ export class ProviderItemsComponent implements OnInit {
       },
     };
 
-    this.renderItemsPromise = this.saleflowService.listItems(pagination, true);
-
-    return this.renderItemsPromise.then(async (response) => {
-      const items = response;
-      let itemsQueryResult = items?.listItems;
-
-      itemsQueryResult.forEach((item, itemIndex) => {
-        item.stock = 0;
-        item.useStock = true;
-        item.images.forEach((image) => {
-          if (!image.value.includes('http'))
-            image.value = 'https://' + image.value;
-        });
-        itemsQueryResult[itemIndex].images = item.images.sort(
-          ({ index: a }, { index: b }) => (a > b ? 1 : -1)
-        );
-      });
-
-      if (itemsQueryResult.length === 0 && this.paginationState.page === 1) {
-        this.itemsIDontSell = [];
-      }
-
-      if (itemsQueryResult.length === 0 && this.paginationState.page !== 1) {
-        this.paginationState.page--;
-        this.reachTheEndOfPagination = true;
-      }
-
-      if (itemsQueryResult && itemsQueryResult.length > 0) {
-        if (this.paginationState.page === 1) {
-          this.itemsIDontSell = itemsQueryResult.map((item) => ({
-            images: item.images.sort(({ index: a }, { index: b }) =>
-              a > b ? 1 : -1
-            ),
-            ...item,
-          }));
-        } else {
-          this.itemsIDontSell = this.itemsIDontSell
-            .concat(itemsQueryResult)
-            .map((item) => ({
-              images: item.images.sort(({ index: a }, { index: b }) =>
-                a > b ? 1 : -1
-              ),
-              ...item,
-            }));
-        }
-      }
-
-      this.paginationState.status = 'complete';
-
-      if (itemsQueryResult.length === 0 && !triggeredFromScroll) {
-        this.itemsIDontSell = [];
-      }
-    });
+    await this.processPaginationItems(pagination, triggeredFromScroll, this.itemsIDontSell)
   }
 
   createItemBasedOnExistingSupplierItems(item: Item) {
@@ -617,10 +599,8 @@ export class ProviderItemsComponent implements OnInit {
 
   async parseMagicLinkData() {
     if (this.isTheUserAMerchant === null) {
-      const isAMerchant =
+      this.isTheUserAMerchant =
         await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
-
-      this.isTheUserAMerchant = isAMerchant;
     }
 
     if (this.encodedJSONData) {
@@ -1611,13 +1591,24 @@ export class ProviderItemsComponent implements OnInit {
     }
   }
 
+  back() {
+    return this.router.navigate(['ecommerce/club-landing'], {
+      queryParams: {
+        tabarIndex: 2
+      }
+    });
+  }
+  goToArticleDetail(id) {
+    this.router.navigate(['ecommerce/admin-article-detail/' + id]);
+  }
+
   /**
-   * Filtrado de items por la barra de búsqueda
-   * Puede obtener un filtrado más especifico dependiendo de si
-   * alguno de los botones de filtrado han sido activados
-   *
-   * @param itemToSearch item a buscar
-   */
+ * Filtrado de items por la barra de búsqueda
+ * Puede obtener un filtrado más especifico dependiendo de si
+ * alguno de los botones de filtrado han sido activados
+ *
+ * @param itemToSearch item a buscar
+ */
   private filteringItemsBySearchbar(itemName: string) {
     const input: PaginationInput = {
       findBy: {
@@ -1658,7 +1649,7 @@ export class ProviderItemsComponent implements OnInit {
       }
     }
 
-    // Button de items para filtrar los items por menos de 10 stock
+    // Boton de items para filtrar los items por menos de 10 stock
     if (this.btnFilterState.lowStock) {
       input.filter = { maxStock: 10 }
     }
@@ -1688,14 +1679,54 @@ export class ProviderItemsComponent implements OnInit {
       .then(data => this.itemsFiltering = data.listItems)
   }
 
-  back() {
-    return this.router.navigate(['ecommerce/club-landing'], {
-      queryParams: {
-        tabarIndex: 2
-      }
+  /**
+ * Procesa la paginación de los items
+ *
+ * @param pagination La información de paginación
+ * @param triggeredFromScroll Indica si el proceso fue desencadenado por scroll
+ * @param arrayItems El array en el que se guardará el resultado
+ */
+  private async processPaginationItems(
+    pagination: PaginationInput,
+    triggeredFromScroll: boolean,
+    arrayItems: Item[]
+  ) {
+    const data = await this.saleflowService.listItems(pagination, true);
+    const itemsQueryResult = data?.listItems || [];
+
+    itemsQueryResult.forEach((item) => {
+      item.stock = 0;
+      item.useStock = true;
+      item.images.forEach((image) => {
+        if (!image.value.includes('http')) {
+          image.value = 'https://' + image.value;
+        }
+      });
+      item.images = item.images.sort(({ index: a }, { index: b }) => (a > b ? 1 : -1));
     });
-  }
-  goToArticleDetail(id) {
-    this.router.navigate(['ecommerce/admin-article-detail/' + id]);
+
+    if (itemsQueryResult.length === 0 && this.paginationState.page === 1) {
+      arrayItems.length = 0;
+    }
+
+    if (itemsQueryResult.length === 0 && this.paginationState.page !== 1) {
+      this.paginationState.page--;
+      this.reachTheEndOfPagination = true;
+    }
+
+    if (itemsQueryResult && itemsQueryResult.length > 0) {
+      if (this.paginationState.page === 1) {
+        arrayItems.length = 0;
+        arrayItems.push(...itemsQueryResult);
+      } else {
+        arrayItems.push(...itemsQueryResult);
+      }
+    }
+
+    this.paginationState.status = 'complete';
+
+    if (itemsQueryResult.length === 0 && !triggeredFromScroll) {
+      arrayItems.length = 0;
+    }
   }
 }

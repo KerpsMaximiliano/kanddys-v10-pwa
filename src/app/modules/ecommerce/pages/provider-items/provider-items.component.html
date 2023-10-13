@@ -73,32 +73,7 @@ h3h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
         </button>
       </div>
 
-      <div *ngIf="isSupplier" class="filtering-options card">
-        <button
-          type="button"
-          [ngClass]="{ active: btnFilterState.exhibits }"
-          (click)="onChangeBtnFiltering('exhibits')"
-        >
-          Exhibidos ({{ itemsISell.length }})
-        </button>
-        <button
-          type="button"
-          [ngClass]="{ active: btnFilterState.noExhibits }"
-          (click)="onChangeBtnFiltering('noExhibits')"
-        >
-          No Exhibidos ({{ itemsIDontSell.length }})
-        </button>
-
-        <button
-          type="button"
-          [ngClass]="{ active: btnFilterState.hidden }"
-          (click)="onChangeBtnFiltering('hidden')"
-        >
-          Ocultos ({{ totalHidden }})
-        </button>
-      </div>
-
-      <div *ngIf="!isSupplier" class="filtering-options card card-store">
+      <div class="filtering-options card card-store">
         <button
           type="button"
           [ngClass]="{ active: btnFilterState.exhibits }"
@@ -254,13 +229,13 @@ h3h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
       </section>
     </main>
 
-    <footer *ngIf="!searchOpened && itemsIDontSell?.length > 0 && isSupplier">
+    <footer *ngIf="!searchOpened && itemsIDontSell?.length > 0 && !isUserLogged">
       <p>Preview</p>
       <p>Comparte</p>
     </footer>
 
     <footer
-      *ngIf="!searchOpened && !isSupplier"
+      *ngIf="!searchOpened && isUserLogged"
       [ngClass]="{ off: !isSwitchActive }"
     >
       <p>Preview</p>
