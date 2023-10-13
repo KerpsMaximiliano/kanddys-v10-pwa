@@ -73,11 +73,13 @@ import { MagicLinkSentComponent } from './pages/magic-link-sent/magic-link-sent.
 import { MerchantRegisterComponent } from './pages/merchant-register/merchant-register.component';
 import { LoginLandingComponent } from './pages/login-landing/login-landing.component';
 import { NotificationAccessScreenComponent } from './pages/notification-access-screen/notification-access-screen.component';
+import { ProviderItemsEditorComponent } from './pages/provider-items-editor/provider-items-editor.component';
 import { AdminArticleDetailComponent } from './pages/admin-article-detail/admin-article-detail.component';
 import { ProfloraCampainComponent } from './pages/proflora-campain/proflora-campain.component';
 import { ChatRoomComponent } from './pages/chat-room/chat-room.component';
 import { DaliahChatComponent } from './pages/daliah-chat/daliah-chat.component';
 import { DaliaTrainingComponent } from './pages/dalia-training/dalia-training.component';
+import { LaiaMemoriesManagementComponent } from './pages/laia-memories-management/laia-memories-management.component';
 
 const routes: Routes = [
   {
@@ -281,6 +283,14 @@ const routes: Routes = [
     component: ProviderItemsComponent,
   },
   {
+    path: 'provider-items-editor/:articleId',
+    component: ProviderItemsEditorComponent
+  },
+  {
+    path: 'provider-items-editor',
+    component: ProviderItemsEditorComponent
+  },
+  {
     path: 'club-landing',
     component: ClubLandingComponent,
   },
@@ -293,8 +303,16 @@ const routes: Routes = [
     component: DaliahChatComponent,
   },
   {
-    path: 'daliah-training',
+    path: 'laia-training',
     component: DaliaTrainingComponent,
+  },
+  {
+    path: 'laia-training/:vectorId',
+    component: DaliaTrainingComponent,
+  },
+  {
+    path: 'laia-memories-management',
+    component: LaiaMemoriesManagementComponent,
   },
   {
     path: 'admin-article-detail/:itemId',
@@ -446,10 +464,6 @@ const routes: Routes = [
         path: 'chat-merchant/:chatId',
         component: ChatRoomComponent,
       },
-      {
-        path: 'daliah-training',
-        component: DaliaTrainingComponent,
-      },
     ],
   },
 ];
@@ -508,11 +522,13 @@ const routes: Routes = [
     MerchantRegisterComponent,
     LoginLandingComponent,
     NotificationAccessScreenComponent,
+    ProviderItemsEditorComponent,
     AdminArticleDetailComponent,
     ProfloraCampainComponent,
     ChatRoomComponent,
     DaliahChatComponent,
     DaliaTrainingComponent,
+    LaiaMemoriesManagementComponent,
   ],
   imports: [
     CommonModule,

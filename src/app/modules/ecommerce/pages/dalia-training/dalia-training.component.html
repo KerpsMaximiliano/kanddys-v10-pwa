@@ -1,7 +1,10 @@
 <div class="container">
   <header>
-    <div class="knowledge-slot-header">
-      Memoria <span class="knowledge-slot-name">Sin nombre</span>
+    <div class="knowledge-slot-header" (click)="editMemoryName()">
+      Memoria
+      <span class="knowledge-slot-name">
+        {{ memoryName ? memoryName : "Sin nombre" }}
+      </span>
     </div>
     <div class="close-button" (click)="back()">X</div>
   </header>
@@ -12,7 +15,7 @@
     }"
   >
     <div class="base-text-wrapper">
-      <label for="base-text">TEXTO BASE DE LA MEMORIA</label>
+      <label for="base-text">TEXTOS PARA FORMULAR RESPUESTAS</label>
 
       <div class="textarea-wrapper" [formGroup]="form">
         <textarea
@@ -97,7 +100,7 @@
     *ngIf="form.get('memory').value && generatedQA?.response"
     (click)="saveMemoryInKnowledgeBase()"
   >
-    Salva la Memoria
+    {{ vectorId ? "Actualiza la memoria" : "Salva la Memoria" }}
   </footer>
 
   <section

@@ -3,7 +3,7 @@ import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from '@angular/material/bott
 
 export interface DialogTemplate {
   title?: string;
-  description: string;
+  description?: string;
   options: Array<{
     value: string;
     callback: () => void;

@@ -61,6 +61,9 @@ import {
   campaigns,
   merchantQuantityOfFiltersCampaign,
   merchantQuantityOfFiltersHaveDebt,
+  merchantAddRole,
+  rolesPublic,
+  merchantRemoveRole,
 } from './../graphql/merchants.gql';
 import {
   EmployeeContract,
@@ -750,6 +753,40 @@ export class MerchantsService {
     if (!result || result?.errors) return undefined;
     return result?.merchantQuantityOfFiltersHaveDebt;
   }
+
+  async rolesPublic () {
+    const result = await this.graphql.query({
+      query: rolesPublic,
+      variables: { },
+      fetchPolicy: 'no-cache',
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result?.rolesPublic;
+  }
+
+  async merchantAddRole (roleId,id) {
+    const result = await this.graphql.mutate({
+      mutation: merchantAddRole,
+      variables: {roleId,id },
+      fetchPolicy: 'no-cache',
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result?.merchantAddRole;
+  }
+
+  async merchantRemoveRole (roleId,id) {
+    const result = await this.graphql.mutate({
+      mutation: merchantRemoveRole,
+      variables: {roleId,id },
+      fetchPolicy: 'no-cache',
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result?.merchantRemoveRole;
+  }
+  
 }
 
 

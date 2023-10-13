@@ -17,15 +17,13 @@ export const generateResponseForTemplate = gql`
 export const requestResponseFromKnowledgeBase = gql`
   query requestResponseFromKnowledgeBase(
     $prompt: String!
-    $saleflowId: ObjectID!
-    $conversationId: ObjectID
+    $userId: ObjectID!
     $chatRoomId: String
     $socketId: String
   ) {
     requestResponseFromKnowledgeBase(
       prompt: $prompt
-      saleflowId: $saleflowId
-      conversationId: $conversationId
+      userId: $userId
       chatRoomId: $chatRoomId
       socketId: $socketId
     )
@@ -35,6 +33,36 @@ export const requestResponseFromKnowledgeBase = gql`
 export const fetchAllDataInVectorDatabaseNamespace = gql`
   query fetchAllDataInVectorDatabaseNamespace($saleflowId: ObjectID!) {
     fetchAllDataInVectorDatabaseNamespace(saleflowId: $saleflowId)
+  }
+`;
+
+export const getMerchantEmbeddingsMetadata = gql`
+  query getMerchantEmbeddingsMetadata {
+    getMerchantEmbeddingsMetadata {
+      vectorsCount
+      automaticModeActivated
+      merchant {
+        _id
+      }
+    }
+  }
+`;
+
+export const doUsersHaveAssistantActivated = gql`
+  query doUsersHaveAssistantActivated($users: [String!]!) {
+    doUsersHaveAssistantActivated(users: $users)
+  }
+`;
+
+export const changeAssistantResponseMode = gql`
+  mutation changeAssistantResponseMode {
+    changeAssistantResponseMode {
+      vectorsCount
+      automaticModeActivated
+      merchant {
+        _id
+      }
+    }
   }
 `;
 
@@ -51,14 +79,18 @@ export const feedFileToKnowledgeBase = gql`
 `;
 
 export const feedKnowledgeBaseWithTextData = gql`
-  mutation feedKnowledgeBaseWithTextData($text: String!) {
-    feedKnowledgeBaseWithTextData(text: $text)
+  mutation feedKnowledgeBaseWithTextData($text: String!, $memoryName: String) {
+    feedKnowledgeBaseWithTextData(text: $text, memoryName: $memoryName)
   }
 `;
 
 export const updateVectorInKnowledgeBase = gql`
-  mutation updateVectorInKnowledgeBase($id: String!, $text: String!) {
-    updateVectorInKnowledgeBase(id: $id, text: $text)
+  mutation updateVectorInKnowledgeBase(
+    $id: String!
+    $text: String!
+    $name: String
+  ) {
+    updateVectorInKnowledgeBase(id: $id, text: $text, name: $name)
   }
 `;
 
@@ -86,5 +118,11 @@ export const generateCompletionForMerchant = gql`
 export const imageObjectRecognition = gql`
   mutation imageObjectRecognition($merchantId: ObjectID!, $file: Upload) {
     imageObjectRecognition(merchantId: $merchantId, file: $file)
+  }
+`;
+
+export const getVectorByIdInKnowledgeBase = gql`
+  query getVectorByIdInKnowledgeBase($id: String!) {
+    getVectorByIdInKnowledgeBase(id: $id)
   }
 `;

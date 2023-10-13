@@ -230,6 +230,7 @@ export const communitycategoriesPaginate = gql`
         _id
         name
         type
+        description
       }
     }
   }

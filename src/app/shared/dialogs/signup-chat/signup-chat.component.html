@@ -1,8 +1,11 @@
 <div class="chat-dialog">
   <header class="chat-header">
-    <p>
-      La<span>ia</span>Chat <span (click)="callLogin()">{{ 'contigo' }}</span>
-    </p>
+    <div class="flex">
+      <p>
+        La<span>ia</span>Chat <span (click)="callLogin()">{{ 'contigo' }}</span>
+      </p>
+      <mat-icon class="close-icon" style="color: #FFF" (click)="close()">close</mat-icon>
+    </div>
   </header>
   <div class="messages">
     <div class="messages-container" #chatContainer>
@@ -34,13 +37,13 @@
     role="form"
     *ngIf="!hideInput"
   >
-    <input
+    <textarea
       type="email"
       class="user-input-box"
       placeholder="Escribe tu correo electrónico para reservar a Laia"
       formControlName="input"
       [(ngModel)]="inputValue"
-    />
+    ></textarea>
 
     <button
       [ngClass]="{ 'button-disabled': !inputValue}"
