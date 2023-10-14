@@ -468,8 +468,8 @@ export class ProviderItemsComponent implements OnInit {
       },
       options: {
         sortBy: 'createdAt:desc',
-        limit: -1,
-        page: 1,
+        limit: this.paginationState.pageSize,
+        page: this.paginationState.page,
       },
     };
 
@@ -1713,11 +1713,13 @@ export class ProviderItemsComponent implements OnInit {
       item.images = item.images.sort(({ index: a }, { index: b }) => (a > b ? 1 : -1));
     });
 
-    if (itemsQueryResult.length === 0 && this.paginationState.page === 1) {
-      arrayItems.length = 0;
+
+    if (!itemsQueryResult.length && this.paginationState.page === 1) {
+      arrayItems = []
     }
 
-    if (itemsQueryResult.length === 0 && this.paginationState.page !== 1) {
+    // Condición para cuando llegas al final de la página
+    if (!itemsQueryResult.length && this.paginationState.page !== 1) {
       this.paginationState.page--;
       this.reachTheEndOfPagination = true;
     }
@@ -1733,8 +1735,8 @@ export class ProviderItemsComponent implements OnInit {
 
     this.paginationState.status = 'complete';
 
-    if (itemsQueryResult.length === 0 && !triggeredFromScroll) {
-      arrayItems.length = 0;
+    if (!itemsQueryResult.length && !triggeredFromScroll) {
+      arrayItems = [];
     }
   }
 }
