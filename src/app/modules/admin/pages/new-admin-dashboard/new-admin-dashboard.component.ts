@@ -529,7 +529,7 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
             {
               title: 'Edita la carta de los artículos',
               callback: () => {
-                this.router.navigate(['/admin/mode-configuration-cards']);
+                this.router.navigate(['/admin/view-configuration-cards']);
               },
             },
             {

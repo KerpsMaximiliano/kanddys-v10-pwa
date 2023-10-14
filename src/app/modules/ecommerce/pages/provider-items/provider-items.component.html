@@ -276,7 +276,7 @@ h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
     <div class="right-column">
       <div class="quantity-title">VENDIENDO</div>
 
-      <div class="item-quantity">
+      <div class="item-quantity" (click)="updatePricing(item._id)">
         <ng-container *ngIf="item.useStock">
           <ng-container *ngIf="item.stock === 0">
             <img
