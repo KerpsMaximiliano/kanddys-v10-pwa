@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, Route, Router } from '@angular/router';
+import { ActivatedRoute, NavigationExtras, Route, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { AppService } from 'src/app/app.service';
@@ -1842,5 +1842,15 @@ export class ProviderItemsComponent implements OnInit {
   }
   goToArticleDetail(id){
     this.router.navigate(['ecommerce/admin-article-detail/' + id]);
+  }
+  updatePricing(id){
+    const navigationData : NavigationExtras = {
+      replaceUrl: true,
+      queryParams : {
+        stockEdition: true
+      }
+    }
+    return this.router.navigate(['ecommerce/provider-items-editor/'+id], navigationData);
+    
   }
 }
