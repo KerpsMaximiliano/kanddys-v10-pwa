@@ -715,6 +715,10 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     return this.router.navigate(['/ecommerce/provider-items']);
   }
 
+  goToOrders() {
+    return this.router.navigate(['/admin/order-progress']);
+  }
+
   openLoginDialog() {
     let dialogRef = this.dialog.open(FormComponent, {
       data: {
