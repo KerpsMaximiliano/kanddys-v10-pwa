@@ -109,12 +109,13 @@
         <div class="info-container">
           <div class="info-container-title-container">
             <p class="info-container-title">Vende fácilmente </p>
+            <input #articleInputFlow id="imgInput" accept="image/*" type="file" (change)="getImg($event)" hidden #uploader>
             <div *ngIf="headerService.user">
               <mat-slide-toggle
                 [checked]="statusSwitch"
                 (click)="toggleStoreVisibility()"
               ></mat-slide-toggle>
-              <p>+</p>
+              <p (click)="articleInputFlow.click()">+</p>
               <mat-icon>ios_share</mat-icon>
             </div>
           </div>
@@ -122,7 +123,7 @@
             Laia creará una vitrina online para vender tus artículos a través de enlaces.
           </p>
           <ng-container *ngIf="!headerService?.user">
-            <p class="info-container-invited-link info-container-invited-link-mr" (click)="openMemoriesLoginDialog()">
+            <p class="info-container-invited-link info-container-invited-link-mr" (click)="articleInputFlow.click()">
               Agrega tu primer articulo
             </p>
           </ng-container>
@@ -133,9 +134,9 @@
             <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToOrders()">
               {{ sales ? sales : '0' }} ventas
             </p>
-            <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToDashboard()">
+            <!-- <p class="info-container-invited-link info-container-invited-link-mr">
               Facturar
-            </p>
+            </p> -->
           </div>
         </div>
         <ng-container *ngIf="headerService.user">

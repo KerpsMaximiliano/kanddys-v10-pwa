@@ -712,7 +712,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   goToDashboard() {
-    return this.router.navigate(['/ecommerce/provider-items']);
+    return this.router.navigate(['/admin/dashboard']);
   }
 
   goToOrders() {
