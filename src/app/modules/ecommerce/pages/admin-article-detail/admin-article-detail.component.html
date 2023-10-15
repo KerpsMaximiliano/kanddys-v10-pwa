@@ -1,77 +1,155 @@
 <div class="main-container">
   <nav>
-    <div *ngIf="!dropdown" class="subnav">
+    <div class="subnav">
       <a class="exit"> X </a>
     </div>
     <div class="subnav right">
       <mat-slide-toggle
-        *ngIf="!dropdown"
-        class="toggle"
         [checked]="active"
         (change)="updateItem('toggle')"
       >
       </mat-slide-toggle>
-      <img 
-        class="icon" 
-        title="icon" 
-        [src]="!dropdown ?  env +'/info-icon.svg' :  env +'/dropdown_icon.png'" 
-        (click)="dropdown = !dropdown"
-      />
     </div>
   </nav>
-  <div *ngIf="!dropdown" class="article-info">
+  <div class="article-info">
     <img alt="" class="article-img" [src]="item?.images[0].value" />
     <p class="article-name">{{item?.name}}</p>
     <p class="article-description">{{item?.description}}</p>
   </div>
-  <div *ngIf="!dropdown" class="container">
+  <div class="tab-bar">
+    <p 
+      (click)="tabIndex = 1"
+      [class]="{'active': tabIndex === 1}"
+    >DATOS</p>
+    <p 
+      (click)="tabIndex = 2"
+      [class]="{'active': tabIndex === 2}"
+    >🌼 VITRINA</p>
+    <p 
+      (click)="tabIndex = 3"
+      [class]="{'active': tabIndex === 3}"
+    >RESULTADOS</p>
+  </div>
+  <main *ngIf="tabIndex === 2">
+    <div class="category">
+      <h2>Precios</h2>
+      <div class="info-card">
+        <div class="title">
+          <h3>Precio normal</h3>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+        <p>{{item?.pricing | currency}}</p>
+      </div>
+      <!--<div class="add-card">
+        <p class="plus">+</p>
+        <p>Adiciona ID</p>
+      </div>-->
+    </div>
+    <div class="category">
+      <h2>Categorias</h2>
+      <div *ngIf="isHashtagExist && hashtagSelected?.keyword" class="info-card"(click)="openDialog('hashtag')">
+        <div class="title">
+          <h3>Hashtag</h3>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+        <p>{{itemHashtagInput?.value}}</p>
+      </div>
+      <div *ngIf="itemCategoriesIds.length > 0" class="info-card" (click)="openCategoriesDialog()">
+        <div class="title">
+          <h3>Categorias donde se exhibiendo</h3>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+        <p>{{categoriesString}}</p>
+      </div>
+      <div *ngIf="itemCategoriesIds.length === 0" class="add-card" (click)="openCategoriesDialog()">
+        <p class="plus">+</p>
+        <p>Adiciona una Categoria</p>
+      </div>
+      <div *ngIf="!hashtagSelected" class="add-card" (click)="openDialog('hashtag')">
+        <p class="plus">+</p>
+        <p>Adiciona un hashtag</p>
+      </div>
+    </div>
+    <div class="category">
+      <h2>Compra</h2>
+      <div *ngIf="numberOfRequiredQuestions > 0 || numberOfOptionalQuestions > 0" class="info-card" (click)="gotoWebform()">
+        <div class="title">
+          <h3>Formulario de preguntas</h3>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+        <p *ngIf="numberOfRequiredQuestions > 0 && numberOfOptionalQuestions > 0" class="display-text">
+          {{
+            numberOfRequiredQuestions + (numberOfRequiredQuestions > 1 ? ' preguntas requeridas y ' : ' pregunta requerida y ') +  
+            numberOfOptionalQuestions + (numberOfOptionalQuestions > 1 ? ' preguntas opcionales y ' : ' pregunta opcional')
+          }}
+        </p>
+        <p *ngIf="numberOfRequiredQuestions > 0 && numberOfOptionalQuestions === 0" class="display-text">
+          {{
+            numberOfRequiredQuestions + (numberOfRequiredQuestions > 1 ? ' preguntas requeridas' : ' pregunta requerida')
+          }}
+        </p>
+        <p *ngIf="numberOfRequiredQuestions === 0 && numberOfOptionalQuestions > 0" class="display-text">
+          {{
+            numberOfOptionalQuestions + (numberOfOptionalQuestions > 1 ? ' preguntas opcionales' : ' pregunta opcional')
+          }}
+        </p>
+      </div>
+      <div 
+        class="add-card" 
+        *ngIf="numberOfRequiredQuestions === 0 && numberOfOptionalQuestions === 0"  
+        (click)="gotoWebform()"
+      >
+        <p class="plus">+</p>
+        <p>Preguntas al Comprador</p>
+      </div>
+    </div>
+    <div class="category">
+      <h2>Entrega</h2>
+      <div *ngIf="deliveryTimeStart || deliveryTimeEnd" class="info-card"(click)="openDialog('deliverytime')">
+        <div class="title">
+          <h3>Tiempo de Entrega</h3>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+        <p *ngIf="deliveryTimeStart && deliveryTimeEnd">
+          Desde {{deliveryTimeStart}} horas hasta {{deliveryTimeEnd}} horas
+        </p>
+        <p *ngIf="deliveryTimeStart && !deliveryTimeEnd">
+          {{deliveryTimeStart}} horas
+        </p>
+        <p *ngIf="deliveryTimeEnd && !deliveryTimeStart">
+          {{deliveryTimeEnd}} horas
+        </p>
+      </div>
+      <div class="costs-list" *ngFor="let expenditure of expenditures">
+        <div class="info-card" (click)="openDialog('expenditure-update', expenditure._id)">
+          <div class="title">
+            <h3>Costo: {{expenditure.name}}</h3>
+            <mat-icon>chevron_right</mat-icon>
+          </div>
+          <p>{{expenditure.amount | currency}}</p>
+        </div>
+      </div>
+      <div 
+        *ngIf="!deliveryTimeStart && !deliveryTimeEnd" 
+        class="add-card" 
+        (click)="openDialog('deliverytime')"
+      >
+        <p class="plus">+</p>
+        <p>Tiempo Aproximado de Entrega</p>
+      </div>
+      <div class="add-card" (click)="openDialog('cost')">
+        <p class="plus">+</p>
+        <p>Costo de la Venta</p>
+      </div>
+    </div>
+  </main>
+  <!--<div *ngIf="tabIndex === 1" class="container">
     <div class="info-card">
       <p class="card-title">Precio normal exhibido en MerchantID</p>
       <p class="display-text">{{item?.pricing | currency}}</p>
     </div>
-    <div *ngIf="isHashtagExist && hashtagSelected?.keyword" class="info-card"(click)="openDialog('hashtag')">
-      <p class="card-title">Hashtag</p>
-      <p class="display-text">{{itemHashtagInput?.value}}</p>
-    </div>
-    <div *ngIf="deliveryTimeStart || deliveryTimeEnd" class="info-card"(click)="openDialog('deliverytime')">
-      <p class="card-title">Tiempo de Entrega</p>
-      <p *ngIf="deliveryTimeStart && deliveryTimeEnd" class="display-text" >
-        Desde {{deliveryTimeStart}} horas hasta {{deliveryTimeEnd}} horas
-      </p>
-      <p *ngIf="deliveryTimeStart && !deliveryTimeEnd" class="display-text">
-        {{deliveryTimeStart}} horas
-      </p>
-      <p *ngIf="deliveryTimeEnd && !deliveryTimeStart" class="display-text">
-        {{deliveryTimeEnd}} horas
-      </p>
-    </div>
-    <div *ngIf="numberOfRequiredQuestions > 0 || numberOfOptionalQuestions > 0" class="info-card" (click)="gotoWebform()">
-      <p class="card-title">Formulario de preguntas</p>
-      <p *ngIf="numberOfRequiredQuestions > 0 && numberOfOptionalQuestions > 0" class="display-text">
-        {{
-          numberOfRequiredQuestions + (numberOfRequiredQuestions > 1 ? ' preguntas requeridas y ' : ' pregunta requerida y ') +  
-          numberOfOptionalQuestions + (numberOfOptionalQuestions > 1 ? ' preguntas opcionales y ' : ' pregunta opcional')
-        }}
-      </p>
-      <p *ngIf="numberOfRequiredQuestions > 0 && numberOfOptionalQuestions === 0" class="display-text">
-        {{
-          numberOfRequiredQuestions + (numberOfRequiredQuestions > 1 ? ' preguntas requeridas' : ' pregunta requerida')
-        }}
-      </p>
-      <p *ngIf="numberOfRequiredQuestions === 0 && numberOfOptionalQuestions > 0" class="display-text">
-        {{
-          numberOfOptionalQuestions + (numberOfOptionalQuestions > 1 ? ' preguntas opcionales' : ' pregunta opcional')
-        }}
-      </p>
-    </div>
-    <div class="container" *ngFor="let expenditure of expenditures">
-        <div class="info-card" (click)="openDialog('expenditure-update', expenditure._id)">
-          <p class="card-title">Costo: {{expenditure.name}}</p>
-          <p class="display-text">{{expenditure.amount | currency}}</p>
-        </div>
-    </div>
   </div>
-  <div *ngIf="!dropdown" class="container">
+  <div *ngIf="tabIndex  === 2" class="container">
     <p class="data-title">
       🌼 VITRINA
     </p>
@@ -112,13 +190,13 @@
       </button>
     </div>
   </div>
-  <div *ngIf="!dropdown && !deliveryTimeStart && !deliveryTimeEnd" class="container">
+  <div *ngIf="" class="container">
     <p class="data-title">
       OPCIONAL- DATOS QUE LOS COMPRADORES CONSIDERAN IMPORTANTES
     </p>
     <div class="input-card">
       <p class="input-text">⏰ Tiempo aproximado de entrega</p>
-      <button class="input-button" (click)="openDialog('deliverytime')">
+      <button class="input-button" >
         <img
           src="../../../../../assets/icons/add-button.svg"
           alt="add item"
@@ -126,16 +204,16 @@
       </button>
     </div>
   </div>
-  <div *ngIf="!dropdown" class="container">
+  <div class="container">
     <p class="data-title">
       FUNCIONALIDADES OPCIONALES
     </p>
     <div 
-      *ngIf="numberOfRequiredQuestions === 0 && numberOfOptionalQuestions === 0" 
+      
       class="input-card"
     >
       <p class="input-text">¿Te tiene que responder algo el comprador antes de pagarte por este artículo?</p>
-      <button class="input-button" (click)="gotoWebform()">
+      <button class="input-button" >
         <img
           src="../../../../../assets/icons/add-button.svg"
           alt="add item"
@@ -144,15 +222,15 @@
     </div>
     <div class="input-card last">
       <p class="input-text">¿Quieres incluir el costo de vender este artículo en tu reporte de los beneficios?</p>
-      <button class="input-button" (click)="openDialog('cost')">
+      <button class="input-button" >
         <img
           src="../../../../../assets/icons/add-button.svg"
           alt="add item"
         />
       </button>
     </div>
-  </div>
-  <div *ngIf="dropdown" class="container dropdown">
+  </div>-->
+  <div *ngIf="tabIndex === 3" class="container">
     <div class="metric">
       <h4>Cantidad de veces Vendido</h4>
       <p>{{ totalSells }} veces, ${{ totalIncome }}</p>
@@ -161,12 +239,10 @@
       <h4>Cantidad de compradores diferentes</h4>
       <p>{{buyers}}</p>
     </div>
-    <!-- Esta card será dummy hasta que se implemente la query en el backend
     <div class="metric">
       <h4>Comprador que mas lo ha comprado</h4>
       <p>CompradorID</p>
     </div>
-    -->
     <div class="metric">
       <h4>Posicion segun las ventas</h4>
       <p>
@@ -178,17 +254,7 @@
       </p>
     </div>
   </div>
-  <div *ngIf="dropdown" class="bubble-button-wrapper">
-    <div
-      class="bubble-button"
-      *ngIf="dropdown === true"
-      (click)="dropdown = false"
-    >
-      <img [src]="env + '/dropdown_icon.png'" alt="wizard" />
-    </div>
-  </div>
-  <div 
-    *ngIf="!dropdown" 
+  <div
     class="bottom-bar"
     [ngStyle]="{'background-color': active ? 'var(--El-verdecito, #87CD9B)' : 'var(--MoKito, #936105)'}"
   >
