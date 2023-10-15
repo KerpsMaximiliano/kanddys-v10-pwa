@@ -171,10 +171,10 @@ export class ProviderItemsComponent implements OnInit {
    */
   initInputValueChanges() {
     this.itemSearchbar.valueChanges.subscribe(async () => {
-      if (this.isUserLogged) {
-        await this.fetchItemsForSell();
-      }
-      await this.fetchItemsForNotSell(true, false);
+      // if (this.isUserLogged) {
+      //   await this.fetchItemsForSell();
+      // }
+      // await this.fetchItemsForNotSell(true, false);
     });
   }
 
@@ -364,7 +364,7 @@ export class ProviderItemsComponent implements OnInit {
       }
       this.orderService.orderPaginate(pagination)
         .then(orders => {
-          if (orders.orderPaginate.length) {
+          if (orders?.orderPaginate.length) {
             localStorage.setItem(this.keyTutorialState, 'true')
             this.searchTutorialsOpened = true
           }
@@ -463,16 +463,17 @@ export class ProviderItemsComponent implements OnInit {
       findBy: {
         merchant: this.merchantData._id,
         _id: {
-          $nin: this.saleflowData.items.map((item) => item.item._id)
+          __in: this.saleflowData.items.map((item) => item.item._id)
         }
       },
       options: {
-        sortBy: 'createdAt:desc',
         limit: this.paginationState.pageSize,
-        page: this.paginationState.page,
+        page: this.paginationState.page-1,
+        sortBy: 'createdAt:desc',
       },
     };
 
+    // const data = await this.saleflowService.listItems(pagination, true);
     await this.processPaginationItems(pagination, triggeredFromScroll, this.itemsISell)
   }
 
@@ -1636,7 +1637,7 @@ export class ProviderItemsComponent implements OnInit {
       input.findBy = {
         ...input.findBy,
         merchant: {
-          _id: this.merchantsService.merchantData._id
+          _id: this.merchantData._id
         }
       }
     }
