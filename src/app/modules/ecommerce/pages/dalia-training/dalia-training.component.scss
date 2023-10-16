@@ -199,19 +199,19 @@
 
     .question-box {
       margin-right: 15px;
-      border-radius: 57.335px;
+      border-radius: 20px;
       opacity: 0.8;
       background-color: #403d3d;
-      max-width: 70%;
+      min-width: 70%;
+      max-width: 100%;
       padding: 8px 19px;
     }
 
     .question-box-input {
       margin-right: 15px;
-      border-radius: 57.335px;
+      border-radius: 20px;
       opacity: 0.8;
       background-color: #403d3d;
-      max-width: 70%;
       padding: 8px 19px;
       border: none;
       color: var(--Fondo-de-Pantallas, #f6f6f6);
@@ -219,6 +219,9 @@
       font-size: 16.107px;
       font-style: normal;
       line-height: normal;
+      min-width: 70%;
+      max-width: 100%;
+      box-sizing: border-box;
     }
   }
 
@@ -314,7 +317,7 @@
 
   &.notAllowed {
     filter: invert(49%) sepia(10%) saturate(15%) hue-rotate(324deg)
-    brightness(47%) contrast(91%);
+      brightness(47%) contrast(91%);
 
     &:hover {
       cursor: not-allowed;

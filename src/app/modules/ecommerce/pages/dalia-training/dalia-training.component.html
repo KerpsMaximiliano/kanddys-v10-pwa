@@ -42,13 +42,12 @@
               {{ generatedQA.question }}
             </div>
 
-            <input
+            <div
               *ngIf="editingQuestion"
-              type="text"
               id="question-box-input"
               class="question-box-input"
-              formControlName="question"
-            />
+              contenteditable="true"
+            ></div>
 
             <img
               class="edit-or-confirm"
