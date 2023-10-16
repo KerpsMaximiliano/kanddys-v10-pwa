@@ -363,6 +363,8 @@
     </footer> -->
     <app-login-flow
       *ngIf="loginflow"
+      [loginEmail]="loginEmail"
+      [magicLink]="magicLink"
       [redirectionRoute]="redirectionRoute"
       [redirectionRouteId]="redirectionRouteId"
       [entity]="entity"
