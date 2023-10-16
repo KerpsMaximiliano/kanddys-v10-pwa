@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
@@ -9,7 +9,10 @@ import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { MatDialog } from '@angular/material/dialog';
 import { FormComponent } from 'src/app/shared/dialogs/form/form.component';
-import { Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import * as moment from 'moment'
+import { ItemsService } from 'src/app/core/services/items.service';
+import { MatDatepicker } from '@angular/material/datepicker';
 @Component({
   selector: 'app-order-progress',
   templateUrl: './order-progress.component.html',
@@ -31,6 +34,22 @@ export class OrderProgressComponent implements OnInit {
 
   selectedProgress = [];
   selectedZones = [];
+  searchOpened:boolean = false;
+  itemSearchbar: FormControl = new FormControl('');
+  placeholder: string = "Todas las facturas";
+  deliveryTime: any[] = [];
+  startDate: Date = null;
+  endDate: Date = null;
+  range = new FormGroup({
+    start: new FormControl(''),
+    end: new FormControl(''),
+  });
+  benefit:number = 0;
+  startDateLabel:string = "";
+  endDateLabel:string = "";
+  @ViewChild('picker') datePicker: MatDatepicker<Date>;
+  ordersTotal: any;
+
 
   constructor(
     private merchantsService: MerchantsService,
@@ -38,6 +57,7 @@ export class OrderProgressComponent implements OnInit {
     private deliveryZonesService: DeliveryZonesService,
     private router: Router,
     private dialog: MatDialog,
+    private itemsService: ItemsService
   ) {}
 
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
@@ -57,7 +77,20 @@ export class OrderProgressComponent implements OnInit {
 
   showLocations : boolean = false;
 
-  orders = []
+  orders = [];
+  ordersByMonth = [];
+  months = [{month:"diciembre"},
+  {month:"noviembre"},
+  {month:"octubre"},
+  {month:"septiembre"},
+  {month:"agosto"},
+  {month:"julio"},
+  {month:"junio"},
+  {month:"mayo"},
+  {month:"abril"},
+  {month:"marzo"},
+  {month:"febrero"},
+  {month:"enero"}];
 
   shortFormatID = shortFormatID
   default_image = 'https://cdn-icons-png.flaticon.com/512/149/149071.png'
@@ -65,9 +98,10 @@ export class OrderProgressComponent implements OnInit {
     return this.orderService.orderDeliveryStatus(status);
   }
 
-  ngOnInit(): void {
-    this.generate()
-    this.toggleTutorial()
+  async ngOnInit() {
+    await this.generate()
+    this.toggleTutorial();
+    await this.getOrdersTotal();
   }
 
   selectProgress(id) {
@@ -124,6 +158,7 @@ export class OrderProgressComponent implements OnInit {
   async generate() {
 
     lockUI()
+    await this.getDeliveryTime();
     if(!this.merchantId) {
       await this.merchantsService.merchantDefault().then((res) => {
         this.merchantId = res._id;
@@ -167,6 +202,17 @@ export class OrderProgressComponent implements OnInit {
     )
     this.orders = orders.orderPaginate != undefined ? orders.orderPaginate : []
     console.log(this.orders)
+    this.months.forEach(month => {
+      console.log(month.month)
+      const data = this.orders.filter(order =>  moment(order.createdAt).locale("es").format('MMMM') === month.month)
+      if(data.length > 0){
+        this.ordersByMonth.push({
+          month: month.month,
+          orders: data
+        });
+      }
+    });
+       
     await this.orderService.orderQuantityOfFiltersStatusDelivery({ findBy: {merchant: this.merchantId} }).then((res) => {
       this.deliveryStatus = res
     })
@@ -369,4 +415,96 @@ export class OrderProgressComponent implements OnInit {
   truncateString (word) {
     return truncateString(word, 12)
   }
+
+  async showSearch() {
+    this.searchOpened = true;
+    setTimeout(() => {
+      (document
+        .querySelector('#search-from-results-view') as HTMLInputElement)
+        ?.focus();
+    }, 100);
+    // this.itemsService
+    //   .itemsQuantityOfFilters(this.merchantsService.merchantData._id, 'supplier')
+    //   .then(data => {
+    //     if (this.isSupplier) {
+    //       this.buttonFiltering[2].total = data.hidden
+    //     } else {
+    //       // btn para todos los items
+    //       this.buttonFilteringNoSupplier[0].total = data.all
+    //       // btn para items ocultos
+    //       this.buttonFilteringNoSupplier[1].total = data.hidden
+    //       // btn para items con comisiones
+    //       this.buttonFilteringNoSupplier[2].total = data.commissionable
+    //       // btn para menos de 10 items para vender
+    //       this.buttonFilteringNoSupplier[3].total = data.lowStock
+    //     }
+    //   })
+
+  }
+
+  async getDeliveryTime(){
+    const itemsQuantityEstimatedDeliveryTime = await this.itemsService.itemsQuantityOfFiltersByEstimatedDeliveryTime({});
+    itemsQuantityEstimatedDeliveryTime.forEach((data, i)=>{
+      this.deliveryTime.push({
+        id: i,
+        count: data.count,
+        estimatedDeliveryTime: data.estimatedDeliveryTime,
+        selected: false
+      })
+    });
+
+    console.log("🚀 ~ file: order-progress.component.ts:148 ~ OrderProgressComponent ~ generate ~ itemsQuantityEstimatedDeliveryTime:", this.deliveryTime)
+
+  }
+
+  async selectDeliveryTime(id){
+    this.deliveryTime.forEach((e) => {
+      if (e.id == id) {
+        e.selected = !e.selected;
+      }
+    });
+    lockUI()
+    setTimeout(() => {
+      unlockUI()
+    }, 500);
+    // this.selectedZones = this.deliveryZones.filter(zone => zone.selected).map(zone => zone._id)
+    // this.generate()
+  }
+
+  onCloseSearchbar() {
+    this.searchOpened = false
+  }
+
+  openDatePicker() {
+    this.datePicker.open();
+  }
+
+  async onDateChange() {
+    if (this.range.get('start').value && this.range.get('end').value) {
+      lockUI();
+      try {
+        this.startDate = new Date(this.range.get('start').value);
+        this.endDate = new Date(this.range.get('end').value);
+        this.startDateLabel = moment(this.startDate).format("DD/MM/YYYY");
+        this.endDateLabel = moment(this.endDate).format("DD/MM/YYYY");
+        //this.getDatesByRange();
+        unlockUI();
+      } catch (error) {
+        unlockUI();
+        console.log(error);
+      }
+    }
+  }
+
+  async getOrdersTotal(){
+    const ordersTotal = await this.orderService.ordersTotal(
+      ['completed', 'to confirm'],
+      this.merchantId,
+    );
+    this.ordersTotal = ordersTotal
+    this.benefit = ordersTotal.total;
+    this.placeholder = `Todas las facturas (${ordersTotal.length})...`
+
+  }
+
 }

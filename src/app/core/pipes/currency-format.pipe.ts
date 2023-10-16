@@ -8,6 +8,8 @@ import { Pipe, PipeTransform } from "@angular/core";
       if (isNaN(value)) {
         return '';
       }
-      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      const formattedValue = value.toFixed(2);
+
+      return formattedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
   }
