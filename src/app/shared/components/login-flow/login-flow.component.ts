@@ -341,7 +341,8 @@ export class LoginFlowComponent implements OnInit {
               {
                 email: credentials,
                 name: result.value.name,
-                lastname: result.value.lastname
+                lastname: result.value.lastname,
+                password: "123"
               },
               "none"
             ).then((res) => {
@@ -432,6 +433,7 @@ export class LoginFlowComponent implements OnInit {
               {
                 email: credentials,
                 phone: result.value.phone.e164Number,
+                password: "123"
               },
               "none"
             ).then((res) => {

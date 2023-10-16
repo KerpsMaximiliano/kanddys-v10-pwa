@@ -819,7 +819,11 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   goToDashboard() {
-    return this.router.navigate(['/ecommerce/provider-items']);
+    return this.router.navigate(['/admin/dashboard']);
+  }
+
+  goToOrders() {
+    return this.router.navigate(['/admin/order-progress']);
   }
 
   openLoginDialog() {
@@ -911,7 +915,11 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   goToWizard() {
-    return this.router.navigate(['/admin/wizard-training']);
+    return this.router.navigate(['/admin/wizard-training'], {
+      queryParams: {
+        triggerWhatsappClient: true
+      }
+    });
   }
 
   truncateString(word) {

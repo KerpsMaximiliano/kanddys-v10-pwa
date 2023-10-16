@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -6,8 +6,9 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
@@ -22,7 +23,7 @@ import { environment } from 'src/environments/environment';
   templateUrl: './wizard-training.component.html',
   styleUrls: ['./wizard-training.component.scss'],
 })
-export class WizardTrainingComponent implements OnInit {
+export class WizardTrainingComponent implements OnInit, OnDestroy {
   openNavigation: boolean = false;
   env: string = environment.assetsUrl;
   knowledgeBaseEmbeddingsContent: string = null;
@@ -32,6 +33,8 @@ export class WizardTrainingComponent implements OnInit {
   loadingKnowledge: boolean = false;
   whatsappQrCodeGenerated: boolean = false;
   whatsappConnected: boolean = false;
+  triggerWhatsappClient: boolean = false;
+  queryParamsSubscription: Subscription;
   pollingInterval = 5000; // Polling interval in milliseconds (15 seconds)
   abortController = new AbortController();
   signal = this.abortController.signal;
@@ -45,44 +48,69 @@ export class WizardTrainingComponent implements OnInit {
     private toastrService: ToastrService,
     private formBuilder: FormBuilder,
     private whatsappService: WhatsappService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   async ngOnInit() {
-    await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
-    this.merchantSaleflow = await this.saleflowsService.saleflowDefault(
-      this.merchantsService.merchantData._id
-    );
-
-    this.whatsappService
-      .clientConnectionStatus()
-      .then((connected) => (this.whatsappConnected = connected))
-      .catch((err) => console.error(err));
-
-    this.loadingKnowledge = true;
-    const embeddingQueryResponse =
-      await this.gptService.fetchAllDataInVectorDatabaseNamespace(
-        this.merchantSaleflow._id
-      );
-
-    if (embeddingQueryResponse?.data && embeddingQueryResponse?.data?.length) {
-      embeddingQueryResponse?.data.forEach((lineObject) => {
-        this.embeddingsLines.push(
-          this.formBuilder.control(
-            lineObject.text,
-            Validators.compose([
-              Validators.pattern(/[\S]/),
-              Validators.required,
-            ])
-          )
+    this.queryParamsSubscription = this.route.queryParams.subscribe(
+      async ({ triggerWhatsappClient }) => {
+        this.triggerWhatsappClient = JSON.parse(
+          triggerWhatsappClient || 'false'
         );
 
-        this.vectorsIdByLineIndex[this.embeddingsLines.length - 1] =
-          lineObject.id;
-      });
-    }
+        await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+        this.merchantSaleflow = await this.saleflowsService.saleflowDefault(
+          this.merchantsService.merchantData._id
+        );
 
-    this.loadingKnowledge = false;
+        this.whatsappService
+          .clientConnectionStatus()
+          .then((connected): any => {
+            this.whatsappConnected = connected;
+
+            if (!this.whatsappConnected && triggerWhatsappClient) {
+              try {
+                lockUI();
+                this.createWhatsappClient();
+                unlockUI();
+              } catch (error) {
+                unlockUI();
+                console.error(error);
+              }
+            }
+          })
+          .catch((err) => console.error(err));
+
+        this.loadingKnowledge = true;
+        const embeddingQueryResponse =
+          await this.gptService.fetchAllDataInVectorDatabaseNamespace(
+            this.merchantSaleflow._id
+          );
+
+        if (
+          embeddingQueryResponse?.data &&
+          embeddingQueryResponse?.data?.length
+        ) {
+          embeddingQueryResponse?.data.forEach((lineObject) => {
+            this.embeddingsLines.push(
+              this.formBuilder.control(
+                lineObject.text,
+                Validators.compose([
+                  Validators.pattern(/[\S]/),
+                  Validators.required,
+                ])
+              )
+            );
+
+            this.vectorsIdByLineIndex[this.embeddingsLines.length - 1] =
+              lineObject.id;
+          });
+        }
+
+        this.loadingKnowledge = false;
+      }
+    );
   }
 
   async deleteKnowledgeData(index: number) {
@@ -137,7 +165,7 @@ export class WizardTrainingComponent implements OnInit {
       unlockUI();
 
       this.toastrService.success(
-        'Se ha entrenado al mago exitosamente con los productos de tu tienda'
+        'Se ha entrenado a laia exitosamente con los productos de tu tienda'
       );
     } catch (error) {
       unlockUI();
@@ -257,7 +285,7 @@ export class WizardTrainingComponent implements OnInit {
       },
     })
       .then((response) => {
-        console.log("then 1")
+        console.log('then 1');
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -268,7 +296,7 @@ export class WizardTrainingComponent implements OnInit {
           this.whatsappConnected = data;
 
           if (this.whatsappConnected) {
-            console.log("limpiando interval");
+            console.log('limpiando interval');
             clearInterval(this.pollingTimeout);
           }
         } else {
@@ -283,17 +311,21 @@ export class WizardTrainingComponent implements OnInit {
         }
       });
 
-    if(!this.pollingTimeout && !this.whatsappConnected) {
-      console.log("seteando timeout", this.pollingTimeout);
+    if (!this.pollingTimeout && !this.whatsappConnected) {
+      console.log('seteando timeout', this.pollingTimeout);
       this.pollingTimeout = setInterval(
         this.pollingMechanismForWhatsappStatus,
         this.pollingInterval
       );
-      console.log("timeout seteado", this.pollingTimeout);
+      console.log('timeout seteado', this.pollingTimeout);
     }
-  }
+  };
 
   back() {
     return this.router.navigate(['/ecommerce/club-landing']);
+  }
+
+  ngOnDestroy(): void {
+    this.queryParamsSubscription?.unsubscribe();
   }
 }

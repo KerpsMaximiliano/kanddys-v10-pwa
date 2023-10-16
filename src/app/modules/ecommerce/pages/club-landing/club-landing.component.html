@@ -124,19 +124,19 @@
           </p>
           <ng-container *ngIf="!headerService?.user">
             <p class="info-container-invited-link info-container-invited-link-mr" (click)="uploader.click()">
-              Agrega tu primer articulo
+              Agrega tu primer artículo
             </p>
           </ng-container>
           <div class="link-container" *ngIf="headerService?.user">
             <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToDashboard()">
               {{ saleflow ? saleflow?.items?.length : '0' }} artículos
             </p>
-            <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToDashboard()">
+            <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToOrders()">
               {{ sales ? sales : '0' }} ventas
             </p>
-            <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToDashboard()">
+            <!-- <p class="info-container-invited-link info-container-invited-link-mr">
               Facturar
-            </p>
+            </p> -->
           </div>
         </div>
         <ng-container *ngIf="headerService.user">

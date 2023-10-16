@@ -102,7 +102,7 @@ export class ProviderItemsEditorComponent implements OnInit {
   }
 
   back() {
-    return this.router.navigate(['/ecommerce/provider-items']);
+    return this.router.navigate(['/ecommerce/club-landing']);
   }
 
   async validateLoginFromLink() {
@@ -224,7 +224,8 @@ export class ProviderItemsEditorComponent implements OnInit {
     if(this.itemImage){
       const type = this.itemImage.split(';')[0].split(':')[1];
       const imageBlob = this.filesService.dataURItoBlob(this.itemImage);
-      const imageFile = new File([imageBlob], this.articleName.value, { type: type });
+      const imageFile = new File([imageBlob], this.articleName?.value ? this.articleName?.value : 'image', { type: type });
+      console.log(imageFile);
       itemDataInput.images = [{
         file:imageFile
       }]
@@ -241,7 +242,7 @@ export class ProviderItemsEditorComponent implements OnInit {
         this.saleFlowId
       );
       unlockUI();
-      await this.router.navigate(['/ecommerce/provider-items']);
+      await this.router.navigate(['/admin/dashboard']);
     } else {
       if (!this.preItemId) {
         const preItem = await this.createPreItem(itemDataInput);
@@ -296,7 +297,7 @@ export class ProviderItemsEditorComponent implements OnInit {
     
     await this.itemService.updateItem(itemDataInput, this.articleId);
     unlockUI();
-    this.router.navigate(['/ecommerce/provider-items']);
+    this.router.navigate(['/admin/dashboard']);
   }
 
   async createSaleFlow() {
@@ -381,10 +382,10 @@ export class ProviderItemsEditorComponent implements OnInit {
             unlockUI();
           }
           unlockUI();
-          this.router.navigate(['/ecommerce/provider-items']);
+          this.router.navigate(['/admin/dashboard']);
         }
         unlockUI();
-        this.router.navigate(['/ecommerce/provider-items']);
+        this.router.navigate(['/admin/dashboard']);
       } else {
         await this.createMerchantDefault(me);
         const saleFlowId = await this.createSaleFlow();
@@ -403,7 +404,7 @@ export class ProviderItemsEditorComponent implements OnInit {
           unlockUI();
         }
         unlockUI();
-        this.router.navigate(['/ecommerce/provider-items']);
+        this.router.navigate(['/admin/dashboard']);
       }
     } else {
       unlockUI();
