@@ -49,12 +49,12 @@
   <div class="content">
       <p class="section-label mt-zero">IMAGEN</p>
       <img alt="imagen" [src]="image" class="img-container" (click)="fileUpload.click()" />
-      <p class="section-label">COMPRADOR</p>
+      <!-- <p class="section-label">COMPRADOR</p>
       <div class="questions" (click)="goToUserSearch()">
         <p class="label body gray-out capitalize">
           {{user ? user.name || user.email || user.phone :'Adiciona quien lo compró'}}
         </p>
-      </div>
+      </div> -->
       <p class="section-label">MONTO</p>
       <div class="questions" (click)="openInputDialog('amount')">
         <p class="label body gray-out capitalize">
@@ -67,7 +67,7 @@
           {{identification ? identification :'Adiciona tu identificador de la factura'}}
         </p>
       </div>
-      <p class="section-label">RECIPIENTE</p>
+      <!-- <p class="section-label">RECIPIENTE</p>
       <div class="questions" (click)="openInputDialog('receiver')" >
         <p *ngIf="!order.receiverData; else elseBlock" class="label body gray-out capitalize">
           Adiciona quien lo recibirá
@@ -81,7 +81,7 @@
               Envía: {{order.receiverData.sender}}
             </p>
         </ng-template>
-      </div>
+      </div> -->
       <p class="section-label">NOTAS</p>
       <div class="questions" (click)="openInputDialog('notes')">
         <p class="label body gray-out capitalize">
@@ -116,6 +116,6 @@
   />
 </div>
 <div class="footer">
-  <p class="footer-title">Adiciona egresos</p>
+  <p class="footer-title"></p>
   <p class="footer-benefict">Beneficio: {{profit | currency}}</p>
 </div>

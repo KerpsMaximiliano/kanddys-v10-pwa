@@ -300,19 +300,25 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
 
   async editOrApplyQuestionChange() {
     if (this.editingQuestion) {
+      const inputDivContent = document.querySelector(
+        '#question-box-input'
+      ).textContent;
+      this.questionForm.get('question').setValue(inputDivContent)
       await this.editQA();
-    } else {
-      this.questionForm.get('question').setValue(this.generatedQA.question);
     }
 
     this.editingQuestion = !this.editingQuestion;
 
     if (this.editingQuestion) {
       setTimeout(() => {
+        this.questionForm.get('question').setValue(this.generatedQA.question);
+        const inputDiv = document.querySelector('#question-box-input');
+        inputDiv.textContent = this.questionForm.get('question').value;
+
         (
           document.querySelector('#question-box-input') as HTMLInputElement
         ).focus();
-      }, 400);
+      }, 200);
     }
   }
 

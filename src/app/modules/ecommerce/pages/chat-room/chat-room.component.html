@@ -32,10 +32,24 @@
       </ng-container>
     </div>
 
+    <div class="typing" *ngIf="typing && chatUsers['RECEIVER']">
+      Escribiendo...
+    </div>
+
+    <div class="error" *ngIf="!online">
+      Sin conexión
+      <mat-icon>signal_wifi_off</mat-icon>
+    </div>
+
+    <div class="error" *ngIf="!socketConnected">
+      Error de conexión con el servidor
+      <mat-icon>error_outline</mat-icon>
+    </div>
+
     <div class="bottom" *ngIf="isTheUserTheMerchant">
       <span>
         {{
-          usersWithAssistantActivated[chatUsers['SENDER']?._id]
+          usersWithAssistantActivated[chatUsers["SENDER"]?._id]
             ? "Dalia está contestando sin tu permiso"
             : "Dalia te preguntará antes de contestar"
         }}</span
