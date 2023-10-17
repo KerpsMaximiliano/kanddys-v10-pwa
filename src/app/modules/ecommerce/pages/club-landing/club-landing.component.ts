@@ -78,6 +78,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   statusSwitch: boolean = false;
 
   loginflow: boolean = false;
+  loginEmail: string = null;
+  magicLink: boolean = false;
 
   sales: number | null = null;
 
@@ -230,6 +232,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
   emailDialogRef: MatDialogRef<FormComponent, any> = null;
   merchant: string;
+  merchantSlug: string;
+  merchantName: string;
   saleflow: SaleFlow;
   referralsCount: number = 0;
   vectorsCount: number = 0;
@@ -297,11 +301,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       await this.getSaleflowDefault();
       await Promise.all([
         this.gptService.getMerchantEmbeddingsMetadata(),
-        fetch(environment.chatAPI.url + '/numberOfChats', {
-          headers: {
-            token: localStorage.getItem('session-token'),
-          },
-        }),
+        this.getChats(),
       ]).then(async ([embeddingsMetadata, numberOfChatResponse]) => {
         if (embeddingsMetadata) {
           this.vectorsCount = embeddingsMetadata.vectorsCount;
@@ -324,30 +324,106 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     }
   }
 
-  showRoleDialog() {
-    const dialogRef = this.dialog.open(SelectRoleDialogComponent, {});
-    dialogRef.afterClosed().subscribe((role) => {
-      if (role != undefined) {
-        this.setRole(parseInt(role));
-        return;
-      }
-      switch (role) {
-        case '0':
-          break;
-        case '1':
-          break;
-        case '2':
-          break;
-        case '3':
-          break;
-        case '4':
-          break;
-        case '5':
-          break;
+  async getChats() {
+    try {
+      return await fetch(environment.chatAPI.url + '/numberOfChats', {
+        headers: {
+          token: localStorage.getItem('session-token'),
+        },
+      }) 
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-        default:
-          break;
+  userSwitchDialog(email: string) {
+    this.bottomSheet.open(OptionsMenuComponent, {
+      data: {
+        title: 'Bienvenido de vuelta, prefieres acceder:',
+        options: [
+          {
+            value: 'Con mi clave provisional que es "123"',
+            callback: () => {
+              this.loginEmail = email;
+              this.loginflow = true;
+            }
+          },
+          {
+            value: `Desde mi correo electronico (recibirás el acceso en ${email})`,
+            callback: () => {
+              this.loginEmail = email;
+              this.magicLink = true;
+              this.loginflow = true;
+            }
+          }
+        ]
       }
+    })
+  }
+
+  showRoleDialog() {
+    let options : [
+      {
+        value:string, 
+        callback: () => void,
+         active?: boolean, 
+         noSettings?: boolean
+      }
+    ] = [
+      {
+        value: `${this.merchantName? this.merchantName : this.merchantSlug}`,
+        callback: () => {},
+        active: true,
+      },
+    ];
+    if(this.headerService.user.roles.length > 0) {
+      this.headerService.user.roles.forEach((role) => {
+        if(role.code === 'ADMIN') {
+          options.push({
+            value: 'De Super Admin',
+            callback: ()=> {}
+          })
+        }
+      })
+    }
+    options.push({
+      value: 'Crear un nuevo comercio',
+      callback: () => {
+        this.dialog.closeAll();
+        console.log(this.loginflow)
+        setTimeout(() => {
+          this.loginflow = true;
+        }, 1000)
+      },
+      noSettings: true,
+    })
+    let logins = JSON.parse(window.localStorage.getItem('logins'));
+    if(logins) {
+      logins.forEach((login) => {
+        if(!this.headerService.user || login.name !== this.headerService.user.email) {
+          options.push({
+            value: `${login.name}`,
+            callback: () => {
+              this.userSwitchDialog(login.name)
+            }
+          })
+        }
+      })
+    }
+
+    const dialogRef = this.dialog.open(SelectRoleDialogComponent, {
+      data: {
+        title: "Perfil de:",
+        options,
+        bottomLeft: {
+          text: 'Cambiar de industria',
+          callback: () => {
+          }
+        }
+      }
+    });
+    dialogRef.afterClosed().subscribe((role) => {
+      
     });
   }
 
@@ -373,9 +449,43 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     this.isOpen = false;
   }
 
-  shareDialog() {
-    const dialogRef = this.bottomSheet.open(OptionsMenuComponent, {
-      data: {
+  shareDialog(store = false) {
+    let data; 
+    if(store) {
+      let storeLink = `${this.URI}/ecommerce/${this.merchantSlug}/store`;
+      data = {
+        title: 'Comparte el Enlace de Ventas:',
+        options: [
+          {
+            value: 'Copia',
+            callback: () => {
+              this.clipboard.copy(storeLink);
+              this.snackbar.open('Enlace copiado', 'Cerrar', {
+                duration: 3000,
+              });
+            },
+          },
+          {
+            value: 'Comparte',
+            callback: () => {
+              this.ngNavigatorShareService.share({
+                title: 'Compartir enlace de www.flores.club',
+                url: `${storeLink}`,
+              });
+            },
+          },
+          {
+            value: 'Descarga el QR',
+            callback: () => {
+              this.qrdata = storeLink;
+              this.downloadQr();
+            },
+          },
+        ],
+        bottomLabel: 'Enlace: ' + storeLink,
+      };
+    } else {
+      data = {
         title: 'Compartir enlace',
         options: [
           {
@@ -419,7 +529,10 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
             },
           },
         ],
-      },
+      };
+    }
+    const dialogRef = this.bottomSheet.open(OptionsMenuComponent, {
+      data: data,
     });
   }
 
@@ -642,6 +755,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     try {
       const merchantDefault: Merchant = await this.merchantsService.merchantDefault();
       this.merchant = merchantDefault._id;
+      this.merchantSlug = merchantDefault.slug;
+      this.merchantName = merchantDefault.name;
       this.orderService.ordersTotal(
         ['to confirm', 'completed'],
         this.merchant
