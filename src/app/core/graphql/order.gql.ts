@@ -882,6 +882,12 @@ export const orderQuantityOfFiltersShippingType = gql`
   }
 `;
 
+export const orderQuantityOfFiltersOrderStatus = gql`
+  query orderQuantityOfFiltersOrderStatus($isMerchant: Boolean!, $pagination: PaginationInput!) {
+    orderQuantityOfFiltersOrderStatus(isMerchant: $isMerchant, pagination: $pagination)
+  }
+`;
+
 // export const orderPaginate = gql`
 //    query orderPaginate($pagination: PaginationInput) {
 //     orderPaginate(pagination: $pagination) {

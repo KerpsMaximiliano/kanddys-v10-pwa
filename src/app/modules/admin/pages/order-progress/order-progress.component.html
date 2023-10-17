@@ -32,7 +32,29 @@
         alt="camara"
         class="camera-icon grey"
         src="{{ env }}/grey-camera.png"
-      />
+        (click)="emitFileInputClick()"
+        />
+        <input title="file" type="file" id="file" 
+          [style.display]="'none'" 
+          (change)="loadFile($event)" 
+          multiple [accept]="[
+            '.png',
+            '.jpg',
+            '.jpeg',
+            '.webp',
+            '.webm',
+            '.mp4',
+            '.m4v',
+            '.mpg',
+            '.mpeg',
+            '.mpeg4',
+            '.mov',
+            '.3gp',
+            '.mts',
+            '.m2ts',
+            '.mxf'
+            ]" 
+        />
       <mat-icon class="add-icon" [ngStyle]="{ color: 'white' }">add</mat-icon>
     </div>
   </div>
@@ -56,7 +78,7 @@
 
     <div class="dates-container">
       <div class="progress-container">
-        <p class="selection-text">⏰ Todos Tiempo de Entrega (3,589)</p>
+        <p class="selection-text">{{deliveryTimePlaceholder}}</p>
         <ng-container *ngFor="let item of deliveryTime">
           <div class="progress-item">
             <div
@@ -73,7 +95,7 @@
     </div>
     <div class="dates-container">
       <div class="progress-container">
-        <p class="selection-text">📦 Todos los Progreso (3,589)</p>
+        <p class="selection-text">{{progressPlaceHolder}}</p>
         <ng-container *ngFor="let i of progress">
           <div class="progress-item">
             <div
@@ -90,7 +112,7 @@
     </div>
     <div class="dates-container">
       <div class="progress-container">
-        <p class="selection-text">📍 Todas las Zonas de Entrega (3,589)</p>
+        <p class="selection-text">{{deliveryZonePlaceholder}}</p>
         <div class="progress-item">
           <div
             class="progress"
@@ -121,6 +143,24 @@
             <span>({{ findAmount(zone._id) }})</span>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="dates-container">
+      <div class="progress-container">
+        <p class="selection-text">{{paymentStatusPlaceholder}}</p>
+        <ng-container *ngFor="let item of paymentStatus">
+          <div class="progress-item">
+            <div
+            class="progress"
+            [ngClass]="{ 'progress-selected': item.selected }"
+            (click)="selectPaymentStatus(item.id)"
+            >
+              <span>{{parseOrderPaymentStatus(item.name)}}</span>
+              <span>({{item.count}})</span>
+            </div>
+          </div>
+        </ng-container>
       </div>
     </div>
 

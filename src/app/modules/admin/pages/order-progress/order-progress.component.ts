@@ -28,6 +28,11 @@ export class OrderProgressComponent implements OnInit {
     { id: 5, name: 'delivered', selected: false },
   ];
 
+  paymentOrderStatusLabels = [
+    { id: 0, name: 'completed', selected: false, label: "Pagadas" },
+    { id: 1, name: 'to confirm', selected: false, label: "Sin Pagar" },
+  ];
+
   deliveryStatus : any[] | null = null;
   deliveryZones : any[] | null = null;
   deliveryZoneQuantities : any[] | null = null;
@@ -37,6 +42,10 @@ export class OrderProgressComponent implements OnInit {
   searchOpened:boolean = false;
   itemSearchbar: FormControl = new FormControl('');
   placeholder: string = "Todas las facturas";
+  deliveryTimePlaceholder:string = "⏰ Todos Tiempo de Entrega";
+  progressPlaceHolder:string = "📦 Todos los Progreso";
+  deliveryZonePlaceholder: string = "📍 Todas las Zonas de Entrega";
+  paymentStatusPlaceholder:string = "💰 Cualquier Estatus del Pago";
   deliveryTime: any[] = [];
   startDate: Date = null;
   endDate: Date = null;
@@ -49,6 +58,12 @@ export class OrderProgressComponent implements OnInit {
   endDateLabel:string = "";
   @ViewChild('picker') datePicker: MatDatepicker<Date>;
   ordersTotal: any;
+  ordersId: any[]= [];
+  totalDeliveryzone:number = 0;
+  hourRange:any = {};
+  paymentStatus:any[] = [];
+  totalPaymentStatus:number = 0;
+  paymentStatusName: any [] = [];
 
 
   constructor(
@@ -101,7 +116,11 @@ export class OrderProgressComponent implements OnInit {
   async ngOnInit() {
     await this.generate()
     this.toggleTutorial();
+    await this.getDeliveryTime();
     await this.getOrdersTotal();
+    await this.getTotalProgress();
+    await this.getTotalDeliveryZones();
+    await this.getPaymentStatus();
   }
 
   selectProgress(id) {
@@ -158,13 +177,12 @@ export class OrderProgressComponent implements OnInit {
   async generate() {
 
     lockUI()
-    await this.getDeliveryTime();
+    
     if(!this.merchantId) {
       await this.merchantsService.merchantDefault().then((res) => {
         this.merchantId = res._id;
         this.userId = res.owner._id;
       });
-      console.log("merchant _id", this.merchantId);
     }
     let ShippingType;
     if(this.pickUp.selected && this.delivery.selected) {
@@ -179,6 +197,13 @@ export class OrderProgressComponent implements OnInit {
     let findBy = {
       merchant: this.merchantId,
     }
+
+    let options ={
+      limit: 25,
+        sortBy: 'createdAt:desc'
+    }
+    let estimatedDeliveryTime={};
+
     if(this.selectedProgress.length > 0) {
       findBy["orderStatusDelivery"] = this.selectedProgress
     }
@@ -188,12 +213,21 @@ export class OrderProgressComponent implements OnInit {
     if(ShippingType) {
       findBy["shippingType"] = ShippingType
     }
+    if(Object.keys(this.hourRange).length > 0){
+      findBy["estimatedDeliveryTime"] = this.hourRange;
+    }
+    if(this.paymentStatusName.length > 0){
+      findBy["orderStatus"] = this.paymentStatusName;
+    }
+    if(this.startDate && this.endDate){
+      options["range"] = {
+        from: this.startDate,
+        to: this.endDate
+      }
+    }
     const pagination: PaginationInput = {
       findBy: findBy,
-      options: {
-        limit: 25,
-        sortBy: 'createdAt:desc'
-      },
+      options: options
     };
     const orders = (
       await this.orderService.orderPaginate(
@@ -201,9 +235,9 @@ export class OrderProgressComponent implements OnInit {
       )
     )
     this.orders = orders.orderPaginate != undefined ? orders.orderPaginate : []
-    console.log(this.orders)
+    
+    this.ordersByMonth = [];
     this.months.forEach(month => {
-      console.log(month.month)
       const data = this.orders.filter(order =>  moment(order.createdAt).locale("es").format('MMMM') === month.month)
       if(data.length > 0){
         this.ordersByMonth.push({
@@ -212,10 +246,12 @@ export class OrderProgressComponent implements OnInit {
         });
       }
     });
-       
+    await this.getOrdersIds();   
+    await this.getOrdersTotal();
     await this.orderService.orderQuantityOfFiltersStatusDelivery({ findBy: {merchant: this.merchantId} }).then((res) => {
       this.deliveryStatus = res
     })
+   
     if(!this.deliveryZones) {
       await this.deliveryZonesService.deliveryZones(
         {
@@ -383,11 +419,8 @@ export class OrderProgressComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      console.log(result)
       if (result) {
-        console.log(result)
         this.externalOrderNumber = Number(result.value.externalOrderNumber);
-        console.log(this.externalOrderNumber)
         this.sendExternalOrder(true);
       } else {
         this.sendExternalOrder(false);
@@ -444,7 +477,9 @@ export class OrderProgressComponent implements OnInit {
 
   async getDeliveryTime(){
     const itemsQuantityEstimatedDeliveryTime = await this.itemsService.itemsQuantityOfFiltersByEstimatedDeliveryTime({});
+    let totalDeliveryTime:number = 0;
     itemsQuantityEstimatedDeliveryTime.forEach((data, i)=>{
+      totalDeliveryTime += data.count;
       this.deliveryTime.push({
         id: i,
         count: data.count,
@@ -452,23 +487,44 @@ export class OrderProgressComponent implements OnInit {
         selected: false
       })
     });
+    this.deliveryTimePlaceholder = `⏰ Todos Tiempo de Entrega (${totalDeliveryTime})...`
 
-    console.log("🚀 ~ file: order-progress.component.ts:148 ~ OrderProgressComponent ~ generate ~ itemsQuantityEstimatedDeliveryTime:", this.deliveryTime)
 
   }
 
   async selectDeliveryTime(id){
+
+    const selectedItems = this.deliveryTime.filter(time => time.selected === true && time.id === id);
+
+    if(selectedItems.length > 0){
+      this.removeDeliveryTimeSelection();
+      this.hourRange = {}
+    }else{
+      this.removeDeliveryTimeSelection();
+      this.deliveryTime.forEach((e) => {
+        if (e.id == id) {
+          e.selected = !e.selected;
+        }
+      });
+      lockUI()
+      setTimeout(() => {
+        unlockUI()
+      }, 500);
+      const deliveryTime = this.deliveryTime.filter(time => time.selected === true);
+      this.hourRange = {
+        from: deliveryTime[0].estimatedDeliveryTime.from,
+        until: deliveryTime[0].estimatedDeliveryTime.until,
+      }      
+      await this.generate()
+    }
+
+    
+  }
+
+  removeDeliveryTimeSelection(){
     this.deliveryTime.forEach((e) => {
-      if (e.id == id) {
-        e.selected = !e.selected;
-      }
+        e.selected = false;
     });
-    lockUI()
-    setTimeout(() => {
-      unlockUI()
-    }, 500);
-    // this.selectedZones = this.deliveryZones.filter(zone => zone.selected).map(zone => zone._id)
-    // this.generate()
   }
 
   onCloseSearchbar() {
@@ -487,7 +543,7 @@ export class OrderProgressComponent implements OnInit {
         this.endDate = new Date(this.range.get('end').value);
         this.startDateLabel = moment(this.startDate).format("DD/MM/YYYY");
         this.endDateLabel = moment(this.endDate).format("DD/MM/YYYY");
-        //this.getDatesByRange();
+        await this.generate();
         unlockUI();
       } catch (error) {
         unlockUI();
@@ -497,14 +553,82 @@ export class OrderProgressComponent implements OnInit {
   }
 
   async getOrdersTotal(){
+    
     const ordersTotal = await this.orderService.ordersTotal(
       ['completed', 'to confirm'],
       this.merchantId,
+      this.ordersId
     );
     this.ordersTotal = ordersTotal
     this.benefit = ordersTotal.total;
     this.placeholder = `Todas las facturas (${ordersTotal.length})...`
 
+  }
+
+  async getOrdersIds(){
+    this.orders.forEach(order =>{
+      this.ordersId.push(order._id)
+    })
+  }
+
+  async getTotalProgress(){
+    let totalProgress = 0;
+    this.progress.forEach(data =>{
+      if(this.deliveryStatus[data.name]){
+        totalProgress += this.deliveryStatus[data.name];
+      }else{
+        totalProgress += 0;
+      }
+    })
+    this.progressPlaceHolder = `📦 Todos los Progreso (${totalProgress})...`
+  }
+
+  async getTotalDeliveryZones(){
+    this.deliveryZoneQuantities.forEach(data =>{
+      this.totalDeliveryzone += data.count;
+    })
+    this.deliveryZonePlaceholder = `📍 Todas las Zonas de Entrega (${this.totalDeliveryzone})...`
+  }
+
+  async getPaymentStatus(){
+    const paymentStatus = await this.orderService.orderQuantityOfFiltersOrderStatus(true, {findBy:{merchant: this.merchantId}});
+    paymentStatus.forEach((data, i)=>{
+      this.totalPaymentStatus += data.count;
+      this.paymentStatus.push({
+        id: i,
+        count: data.count,
+        name: data.orderStatus,
+        selected: false
+      })
+    });
+
+    this.paymentStatusPlaceholder = `💰 Cualquier Estatus del Pago (${this.totalPaymentStatus})...`;
+  }
+
+  parseOrderPaymentStatus(name){
+    const paymentStatusOrders = this.paymentOrderStatusLabels.filter(status => status.name === name);
+    return paymentStatusOrders[0].label;
+  }
+
+  async selectPaymentStatus(id){
+    this.paymentStatusName = [];
+      this.paymentStatus.forEach((e) => {
+        if (e.id === id) {
+          e.selected = !e.selected;
+        }
+      });
+
+      this.paymentStatus.forEach(data =>{
+        if(data.selected === true){
+          this.paymentStatusName.push(data.name);
+        }
+      })
+    
+    lockUI()
+    setTimeout(() => {
+      unlockUI()
+    }, 500);
+    await this.generate()
   }
 
 }
