@@ -201,8 +201,9 @@
           class="ganas-desc center" 
           style="cursor: pointer" 
           (click)="goToWizard()"
+          *ngIf="isUserAdmin()"
         >
-          Responde desde tu propio Website, <span>WhatsApp</span> e Instagram.
+          Responde desde tu propio <span>WhatsApp</span>.
         </p>
         <hr />
         <div class="info-container">
@@ -325,7 +326,7 @@
         </ng-container>
       </div>
     </main>
-    <div 
+    <!-- <div 
       class="message"
       *ngIf="showGanas === false"
     >
@@ -342,13 +343,13 @@
           alt="img"
         >
       </div>
-      <!-- <input type="text" placeholder="Escribe tu correo electrónico para reservar a Laia" (click)="openLaiaDialog()"/> -->
         <img
           alt="arrow"
           class="arrow"
           src="{{assetsFolder}}/transparent-arrow-up.png"
         >
-    </div>
+    </div> -->
+
     <!-- <footer
       *ngIf="!tabarIndex"
       (click)="share()"
