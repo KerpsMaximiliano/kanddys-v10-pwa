@@ -1,5 +1,5 @@
 export class LinkInput {
-  image: any;
+  image?: any;
   name: String;
   value: String;
 }

@@ -1,0 +1,109 @@
+.page-container {
+  position: relative;
+  button {
+    appearance: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+}
+
+.page-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  height: 46px;
+  padding: 0 10px 0 10px;
+  background: #181d17;
+  button {
+    color: #fff;
+    font-family: FiraSansBold;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+  }
+}
+main {
+  background: #181D17;
+  h3 {
+    color: #fff;
+    font-family: Inter;
+    font-size: 19px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    margin: 0 26px;
+  }
+  .page-form {
+    display: flex;
+    flex-direction: column;
+    gap: 47px;
+    width: 90%;
+    padding: 26px 0 293px;
+    margin: 0 auto;
+    font-family: "Inter", sans-serif;
+    .form-full {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      .form-title {
+        color: #C4C5C3;
+        font-family: Inter;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 300;
+        line-height: normal;
+        line-height: 15.73px;
+        margin: 0;
+      }
+    }
+  }
+
+  .card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0 16px;
+    border-radius: 14px;
+    background: #403D3D;
+
+    p.left {
+      color: #fff;
+      font-family: Inter;
+      font-size: 17px;
+      font-style: normal;
+      font-weight: 300;
+      line-height: normal;
+    }
+
+    p.right {
+      color: #7B7B7B;
+      font-family: Inter;
+      font-size: 17px;
+      font-style: normal;
+      font-weight: 300;
+      line-height: normal;
+    }
+
+    input.link {
+      background-color: #403D3D;
+      color: #7B7B7B;
+      border: 0px;
+      text-align: center;
+    }
+
+    &-group {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+  }
+}
