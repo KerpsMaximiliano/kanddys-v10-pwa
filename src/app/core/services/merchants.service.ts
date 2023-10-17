@@ -588,6 +588,11 @@ export class MerchantsService {
       deliveryLocations,
       role
     };
+    Object.keys(input).forEach(key => {
+      if (input[key] === null) {
+        delete input[key];
+      }
+    });
     const result = await this.graphql.mutate({
       mutation: entryMerchant,
       variables: { input },

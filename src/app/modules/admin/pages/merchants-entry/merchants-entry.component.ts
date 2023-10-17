@@ -58,7 +58,7 @@ export class MerchantsEntryComponent implements OnInit {
 
   async ngOnInit() {
     this.merchantForm = this.formBuilder.group({
-      name: [null],
+      name: [null, Validators.required],
       slug: [null],
       phone: [null],
       email: [null, Validators.compose([Validators.required, Validators.email])],
@@ -137,13 +137,13 @@ export class MerchantsEntryComponent implements OnInit {
       name: userName,
     };
 
-    const deliveryLocations = {
-      country: country,
+    const deliveryLocations = country && city ? {
+      country,
       cityReference: city,
       type: 'city-reference',
-    };
+    } : null;
     
-    const arrayRole = [role];
+    const arrayRole = role ? [role] : null;
 
     if (!phone?.e164Number?.split('+')[1]) delete userInput.phone;
 
@@ -152,8 +152,12 @@ export class MerchantsEntryComponent implements OnInit {
         this.merchant._id,
         {
           name: storeName,
-          slug,
-          bio
+          ...(slug && {
+            slug,
+          }),
+          ...(bio && {
+            bio,
+          }),
         },
         userInput,
         address,
