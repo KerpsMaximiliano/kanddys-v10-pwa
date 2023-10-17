@@ -228,7 +228,7 @@ export class AuthService {
       }
       //this.app.events.emit({ type: 'auth', data: this.session });
       if (result.success) {
-        this.router.navigateByUrl('/home');
+        this.router.navigateByUrl('/');
         // this.app.nav = [];
         // this.app.header = {};
         window.location.reload();
