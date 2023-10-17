@@ -171,10 +171,10 @@ export class ProviderItemsComponent implements OnInit {
    */
   initInputValueChanges() {
     this.itemSearchbar.valueChanges.subscribe(async () => {
-      // if (this.isUserLogged) {
-      //   await this.fetchItemsForSell();
-      // }
-      // await this.fetchItemsForNotSell(true, false);
+      if (this.isUserLogged) {
+        await this.fetchItemsForSell();
+      }
+      await this.fetchItemsForNotSell(true, false);
     });
   }
 
@@ -468,12 +468,11 @@ export class ProviderItemsComponent implements OnInit {
       },
       options: {
         limit: this.paginationState.pageSize,
-        page: this.paginationState.page-1,
+        page: this.paginationState.page - 1,
         sortBy: 'createdAt:desc',
       },
     };
 
-    // const data = await this.saleflowService.listItems(pagination, true);
     await this.processPaginationItems(pagination, triggeredFromScroll, this.itemsISell)
   }
 
@@ -1623,7 +1622,7 @@ export class ProviderItemsComponent implements OnInit {
       findBy: {
         status: this.btnFilterState.hidden ? "disabled" : "active",
         _id: {
-          $nin: this.itemsISell.map((item) => item.parentItem).filter(item => item),
+          __in: this.saleflowData.items.map((item) => item.item._id)
         },
       },
       options: {
@@ -1740,14 +1739,14 @@ export class ProviderItemsComponent implements OnInit {
       arrayItems = [];
     }
   }
-  updatePricing(id){
-    const navigationData : NavigationExtras = {
+  updatePricing(id) {
+    const navigationData: NavigationExtras = {
       replaceUrl: true,
-      queryParams : {
+      queryParams: {
         stockEdition: true
       }
     }
-    return this.router.navigate(['ecommerce/provider-items-editor/'+id], navigationData);
-    
+    return this.router.navigate(['ecommerce/provider-items-editor/' + id], navigationData);
+
   }
 }

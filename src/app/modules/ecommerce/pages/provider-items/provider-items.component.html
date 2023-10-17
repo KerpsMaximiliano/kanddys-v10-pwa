@@ -279,14 +279,14 @@ h3h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
       <div class="item-name" (click)="goToArticleDetail(item._id)">{{ item.name }}</div>
       <div class="item-description" (click)="goToArticleDetail(item._id)">{{ item.description }}</div>
       <div class="item-price" (click)="editPrice(item, itemIndex)">
-        <ng-container *ngIf="item.pricing !== null && providedByMe">
+        <ng-container *ngIf="item.pricing !== null && isUserLogged">
           ${{ item.pricing | number : "1.2-2" }}
         </ng-container>
       </div>
 
       <div
         class="item-add-price"
-        *ngIf="!providedByMe"
+        *ngIf="!isUserLogged"
         (click)="addPrice(item)"
       >
         Mi precio
