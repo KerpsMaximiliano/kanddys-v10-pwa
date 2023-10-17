@@ -31,7 +31,7 @@ export class LoginFlowComponent implements OnInit {
   @Input() jsondata: string = JSON.stringify({
     openNavigation: true,
   });
-  @Input() loginEmail: string = null;
+  @Input() loginEmail: string | null = null;
   @Input() magicLink: boolean = false;
   openNavigation: boolean = false;
 
@@ -67,12 +67,6 @@ export class LoginFlowComponent implements OnInit {
           []
         );
 
-        let logins = JSON.parse(window.localStorage.getItem('logins')) || [];
-        logins.push({
-          name: this.loginEmail,
-        });
-        window.localStorage.setItem('logins', JSON.stringify(logins));
-
         this.dialogIsOpen.emit(false);
 
         this.dialogService.open(
@@ -89,8 +83,10 @@ export class LoginFlowComponent implements OnInit {
             flags: ['no-header'],
           }
         );
+        this.magicLink = false;
       } else {
-        this.addPassword(this.loginEmail)
+        let loginEmail = this.loginEmail;
+        this.addPassword(loginEmail)
       }
     } else {
       this.share()
@@ -295,6 +291,7 @@ export class LoginFlowComponent implements OnInit {
     this.openTemplateCommerce(credentials)
   }
 
+  //method currently not used
   async openTemplateUser(credentials: string) {
     let isUser = true;
     let formTemplateUser: FormData = {
@@ -360,7 +357,8 @@ export class LoginFlowComponent implements OnInit {
             );
             let logins = JSON.parse(window.localStorage.getItem('logins')) || [];
             logins.push({
-              name: credentials,
+              name: result.value.name,
+              email: credentials,
             });
             window.localStorage.setItem('logins', JSON.stringify(logins));
 
@@ -457,7 +455,8 @@ export class LoginFlowComponent implements OnInit {
 
               let logins = JSON.parse(window.localStorage.getItem('logins')) || [];
               logins.push({
-                name: credentials,
+                name: businessName,
+                email: credentials,
               });
               window.localStorage.setItem('logins', JSON.stringify(logins));
 
@@ -529,11 +528,6 @@ export class LoginFlowComponent implements OnInit {
                 },
                 []
               );
-              let logins = JSON.parse(window.localStorage.getItem('logins')) || [];
-              logins.push({
-                name: emailOrPhone,
-              });
-              window.localStorage.setItem('logins', JSON.stringify(logins));
 
               unlockUI();
               
@@ -615,7 +609,12 @@ export class LoginFlowComponent implements OnInit {
   }
 
   private async addPassword(emailOrPhone: string) {
-    if(!this.loginEmail) this.emailDialogRef.close();
+    if(this.emailDialogRef) {
+      console.log('no mail')
+      this.emailDialogRef.close()
+    };
+    this.loginEmail = null;
+    console.log(emailOrPhone, 'notnull')
     let fieldsToCreate: FormData = {
       title: {
         text: 'Clave de Acceso:',
@@ -634,7 +633,7 @@ export class LoginFlowComponent implements OnInit {
             text: 'Prefiero recibir el correo con el enlace de acceso',
             callback: () => {
               //Cerrar 2do dialog
-
+              this.loginEmail = null;
               return switchToMagicLinkDialog();
             },
           },
@@ -648,6 +647,7 @@ export class LoginFlowComponent implements OnInit {
     });
 
     dialog2Ref.afterClosed().subscribe(async (result: FormGroup) => {
+      this.loginEmail = null;
       try {
         if (result?.controls?.password.valid) {
           let password = result?.value['password'];
@@ -664,13 +664,18 @@ export class LoginFlowComponent implements OnInit {
           if (!session) throw new Error('invalid credentials');
 
           this.openNavigation = true;
-
-          let logins = JSON.parse(window.localStorage.getItem('logins')) || [];
-          logins.push({
-            name: emailOrPhone,
-          });
-          window.localStorage.setItem('logins',JSON.stringify(logins));
-
+          let merchantName;
+          await this.merchantsService.merchantDefault().then((res) => {
+            merchantName = res.name;
+          })
+          let logins : any[] = JSON.parse(window.localStorage.getItem('logins')) || [];
+          if(!logins.find((login) => login.email === emailOrPhone)) {
+            logins.push({
+              name: merchantName ? merchantName: this.headerService.user.name,
+              email: emailOrPhone,
+            });
+            window.localStorage.setItem('logins',JSON.stringify(logins));
+          }
           unlockUI();
           this.dialogIsOpen.emit(false);
         } else if (result?.controls?.password.valid === false) {
@@ -683,6 +688,7 @@ export class LoginFlowComponent implements OnInit {
         unlockUI();
         console.error(error);
         this.headerService.showErrorToast();
+
       }
     });
 
