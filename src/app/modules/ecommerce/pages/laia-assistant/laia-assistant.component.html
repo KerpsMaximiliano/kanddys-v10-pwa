@@ -26,14 +26,14 @@
         </ul>
     </div>
 
-    <ng-template [ngIf]="!user">
+    <ng-container *ngIf="!user || !(user && newArticle)">
         <div class="more-info">
             <p class="title">
                 Para sugerencias y adaptaciones que te ayuden a crecer, escríbenos por WhatsApp
             </p>
             <a href="http://whatsAppURLconElTeldeDaviel.com" class="link">WhatsAppURLconElTeldeDaviel.com</a>
         </div>
-    </ng-template>
+    </ng-container>
 
     <ng-container *ngIf="user && newArticle">
         <div class="message message-sent" [style.width.px]="330">

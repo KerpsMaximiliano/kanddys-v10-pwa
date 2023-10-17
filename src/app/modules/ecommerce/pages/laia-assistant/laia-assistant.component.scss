@@ -12,7 +12,7 @@
     top: 0;
     display: flex;
     justify-content: space-between;
-    padding: 15px 20px 0;
+    padding: 15px 20px;
     padding-right: 23px;
     background-color: #181d17;
     align-items: center;
@@ -26,6 +26,9 @@
       line-height: normal;
       margin: 0px;
       padding: 0px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
 
       .highlight {
         color: #87cd9b;
@@ -36,12 +39,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-left: 10px;
 
       .close {
         background-color: transparent;
         padding: 0px;
-        color: #fff;
-        font-family: FiraSansBold;
+        color: #C4C5C3;
+        font-family: InterLight;
         font-size: 19.005px;
         font-style: normal;
         font-weight: normal;
