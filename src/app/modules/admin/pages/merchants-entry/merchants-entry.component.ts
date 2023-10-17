@@ -58,17 +58,17 @@ export class MerchantsEntryComponent implements OnInit {
 
   async ngOnInit() {
     this.merchantForm = this.formBuilder.group({
-      name: [null, Validators.required],
+      name: [null],
       slug: [null],
       phone: [null],
       email: [null, Validators.compose([Validators.required, Validators.email])],
       password: ['123', Validators.required],
       userName: [null, Validators.required],
-      role: [null, Validators.required],
-      country: [''],
-      city: [''],
-      address: [''],
-      bio: [''],
+      role: [null],
+      country: [null],
+      city: [null],
+      address: [null],
+      bio: [null],
     });
 
     this.getDataCountries();
@@ -203,7 +203,8 @@ export class MerchantsEntryComponent implements OnInit {
 
   private async checkIfMerchantExists(): Promise<boolean> {
     try {
-      const name = await this.merchantsService.merchantByName(this.merchantForm.value.name);
+      let name;
+      if(this.merchantForm?.value?.name) name = await this.merchantsService.merchantByName(this.merchantForm.value.name);
       let slug;
       if(this.merchantForm?.value?.slug) slug = await this.merchantsService.merchantBySlug(this.merchantForm.value.slug);
 
