@@ -156,11 +156,11 @@
           <p class="ganas-desc left">
             Tus articulos se exhibirán 
             <span (click)="openExhibitDialog()">
-              {{this.merchantRole.code === 'PRODUCTOR' ?
+              {{this.merchantRole?.code === 'PRODUCTOR' ?
                 'a fincas' :
-                this.merchantRole.code === 'PROVIDER' ?
+                this.merchantRole?.code === 'PROVIDER' ?
                 'a floristerías' :
-                this.merchantRole.code === 'SUPPLIER' ?
+                this.merchantRole?.code === 'SUPPLIER' ?
                 'a wholesalers' : 'al consumidor final'
               }}.
             </span>

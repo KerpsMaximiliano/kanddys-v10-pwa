@@ -301,11 +301,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       await this.getSaleflowDefault();
       await Promise.all([
         this.gptService.getMerchantEmbeddingsMetadata(),
-        fetch(environment.chatAPI.url + '/numberOfChats', {
-          headers: {
-            token: localStorage.getItem('session-token'),
-          },
-        }),
+        this.getChats(),
       ]).then(async ([embeddingsMetadata, numberOfChatResponse]) => {
         if (embeddingsMetadata) {
           this.vectorsCount = embeddingsMetadata.vectorsCount;
@@ -325,6 +321,18 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     });
     if (this.tabarIndex === undefined) {
       this.tabarIndex = 2;
+    }
+  }
+
+  async getChats() {
+    try {
+      return await fetch(environment.chatAPI.url + '/numberOfChats', {
+        headers: {
+          token: localStorage.getItem('session-token'),
+        },
+      }) 
+    } catch (error) {
+      console.log(error);
     }
   }
 
