@@ -35,6 +35,35 @@ header {
     padding-right: 23px;
   }
 
+  .typing {
+    font-family: InterRegular;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    padding: 10px 20px;
+    padding-top: 0px;
+    color: white;
+    margin-top: -8px;
+  }
+
+  .error {
+    font-family: InterRegular;
+    font-size: 17px;
+    font-style: normal;
+    line-height: normal;
+    padding: 10px 20px;
+    color: white;
+    background-color: darkred;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    mat-icon {
+      margin-left: 10px;
+    }
+  }
+
   .bottom {
     border-radius: 14px;
     background: var(--Plomazo, #403d3d);

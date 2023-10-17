@@ -12,23 +12,20 @@
 </div> -->
 <div class="container">
   <div class="title">
-    Perfil de:
+    {{data.title}}
   </div>
-  <div class="role" mat-dialog-close="1">
-    De Súper-Admin (cuando logged) 
-  </div>
-  <div class="role" mat-dialog-close="2">
-    Yo como Comprador o Embajador
-  </div>
-  <div class="role" mat-dialog-close="3">
-    Crear un nuevo comercio
+  <div class="option" *ngFor="let option of data.options; let i = index">
+    <p class="role" (click)="onClick(i)" [ngClass]="{'active' : option.active}">{{option.value}}</p>
+    <mat-icon *ngIf="!option.noSettings" class="material-icons-outlined">settings</mat-icon>
   </div>
   <div class="flex space-between">
-    <div class="cancel" mat-dialog-close="4">Cambiar de Industria</div>
     <div 
-      class="signout" 
-      mat-dialog-close="5"
+      class="cancel"
+      (click)="bottomLeftClick()"
+    > {{data.bottomLeft.text}}</div>
+    <div 
+      class="signout"
       (click)="signout()"
-    >Sign out</div>
+    > Sign out</div>
   </div>
 </div>

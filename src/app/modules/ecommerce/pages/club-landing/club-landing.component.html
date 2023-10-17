@@ -2,7 +2,7 @@
   <div class="container">
     <div class="header-wrapper">
       <div class="left-part">
-        <div class="title" >
+        <div class="title" *ngIf="showGanas === false">
           <p (click)="openMsgDialog()">La<span style="color: #87CD9B;">ia</span>Chat</p>
           <span (click)="!headerService.user ? loginflow = true : showRoleDialog()" style="color: #87CD9B;">
             {{ 
@@ -53,7 +53,7 @@
             </div>
           </div>
         </div>
-        <p class="ganas-desc">
+        <p class="ganas-desc center">
           Del dinero recolectado cada mes para mantener a Laia, TU como Embajador
           ganas el 15% de cada comercio invitado directo y el 10% de todos los
           indirectos*
@@ -109,22 +109,22 @@
         <div class="info-container">
           <div class="info-container-title-container">
             <p class="info-container-title">Vende fácilmente </p>
-            <input #articleInputFlow id="imgInput" accept="image/*" type="file" (change)="getImg($event)" hidden #uploader>
+            <input id="imgInput" accept="image/*" type="file" (change)="getImg($event)" hidden #uploader>
             <div *ngIf="headerService.user">
               <mat-slide-toggle
                 [checked]="statusSwitch"
                 (click)="toggleStoreVisibility()"
               ></mat-slide-toggle>
-              <p (click)="articleInputFlow.click()">+</p>
-              <mat-icon>ios_share</mat-icon>
+              <p (click)="uploader.click()">+</p>
+              <mat-icon (click)="shareDialog(true)">ios_share</mat-icon>
             </div>
           </div>
           <p class="info-container-desc info-container-desc-mt">
             Laia creará una vitrina online para vender tus artículos a través de enlaces.
           </p>
           <ng-container *ngIf="!headerService?.user">
-            <p class="info-container-invited-link info-container-invited-link-mr" (click)="articleInputFlow.click()">
-              Agrega tu primer articulo
+            <p class="info-container-invited-link info-container-invited-link-mr" (click)="uploader.click()">
+              Agrega tu primer artículo
             </p>
           </ng-container>
           <div class="link-container" *ngIf="headerService?.user">
@@ -156,11 +156,11 @@
           <p class="ganas-desc left">
             Tus articulos se exhibirán 
             <span (click)="openExhibitDialog()">
-              {{this.merchantRole.code === 'PRODUCTOR' ?
+              {{this.merchantRole?.code === 'PRODUCTOR' ?
                 'a fincas' :
-                this.merchantRole.code === 'PROVIDER' ?
+                this.merchantRole?.code === 'PROVIDER' ?
                 'a floristerías' :
-                this.merchantRole.code === 'SUPPLIER' ?
+                this.merchantRole?.code === 'SUPPLIER' ?
                 'a wholesalers' : 'al consumidor final'
               }}.
             </span>
@@ -201,8 +201,9 @@
           class="ganas-desc center" 
           style="cursor: pointer" 
           (click)="goToWizard()"
+          *ngIf="isUserAdmin()"
         >
-          Responde desde tu propio Website, <span>WhatsApp</span> e Instagram.
+          Responde desde tu propio <span>WhatsApp</span>.
         </p>
         <hr />
         <div class="info-container">
@@ -325,8 +326,9 @@
         </ng-container>
       </div>
     </main>
-    <div 
+    <!-- <div 
       class="message"
+      *ngIf="showGanas === false"
     >
       <div 
         [ngClass]="{ 'loggedout': !headerService.user }"
@@ -341,13 +343,13 @@
           alt="img"
         >
       </div>
-      <!-- <input type="text" placeholder="Escribe tu correo electrónico para reservar a Laia" (click)="openLaiaDialog()"/> -->
         <img
           alt="arrow"
           class="arrow"
           src="{{assetsFolder}}/transparent-arrow-up.png"
         >
-    </div>
+    </div> -->
+
     <!-- <footer
       *ngIf="!tabarIndex"
       (click)="share()"
@@ -362,13 +364,15 @@
     </footer> -->
     <app-login-flow
       *ngIf="loginflow"
+      [loginEmail]="loginEmail"
+      [magicLink]="magicLink"
       [redirectionRoute]="redirectionRoute"
       [redirectionRouteId]="redirectionRouteId"
       [entity]="entity"
       [jsondata]="jsondata"
       (dialogIsOpen)="resetLoginDialog($event)"
     ></app-login-flow>
-  <footer class="footer-ganas" *ngIf="tabarIndex === 3" (click)="invite()">
+  <footer class="footer-ganas" *ngIf="showGanas === true" (click)="invite()">
     Invita a comerciantes con tu enlace
     <mat-icon>ios_share</mat-icon>
   </footer>
