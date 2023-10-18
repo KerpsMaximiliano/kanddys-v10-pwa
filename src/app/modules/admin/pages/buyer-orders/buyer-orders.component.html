@@ -42,7 +42,7 @@
       <div class="input-filter">Todas mis compras</div>
       <div *ngFor="let ordersByMoth of ordersByMonth">
             <p class="month-title">{{ ordersByMoth.month }}</p>
-            <div class="month-card" *ngFor="let order of ordersByMoth.orders">
+            <div class="month-card" *ngFor="let order of ordersByMoth.orders" (click)="goToOrderDetail(order._id, order?.orderType)">
                 <div class="flex-space-between" [style.marginBottom.px]="5">
                     <p class="month-card-title">{{ order?.items[0]?.saleflow?.name || "Sin nombre" }}</p>
                     <p class="month-card-subtotal">${{calcTotal(order.subtotals).toFixed(2)}}</p>

@@ -242,7 +242,11 @@ export class ProviderItemsEditorComponent implements OnInit {
         this.saleFlowId
       );
       unlockUI();
-      await this.router.navigate(['/admin/dashboard']);
+      await this.router.navigate(['/ecommerce/laia-assistant'], {
+        queryParams: {
+          newArticle: createItem._id,
+        },
+      });
     } else {
       if (!this.preItemId) {
         const preItem = await this.createPreItem(itemDataInput);
@@ -382,10 +386,18 @@ export class ProviderItemsEditorComponent implements OnInit {
             unlockUI();
           }
           unlockUI();
-          this.router.navigate(['/admin/dashboard']);
+          await this.router.navigate(['/ecommerce/laia-assistant'], {
+            queryParams: {
+              newArticle: this.preItemId,
+            },
+          });
         }
         unlockUI();
-        this.router.navigate(['/admin/dashboard']);
+        await this.router.navigate(['/ecommerce/laia-assistant'], {
+          queryParams: {
+            newArticle: this.preItemId,
+          },
+        });
       } else {
         await this.createMerchantDefault(me);
         const saleFlowId = await this.createSaleFlow();
@@ -404,7 +416,11 @@ export class ProviderItemsEditorComponent implements OnInit {
           unlockUI();
         }
         unlockUI();
-        this.router.navigate(['/admin/dashboard']);
+        await this.router.navigate(['/ecommerce/laia-assistant'], {
+          queryParams: {
+            newArticle: this.preItemId,
+          },
+        });
       }
     } else {
       unlockUI();

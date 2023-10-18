@@ -234,6 +234,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   merchant: string;
   merchantSlug: string;
   merchantName: string;
+  merchantEmail: string;
   saleflow: SaleFlow;
   referralsCount: number = 0;
   vectorsCount: number = 0;
@@ -299,6 +300,23 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     if (this.merchant) {
       await this.getReferrals();
       await this.getSaleflowDefault();
+      let logins : any[] = JSON.parse(window.localStorage.getItem('logins'));
+      if(!logins) {
+        logins = [];
+        logins.push({
+          name: this.merchantName ? this.merchantName : this.headerService.user.name,
+          email: this.merchantEmail ? this.merchantEmail : this.headerService.user.email,
+        })
+        console.log(logins)
+        window.localStorage.setItem('logins', JSON.stringify(logins));
+      } else if(!logins.find((login) => login.name === this.merchantName || login.name === this.headerService.user.name)) {
+        logins.push({
+          name: this.merchantName ? this.merchantName : this.headerService.user.name,
+          email: this.merchantEmail ? this.merchantEmail : this.headerService.user.email,
+        })
+        console.log(logins)
+        window.localStorage.setItem('logins', JSON.stringify(logins));
+      }
       await Promise.all([
         this.gptService.getMerchantEmbeddingsMetadata(),
         this.getChats(),
@@ -371,7 +389,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       }
     ] = [
       {
-        value: `${this.merchantName? this.merchantName : this.merchantSlug}`,
+        value: `${this.merchantName? this.merchantName : this.merchantSlug? this.merchantSlug : this.headerService.user.name}`,
         callback: () => {},
         active: true,
       },
@@ -389,6 +407,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     options.push({
       value: 'Crear un nuevo comercio',
       callback: () => {
+        this.loginEmail = null;
         this.dialog.closeAll();
         console.log(this.loginflow)
         setTimeout(() => {
@@ -397,14 +416,14 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       },
       noSettings: true,
     })
-    let logins = JSON.parse(window.localStorage.getItem('logins'));
+    let logins : any[] = JSON.parse(window.localStorage.getItem('logins'));
     if(logins) {
       logins.forEach((login) => {
-        if(!this.headerService.user || login.name !== this.headerService.user.email) {
+        if(login.email !== this.headerService.user.email) {
           options.push({
             value: `${login.name}`,
             callback: () => {
-              this.userSwitchDialog(login.name)
+              this.userSwitchDialog(login.email)
             }
           })
         }
@@ -416,7 +435,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         title: "Perfil de:",
         options,
         bottomLeft: {
-          text: 'Cambiar de industria',
+          text: '',
           callback: () => {
           }
         }
@@ -757,6 +776,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       this.merchant = merchantDefault._id;
       this.merchantSlug = merchantDefault.slug;
       this.merchantName = merchantDefault.name;
+      this.merchantEmail = merchantDefault.email;
       this.orderService.ordersTotal(
         ['to confirm', 'completed'],
         this.merchant
