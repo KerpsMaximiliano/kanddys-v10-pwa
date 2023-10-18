@@ -1,19 +1,76 @@
 <div class="container">
   <div class="form-container">
-    <h2>Crear una nueva tienda</h2>
+    <h1>Crear una nueva tienda</h1>
+    <h2 [style.marginTop.px]="0">Datos de la Tienda</h2>
+
     <form [formGroup]="merchantForm" (ngSubmit)="submitForm()">
       <div class="form-group">
         <label for="name">Nombre de la tienda:</label>
-        <input type="text" id="name" formControlName="name" required>
+        <input type="text" id="name" formControlName="name">
       </div>
+
       <div class="form-group">
         <label for="name">Slug de la tienda:</label>
-        <input type="text" id="name" formControlName="slug" required>
+        <input type="text" id="name" formControlName="slug">
       </div>
+
+      <div class="form-group">
+        <label for="address">Dirección de la Tienda:</label>
+        <input type="text" id="address" formControlName="address">
+      </div>
+
+      <div class="form-group">
+        <label for="bio">Descripción de la Tienda:</label>
+        <textarea id="bio" rows="3" formControlName="bio" class="textarea"></textarea>
+      </div>
+
+      <button (click)="openExhibitDialog()">¿A quién le vendes?</button>
+
+      <p *ngIf="role" [style.margin]="'5px 0'">
+        {{               
+          role?.code === 'PRODUCTOR' ?
+          'Fincas' :
+          role?.code === 'PROVIDER' ?
+          'Floristerías' :
+          role?.code === 'SUPPLIER' ?
+          'Wholesalers' : 'Al consumidor final'
+        }}
+      </p>
+
+      <div *ngIf="countries" class="input-area">
+        <div class="label">País y ciudad:</div>
+        <div class="input">
+            <mat-form-field>
+                <mat-label>País</mat-label>
+                <mat-select formControlName="country" (ngModelChange)="getCities($event)">
+                    <mat-option *ngFor="let country of countries" [value]="country?._id">
+                        {{country?.value}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Ciudad</mat-label>
+                <mat-select formControlName="city">
+                    <mat-option *ngFor="let city of cities" [value]="city?._id">
+                        {{city?.value}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+      </div>
+
+      <h2 [style.marginTop.px]="0">Datos del Usuario</h2>
+
+      <div class="form-group">
+        <label for="userName">Nombre del Usuario:</label>
+        <input type="text" id="userName" formControlName="userName">
+      </div>
+
       <div class="form-group">
         <label for="name">Correo:</label>
-        <input type="email" id="email" formControlName="email" required>
+        <input type="email" id="email" formControlName="email">
       </div>
+      
       <div class="form-group">
         <label for="phone">Teléfono:</label>
         <div class="phone-wrapper">
@@ -44,10 +101,7 @@
           </span>
         </div>
       </div>
-      <div class="form-group">
-        <label for="password">Contraseña:</label>
-        <input type="password" id="password" formControlName="password" required>
-      </div>
+
       <button type="submit" [disabled]="merchantForm.invalid">Guardar</button>
     </form>
   </div>

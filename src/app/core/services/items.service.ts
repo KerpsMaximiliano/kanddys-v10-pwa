@@ -631,7 +631,7 @@ export class ItemsService {
 
       return response?.itemsQuantityOfFilters;
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
 

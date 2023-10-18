@@ -1,10 +1,10 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
-import { Item, RangeDate } from '../models/item';
+import { Item } from '../models/item';
 import { ItemOrder } from '../models/order';
-import { PaginationInput, PaginationRangeInput } from '../models/saleflow';
+import { PaginationInput, SaleFlow } from '../models/saleflow';
 import { Tag } from '../models/tags';
 import { RecurrentUserData, User, UserInput } from '../models/user';
 import { ViewsMerchant } from '../models/views-merchant';
@@ -16,7 +16,6 @@ import {
   merchants,
   addMerchant,
   createMerchant,
-  createMerchant2,
   updateMerchant,
   merchantDefault,
   setDefaultMerchant,
@@ -33,7 +32,6 @@ import {
   uploadAirtableAttachments,
   usersOrderMerchant,
   incomeMerchant,
-  merchantDefault2,
   ordersByMerchantHot,
   merchantByName,
   merchantBySlug,
@@ -58,12 +56,12 @@ import {
   dataCountries,
   merchantQuantityOfFiltersRole,
   merchantQuantityOfFiltersCountry,
-  campaigns,
   merchantQuantityOfFiltersCampaign,
   merchantQuantityOfFiltersHaveDebt,
   merchantAddRole,
   rolesPublic,
   merchantRemoveRole,
+  dataPagination,
 } from './../graphql/merchants.gql';
 import {
   EmployeeContract,
@@ -74,11 +72,11 @@ import { Contact } from '../models/contact';
 import { carts, getMe, taxesByMerchant } from '../graphql/cart.gql';
 import { AffiliateService } from './affiliate.service';
 import { AffiliateInput } from '../models/affiliate';
+import { SaleFlowService } from './saleflow.service';
 
 @Injectable({ providedIn: 'root' })
 export class MerchantsService {
   loadedMerchantData = new Subject();
-  constructor(private graphql: GraphQLWrapper, private affiliateService: AffiliateService) { }
   merchantData: Merchant;
   temporalMerchantInput: any | null = null;
   merchantContact: Contact;
@@ -86,6 +84,12 @@ export class MerchantsService {
     orderAmount: number;
     income: number;
   };
+
+  constructor(
+    private graphql: GraphQLWrapper,
+    private affiliateService: AffiliateService,
+    private saleflowService: SaleFlowService
+  ) { }
 
   async merchant(id: string, isHot?: boolean): Promise<Merchant> {
     try {
@@ -574,11 +578,27 @@ export class MerchantsService {
   async entryMerchant(
     merchantID: string,
     merchantInput: MerchantInput,
-    userInput: UserInput
+    userInput: UserInput,
+    addressPickUp: string,
+    deliveryLocations: { country: string, cityReference: string },
+    role: string[],
   ) {
+    const input = {
+      merchantID,
+      merchantInput,
+      userInput,
+      addressPickUp,
+      deliveryLocations,
+      role
+    };
+    Object.keys(input).forEach(key => {
+      if (input[key] === null) {
+        delete input[key];
+      }
+    });
     const result = await this.graphql.mutate({
       mutation: entryMerchant,
-      variables: { merchantID, merchantInput, userInput },
+      variables: { input },
       fetchPolicy: 'no-cache',
       context: { useMultipart: true },
     });
@@ -714,6 +734,17 @@ export class MerchantsService {
     return result?.dataCountries;
   }
 
+  async getDataPagination(paginate: PaginationInput) {
+    const result = await this.graphql.query({
+      query: dataPagination,
+      variables: { paginate },
+      fetchPolicy: 'no-cache',
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result?.dataPagination;
+  }
+
   async merchantQuantityOfFiltersRole() {
     const result = await this.graphql.query({
       query: merchantQuantityOfFiltersRole,
@@ -744,7 +775,7 @@ export class MerchantsService {
     return result?.merchantQuantityOfFiltersCampaign;
   }
 
-  async merchantQuantityOfFiltersHaveDebt(){
+  async merchantQuantityOfFiltersHaveDebt() {
     const result = await this.graphql.query({
       query: merchantQuantityOfFiltersHaveDebt,
       fetchPolicy: 'no-cache',
@@ -754,10 +785,46 @@ export class MerchantsService {
     return result?.merchantQuantityOfFiltersHaveDebt;
   }
 
-  async rolesPublic () {
+  /**
+ * Verifica si el comerciante es válido.
+ *
+ * Obtiene los datos del comerciante predeterminado, luego los verifica.
+ * Si es valido, obtiene la configuración de la venta para el comerciante
+ * predeterminado y verifica si es válido.
+ *
+ * @returns {Promise<boolean>} Indica si el comerciante es válido o no.
+ */
+  async verifyValidMerchant(): Promise<boolean> {
+    const merchant = await this.merchantDefault()
+    const isValidMerchant = merchant._id && merchant.slug && merchant.roles.length > 0
+
+    if (!isValidMerchant) {
+      return false
+    }
+
+    if (isValidMerchant) {
+      const saleflow = await this.saleflowService.saleflowDefault(merchant._id)
+      if (!saleflow || !saleflow.module) {
+        return false;
+      }
+
+      const { paymentMethod, delivery } = saleflow.module;
+      if (!paymentMethod.isActive || !paymentMethod.paymentModule._id) {
+        return false;
+      }
+
+      if (!delivery.isActive || !delivery.pickUpLocations.length || !delivery.pickUpLocations[0]?.nickName) {
+        return false;
+      }
+
+      return true;
+    }
+  }
+
+  async rolesPublic() {
     const result = await this.graphql.query({
       query: rolesPublic,
-      variables: { },
+      variables: {},
       fetchPolicy: 'no-cache',
     });
 
@@ -765,10 +832,10 @@ export class MerchantsService {
     return result?.rolesPublic;
   }
 
-  async merchantAddRole (roleId,id) {
+  async merchantAddRole(roleId, id) {
     const result = await this.graphql.mutate({
       mutation: merchantAddRole,
-      variables: {roleId,id },
+      variables: { roleId, id },
       fetchPolicy: 'no-cache',
     });
 
@@ -776,17 +843,17 @@ export class MerchantsService {
     return result?.merchantAddRole;
   }
 
-  async merchantRemoveRole (roleId,id) {
+  async merchantRemoveRole(roleId, id) {
     const result = await this.graphql.mutate({
       mutation: merchantRemoveRole,
-      variables: {roleId,id },
+      variables: { roleId, id },
       fetchPolicy: 'no-cache',
     });
 
     if (!result || result?.errors) return undefined;
     return result?.merchantRemoveRole;
   }
-  
+
 }
 
 
