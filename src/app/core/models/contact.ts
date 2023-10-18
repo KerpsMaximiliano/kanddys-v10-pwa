@@ -4,7 +4,7 @@ export class ContactInput {
   description?: string;
   image?: any;
   merchant?: string;
-  type?: 'user';
+  type?: 'user' | 'merchant';
   name?: String;
   decription?: String;
   banner?: string;

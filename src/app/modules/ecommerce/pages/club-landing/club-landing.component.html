@@ -201,7 +201,7 @@
           class="ganas-desc center" 
           style="cursor: pointer" 
           (click)="goToWizard()"
-          *ngIf="isUserAdmin()"
+          *ngIf="headerService?.user"
         >
           Responde desde tu propio <span>WhatsApp</span>.
         </p>
