@@ -16,7 +16,7 @@
   </div>
   <div class="option" *ngFor="let option of data.options; let i = index">
     <p class="role" (click)="onClick(i)" [ngClass]="{'active' : option.active}">{{option.value}}</p>
-    <mat-icon *ngIf="!option.noSettings" class="material-icons-outlined">settings</mat-icon>
+    <mat-icon *ngIf="!option.noSettings" class="material-icons-outlined" (click)="goToMerchantEditor()">settings</mat-icon>
   </div>
   <div class="flex space-between">
     <div 

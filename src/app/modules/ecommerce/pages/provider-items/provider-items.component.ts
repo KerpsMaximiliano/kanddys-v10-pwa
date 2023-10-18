@@ -26,11 +26,8 @@ import { OptionsDialogComponent, OptionsDialogTemplate } from 'src/app/shared/di
 import { environment } from 'src/environments/environment';
 
 
-interface BtnFiltering {
-  label: string,
-  isActive: boolean,
-  total: number
-}
+type btnFilterName = 'exhibits' | 'noExhibits' | 'hidden' | 'byCommission' | 'lowStock'
+type consumerType = 'supplier' | 'default'
 
 @Component({
   selector: 'app-provider-items',
@@ -58,52 +55,31 @@ export class ProviderItemsComponent implements OnInit {
         key: 'providedByMe',
       },
     ];
-  activatedSearchFilters: Record<string, boolean> = {};
-  isSwitchActive: boolean = true;
+  isSwitchActive = false;
 
-  isSupplier: boolean = true;
-  hiddenDashboard: boolean = false
-  itemToSearch: string = ''
+  isSupplier = true;
+  hiddenDashboard = false;
   itemsFiltering = []
-  buttonFiltering: BtnFiltering[] = [
-    {
-      label: "Exhibidos",
-      isActive: false,
-      total: 0
-    },
-    {
-      label: "No Exhibidos",
-      isActive: false,
-      total: 0
-    },
-    {
-      label: "Ocultos",
-      isActive: false,
-      total: 0
-    }
-  ]
-  buttonFilteringNoSupplier: BtnFiltering[] = [
-    {
-      label: "Todos los exhibidos",
-      isActive: false,
-      total: 0
-    },
-    {
-      label: "Los ocultos",
-      isActive: false,
-      total: 0
-    },
-    {
-      label: "Los que pagan comisión",
-      isActive: false,
-      total: 0
-    },
-    {
-      label: "Menos de 10 disponibles para vender",
-      isActive: false,
-      total: 0
-    }
-  ]
+
+  /**Button for filtering */
+  btnConsumerState = {
+    supplier: false,
+    default: false
+  }
+
+  btnFilterState = {
+    exhibits: false,
+    noExhibits: false,
+    hidden: false,
+    byCommission: false,
+    lowStock: false,
+  }
+
+  /** Total items */
+  totalHidden: number = 0
+  totalAllItems: number = 0
+  totalItemsByCommission: number = 0
+  totalItemsByLowStock: number = 0
 
   //Pagination-specific variables
   paginationState: {
@@ -129,7 +105,6 @@ export class ProviderItemsComponent implements OnInit {
 
   //Subscriptions
   queryParamsSubscription: Subscription;
-  saleflowLoadedSubscription: Subscription;
 
   //magicLink-specific variables
   encodedJSONData: string;
@@ -149,9 +124,13 @@ export class ProviderItemsComponent implements OnInit {
   };
   numberOfItemsSold: number = 0;
 
+  isUserLogged = false
+  isUserVerified = false
+
   private keyPresentationState = 'providersPresentationClosed'
   private keyTutorialState = 'tutorialClosed'
-  private saleFlowId = null;
+  private merchantData: Merchant | null = null;
+  private saleflowData: SaleFlow | null = null;
 
   constructor(
     private headerService: HeaderService,
@@ -168,103 +147,156 @@ export class ProviderItemsComponent implements OnInit {
   ) { }
 
   async ngOnInit() {
-    this.itemSearchbar.valueChanges.subscribe(async () => {
-      this.verifyIfIsSupplier()
-      await this.getItemsISell();
-      await this.getNewPageOfItemsIDontSell(true, false);
-    });
-
     const existToken = localStorage.getItem('session-token')
     if (existToken) {
       if (!this.headerService.user) {
-        let sub = this.appService.events
-          .pipe(filter((e) => e.type === 'auth'))
-          .subscribe((e) => {
-            this.verifyIfIsSupplier()
-            this.getStatusSwitch()
-            setTimeout(() => this.executeInitProcesses(), 500);
-            sub.unsubscribe();
-          });
+        this.handleUserSubscription()
       } else {
-        this.executeInitProcesses();
+        this.isUserLogged = true
+        await this.executeInitProcesses();
       }
     }
 
     if (!existToken) {
-      this.executeInitProcesses();
+      await this.executeInitProcesses();
+      await this.fetchItemsForNotSell(true, false);
+
     }
 
+    this.initInputValueChanges()
   }
 
+  /**
+   * Inicializa la detección de cambios en el input
+   */
+  initInputValueChanges() {
+    this.itemSearchbar.valueChanges.subscribe(async () => {
+      if (this.isUserLogged) {
+        await this.fetchItemsForSell();
+      }
+      await this.fetchItemsForNotSell(true, false);
+    });
+  }
+
+  /**
+   * Maneja la suscripción del usuario.
+   *
+   * Se encarga de suscribirse a los eventos de la aplicación relacionados
+   * con la autenticación del usuario. Cuando se recibe un evento de autenticación
+   * se ejecutan una serie de tareas para configurar y procesar la sesión del usuario.
+   */
+  handleUserSubscription() {
+    const subscription = this.appService.events
+      .pipe(filter((e) => e.type === 'auth'))
+      .subscribe(async ({ data }) => {
+        this.getDefaultMerchantAndSaleflows(data.user)
+          .then(async ({ merchantDefault, saleflowDefault }) => {
+            this.merchantData = merchantDefault;
+            this.saleflowData = saleflowDefault
+            this.isUserLogged = true
+
+            this.isSupplier = this.verifyIfIsSupplier(this.merchantData);
+            this.getStatusSwitch();
+            await this.executeInitProcesses();
+            setTimeout(async () => {
+              if (this.merchantData?._id) {
+                await this.fetchItemsForSell();
+                await this.fetchQuantifyFilters();
+              }
+            }, 1000);
+          })
+        subscription.unsubscribe();
+      });
+  }
+
+  /**
+   * Inicializa el proceso para obtener los datos a mostrar en pantalla, como los items
+   * del merchant, la cantidad de items vendidos, el estado para mostrar el modal del
+   * tutorial
+   */
   async executeInitProcesses() {
     this.queryParamsSubscription = this.route.queryParams.subscribe(
-      async ({ jsondata, supplierMode }) => {
-        supplierMode = JSON.parse(supplierMode || 'false');
+      async ({ jsondata }) => {
         this.encodedJSONData = jsondata;
         if (this.encodedJSONData) {
           this.parseMagicLinkData();
         }
 
-        await this.getItemsISell();
-        await this.getNumberOfItemsSold();
-
         this.checkIfPresentationWasClosedBefore();
         this.checkIfTutorialWasOpen()
-        if (this.isSupplier) {
-          await this.getNewPageOfItemsIDontSell(true, false);
-        }
+
+        await this.getNumberOfItemsSold();
       }
     );
   }
 
-  /**
-   * Obtiene el estado del switch
-   */
-  getStatusSwitch() {
-    this.merchantsService.merchantDefault()
-      .then((merchantDefault) => {
-        this.saleflowService.saleflowDefault(merchantDefault._id)
-          .then(saleflow => {
-            const status = !saleflow?.status || saleflow?.status === 'open'
-            this.isSwitchActive = status
-            this.saleFlowId = saleflow._id
-          })
-      })
-  }
 
   /**
-   * Verifica si el usuario es de tipo proveedor o no
+   * Obtiene el total de items segun el tipo de filtro.
+   * Entre los tipos de filtros estan: items ocutlos, todos, por comision
+   * o por bajo precio
    */
-  verifyIfIsSupplier() {
-    this.merchantsService.merchantDefault()
-      .then(merchantDefault => {
-        this.isSupplier = merchantDefault.roles[0].code !== 'STORE'
-      })
-  }
-
-  /**
-   * Obtiene el numero de items vendidos
-   */
-  async getNumberOfItemsSold() {
-    if (this.isTheUserAMerchant) {
-      const sold = await this.itemsService.itemsQuantitySoldTotal({
-        findBy: {
-          type: this.isSupplier ? 'supplier' : 'default',
-          merchant: this.merchantsService.merchantData._id,
-        },
-        options: {
-          limit: -1,
-        },
-      });
-      this.numberOfItemsSold = sold?.total;
+  async fetchQuantifyFilters() {
+    try {
+      const merchantTotal = await this.itemsService.itemsQuantityOfFilters(this.merchantData._id)
+      if (merchantTotal) {
+        this.totalHidden = merchantTotal.hidden
+        this.totalAllItems = merchantTotal.all
+        this.totalItemsByCommission = merchantTotal.commissionable
+        this.totalItemsByLowStock = merchantTotal.lowStock
+      }
+    } catch (error) {
+      console.error(error)
     }
   }
 
+  /**
+   * Obtiene el estado del switch consultando el merchant. Si el merchant es valido,
+   * obtendrá los datos del saleflpw. Y si este ultimo es válido, recibirá el estado
+   * del switch si está activo o inactivo.
+   *
+   * Si no hay merchant, no hace nada
+   */
+  getStatusSwitch() {
+    const isValidMerchant = this.merchantsService.verifyValidMerchant()
+    if (!isValidMerchant) {
+      this.isSwitchActive = false
+    } else {
+      const status = !this.saleflowData?.status || this.saleflowData?.status === 'open'
+      this.isSwitchActive = status
+      this.isUserVerified = true
+    }
+  }
+
+  /**
+   * Cambia el estado del consumidor de supplier o default
+   */
+  onChangeConsumerState(selected: consumerType) {
+    this.btnConsumerState[selected] = !this.btnConsumerState[selected]
+    this.filteringItemsBySearchbar(this.itemSearchbar.value)
+  }
+
+  /**
+   * Verifica si el usuario es de tipo proveedor o no.
+   *
+   * @params merchant - datos del merchant
+   * @returns {Boolean} un boleano que indica si es supplier o no
+   */
+  verifyIfIsSupplier(merchant: Merchant): boolean {
+    return merchant.roles[0]?.code !== 'STORE'
+  }
+
+  /**
+   * Función para realizar paginación infinita en una página de dashboard.
+   * Se encarga de cargar más elementos cuando el usuario llega al final de la página.
+   */
   async infinitePagination() {
     const targetClass = '.dashboard-page';
     const page = document.querySelector(targetClass);
     const pageScrollHeight = page.scrollHeight;
     const verticalScroll = window.innerHeight + page.scrollTop;
+
+    // Calcula la diferencia entre la posición vertical y la altura total de la página
     const difference = Math.abs(verticalScroll - pageScrollHeight);
 
     if (verticalScroll >= pageScrollHeight || difference <= 50) {
@@ -272,7 +304,11 @@ export class ProviderItemsComponent implements OnInit {
         this.paginationState.status === 'complete' &&
         !this.reachTheEndOfPagination
       ) {
-        await this.getNewPageOfItemsIDontSell(false, true, true);
+        if (this.isUserLogged) {
+          await this.fetchItemsForSell(false, true);
+        } else {
+          await this.fetchItemsForNotSell(false, true);
+        }
       }
     }
   }
@@ -328,7 +364,7 @@ export class ProviderItemsComponent implements OnInit {
       }
       this.orderService.orderPaginate(pagination)
         .then(orders => {
-          if (orders.orderPaginate.length) {
+          if (orders?.orderPaginate.length) {
             localStorage.setItem(this.keyTutorialState, 'true')
             this.searchTutorialsOpened = true
           }
@@ -338,7 +374,8 @@ export class ProviderItemsComponent implements OnInit {
 
   /**
    * Cierra el tutorial de busqueda. Si las cartas han sido cerradas,
-   * almacena el estado en el localstorage y l
+   * almacena el estado en el localstorage
+   *
    * @param cardName nombre de la carta que se cerró
    */
   closeSearchTutorial = (cardName: string) => {
@@ -361,107 +398,90 @@ export class ProviderItemsComponent implements OnInit {
     }
   };
 
+
   toggleStoreVisibility() {
-    const input = {
-      status: this.isSwitchActive ? "closed" : "open"
-    }
-
-    this.saleflowService
-      .updateSaleflow(input, this.saleFlowId)
-      .then(() => this.isSwitchActive = !this.isSwitchActive)
-      .catch(error => {
-        console.error(error);
-        const message = 'Ocurrió un error al intentar cambiar la visibilidad de tu tienda, intenta más tarde'
-        this.headerService.showErrorToast(message);
-      })
-
-  }
-
-  activateOrDeactivateFilters(filterKey: string) {
-    this.activatedSearchFilters[filterKey] =
-      !this.activatedSearchFilters[filterKey];
-
-    //this.inicializeItems(true, false);
-  }
-
-  async getItemsISell() {
-    if (this.isTheUserAMerchant === null) {
-      const isAMerchant =
-        await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
-
-      this.isTheUserAMerchant = isAMerchant;
-    }
-
-    if (this.isTheUserAMerchant) {
-      // const supplierSpecificItemsPagination: PaginationInput = {
-      //   findBy: {
-      //     type: this.isSupplier ? 'supplier' : 'default',
-      //     parentItem: {
-      //       $ne: null,
-      //     },
-      //     merchant: this.merchantsService.merchantData._id,
-      //   },
-      //   options: {
-      //     sortBy: 'createdAt:desc',
-      //     limit: -1,
-      //     page: 1,
-      //   },
-      // };
-      const supplierSpecificItemsPagination: PaginationInput = {
-        findBy: {
-          type: this.isSupplier ? 'supplier' : 'default',
-          merchant: this.merchantsService.merchantData._id,
-          _id: {
-            $nin: this.itemsISell.map((item) => item.parentItem),
-          }
-        },
-        options: {
-          sortBy: 'createdAt:desc',
-          limit: -1,
-          page: 1,
-        },
-      };
-
-      if (this.itemSearchbar.value && this.itemSearchbar.value !== '') {
-        let regexQueries: Array<any> = [
-          {
-            name: {
-              __regex: {
-                pattern: this.itemSearchbar.value,
-                options: 'gi',
-              },
-            },
-          },
-          {
-            description: {
-              __regex: {
-                pattern: this.itemSearchbar.value,
-                options: 'gi',
-              },
-            },
-          },
-        ];
-
-        supplierSpecificItemsPagination.findBy = {
-          ...supplierSpecificItemsPagination.findBy,
-          $or: regexQueries,
-        };
+    if (this.isUserVerified) {
+      const input = {
+        status: this.isSwitchActive ? "closed" : "open"
       }
 
-      const supplierSpecificItems: Array<Item> = (
-        await this.itemsService.listItems(supplierSpecificItemsPagination)
-      )?.listItems;
+      this.saleflowService.updateSaleflow(input, this.saleflowData._id)
+        .then(() => this.isSwitchActive = !this.isSwitchActive)
+        .catch(error => {
+          console.error(error);
+          const message = 'Ocurrió un error al intentar cambiar la visibilidad de tu tienda, intenta más tarde'
+          this.headerService.showErrorToast(message);
+        })
+    }
 
-      if (supplierSpecificItems) this.itemsISell = supplierSpecificItems;
-      this.buttonFiltering[0].total = this.itemsISell.length
+    if (!this.isUserVerified) {
+      const message = 'Te falto datos para completar en tu perfil para activar esta función'
+      this.headerService.showErrorToast(message);
+    }
+
+    if (!this.isUserLogged) {
+      const message = 'Debes iniciar sesión para activar esta función'
+      this.headerService.showErrorToast(message);
     }
   }
 
-  async getNewPageOfItemsIDontSell(
+  /**
+ * Obtiene el numero de items vendidos
+ */
+  async getNumberOfItemsSold() {
+    if (this.isTheUserAMerchant) {
+      const sold = await this.itemsService.itemsQuantitySoldTotal({
+        findBy: {
+          merchant: this.merchantsService.merchantData._id,
+        },
+        options: {
+          limit: -1,
+        },
+      });
+      this.numberOfItemsSold = sold?.total;
+    }
+  }
+
+  /**
+   * Obtiene todos los items para vender
+   */
+  async fetchItemsForSell(
     restartPagination = false,
     triggeredFromScroll = false,
-    getTotalNumberOfItems = false,
-    createCopyOfAllItems = false
+  ) {
+    this.paginationState.status = 'loading';
+
+    if (restartPagination) {
+      this.reachTheEndOfPagination = false;
+      this.paginationState.page = 1;
+      this.itemsISell = [];
+    } else {
+      this.paginationState.page++;
+    }
+
+    const pagination: PaginationInput = {
+      findBy: {
+        merchant: this.merchantData._id,
+        _id: {
+          __in: this.saleflowData.items.map((item) => item.item._id)
+        }
+      },
+      options: {
+        limit: this.paginationState.pageSize,
+        page: this.paginationState.page - 1,
+        sortBy: 'createdAt:desc',
+      },
+    };
+
+    await this.processPaginationItems(pagination, triggeredFromScroll, this.itemsISell)
+  }
+
+  /**
+   * Obtiene todos los items que no se venden
+   */
+  async fetchItemsForNotSell(
+    restartPagination = false,
+    triggeredFromScroll = false,
   ) {
     this.paginationState.status = 'loading';
 
@@ -483,140 +503,8 @@ export class ProviderItemsComponent implements OnInit {
         page: this.paginationState.page,
       },
     };
-    // const pagination: PaginationInput = {
-    //   findBy: {
-    //     type: this.isSupplier ? 'supplier' : 'default',
-    //     parentItem: null,
-    //     _id: {
-    //       $nin: this.itemsISell.map((item) => item.parentItem),
-    //     },
-    //   },
-    //   options: {
-    //     sortBy: 'createdAt:desc',
-    //     limit: this.paginationState.pageSize,
-    //     page: this.paginationState.page,
-    //   },
-    // };
-    if (this.isTheUserAMerchant) {
-      pagination.findBy.merchant = {
-        $ne: this.merchantsService.merchantData._id,
-      };
-    }
 
-    if (this.activatedSearchFilters['hidden']) {
-      pagination.findBy.status = 'hidden';
-    }
-
-    if (this.activatedSearchFilters['toBeApproved']) {
-      pagination.findBy.approvedByAdmin = {
-        $ne: true,
-      };
-    }
-
-    if (
-      this.activatedSearchFilters['notMine'] &&
-      !this.activatedSearchFilters['mine']
-    ) {
-      pagination.findBy.merchant = {
-        $ne: this.merchantsService.merchantData._id,
-      };
-    }
-
-    if (
-      this.activatedSearchFilters['mine'] &&
-      !this.activatedSearchFilters['notMine']
-    ) {
-      pagination.findBy.merchant = this.merchantsService.merchantData._id;
-    }
-
-    if (
-      this.activatedSearchFilters['mine'] &&
-      this.activatedSearchFilters['notMine']
-    )
-      pagination.findBy.merchant = {
-        $ne: null,
-      };
-
-    if (this.itemSearchbar.value && this.itemSearchbar.value !== '') {
-      let regexQueries: Array<any> = [
-        {
-          name: {
-            __regex: {
-              pattern: this.itemSearchbar.value,
-              options: 'gi',
-            },
-          },
-        },
-        {
-          description: {
-            __regex: {
-              pattern: this.itemSearchbar.value,
-              options: 'gi',
-            },
-          },
-        },
-      ];
-
-      pagination.findBy = {
-        ...pagination.findBy,
-        $or: regexQueries,
-      };
-    }
-
-    this.renderItemsPromise = this.saleflowService.listItems(pagination, true);
-
-    return this.renderItemsPromise.then(async (response) => {
-      const items = response;
-      let itemsQueryResult = items?.listItems;
-
-      itemsQueryResult.forEach((item, itemIndex) => {
-        item.stock = 0;
-        item.useStock = true;
-        item.images.forEach((image) => {
-          if (!image.value.includes('http'))
-            image.value = 'https://' + image.value;
-        });
-        itemsQueryResult[itemIndex].images = item.images.sort(
-          ({ index: a }, { index: b }) => (a > b ? 1 : -1)
-        );
-      });
-
-      if (itemsQueryResult.length === 0 && this.paginationState.page === 1) {
-        this.itemsIDontSell = [];
-      }
-
-      if (itemsQueryResult.length === 0 && this.paginationState.page !== 1) {
-        this.paginationState.page--;
-        this.reachTheEndOfPagination = true;
-      }
-
-      if (itemsQueryResult && itemsQueryResult.length > 0) {
-        if (this.paginationState.page === 1) {
-          this.itemsIDontSell = itemsQueryResult.map((item) => ({
-            images: item.images.sort(({ index: a }, { index: b }) =>
-              a > b ? 1 : -1
-            ),
-            ...item,
-          }));
-        } else {
-          this.itemsIDontSell = this.itemsIDontSell
-            .concat(itemsQueryResult)
-            .map((item) => ({
-              images: item.images.sort(({ index: a }, { index: b }) =>
-                a > b ? 1 : -1
-              ),
-              ...item,
-            }));
-        }
-      }
-
-      this.paginationState.status = 'complete';
-
-      if (itemsQueryResult.length === 0 && !triggeredFromScroll) {
-        this.itemsIDontSell = [];
-      }
-      this.buttonFiltering[1].total = this.itemsIDontSell.length
-    });
+    await this.processPaginationItems(pagination, triggeredFromScroll, this.itemsIDontSell)
   }
 
   createItemBasedOnExistingSupplierItems(item: Item) {
@@ -711,23 +599,6 @@ export class ProviderItemsComponent implements OnInit {
         .querySelector('#search-from-results-view') as HTMLInputElement)
         ?.focus();
     }, 100);
-    this.itemsService
-      .itemsQuantityOfFilters(this.merchantsService.merchantData._id, 'supplier')
-      .then(data => {
-        if (this.isSupplier) {
-          this.buttonFiltering[2].total = data.hidden
-        } else {
-          // btn para todos los items
-          this.buttonFilteringNoSupplier[0].total = data.all
-          // btn para items ocultos
-          this.buttonFilteringNoSupplier[1].total = data.hidden
-          // btn para items con comisiones
-          this.buttonFilteringNoSupplier[2].total = data.commissionable
-          // btn para menos de 10 items para vender
-          this.buttonFilteringNoSupplier[3].total = data.lowStock
-        }
-      })
-
   }
 
   urlIsVideo(url: string) {
@@ -736,10 +607,8 @@ export class ProviderItemsComponent implements OnInit {
 
   async parseMagicLinkData() {
     if (this.isTheUserAMerchant === null) {
-      const isAMerchant =
+      this.isTheUserAMerchant =
         await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
-
-      this.isTheUserAMerchant = isAMerchant;
     }
 
     if (this.encodedJSONData) {
@@ -772,9 +641,6 @@ export class ProviderItemsComponent implements OnInit {
     try {
       lockUI();
       const createdItemId = parsedData.createdItem;
-
-      const item = await this.itemsService.item(createdItemId);
-
       const saleflowDefault = await this.saleflowService.saleflowDefault(
         this.merchantsService.merchantData._id
       );
@@ -1090,7 +956,6 @@ export class ProviderItemsComponent implements OnInit {
     price: number,
     item: Item
   ): Promise<ItemInput> => {
-    // const type: TypeItem = this.isSupplier ? 'supplier' : 'default'
     const itemInput: ItemInput = {
       name: item.name,
       layout: item.layout,
@@ -1698,139 +1563,40 @@ export class ProviderItemsComponent implements OnInit {
     window.location.href = whatsappLink;
   }
 
-  onChangeBtnFiltering(btnActual: BtnFiltering) {
-    const index = this.buttonFiltering.findIndex(btn => btn.label === btnActual.label)
-    this.buttonFiltering[index].isActive = this.buttonFiltering[index].isActive
-    this.hiddenDashboard = this.buttonFiltering.some(btn => btn.isActive)
-    this.filteringItemsBySearchbar(this.itemToSearch)
-  }
-
-  onChangeBtnFilteringNotSupplier(btnActual: BtnFiltering) {
-    const i = this.buttonFilteringNoSupplier.findIndex(btn => btn.label === btnActual.label)
-    this.buttonFilteringNoSupplier[i].isActive = this.buttonFilteringNoSupplier[i].isActive
-    this.hiddenDashboard = this.buttonFilteringNoSupplier.some(btn => btn.isActive)
-    this.filteringItemsBySearchbarNotSupplier(this.itemToSearch)
+  /**
+   * Al hacer click en un boton, filtrará segun el boton seleccionado.
+   * Además ocultará el dashboard si algun de los filtros están activos
+   *
+   * @param {btnFilterName} selected nombre del button del filtrado seleccionado
+   */
+  onChangeBtnFiltering(selected: btnFilterName) {
+    this.btnFilterState[selected] = !this.btnFilterState[selected]
+    this.hiddenDashboard = Object.values(this.btnFilterState).some(value => value)
+    this.filteringItemsBySearchbar(this.itemSearchbar.value)
   }
 
   onCloseSearchbar() {
     this.searchOpened = false
   }
 
+  /**
+   * Busca en el searchbar con o sin el filtrado.
+   * Ocultará o mostrará el dashboard segun si algun filtro está activo
+   *
+   * @param {EventTarget} event evento del input
+   */
   onFilteringItemsBySearchbar(event: any) {
-    this.itemToSearch = event.target.value
-    const isSomeBtnActive = this.buttonFiltering.some(btn => btn.isActive)
+    this.itemSearchbar.setValue(event.target.value)
+    const isSomeBtnActive = Object.values(this.btnFilterState).some(value => value)
 
-    if (this.itemToSearch) {
+    if (this.itemSearchbar.value) {
       this.hiddenDashboard = true
-      if (this.isSupplier) {
-        this.filteringItemsBySearchbar(this.itemToSearch)
-      } else {
-        this.filteringItemsBySearchbarNotSupplier(this.itemToSearch)
-      }
+      this.filteringItemsBySearchbar(this.itemSearchbar.value)
     }
 
-    if (!this.itemToSearch && !isSomeBtnActive) {
+    if (!this.itemSearchbar.value && !isSomeBtnActive) {
       this.hiddenDashboard = false
     }
-  }
-
-  /**
-   * Filtrado de items por la barra de búsqueda
-   * @param itemToSearch item a buscar
-   */
-  private filteringItemsBySearchbar(itemName: string) {
-    // Si el boton de "oculto" está activo, será "disabled". Caso contrario "active"
-    const status = this.buttonFiltering[2].isActive ? "disabled" : "active"
-
-    const input: PaginationInput = {
-      findBy: {
-        status,
-        type: "supplier",
-        _id: {
-          $nin: this.itemsISell.map((item) => item.parentItem),
-        },
-      },
-      options: {
-        sortBy: 'createdAt:desc',
-        limit: this.paginationState.pageSize,
-        page: this.paginationState.page,
-      },
-    };
-
-    // Button de items exhibidos
-    if (this.buttonFiltering[0].isActive) {
-      input.findBy = {
-        ...input.findBy,
-        merchant: {
-          _id: this.merchantsService.merchantData._id
-        }
-      }
-    }
-
-    // Button de items no exhibidos
-    if (this.buttonFiltering[1].isActive) {
-      input.findBy = {
-        ...input.findBy,
-        parentItem: {
-          $ne: null
-        }
-      }
-    }
-
-    this.saleflowService
-      .listItems(input, false, itemName)
-      .then(data => this.itemsFiltering = data.listItems)
-  }
-
-  /**
-   *
-   * @param itemName nombre
-   */
-  private filteringItemsBySearchbarNotSupplier(itemName: string) {
-    // Estado del boton para mostrar los items ocultos o activos
-    const status = this.buttonFilteringNoSupplier[1].isActive ? "disabled" : "active"
-
-    const input: PaginationInput = {
-      findBy: {
-        status,
-        type: ['default', null],
-        _id: {
-          $nin: this.itemsISell.map((item) => item.parentItem),
-        },
-      },
-      options: {
-        sortBy: 'createdAt:desc',
-        limit: this.paginationState.pageSize,
-        page: this.paginationState.page,
-      },
-    };
-
-    // Button de todos items exhibidos
-    if (this.buttonFilteringNoSupplier[0].isActive) {
-      input.findBy = {
-        ...input.findBy,
-        merchant: {
-          _id: this.merchantsService.merchantData._id
-        },
-      }
-    }
-
-    // Button de items para filtrar por comisiones
-    if (this.buttonFilteringNoSupplier[2].isActive) {
-      input.findBy = {
-        ...input.findBy,
-        allowCommission: true
-      }
-    }
-
-    // Button de items para filtrar los items por menos de 10 stock
-    if (this.buttonFilteringNoSupplier[3].isActive) {
-      input.filter = { maxStock: 10 }
-    }
-
-    this.saleflowService
-      .listItems(input, false, itemName)
-      .then(data => this.itemsFiltering = data.listItems)
   }
 
   back() {
@@ -1840,17 +1606,147 @@ export class ProviderItemsComponent implements OnInit {
       }
     });
   }
-  goToArticleDetail(id){
+  goToArticleDetail(id) {
     this.router.navigate(['ecommerce/admin-article-detail/' + id]);
   }
-  updatePricing(id){
-    const navigationData : NavigationExtras = {
+
+  /**
+ * Filtrado de items por la barra de búsqueda
+ * Puede obtener un filtrado más especifico dependiendo de si
+ * alguno de los botones de filtrado han sido activados
+ *
+ * @param itemToSearch item a buscar
+ */
+  private filteringItemsBySearchbar(itemName: string) {
+    const input: PaginationInput = {
+      findBy: {
+        status: this.btnFilterState.hidden ? "disabled" : "active",
+        _id: {
+          __in: this.saleflowData.items.map((item) => item.item._id)
+        },
+      },
+      options: {
+        sortBy: 'createdAt:desc',
+        limit: this.paginationState.pageSize,
+        page: this.paginationState.page,
+      },
+    };
+
+    if (this.btnFilterState.exhibits) {
+      input.findBy = {
+        ...input.findBy,
+        merchant: {
+          _id: this.merchantData._id
+        }
+      }
+    }
+
+    if (this.btnFilterState.noExhibits) {
+      input.findBy = {
+        ...input.findBy,
+        parentItem: {
+          $ne: null
+        }
+      }
+    }
+
+    if (this.btnFilterState.byCommission) {
+      input.findBy = {
+        ...input.findBy,
+        allowCommission: true
+      }
+    }
+
+    // Boton de items para filtrar los items por menos de 10 stock
+    if (this.btnFilterState.lowStock) {
+      input.filter = { maxStock: 10 }
+    }
+
+    if (this.btnConsumerState.supplier) {
+      input.findBy = {
+        ...input.findBy,
+        type: 'supplier'
+      }
+    }
+
+    if (this.btnConsumerState.default) {
+      input.findBy = {
+        ...input.findBy,
+        type: 'default'
+      }
+    }
+
+    if (this.btnConsumerState.supplier && this.btnConsumerState.default) {
+      input.findBy = {
+        ...input.findBy,
+        type: ['supplier', 'default']
+      }
+    }
+
+    this.saleflowService.listItems(input, false, itemName)
+      .then(data => this.itemsFiltering = data.listItems)
+  }
+
+  /**
+ * Procesa la paginación de los items
+ *
+ * @param pagination La información de paginación
+ * @param triggeredFromScroll Indica si el proceso fue desencadenado por scroll
+ * @param arrayItems El array en el que se guardará el resultado
+ */
+  private async processPaginationItems(
+    pagination: PaginationInput,
+    triggeredFromScroll: boolean,
+    arrayItems: Item[]
+  ) {
+    const data = await this.saleflowService.listItems(pagination, true);
+    const itemsQueryResult = data?.listItems || [];
+
+    itemsQueryResult.forEach((item) => {
+      item.stock = 0;
+      item.useStock = true;
+      item.images.forEach((image) => {
+        if (!image.value.includes('http')) {
+          image.value = 'https://' + image.value;
+        }
+      });
+      item.images = item.images.sort(({ index: a }, { index: b }) => (a > b ? 1 : -1));
+    });
+
+
+    if (!itemsQueryResult.length && this.paginationState.page === 1) {
+      arrayItems = []
+    }
+
+    // Condición para cuando llegas al final de la página
+    if (!itemsQueryResult.length && this.paginationState.page !== 1) {
+      this.paginationState.page--;
+      this.reachTheEndOfPagination = true;
+    }
+
+    if (itemsQueryResult && itemsQueryResult.length > 0) {
+      if (this.paginationState.page === 1) {
+        arrayItems.length = 0;
+        arrayItems.push(...itemsQueryResult);
+      } else {
+        arrayItems.push(...itemsQueryResult);
+      }
+    }
+
+    this.paginationState.status = 'complete';
+
+    if (!itemsQueryResult.length && !triggeredFromScroll) {
+      arrayItems = [];
+    }
+  }
+  updatePricing(id) {
+    const navigationData: NavigationExtras = {
       replaceUrl: true,
-      queryParams : {
+      queryParams: {
         stockEdition: true
       }
     }
-    return this.router.navigate(['ecommerce/provider-items-editor/'+id], navigationData);
-    
+    return this.router.navigate(['ecommerce/provider-items-editor/' + id], navigationData);
+
   }
 }

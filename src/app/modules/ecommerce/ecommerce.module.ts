@@ -80,6 +80,7 @@ import { ChatRoomComponent } from './pages/chat-room/chat-room.component';
 import { DaliahChatComponent } from './pages/daliah-chat/daliah-chat.component';
 import { DaliaTrainingComponent } from './pages/dalia-training/dalia-training.component';
 import { LaiaMemoriesManagementComponent } from './pages/laia-memories-management/laia-memories-management.component';
+import { LaiaAssistantComponent } from './pages/laia-assistant/laia-assistant.component';
 
 const routes: Routes = [
   {
@@ -301,6 +302,10 @@ const routes: Routes = [
   {
     path: 'daliah-chat',
     component: DaliahChatComponent,
+  },
+  {
+    path: 'laia-assistant',
+    component: LaiaAssistantComponent,
   },
   {
     path: 'laia-training',
@@ -529,6 +534,7 @@ const routes: Routes = [
     DaliahChatComponent,
     DaliaTrainingComponent,
     LaiaMemoriesManagementComponent,
+    LaiaAssistantComponent
   ],
   imports: [
     CommonModule,
