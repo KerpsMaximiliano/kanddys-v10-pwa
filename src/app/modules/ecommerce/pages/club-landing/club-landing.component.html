@@ -24,12 +24,13 @@
         <div class="close" *ngIf="showGanas === true" (click)="showGanas = false">
           X
         </div>
-        <div *ngIf="headerService.user && showGanas === false" class="icon" (click)="showGanas = true">
+        <div *ngIf="showGanas === false" class="icon" (click)="showGanas = true">
             <p>Gana$</p>
             <mat-icon>ios_share</mat-icon>
         </div>
       </div>
     </div>
+    <input id="imgInput" accept="image/*" type="file" (change)="getImg($event)" hidden #uploader>
     <main>
       <div class="tab-header" *ngIf="showGanas===true">
         <div class="info-container">
@@ -114,13 +115,13 @@
         </p>
       </div>
       <div class="tabs" *ngIf="tabIndex === 1">
-        <div class="card">
+        <div (click)="headerService.user ? goToDashboard() : uploader.click()" class="card">
           <img alt="img">
           <h2>Vende fácilmente a través de enlaces</h2>
           <mat-icon>chevron_right</mat-icon>
         </div>
         <hr />
-        <div class="card">
+        <div (click)="headerService.user ? goToAIMemoriesManagement() : goToLaiaTraining()" class="card">
           <img alt="img">
           <h2>Brinda respuestas precisas al instante</h2>
           <mat-icon>chevron_right</mat-icon>
@@ -132,7 +133,7 @@
           <mat-icon>chevron_right</mat-icon>
         </div>
         <hr />
-        <div class="card">
+        <div (click)="headerService.user ? goToItemsOffers() : ''" class="card">
           <img alt="img">
           <h2>Vende con ofertas de 24 horas</h2>
           <mat-icon>chevron_right</mat-icon>
@@ -167,7 +168,6 @@
         <div class="info-container">
           <div class="info-container-title-container">
             <p class="info-container-title">Vende fácilmente </p>
-            <input id="imgInput" accept="image/*" type="file" (change)="getImg($event)" hidden #uploader>
             <div *ngIf="headerService.user">
               <mat-slide-toggle
                 [checked]="statusSwitch"
@@ -384,30 +384,39 @@
         </ng-container>
       </div>-->
     </main>
-    <!-- <div 
+    <div 
       class="message"
       *ngIf="showGanas === false"
     >
+      <p class="plus-sign" (click)="openOptionsMenu()">
+        +
+      </p>
       <div 
         [ngClass]="{ 'loggedout': !headerService.user }"
         class="input" 
         (click)="openLaiaDialog()"
       >
-        {{headerService.user ? 'Como te ayudaría Laia (la IA)?' : 'Mensaje'}}
-        <img
-          class="audio-freq"
-          src="{{assetsFolder}}/audio-freq.png"
-          [ngClass]="{ 'brighter': headerService.user }"
-          alt="img"
-        >
+        {{'Soy Laia, que necesitas saber?'}}
+        <div>
+          <img
+            alt="camera"
+            class="darker"
+            src="{{assetsFolder}}/grey-camera.png"
+          >
+          <img
+            class="audio-freq"
+            src="{{assetsFolder}}/audio-freq.png"
+            [ngClass]="{ 'brighter': headerService.user }"
+            alt="img"
+          >
+        </div>
       </div>
-        <img
+        <!--<img
           alt="arrow"
           class="arrow"
           src="{{assetsFolder}}/transparent-arrow-up.png"
-        >
-    </div> -->
-
+        >-->
+    </div>
     <!-- <footer
       *ngIf="!tabarIndex"
       (click)="share()"
