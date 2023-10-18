@@ -1,5 +1,6 @@
 import {Component, Inject} from '@angular/core';
 import {MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
 
 export interface DialogTemplate {
@@ -27,7 +28,8 @@ export class SelectRoleDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<SelectRoleDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogTemplate,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -45,6 +47,12 @@ export class SelectRoleDialogComponent {
 
   signout() {
     this.authService.signout();
+  }
+
+  goToMerchantEditor() {
+    this.dialogRef.close();
+    this.router.navigate(['/admin/merchant-editor']);
+    return;
   }
 
 }
