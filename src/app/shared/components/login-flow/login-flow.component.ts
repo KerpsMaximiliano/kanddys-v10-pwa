@@ -31,7 +31,8 @@ export class LoginFlowComponent implements OnInit {
   @Input() jsondata: string = JSON.stringify({
     openNavigation: true,
   });
-
+  @Input() loginEmail: string = null;
+  @Input() magicLink: boolean = false;
   openNavigation: boolean = false;
 
   @Output() dialogIsOpen: EventEmitter<boolean> = new EventEmitter();
@@ -53,11 +54,50 @@ export class LoginFlowComponent implements OnInit {
   emailDialogRef: MatDialogRef<LoginFormComponent, any> = null;
 
   ngOnInit(): void {
-    this.share()
+    if(this.loginEmail) {
+      if(this.magicLink) {
+        this.authService.generateMagicLink(
+          this.loginEmail,
+          this.redirectionRoute,
+          this.redirectionRouteId,
+          this.entity,
+          {
+            jsondata: this.jsondata,
+          },
+          []
+        );
+
+        let logins = JSON.parse(window.localStorage.getItem('logins')) || [];
+        logins.push({
+          name: this.loginEmail,
+        });
+        window.localStorage.setItem('logins', JSON.stringify(logins));
+
+        this.dialogIsOpen.emit(false);
+
+        this.dialogService.open(
+          GeneralFormSubmissionDialogComponent,
+          {
+            type: 'centralized-fullscreen',
+            props: {
+              icon: 'check-circle.svg',
+              showCloseButton: false,
+              message:
+                'Se ha enviado un link mágico a tu correo electrónico',
+            },
+            customClass: 'app-dialog',
+            flags: ['no-header'],
+          }
+        );
+      } else {
+        this.addPassword(this.loginEmail)
+      }
+    } else {
+      this.share()
+    }
   }
 
   share() {
-    if (!this.headerService.user) {
       let dialogRef = this.bottomSheet.open(OptionsMenuComponent, {
         data: {
           title: 'Correo electrónico:',
@@ -87,7 +127,6 @@ export class LoginFlowComponent implements OnInit {
         this.dialogIsOpen.emit(false);
         dialogRef.dismiss()
       })
-    }
   }
 
   async merchantCheck(userData) {
@@ -319,6 +358,11 @@ export class LoginFlowComponent implements OnInit {
               },
               []
             );
+            let logins = JSON.parse(window.localStorage.getItem('logins')) || [];
+            logins.push({
+              name: credentials,
+            });
+            window.localStorage.setItem('logins', JSON.stringify(logins));
 
             this.dialogService.open(
               GeneralFormSubmissionDialogComponent,
@@ -348,7 +392,7 @@ export class LoginFlowComponent implements OnInit {
           name: 'businessName',
           type: 'text',
           validators: [Validators.pattern(/[\S]/), Validators.required],
-          bottomButton: {
+          /*bottomButton: {
             text: 'No tengo un comercio',
             callback: () => {
               isCommerce = false;
@@ -360,7 +404,7 @@ export class LoginFlowComponent implements OnInit {
               top: '0px',
               left: '283px'
             }
-          }
+          }*/
         },
         {
           label: 'Whatsapp donde tus compradores te contactan:',
@@ -410,6 +454,12 @@ export class LoginFlowComponent implements OnInit {
                   jsondata: this.jsondata,
                 },
                 [])
+
+              let logins = JSON.parse(window.localStorage.getItem('logins')) || [];
+              logins.push({
+                name: credentials,
+              });
+              window.localStorage.setItem('logins', JSON.stringify(logins));
 
               this.dialogService.open(
                 GeneralFormSubmissionDialogComponent,
@@ -479,8 +529,14 @@ export class LoginFlowComponent implements OnInit {
                 },
                 []
               );
+              let logins = JSON.parse(window.localStorage.getItem('logins')) || [];
+              logins.push({
+                name: emailOrPhone,
+              });
+              window.localStorage.setItem('logins', JSON.stringify(logins));
 
               unlockUI();
+              
 
               this.dialogService.open(
                 GeneralFormSubmissionDialogComponent,
@@ -559,7 +615,7 @@ export class LoginFlowComponent implements OnInit {
   }
 
   private async addPassword(emailOrPhone: string) {
-    this.emailDialogRef.close();
+    if(!this.loginEmail) this.emailDialogRef.close();
     let fieldsToCreate: FormData = {
       title: {
         text: 'Clave de Acceso:',
@@ -608,6 +664,12 @@ export class LoginFlowComponent implements OnInit {
           if (!session) throw new Error('invalid credentials');
 
           this.openNavigation = true;
+
+          let logins = JSON.parse(window.localStorage.getItem('logins')) || [];
+          logins.push({
+            name: emailOrPhone,
+          });
+          window.localStorage.setItem('logins',JSON.stringify(logins));
 
           unlockUI();
           this.dialogIsOpen.emit(false);
