@@ -98,7 +98,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   });
 
   isFlag = false;
-  tabIndex = 0;
+  tabIndex = 1;
   userID = '';
   isVendor = false;
   isProvider = false;
