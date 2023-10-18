@@ -202,7 +202,6 @@ export class OrderProgressComponent implements OnInit {
       limit: 25,
         sortBy: 'createdAt:desc'
     }
-    let estimatedDeliveryTime={};
 
     if(this.selectedProgress.length > 0) {
       findBy["orderStatusDelivery"] = this.selectedProgress
@@ -248,15 +247,26 @@ export class OrderProgressComponent implements OnInit {
     });
     await this.getOrdersIds();   
     await this.getOrdersTotal();
-    await this.orderService.orderQuantityOfFiltersStatusDelivery({ findBy: {merchant: this.merchantId} }).then((res) => {
+    await this.orderService.orderQuantityOfFiltersStatusDelivery({ findBy: {merchant: this.merchantId}, options: options }).then((res) => {
       this.deliveryStatus = res
     })
    
     if(!this.deliveryZones) {
+      let deliverOptions = {
+        sortBy: "createdAt:desc", 
+        limit: -1
+      }
+      if(this.startDate && this.endDate){
+        deliverOptions["range"] = {
+          from: this.startDate,
+          to: this.endDate
+        }
+      }
+
       await this.deliveryZonesService.deliveryZones(
         {
           findBy:{merchant: this.merchantId},
-          options: {sortBy: "createdAt:desc", limit: -1}
+          options: deliverOptions
         }).then((res) => {
         this.deliveryZones = res.map((deliveryZone) => {
           let zone = {
@@ -274,7 +284,8 @@ export class OrderProgressComponent implements OnInit {
           merchant: this.merchantId,
           orderStatusDelivery: this.selectedProgress,
           deliveryZone: deliveryZonesIds,
-        } 
+        }, 
+        options: options
       }).then((res) => {
       this.deliveryZoneQuantities = res
     })
@@ -284,7 +295,8 @@ export class OrderProgressComponent implements OnInit {
       {
         merchant: this.merchantId,
         orderStatusDelivery: this.selectedProgress,
-      } 
+      },
+      options:options 
     }).then((res) => {
       this.pickUp = {
         amount: res.pickup,
@@ -476,7 +488,14 @@ export class OrderProgressComponent implements OnInit {
   }
 
   async getDeliveryTime(){
-    const itemsQuantityEstimatedDeliveryTime = await this.itemsService.itemsQuantityOfFiltersByEstimatedDeliveryTime({});
+    let options = {}
+    if(this.startDate && this.endDate){
+      options["range"] = {
+        from: this.startDate,
+        to: this.endDate
+      }
+    }
+    const itemsQuantityEstimatedDeliveryTime = await this.itemsService.itemsQuantityOfFiltersByEstimatedDeliveryTime({options});
     let totalDeliveryTime:number = 0;
     itemsQuantityEstimatedDeliveryTime.forEach((data, i)=>{
       totalDeliveryTime += data.count;
@@ -499,6 +518,7 @@ export class OrderProgressComponent implements OnInit {
     if(selectedItems.length > 0){
       this.removeDeliveryTimeSelection();
       this.hourRange = {}
+      await this.generate()
     }else{
       this.removeDeliveryTimeSelection();
       this.deliveryTime.forEach((e) => {
