@@ -3,11 +3,19 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CountryISO, PhoneNumberFormat } from 'ngx-intl-tel-input';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
-import { Merchant } from 'src/app/core/models/merchant';
+import { Merchant, Roles } from 'src/app/core/models/merchant';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { environment } from 'src/environments/environment';
+import { OptionsDialogComponent } from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { PaginationInput } from 'src/app/core/models/saleflow';
+
+interface Option {
+  value: string;
+  viewValue: string;
+};
 
 @Component({
   selector: 'app-merchants-entry',
@@ -28,32 +36,67 @@ export class MerchantsEntryComponent implements OnInit {
     CountryISO.UnitedStates,
   ];
 
+  countries: any[] = [];
+
+  cities: any[] = [];
+
   PhoneNumberFormat = PhoneNumberFormat;
 
   URI: string = environment.uri;
+
+  roles: Roles[] = [];
+  role: Roles;
 
   constructor(
     private formBuilder: FormBuilder,
     private merchantsService: MerchantsService,
     private authservice: AuthService,
     private matSnackBar: MatSnackBar,
-    private clipboard: Clipboard
+    private clipboard: Clipboard,
+    private dialog: MatDialog,
   ) { }
 
   async ngOnInit() {
     this.merchantForm = this.formBuilder.group({
-      name: ['', Validators.required],
-      slug: ['', Validators.required],
-      phone: [''],
-      email: ['', Validators.required, Validators.email],
-      password: ['', Validators.required]
+      name: [null, Validators.required],
+      slug: [null],
+      phone: [null],
+      email: [null, Validators.compose([Validators.required, Validators.email])],
+      password: ['123', Validators.required],
+      userName: [null, Validators.required],
+      role: [null],
+      country: [null],
+      city: [null],
+      address: [null],
+      bio: [null],
     });
+
+    this.getDataCountries();
 
     await this.getMerchantDefault();
   }
 
+  async getDataCountries() {
+    let result = await this.merchantsService.getDataCountries();
+    if (result) this.countries = result;
+  }
+
+  async getCities(cityID: string) {
+    const paginationInput: PaginationInput = {
+      findBy: {
+        table: "city",
+        reference: cityID
+      }
+    }
+    let result = await this.merchantsService.getDataPagination(paginationInput);
+    if (result) this.cities = result?.results;
+  }
+
   async getMerchantDefault() {
     try {
+      this.merchantsService.rolesPublic().then((res) => {
+        this.roles = res;
+      })
       const result = await this.merchantsService.merchantDefault();
       if (result) this.merchant = result;
     } catch (error) {
@@ -73,6 +116,13 @@ export class MerchantsEntryComponent implements OnInit {
     const password = this.merchantForm.value.password;
     const slug = this.merchantForm.value.slug;
 
+    const userName = this.merchantForm.value.userName;
+    const role = this.merchantForm.value.role;
+    const country = this.merchantForm.value.country;
+    const city = this.merchantForm.value.city;
+    const address = this.merchantForm.value.address;
+    const bio = this.merchantForm.value.bio;
+
     lockUI();
 
     if (await this.checkIfUserExists() || await this.checkIfMerchantExists()) {
@@ -84,8 +134,16 @@ export class MerchantsEntryComponent implements OnInit {
       email: email,
       phone: phone?.e164Number?.split('+')[1] ? phone?.e164Number?.split('+')[1] : null,
       password: password,
-      name: storeName
-    }
+      name: userName,
+    };
+
+    const deliveryLocations = country && city ? {
+      country,
+      cityReference: city,
+      type: 'city-reference',
+    } : null;
+    
+    const arrayRole = role ? [role] : null;
 
     if (!phone?.e164Number?.split('+')[1]) delete userInput.phone;
 
@@ -94,10 +152,18 @@ export class MerchantsEntryComponent implements OnInit {
         this.merchant._id,
         {
           name: storeName,
-          slug
+          ...(slug && {
+            slug,
+          }),
+          ...(bio && {
+            bio,
+          }),
         },
-        userInput
-      )
+        userInput,
+        address,
+        deliveryLocations,
+        arrayRole,
+      );
 
       if (result) {
         this.merchantCreated = true;
@@ -114,12 +180,15 @@ export class MerchantsEntryComponent implements OnInit {
 
   private async checkIfUserExists(): Promise<boolean> {
     try {
-      const phone = await this.authservice.checkUser(this.merchantForm?.value?.phone?.e164Number?.split('+')[1]);
-      if (phone) {
-        this.matSnackBar.open('Un usuario con ese teléfono ya existe', '', {
-          duration: 2000,
-          panelClass: 'snack-toast-error'
-        });
+      let phone;
+      if(this.merchantForm?.value?.phone) {
+        phone = await this.authservice.checkUser(this.merchantForm?.value?.phone?.e164Number?.split('+')[1]);
+        if (phone) {
+          this.matSnackBar.open('Un usuario con ese teléfono ya existe', '', {
+            duration: 2000,
+            panelClass: 'snack-toast-error'
+          });
+        }
       }
       const email = await this.authservice.checkUser(this.merchantForm.value.email);
       if (email) {
@@ -128,7 +197,7 @@ export class MerchantsEntryComponent implements OnInit {
           panelClass: 'snack-toast-error'
         });
       }
-      if (phone && email) return true;
+      if (phone || email) return true;
       else return false;
     } catch (error) {
       console.log(error);
@@ -138,8 +207,10 @@ export class MerchantsEntryComponent implements OnInit {
 
   private async checkIfMerchantExists(): Promise<boolean> {
     try {
-      const name = await this.merchantsService.merchantByName(this.merchantForm.value.name);
-      const slug = await this.merchantsService.merchantBySlug(this.merchantForm.value.slug);
+      let name;
+      if(this.merchantForm?.value?.name) name = await this.merchantsService.merchantByName(this.merchantForm.value.name);
+      let slug;
+      if(this.merchantForm?.value?.slug) slug = await this.merchantsService.merchantBySlug(this.merchantForm.value.slug);
 
       if (name || slug) {
         if (name) 
@@ -177,6 +248,44 @@ export class MerchantsEntryComponent implements OnInit {
         duration: 2000,
       }
     );
+  }
+
+  openExhibitDialog() {
+    this.dialog.open(OptionsDialogComponent, {
+      data: {
+        title: '¿A quién le vendes?',
+        options: [
+          {
+            value: 'Consumidor final',
+            callback: () => {
+              this.role = this.roles.find((role) => role.code === 'STORE');
+              this.merchantForm.get('role').setValue(this.role._id);
+            }
+          },
+          {
+            value: 'Floristerías',
+            callback: () => {
+              this.role = this.roles.find((role) => role.code === 'PROVIDER');
+              this.merchantForm.get('role').setValue(this.role._id);
+            }
+          },
+          {
+            value: 'Wholesalers',
+            callback: () => {
+              this.role = this.roles.find((role) => role.code === 'SUPPLIER');
+              this.merchantForm.get('role').setValue(this.role._id);
+            }
+          },
+          {
+            value: 'Fincas',
+            callback: () => {
+              this.role = this.roles.find((role) => role.code === 'PRODUCTOR');
+              this.merchantForm.get('role').setValue(this.role._id);
+            }
+          },
+        ]
+      }
+    })
   }
 
   clearForm() {

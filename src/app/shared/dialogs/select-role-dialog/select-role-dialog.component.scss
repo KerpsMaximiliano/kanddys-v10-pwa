@@ -1,42 +1,68 @@
 ::ng-deep .cdk-global-overlay-wrapper {
-    background-color: rgba($color: white, $alpha: 0.7);
+  background-color: rgba($color: white, $alpha: 0.7);
 }
-// ::ng-deep .cdk-overlay-pane {
-//     max-width: 500vw !important;
-// }
+
+::ng-deep .cdk-overlay-pane {
+  width: 100%;
+  max-width: 100% !important;
+}
+
 ::ng-deep .mat-dialog-container {
-    padding: 0px;
-    background-color: #181D17;
-    max-width: 480px !important;
-    margin: auto;
+  padding: 0px;
+  background-color: #181D17;
+  max-width: 500px !important;
+  margin: auto;
 }
+
+.left-border {
+  align-self: stretch;
+  width: 2px;
+  background-color: #87cd9b;
+  margin: 3px 0;
+  flex-shrink: 0;
+}
+
 .container {
+    width: 100%;
     padding: 39px 42px 39px 26px;
+    background-color: #181d17;
     .title {
         color: #FFF;
         font-family: InterBold;
         font-size: 19px;
-        font-style: normal;
-        font-weight: 600;
-        line-height: normal;
         margin-bottom: 7px;
         max-width: 310px;
     }
+    .option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 15px;
+      mat-icon {
+        color: #7b7b7b;
+        margin-left: 15px;
+      }
+    }
     .role {
-        color: #FFF;
-        font-family: InterRegular;
-        font-size: 16px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: normal;
-        margin-top: 21px;
-        max-width: 322px;
-        padding-left: 12px;
-        border-left: 3px solid #87CD9B;
+      color: #FFF;
+      font-family: InterRegular;
+      font-size: 16px;
+      padding-left: 12px;
+      border-left: 3px solid #87CD9B;
+      margin: 0;
+    }
+    .role.active {
+      border: 0;
+      color: #181D17;
+      font-family: InterBold;
+      font-size: 16px; 
+      padding: 3px 13px;
+      border-radius: 29px;
+      background: #6FCF97; 
     }
     .flex {
-        display: flex;
-        margin-top: 25px;
+      display: flex;
+      margin-top: 25px;
     }
     .space-between {
         justify-content: space-between;

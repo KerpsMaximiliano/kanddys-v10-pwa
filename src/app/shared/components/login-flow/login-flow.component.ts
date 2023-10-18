@@ -31,7 +31,8 @@ export class LoginFlowComponent implements OnInit {
   @Input() jsondata: string = JSON.stringify({
     openNavigation: true,
   });
-
+  @Input() loginEmail: string | null = null;
+  @Input() magicLink: boolean = false;
   openNavigation: boolean = false;
 
   @Output() dialogIsOpen: EventEmitter<boolean> = new EventEmitter();
@@ -53,11 +54,46 @@ export class LoginFlowComponent implements OnInit {
   emailDialogRef: MatDialogRef<LoginFormComponent, any> = null;
 
   ngOnInit(): void {
-    this.share()
+    if(this.loginEmail) {
+      if(this.magicLink) {
+        this.authService.generateMagicLink(
+          this.loginEmail,
+          this.redirectionRoute,
+          this.redirectionRouteId,
+          this.entity,
+          {
+            jsondata: this.jsondata,
+          },
+          []
+        );
+
+        this.dialogIsOpen.emit(false);
+
+        this.dialogService.open(
+          GeneralFormSubmissionDialogComponent,
+          {
+            type: 'centralized-fullscreen',
+            props: {
+              icon: 'check-circle.svg',
+              showCloseButton: false,
+              message:
+                'Se ha enviado un link mágico a tu correo electrónico',
+            },
+            customClass: 'app-dialog',
+            flags: ['no-header'],
+          }
+        );
+        this.magicLink = false;
+      } else {
+        let loginEmail = this.loginEmail;
+        this.addPassword(loginEmail)
+      }
+    } else {
+      this.share()
+    }
   }
 
   share() {
-    if (!this.headerService.user) {
       let dialogRef = this.bottomSheet.open(OptionsMenuComponent, {
         data: {
           title: 'Correo electrónico:',
@@ -87,7 +123,6 @@ export class LoginFlowComponent implements OnInit {
         this.dialogIsOpen.emit(false);
         dialogRef.dismiss()
       })
-    }
   }
 
   async merchantCheck(userData) {
@@ -256,6 +291,7 @@ export class LoginFlowComponent implements OnInit {
     this.openTemplateCommerce(credentials)
   }
 
+  //method currently not used
   async openTemplateUser(credentials: string) {
     let isUser = true;
     let formTemplateUser: FormData = {
@@ -319,6 +355,12 @@ export class LoginFlowComponent implements OnInit {
               },
               []
             );
+            let logins = JSON.parse(window.localStorage.getItem('logins')) || [];
+            logins.push({
+              name: result.value.name,
+              email: credentials,
+            });
+            window.localStorage.setItem('logins', JSON.stringify(logins));
 
             this.dialogService.open(
               GeneralFormSubmissionDialogComponent,
@@ -348,7 +390,7 @@ export class LoginFlowComponent implements OnInit {
           name: 'businessName',
           type: 'text',
           validators: [Validators.pattern(/[\S]/), Validators.required],
-          bottomButton: {
+          /*bottomButton: {
             text: 'No tengo un comercio',
             callback: () => {
               isCommerce = false;
@@ -360,7 +402,7 @@ export class LoginFlowComponent implements OnInit {
               top: '0px',
               left: '283px'
             }
-          }
+          }*/
         },
         {
           label: 'Whatsapp donde tus compradores te contactan:',
@@ -410,6 +452,13 @@ export class LoginFlowComponent implements OnInit {
                   jsondata: this.jsondata,
                 },
                 [])
+
+              let logins = JSON.parse(window.localStorage.getItem('logins')) || [];
+              logins.push({
+                name: businessName,
+                email: credentials,
+              });
+              window.localStorage.setItem('logins', JSON.stringify(logins));
 
               this.dialogService.open(
                 GeneralFormSubmissionDialogComponent,
@@ -481,6 +530,7 @@ export class LoginFlowComponent implements OnInit {
               );
 
               unlockUI();
+              
 
               this.dialogService.open(
                 GeneralFormSubmissionDialogComponent,
@@ -559,7 +609,12 @@ export class LoginFlowComponent implements OnInit {
   }
 
   private async addPassword(emailOrPhone: string) {
-    this.emailDialogRef.close();
+    if(this.emailDialogRef) {
+      console.log('no mail')
+      this.emailDialogRef.close()
+    };
+    this.loginEmail = null;
+    console.log(emailOrPhone, 'notnull')
     let fieldsToCreate: FormData = {
       title: {
         text: 'Clave de Acceso:',
@@ -578,7 +633,7 @@ export class LoginFlowComponent implements OnInit {
             text: 'Prefiero recibir el correo con el enlace de acceso',
             callback: () => {
               //Cerrar 2do dialog
-
+              this.loginEmail = null;
               return switchToMagicLinkDialog();
             },
           },
@@ -592,6 +647,7 @@ export class LoginFlowComponent implements OnInit {
     });
 
     dialog2Ref.afterClosed().subscribe(async (result: FormGroup) => {
+      this.loginEmail = null;
       try {
         if (result?.controls?.password.valid) {
           let password = result?.value['password'];
@@ -608,7 +664,18 @@ export class LoginFlowComponent implements OnInit {
           if (!session) throw new Error('invalid credentials');
 
           this.openNavigation = true;
-
+          let merchantName;
+          await this.merchantsService.merchantDefault().then((res) => {
+            merchantName = res.name;
+          })
+          let logins : any[] = JSON.parse(window.localStorage.getItem('logins')) || [];
+          if(!logins.find((login) => login.email === emailOrPhone)) {
+            logins.push({
+              name: merchantName ? merchantName: this.headerService.user.name,
+              email: emailOrPhone,
+            });
+            window.localStorage.setItem('logins',JSON.stringify(logins));
+          }
           unlockUI();
           this.dialogIsOpen.emit(false);
         } else if (result?.controls?.password.valid === false) {
@@ -621,6 +688,7 @@ export class LoginFlowComponent implements OnInit {
         unlockUI();
         console.error(error);
         this.headerService.showErrorToast();
+
       }
     });
 
