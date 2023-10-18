@@ -116,50 +116,74 @@
       </div>
       <div class="tabs" *ngIf="tabIndex === 1">
         <div (click)="headerService.user ? goToDashboard() : uploader.click()" class="card">
-          <img alt="img">
+          <img 
+            alt="img"
+            src="{{assetsFolder}}/landing-image-1.png"
+          >
           <h2>Vende fácilmente a través de enlaces</h2>
           <mat-icon>chevron_right</mat-icon>
         </div>
         <hr />
         <div (click)="headerService.user ? goToAIMemoriesManagement() : goToLaiaTraining()" class="card">
-          <img alt="img">
+          <img 
+            alt="img"
+            src="{{assetsFolder}}/landing-image-2.png"
+          >
           <h2>Brinda respuestas precisas al instante</h2>
           <mat-icon>chevron_right</mat-icon>
         </div>
         <hr />
         <div class="card">
-          <img alt="img">
+          <img 
+            alt="img"
+            src="{{assetsFolder}}/landing-image-3.png"
+          >
           <h2>Selecciona lo que necesitas comprar</h2>
           <mat-icon>chevron_right</mat-icon>
         </div>
         <hr />
         <div (click)="headerService.user ? goToItemsOffers() : ''" class="card">
-          <img alt="img">
+          <img 
+            alt="img"
+            src="{{assetsFolder}}/landing-image-4.png"
+          >
           <h2>Vende con ofertas de 24 horas</h2>
           <mat-icon>chevron_right</mat-icon>
         </div>
       </div>
       <div class="tabs" *ngIf="tabIndex === 2">
         <div class="card">
-          <img alt="img">
+          <img 
+            alt="img"
+            src="{{assetsFolder}}/landing-image-5.png"
+          >
           <h2>Premia a quienes refirieren a compradores</h2>
           <mat-icon>chevron_right</mat-icon>
         </div>
         <hr />
         <div class="card">
-          <img alt="img">
+          <img 
+            alt="img"
+            src="{{assetsFolder}}/landing-image-6.png"
+          >
           <h2>Premia porque si!</h2>
           <mat-icon>chevron_right</mat-icon>
         </div>
         <hr />
         <div class="card">
-          <img alt="img">
+          <img 
+            alt="img"
+            src="{{assetsFolder}}/landing-image-7.png"
+          >
           <h2>Premia a quienes te @mencionan</h2>
           <mat-icon>chevron_right</mat-icon>
         </div>
         <hr />
         <div class="card">
-          <img alt="img">
+          <img 
+            alt="img"
+            src="{{assetsFolder}}/landing-image-8.png"
+          >
           <h2>Premia a tus compradores</h2>
           <mat-icon>chevron_right</mat-icon>
         </div>

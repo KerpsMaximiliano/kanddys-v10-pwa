@@ -120,10 +120,8 @@
     width: 100%;
     cursor: pointer;
     img {
-      background: white;
-      width: 70px;
-      height: 70px;
       flex-shrink: 0;
+      height: 70px;
     }
     h2 {
       color: var(--Fondo-de-Pantallas, #F6F6F6);
