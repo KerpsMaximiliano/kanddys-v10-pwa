@@ -228,7 +228,7 @@ export class AuthService {
       }
       //this.app.events.emit({ type: 'auth', data: this.session });
       if (result.success) {
-        this.router.navigateByUrl('/home');
+        this.router.navigateByUrl('/');
         // this.app.nav = [];
         // this.app.header = {};
         window.location.reload();
@@ -460,11 +460,16 @@ export class AuthService {
   }
 
   async getMerchantDefault() {
-    const merchantDefault: Merchant = await this.merchantService.merchantDefault();
-    return merchantDefault._id;
+    try {
+      const merchantDefault: Merchant = await this.merchantService.merchantDefault();
+      return merchantDefault._id;
+    } catch (error) {
+      console.log(error);
+
+    }
   }
 
-  async getMerchant(userId: string)  {
+  async getMerchant(userId: string) {
     try {
       const result: Merchant[] = await this.merchantService.merchants({
         findBy: {
@@ -480,7 +485,7 @@ export class AuthService {
       };
       merchant = result.find(merchant => merchant.default);
       if (!merchant) result[0];
-      return merchant; 
+      return merchant;
     } catch (error) {
       console.log(error);
     }

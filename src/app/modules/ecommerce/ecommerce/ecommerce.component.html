@@ -52,10 +52,13 @@
     activePath !== 'cart' &&
     activePath !== 'receiver-form' &&
     activePath !== 'new-symbol' &&
-    activePath !== 'giftcard-details' && 
+    activePath !== 'giftcard-details' &&
     activePath !== 'terms-of-use/:viewsMerchantId' &&
     activePath !== 'post-slide-editor' &&
     activePath !== 'payments/:orderId' &&
-    activePath !== 'webform/:itemId'
+    activePath !== 'webform/:itemId' &&
+    activePath !== 'chat-merchant' &&
+    activePath !== 'chat-merchant/:chatId' &&
+    headerService.user?._id !== headerService.saleflow?.merchant?.owner._id
   "
 ></app-wizard-chatbot>

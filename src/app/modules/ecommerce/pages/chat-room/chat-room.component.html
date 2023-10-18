@@ -1,33 +1,113 @@
 <div class="container">
-  <div class="messages">
-    <ng-container *ngFor="let message of chat?.messages">
-      <div
-        class="message-sent"
-        *ngIf="message.sender === headerService.user._id"
-      >
-        {{ message.message }}
-      </div>
-      <div
-        class="message-received"
-        *ngIf="message.sender !== headerService.user._id"
-      >
-        {{ message.message }}
-      </div>
-    </ng-container>
-  </div>
+  <header>
+    <div class="top">
+      <ng-container *ngIf="isTheUserTheMerchant">
+        <div class="header-title">
+          La<span class="highlight">ia</span>Chat con
+          <span class="highlight">{{
+            chatUsers["RECEIVER"]
+              ? chatUsers["RECEIVER"].name ||
+                chatUsers["RECEIVER"].email ||
+                chatUsers["RECEIVER"].phone
+              : "Cargando..."
+          }}</span>
+        </div>
+        <div class="close-button" (click)="goBack()">X</div>
+      </ng-container>
+      <ng-container *ngIf="!isTheUserTheMerchant">
+        <div class="header-title">
+          La<span class="highlight">ia</span>Chat con
+          <span class="highlight">
+            {{
+              headerService.saleflow.merchant.name ||
+                headerService.saleflow.merchant.owner.email ||
+                headerService.saleflow.merchant.owner.phone
+            }}
+          </span>
+        </div>
 
-  <form [formGroup]="chatFormGroup">
-    <textarea
-      class="user-input-box"
-      placeholder="Escribe algo..."
-      formControlName="input"
-    ></textarea>
+        <div class="close-button" (click)="loggedAsAMerchant ? goBack() : null">
+          X
+        </div>
+      </ng-container>
+    </div>
 
-    <button class="submit-button" [disabled]="!chat" (click)="sendQuestion()">
+    <div class="typing" *ngIf="typing && chatUsers['RECEIVER']">
+      Escribiendo...
+    </div>
+
+    <div class="error" *ngIf="!online">
+      Sin conexión
+      <mat-icon>signal_wifi_off</mat-icon>
+    </div>
+
+    <div class="error" *ngIf="!socketConnected">
+      Error de conexión con el servidor
+      <mat-icon>error_outline</mat-icon>
+    </div>
+
+    <div class="bottom" *ngIf="isTheUserTheMerchant">
+      <span>
+        {{
+          usersWithAssistantActivated[chatUsers["SENDER"]?._id]
+            ? "Dalia está contestando sin tu permiso"
+            : "Dalia te preguntará antes de contestar"
+        }}</span
+      >
       <img
-        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fsend_black.svg"
-        alt="send"
+        (click)="changeAssistantResponseMode()"
+        [src]="
+          assetsFolder +
+          (usersWithAssistantActivated[chatUsers['SENDER']?._id]
+            ? '/toggle-on.svg'
+            : '/toggle-off.svg')
+        "
+      />
+    </div>
+  </header>
+
+  <main>
+    <div
+      class="messages"
+      [ngClass]="{
+        isAdmin: isTheUserTheMerchant
+      }"
+      id="messages"
+    >
+      <ng-container *ngFor="let message of chat?.messages">
+        <div
+          class="question-box-wrapper"
+          *ngIf="message.sender === headerService.user._id"
+        >
+          <div class="content">
+            <div class="question-box" [innerHTML]="message.message"></div>
+          </div>
+        </div>
+
+        <div
+          class="response-box-wrapper"
+          *ngIf="message.sender !== headerService.user._id"
+        >
+          <div class="content">
+            <div class="response-box" [innerHTML]="message.message"></div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </main>
+
+  <section class="input-area" [formGroup]="chatFormGroup">
+    <textarea formControlName="input" placeholder="Escríbe"></textarea>
+
+    <button>
+      <img
+        [ngClass]="{
+          notAllowed: !chatFormGroup.get('input').value
+        }"
+        [src]="assetsFolder + '/sumit-icon-arrecho.png'"
+        alt="edit question"
+        (click)="chatFormGroup.get('input').value ? sendMessage() : null"
       />
     </button>
-  </form>
+  </section>
 </div>

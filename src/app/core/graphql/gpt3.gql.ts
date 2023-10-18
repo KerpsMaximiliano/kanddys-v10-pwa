@@ -17,15 +17,13 @@ export const generateResponseForTemplate = gql`
 export const requestResponseFromKnowledgeBase = gql`
   query requestResponseFromKnowledgeBase(
     $prompt: String!
-    $saleflowId: ObjectID!
-    $conversationId: ObjectID
+    $userId: ObjectID!
     $chatRoomId: String
     $socketId: String
   ) {
     requestResponseFromKnowledgeBase(
       prompt: $prompt
-      saleflowId: $saleflowId
-      conversationId: $conversationId
+      userId: $userId
       chatRoomId: $chatRoomId
       socketId: $socketId
     )
@@ -42,6 +40,25 @@ export const getMerchantEmbeddingsMetadata = gql`
   query getMerchantEmbeddingsMetadata {
     getMerchantEmbeddingsMetadata {
       vectorsCount
+      automaticModeActivated
+      merchant {
+        _id
+      }
+    }
+  }
+`;
+
+export const doUsersHaveAssistantActivated = gql`
+  query doUsersHaveAssistantActivated($users: [String!]!) {
+    doUsersHaveAssistantActivated(users: $users)
+  }
+`;
+
+export const changeAssistantResponseMode = gql`
+  mutation changeAssistantResponseMode {
+    changeAssistantResponseMode {
+      vectorsCount
+      automaticModeActivated
       merchant {
         _id
       }

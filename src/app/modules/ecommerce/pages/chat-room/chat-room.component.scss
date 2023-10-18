@@ -4,8 +4,6 @@
   height: 100%;
 
   .messages {
-    flex: 1;
-
     .message-sent {
       background-color: lightskyblue;
       text-align: left;
@@ -15,5 +13,238 @@
       background-color: pink;
       text-align: right;
     }
+  }
+}
+
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  max-width: 500px;
+  z-index: 999;
+  background-color: #181d17;
+  margin: auto;
+
+  .top {
+    padding-bottom: 13px;
+    padding-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    padding-left: 20px;
+    padding-right: 23px;
+  }
+
+  .typing {
+    font-family: InterRegular;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+    padding: 10px 20px;
+    padding-top: 0px;
+    color: white;
+    margin-top: -8px;
+  }
+
+  .error {
+    font-family: InterRegular;
+    font-size: 17px;
+    font-style: normal;
+    line-height: normal;
+    padding: 10px 20px;
+    color: white;
+    background-color: darkred;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    mat-icon {
+      margin-left: 10px;
+    }
+  }
+
+  .bottom {
+    border-radius: 14px;
+    background: var(--Plomazo, #403d3d);
+    padding: 15px 19.14px 20px 21px;
+    margin-left: 18px;
+    margin-right: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    span {
+      color: var(--Blanco, #fff);
+      font-family: InterLight;
+      font-size: 17px;
+      font-style: normal;
+      font-weight: 300;
+      line-height: normal;
+    }
+
+    img {
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  .header-title {
+    color: var(--Fondo-de-Pantallas, #f6f6f6);
+    font-family: InterLight;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .highlight {
+    color: var(--El-verdecito, #87cd9b);
+    font-family: InterLight;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  }
+
+  .close-button {
+    cursor: pointer;
+    color: #fff;
+    font-family: InterBold;
+    font-size: 19.005px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+  }
+}
+
+.input-area {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  max-width: 500px;
+  background-color: #403d3d;
+  padding: 16px 18px;
+  padding-right: 21px;
+  display: flex;
+
+  textarea {
+    width: 344px;
+    height: 63px;
+    flex-shrink: 0;
+    border-radius: 300px;
+    border: 1px solid #7b7b7b;
+    background: #d9d9d9;
+    padding: 13px 26px;
+    font-family: InterRegular;
+    font-size: 16.107px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    width: 89.37%;
+    resize: none;
+  }
+
+  button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    border: none;
+    margin-left: 6px;
+
+    .notAllowed {
+      filter: brightness(0.7);
+
+      &:hover {
+        cursor: not-allowed;
+      }
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+
+main {
+  background-color: #181d17;
+  min-height: 100%;
+  padding: 0px 24px;
+  padding-bottom: 95px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.messages {
+  max-height: calc(100% - 51px);
+  overflow-y: scroll;
+
+  &.isAdmin {
+    max-height: calc(100% - 106px);
+  }
+
+  .message-space {
+    width: 100%;
+    height: 7px;
+  }
+}
+
+.question-box-wrapper {
+  margin-bottom: 7px;
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+
+  .content {
+    height: fit-content;
+    display: flex;
+    color: var(--Fondo-de-Pantallas, #f6f6f6);
+    font-family: InterRegular;
+    font-size: 16.107px;
+    font-style: normal;
+    line-height: normal;
+  }
+
+  .question-box {
+    margin-right: 15px;
+    opacity: 0.8;
+    background: #2874ad;
+    width: 100%;
+    padding: 8px 19px;
+    border-radius: 20px;
+  }
+}
+
+.response-box-wrapper {
+  margin-bottom: 7px;
+
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+
+  .content {
+    display: flex;
+    height: fit-content;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .response-box {
+    border-radius: 20px;
+    opacity: 0.8;
+    background-color: #403d3d;
+    width: fit-content;
+    flex-shrink: 0;
+    padding: 8px 19px;
+    color: var(--Fondo-de-Pantallas, #f6f6f6);
+    font-family: InterRegular;
   }
 }

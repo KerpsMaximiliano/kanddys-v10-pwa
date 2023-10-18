@@ -529,18 +529,18 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
             {
               title: 'Edita la carta de los artículos',
               callback: () => {
-                this.router.navigate(['/admin/mode-configuration-cards']);
+                this.router.navigate(['/admin/view-configuration-cards']);
               },
             },
-            {
-              title:
-                'Edita cuentas sociales y WhatsApp de contacto al footer de la tienda',
-              callback: () => {
-                this.router.navigate([
-                  `/ecommerce/link-register/${this.headerService.user._id}`,
-                ]);
-              },
-            },
+            // {
+            //   title:
+            //     'Edita cuentas sociales y WhatsApp de contacto al footer de la tienda',
+            //   callback: () => {
+            //     this.router.navigate([
+            //       `/ecommerce/link-register/${this.headerService.user._id}`,
+            //     ]);
+            //   },
+            // },
           ],
           secondaryOptions: [
             {
@@ -552,7 +552,7 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
                   ],
                   { 
                     queryParams: { 
-                      adminmode: true,
+                      adminView: true,
                       mode: this.mode === 'SUPPLIER' ? 'supplier' : 'standard'
                     } 
                   }
@@ -643,7 +643,7 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
       `/ecommerce/${this.merchantsService.merchantData.slug}/store`,
     ], {
       queryParams: {
-        adminmode: true,
+        adminView: true,
         mode: this.mode === 'SUPPLIER' ? 'supplier' : 'standard'
       }
     });
@@ -1463,5 +1463,9 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
 
   goToOrderProgress() {
     return this.router.navigate(['/admin/order-progress']);
+  }
+
+  goToLanding() {
+    return this.router.navigate(['/ecommerce/club-landing']);
   }
 }

@@ -9,6 +9,10 @@ export const environment = {
     url: 'https://api.kanddys.com',
     key: 'a6c6d9880190ad2c4d477b89b44107b82b3e4902f293fe710d9a904de283f8f7',
   },
+  chatAPI: {
+    url: 'https://chat.flores.club',
+    key: '2496a588184b9dc9e4f436b48cad0c36274e625d5b490739d7285a07a578e895'
+  },
   APIREST: 'https://appointments.kanddys.com/v1',
   socials: {
     googleId:

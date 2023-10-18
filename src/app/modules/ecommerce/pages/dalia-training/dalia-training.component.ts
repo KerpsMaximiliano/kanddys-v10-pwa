@@ -40,7 +40,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     response: string;
   } = null;
   editingQuestion: boolean = false;
-  laiaPlaceholder = `Ejemplo:\n\nTrabajamos de 8 a 9 de la noche, de lunes a viernes, y de 8 a 12pm los sábados, los domingos estamos cerrados.`
+  laiaPlaceholder = `Ejemplo:\n\nTrabajamos de 8 a 9 de la noche, de lunes a viernes, y de 8 a 12pm los sábados, los domingos estamos cerrados.`;
   timeoutDeleteKey: any = null;
   timeoutCutKey: any = null;
   showLogin: boolean = false;
@@ -156,6 +156,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
               .valueChanges.subscribe((change) => {
                 this.loginData.jsondata = JSON.stringify({
                   memoryToSave: this.form.get('memory').value,
+                  memoryName: this.memoryName,
                 });
               });
 
@@ -164,6 +165,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
 
               if (parsedData.memoryToSave) {
                 this.form.get('memory').setValue(parsedData.memoryToSave);
+                this.memoryName = parsedData.memoryName;
                 await this.saveMemoryInKnowledgeBase();
 
                 const urlWithoutQueryParams = this.router.url.split('?')[0];
@@ -298,19 +300,25 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
 
   async editOrApplyQuestionChange() {
     if (this.editingQuestion) {
+      const inputDivContent = document.querySelector(
+        '#question-box-input'
+      ).textContent;
+      this.questionForm.get('question').setValue(inputDivContent)
       await this.editQA();
-    } else {
-      this.questionForm.get('question').setValue(this.generatedQA.question);
     }
 
     this.editingQuestion = !this.editingQuestion;
 
     if (this.editingQuestion) {
       setTimeout(() => {
+        this.questionForm.get('question').setValue(this.generatedQA.question);
+        const inputDiv = document.querySelector('#question-box-input');
+        inputDiv.textContent = this.questionForm.get('question').value;
+
         (
           document.querySelector('#question-box-input') as HTMLInputElement
         ).focus();
-      }, 400);
+      }, 200);
     }
   }
 
@@ -417,10 +425,30 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
 
     this.memoryNameDialogSubscription = dialogRef
       .afterClosed()
-      .subscribe((result: FormGroup) => {
+      .subscribe(async (result: FormGroup) => {
         if (result?.value['memoryName']) {
           this.memoryName = result?.value['memoryName'];
-          console.log('Nombre de la memoria', result?.value['memoryName']);
+
+          this.loginData.jsondata = JSON.stringify({
+            memoryToSave: this.form.get('memory').value,
+            memoryName: this.memoryName,
+          });
+
+          if (
+            this.vectorId &&
+            this.form.get('memory').value &&
+            this.memoryName
+          ) {
+            lockUI();
+
+            await this.gptService.updateVectorInKnowledgeBase(
+              this.vectorId,
+              this.form.get('memory').value,
+              this.memoryName
+            );
+
+            unlockUI();
+          }
         }
       });
   };
