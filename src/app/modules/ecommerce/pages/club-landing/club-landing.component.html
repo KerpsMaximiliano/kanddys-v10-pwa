@@ -114,7 +114,7 @@
           ESTRATEGIAS DE GAMIFICACION
         </p>
       </div>
-      <div *ngIf="showGanas === false" class="tabs" *ngIf="tabIndex === 1">
+      <div class="tabs" *ngIf="tabIndex === 1 && showGanas === false">
         <div (click)="headerService.user ? goToDashboard() : uploader.click()" class="card">
           <img 
             alt="img"
@@ -151,7 +151,7 @@
           <mat-icon>chevron_right</mat-icon>
         </div>
       </div>
-      <div *ngIf="showGanas === false" class="tabs" *ngIf="tabIndex === 2">
+      <div class="tabs" *ngIf="tabIndex === 2 && showGanas === false">
         <div class="card">
           <img 
             alt="img"
