@@ -55,6 +55,7 @@ import {
   orderPaginate,
   updateOrderExternal,
   orderIncomeCompletedByUser,
+  orderQuantityOfFiltersOrderStatus,
 } from '../graphql/order.gql';
 import {
   ItemOrder,
@@ -738,5 +739,14 @@ export class OrderService {
       context:{ useMultipart: true }
     });
     return result?.updateOrderExternal;
+  }
+
+  async orderQuantityOfFiltersOrderStatus(isMerchant: boolean, pagination: PaginationInput) {
+    const result = await this.graphql.query({
+      query: orderQuantityOfFiltersOrderStatus,
+      variables: { isMerchant, pagination },
+      fetchPolicy: 'no-cache',
+    });
+    return result?.orderQuantityOfFiltersOrderStatus;
   }
 }

@@ -1,0 +1,69 @@
+<div class="container">
+  <header>
+    <h2>LaiaChat para miembros de www.flores.club</h2>
+    <div class="right">
+      <button class="close" (click)="goBack()">X</button>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <div class="info-container">
+        <img class="image" src="../../../../../assets/images/laia.png" alt="" />
+        <p class="img-title">Laia</p>
+        <p class="info-container-title">Asiste Virtual con Inteligencia Artificial</p>
+        <p class="info-container-subtitle">
+            Ahorra tiempo comprando, vendiendo y automatizando las respuestas.
+        </p>
+    </div>
+
+    <div class="message message-sent" [style.marginBottom.px]="!headerService?.user ? 20 : 12">
+        <p [style.marginBottom.px]="0">Hola, soy Laia, y te estaba esperando!!</p>
+        <p [style.marginBottom.px]="0">Cuando agregues detalles en mi memoria te ayudaré a que:</p>
+        <ul>
+            <li>Respondamos de forma consistente desde el Website, Shopify, WhatsApp e Instagram.</li>
+            <li>Vendamos. Coticemos. Facturemos. Organicemos los pedidos.</li>
+            <li>Si quieres, premiarémos a quienes venden por nosotros y a los compradores para que vuelvan a comprarnos.</li>
+        </ul>
+    </div>
+
+    <ng-container *ngIf="!user || !(user && newArticle)">
+        <div class="more-info">
+            <p class="title">
+                Para sugerencias y adaptaciones que te ayuden a crecer, escríbenos por WhatsApp
+            </p>
+            <a href="http://whatsAppURLconElTeldeDaviel.com" class="link">WhatsAppURLconElTeldeDaviel.com</a>
+        </div>
+    </ng-container>
+
+    <ng-container *ngIf="user && newArticle">
+        <div class="message message-sent" [style.width.px]="330">
+            <p [style.margin]="'10px 0'">
+                Bien, ya tu 
+                <a [routerLink]="['/ecommerce/admin-article-detail', newArticle]" class="link">primer artículo</a> 
+                está en 
+                <a [routerLink]="['/admin/dashboard']" class="link">tu Vitrina</a>.
+            </p>
+        </div>
+
+        <div class="message message-sent" [style.marginBottom.px]="30" [style.width.px]="330">
+            <p [style.margin]="'10px 0'">
+                {{this.merchantDefault?.name}}, para presentar tus artículos, por favor llena el 
+                <a [routerLink]="['/ecommerce/merchant-editor']" class="link">perfil comercial</a>.
+            </p>
+        </div>
+    </ng-container>
+
+  </div>
+
+  <div class="message-input">
+        <div class="custom-input">
+            <input type="text" placeholder="Mensaje">
+            <img class="audio-freq brighter" src="{{assetsFolder}}/audio-freq.png" alt="img">
+          </div>
+        <img
+            alt="arrow"
+            class="arrow"
+            src="{{assetsFolder}}/transparent-arrow-up.png"
+        >
+   </div>
+</div>

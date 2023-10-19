@@ -781,3 +781,9 @@ export const itemAddExpenditure = gql`
     }
   }
 `;//webformId should be expenditureId, is misnamed in backend, correct when fixed
+
+export const itemsQuantityOfFiltersByEstimatedDeliveryTime = gql`
+  query itemsQuantityOfFiltersByEstimatedDeliveryTime($input: PaginationInput!) {
+    itemsQuantityOfFiltersByEstimatedDeliveryTime(paginate: $input)
+  }
+`;

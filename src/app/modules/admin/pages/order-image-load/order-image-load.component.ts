@@ -46,6 +46,9 @@ export class OrderImageLoadComponent implements OnInit {
   notes: string;
   orderId: string;
   messageLink: string;
+  redirectTo: string = null;
+  from: string;
+
   constructor(
     private merchantsService: MerchantsService,
     private orderService: OrderService,
@@ -58,6 +61,17 @@ export class OrderImageLoadComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe(async (queryParams) => {
+      const {
+        redirectTo,
+        from,
+      } = queryParams;
+      this.redirectTo = redirectTo;
+      this.from = from;
+
+      if (typeof redirectTo === 'undefined') this.redirectTo = null;
+    });
+
     this.generate();
   }
 
@@ -225,9 +239,55 @@ export class OrderImageLoadComponent implements OnInit {
   }
 
   returnEvent() {
-    this.router.navigate(['/admin/order-progress']);
+    if (!this.redirectTo && this.from) return this.redirectFromQueryParams();
+
+    let queryParams = {};
+    if (this.redirectTo.includes('?')) {
+      const url = this.redirectTo.split('?');
+      this.redirectTo = url[0];
+      const queryParamList = url[1].split('&');
+      for (const param in queryParamList) {
+        const keyValue = queryParamList[param].split('=');
+        queryParams[keyValue[0]] = keyValue[1].replace('%20', ' ');
+      }
+    }
+    this.router.navigate([this.redirectTo], {
+      queryParams,
+    });
   }
   
+  redirectFromQueryParams() {
+    if (this.from.includes('?')) {
+      const redirectURL: { url: string; queryParams: Record<string, string> } =
+        { url: null, queryParams: {} };
+      const routeParts = this.from.split('?');
+      const redirectionURL = routeParts[0];
+      const routeQueryStrings = routeParts[1].split('&').map((queryString) => {
+        const queryStringElements = queryString.split('=');
+
+        return {
+          [queryStringElements[0]]: queryStringElements[1].replace('%20', ' '),
+        };
+      });
+
+      redirectURL.url = redirectionURL;
+      redirectURL.queryParams = {};
+
+      routeQueryStrings.forEach((queryString) => {
+        const key = Object.keys(queryString)[0];
+        redirectURL.queryParams[key] = queryString[key];
+      });
+
+      this.router.navigate([redirectURL.url], {
+        queryParams: redirectURL.queryParams,
+        replaceUrl: true,
+      });
+    } else {
+      this.router.navigate([this.from], {
+        replaceUrl: true,
+      });
+    }
+  }
 
   async updateOrder(type : 'amount' | 'notes' | 'identification' | 'user' | 'receiver' | 'image') {
     let input;
