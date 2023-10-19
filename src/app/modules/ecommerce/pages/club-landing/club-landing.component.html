@@ -90,7 +90,7 @@
           </div>
         </div>
       </div>
-      <div class="top-item" *ngIf="!headerService.user">
+      <div class="top-item" *ngIf="!headerService.user && showGanas === false">
           <div class="image">
             <img src="../../../../../assets/images/laia.png" alt="" />
             <p>Laia</p>
@@ -100,7 +100,7 @@
             <p>Se convierte en tu asistente virtual con Inteligencia Artificial</p>
           </div>
       </div>
-      <div class="tab-index">
+      <div class="tab-index" *ngIf="showGanas === false">
         <p 
           (click)="tabIndex = 1"
           [class]="{'active': tabIndex === 1}"
@@ -114,7 +114,7 @@
           ESTRATEGIAS DE GAMIFICACION
         </p>
       </div>
-      <div class="tabs" *ngIf="tabIndex === 1">
+      <div *ngIf="showGanas === false" class="tabs" *ngIf="tabIndex === 1">
         <div (click)="headerService.user ? goToDashboard() : uploader.click()" class="card">
           <img 
             alt="img"
@@ -151,7 +151,7 @@
           <mat-icon>chevron_right</mat-icon>
         </div>
       </div>
-      <div class="tabs" *ngIf="tabIndex === 2">
+      <div *ngIf="showGanas === false" class="tabs" *ngIf="tabIndex === 2">
         <div class="card">
           <img 
             alt="img"
