@@ -142,7 +142,7 @@
           <mat-icon>chevron_right</mat-icon>
         </div>
         <hr />
-        <div (click)="headerService.user ? goToItemsOffers() : ''" class="card">
+        <div (click)="headerService.user && saleflow?.items?.length > 0 ? goToItemsOffers() : contactUsDialog('Ofertas Flash')" class="card">
           <img 
             alt="img"
             src="{{assetsFolder}}/landing-image-4.png"
@@ -152,7 +152,7 @@
         </div>
       </div>
       <div class="tabs" *ngIf="tabIndex === 2 && showGanas === false">
-        <div class="card">
+        <div (click)="contactUsDialog('Premia Referencias')" class="card">
           <img 
             alt="img"
             src="{{assetsFolder}}/landing-image-5.png"
@@ -161,7 +161,7 @@
           <mat-icon>chevron_right</mat-icon>
         </div>
         <hr />
-        <div class="card">
+        <div (click)="contactUsDialog('Premia Porque Si')" class="card">
           <img 
             alt="img"
             src="{{assetsFolder}}/landing-image-6.png"
@@ -170,7 +170,7 @@
           <mat-icon>chevron_right</mat-icon>
         </div>
         <hr />
-        <div class="card">
+        <div (click)="contactUsDialog('Premia Menciones')" class="card">
           <img 
             alt="img"
             src="{{assetsFolder}}/landing-image-7.png"
@@ -179,7 +179,7 @@
           <mat-icon>chevron_right</mat-icon>
         </div>
         <hr />
-        <div class="card">
+        <div (click)="contactUsDialog('Premia Compradores')" class="card">
           <img 
             alt="img"
             src="{{assetsFolder}}/landing-image-8.png"
@@ -418,7 +418,7 @@
       <div 
         [ngClass]="{ 'loggedout': !headerService.user }"
         class="input" 
-        (click)="openLaiaDialog()"
+        (click)="contactUsDialog('Laia Chat')"
       >
         {{'Soy Laia, que necesitas saber?'}}
         <div>
@@ -430,7 +430,6 @@
           <img
             class="audio-freq"
             src="{{assetsFolder}}/audio-freq.png"
-            [ngClass]="{ 'brighter': headerService.user }"
             alt="img"
           >
         </div>
