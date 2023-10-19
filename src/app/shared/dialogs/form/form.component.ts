@@ -17,6 +17,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { ViewportRuler } from '@angular/cdk/overlay';
 import { environment } from 'src/environments/environment';
 import { CountryISO, PhoneNumberFormat } from 'ngx-intl-tel-input';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
+import { ContactUsDialogComponent } from '../contact-us-dialog/contact-us-dialog.component';
 
 interface Field {
   type:
@@ -44,6 +48,7 @@ interface Field {
   submitButton?: {
     text?: string;
     styles?: Record<string, string>;
+    disabledStyles?: Record<string, string>;
   };
   bottomTexts?: Array<{
     text?: string;
@@ -64,6 +69,9 @@ export interface FormData {
     accept?: string;
   };
   automaticallyFocusFirstField?: boolean;
+  buttonsStyles?: Record<string, string | number>
+  closeCallback?: () => void;
+  signInValidation?: 'user' | 'commerce'
 }
 
 @Component({
@@ -89,7 +97,10 @@ export class FormComponent implements OnInit {
     private fb: FormBuilder,
     private viewportRuler: ViewportRuler,
     private elementRef: ElementRef,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private merchantsService: MerchantsService,
+    private bottomSheet: MatBottomSheet,
+    private authService: AuthService
   ) {
     translate.setDefaultLang('en');
     translate.use('en');
@@ -157,6 +168,76 @@ export class FormComponent implements OnInit {
   onIconClick(index: number) {
     this.data.fields[index].secondaryIconCallback();
     this.close();
+  }
+
+  async submit() {
+    const censorWord = (str: string) => {
+      return str[0] + '*'.repeat(str.length - 2) + str[str.length - 1];
+    }
+    const censorEmail = (str: string) => {
+      const [name, domain] = str.split('@')
+      return censorWord(name) + '@' + censorWord(domain)
+    }
+    if (this.formGroup.valid) {
+      if(this.data.signInValidation && this.data.signInValidation === 'commerce') {
+        let nameFree = true
+        let phoneFree = true
+        if(this.formGroup.value.businessName) {
+          nameFree = false
+          let nameTaken = await this.merchantsService.merchantByName(this.formGroup.value.businessName)
+          console.log(nameTaken)
+          if(nameTaken) {
+            this.bottomSheet.open(ContactUsDialogComponent, {
+              data: {
+                topText: `Este nombre ya se encuentra registrado con otro usuario (${censorEmail(nameTaken.email)})`,
+                contactText: 'Escribenos por Whatsapp para reclamarlo 👇',
+                phone: '19188156444',
+                message: `Hola, quisiera reclamar el nombre comercial ${this.formGroup.value.businessName}`,
+              }
+            })
+          } else {
+            nameFree = true
+          }
+        }
+        if(this.formGroup.value.phone) {
+          phoneFree = false
+          let phoneTaken = await this.authService.checkUser(this.formGroup.value.phone.e164Number)
+          console.log(phoneTaken)
+          if(phoneTaken) {
+            this.bottomSheet.open(ContactUsDialogComponent, {
+              data: {
+                topText: `Este teléfono ya se encuentra registrado con otro usuario (${censorEmail(phoneTaken.email)})`,
+                contactText: 'Escribenos por Whatsapp para reclamarlo 👇',
+                phone: '19188156444',
+                message: `Hola, quisiera reclamar el teléfono ${this.formGroup.value.phone.e164Number}`,
+              }
+            })
+          } else {
+            phoneFree = true
+          }
+        }
+        if(nameFree && phoneFree) this.close(this.formGroup);
+      } else if(this.data.signInValidation && this.data.signInValidation === 'user') {
+        if(this.formGroup.value.phone) {
+          let phoneTaken = await this.authService.checkUser(this.formGroup.value.phone.e164Number)
+          console.log(phoneTaken)
+          if(phoneTaken) {
+            this.bottomSheet.open(ContactUsDialogComponent, {
+              data: {
+                topText: `Este teléfono ya se encuentra registrado con otro usuario (${censorEmail(phoneTaken.email)})`,
+                contactText: 'Escribenos por Whatsapp para reclamarlo 👇',
+                phone: '19188156444',
+                message: `Hola, quisiera reclamar el teléfono ${this.formGroup.value.phone.e164Number}`,
+              }
+            })
+          } else {
+            this.close(this.formGroup)
+          }
+        }
+      } else {
+        this.close(this.formGroup);
+      }
+    }
   }
 
   close(data?: any): void {
