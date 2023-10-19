@@ -154,24 +154,33 @@
   }
 }
 
-.empty-chat-card {
-  padding: 35px 18px;
-  border: 1px solid #A1A1A1;
-  border-radius: 5px;
+.empty-chat {
+  margin-top: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
 
-  &:hover {
-    cursor: pointer;
-  }
-
-  &:not(:first-child) {
-    margin-top: 5px;
+  img {
+    width: 155.59px;
+    height: 242px;
   }
 
   .text {
     margin: 0;
-    color: #A1A1A1;
-    font-family: InterBold;
-    font-size: 17px;
+    margin-top: 5px;
+    color: #7B7B7B;
+    font-family: InterMedium;
+  }
+
+  .text-secondary {
+    margin-top: 14px;
+    color: #F6F6F6;
+    font-family: InterMedium;
+    font-size: 15px;
+    text-decoration: none; 
+    border-bottom: 1px solid white;
   }
 }
 
