@@ -2,10 +2,42 @@
   height: 100vh;
   overflow-y: scroll;
   background: #f6f6f6;
+
+  .bottom-footer {
+    position: absolute;
+    bottom: 0;
+    background-color: #6fcf97 !important;
+    padding: 0 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 29px;
+    text-align: left;
+    width: 100%;
+    z-index: 55;
+    p {
+      color: #181d17;
+      text-align: left;
+      font-family: InterBold;
+      font-size: 17px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+  }
+
+  .benefits{
+    font-family: InterRegular !important;
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 21px;
+    letter-spacing: 0em;
+    text-align: right;
+  }
 }
 
 .header {
-  background: #fff;
+  background: #181D17;
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.06));
   height: 46px;
   padding-left: 14px;
@@ -13,8 +45,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  z-index: 50 !important;
 
-  .close-icon {
+  .back-icon {
     cursor: pointer;
     color: #c4c5c3;
     font-size: 28px;
@@ -25,13 +58,25 @@
   }
 
   p {
-    color: #181d17;
-    font-family: InterMedium;
+    color: #c4c5c3;
+    font-family: InterRegular;
     font-size: 18px;
     font-style: normal;
     font-weight: 600;
     line-height: normal;
     margin: 0;
+  }
+
+  .right-icons{
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    align-items: center;
+
+    .add-icon{
+      margin-left: 28px;
+    }
+
   }
 }
 
@@ -42,7 +87,7 @@
   opacity: 0.7;
   background: var(--blanco, #FFF);
   filter: blur(3px);
-  z-index: 49;
+  z-index: 0;
 }
 
 .dialog {
@@ -57,7 +102,7 @@
   height: 295px;
   flex-shrink: 0;
   border-radius: 15.591px; 
-  top: 111px;
+  top: 63px;
   margin-left: 16px;
   margin-right: 16px;
 }
@@ -73,7 +118,7 @@
 .arrow-svg {
   position: absolute;
   top: -46px;
-  right: 30px;
+  right: 63px;
   height: 100px;
   width: 30px;
 }
@@ -121,18 +166,21 @@
 .dates-container {
   display: flex;
   flex-direction: column;
-  background: #181d17;
+  background: #D9D9D9;
   padding-bottom: 5px;
+  border-radius: 8px;
+  margin: 0px 17px;
 }
 
 
 .progress-camera {
   display: flex;
   justify-content: space-between;
-  background: #181d17;
+  background: #D9D9D9;
   align-items: center;
-  padding: 14px;
+  padding-top: 14px;
   z-index: 50;
+  border-radius: 8px;
 }
 
 .camera-icon {
@@ -147,23 +195,23 @@
 }
 
 .selection-text {
-  font-family: InterLight;
-  color: #F6F6F6;
-  font-size: 13px;
-  line-height: 16px;
-  margin-top: 0;
-  margin-bottom: 0;
+  font-family: InterBold;
+  color: #181D17;
+  font-size: 17px;
+  line-height: 20.57px;
+  font-weight: 700;
+  margin: 23px 10px;
 }
 
 .progress-container {
   width: 100%;
-  padding-bottom: 24px;
   display: flex;
   padding-left: 20px;
   align-items: flex-start;
   justify-content: space-between;
   flex-wrap: wrap;
   row-gap: 10px;
+  padding-bottom: 17px;
 }
 
 .progress-item {
@@ -173,11 +221,12 @@
 }
 
 .progress {
-  color: #f6f6f6;
-  font-family: InterMedium;
-  font-size: 16px;
+  color: #7B7B7B;
+  font-family: InterBold;
+  font-size: 17px;
   font-style: normal;
-  font-weight: 400;
+  line-height: 20.57px;
+  font-weight: 700;
   padding-left: 13px;
   padding-right: 13px;
   padding-top: 3px;
@@ -193,6 +242,7 @@
   color: #181d17;
   background: #c4c5c3;
   font-weight: 700;
+  margin-right: 5px;
 }
 
 .location-container {
@@ -230,19 +280,20 @@
 }
 .content-title {
   color: #7b7b7b;
-  text-align: center;
   font-family: InterLight;
   font-size: 17px;
   font-style: italic;
   font-weight: 400;
   line-height: normal;
   margin: 0;
-  text-align: center;
+  text-align: left;
   max-width: 360px;
 }
 
 .content-cards-container {
   margin-top: 10px;
+  margin-bottom: 20px;
+  
 }
 
 .content-card {
@@ -279,6 +330,14 @@
   font-weight: 400;
   line-height: normal;
   margin: 0;
+}
+
+.right-side{
+    justify-content: end;
+    align-items: end;
+    text-align: end;
+    display: flex;
+    flex-direction: column;
 }
 
 .content-card-extra-info {
@@ -368,3 +427,162 @@
   }
 }
 
+.search-bar-wrapper {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+  margin-bottom: 13px;
+  padding-bottom: 0;
+  position: relative;
+
+  &.tutorial {
+    z-index: 3;
+  }
+
+  .search-bar {
+    /*
+        DESCOMENTAR LUEGO
+        width: 70.09%;
+      */
+    text-align: left;
+    height: fit-content;
+    padding: 8px 21px 12px 21px;
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 8px;
+    background: #d9d9d9;
+    color: #7b7b7b;
+    font-family: InterBold;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    border: none;
+    width: 100%;
+  }
+
+  .filters {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto 0;
+    display: flex;
+    gap: 20px;
+    right: 17px;
+    align-items: center;
+    background: #d9d9d9;
+    padding-left: 17px;
+
+    .option:hover {
+      cursor: pointer;
+    }
+  }
+}
+
+.search-opened {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  position: relative;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  max-width: 500px;
+  margin: auto;
+  margin-bottom: 21px;
+  z-index: 54;
+
+  header {
+    height: 42px;
+    display: flex;
+    align-items: center;
+    padding-left: 12px;
+    padding-top: 4px;
+    background: #181d17;
+  }
+
+  .search-bar-wrapper {
+    display: flex;
+    justify-content: space-between;
+    margin: 0px;
+    padding-bottom: 13px;
+    position: relative;
+
+    mat-icon {
+      position: absolute;
+      top: 8px;
+      left: 28px;
+      color: #7b7b7b;
+    }
+  }
+
+  .search-bar {
+    width: 90%;
+    margin: auto;
+    padding: 10px 0px 12px 36px;
+    border-bottom: 1px solid #87cd9b;
+    border-radius: 0px;
+    background: transparent;
+    color: #7b7b7b;
+    font-family: Inter;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: normal;
+  }
+
+  .filtering-options {
+    &.card {
+      width: 90%;
+      margin: 0 auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      background: #d9d9d9;
+      border-radius: 6px;
+      &-store {
+        display: flex;
+        flex-direction: column;
+      }
+    }
+
+    button {
+      appearance: none;
+      border: none;
+      background: none;
+      padding: 0;
+      width: max-content;
+      color: #7b7b7b;
+      font-family: Inter;
+      font-size: 17px;
+      letter-spacing: -1px;
+      cursor: pointer;
+      &.active {
+        color: #181d17;
+        font-weight: 700;
+      }
+    }
+  }
+  .btn-close{
+    background: #181d17;
+    border: none;
+  }
+}
+::ng-deep .mat-datepicker-content {
+  max-width: 500px !important;
+  width: 500px !important;
+  display: flex;
+  bottom: 0;
+  position: absolute;
+
+}
+::ng-deep .mat-datepicker-content .mat-calendar {
+  height: auto!important;
+  width: auto!important;
+}
+::ng-deep .cdk-overlay-pane {
+  bottom: 32px!important;
+  left: calc(50vw - 250px)!important;
+  right: 0px;
+}

@@ -435,7 +435,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         title: "Perfil de:",
         options,
         bottomLeft: {
-          text: 'Cambiar de industria',
+          text: '',
           callback: () => {
           }
         }

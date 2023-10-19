@@ -58,6 +58,14 @@ export const contactAddLink = gql`
   }
 `;
 
+export const contactRemoveLink = gql`
+  mutation contactRemoveLink($linkId: ObjectID! $id: ObjectID!) {
+    contactRemoveLink(linkId: $linkId, id: $id) {
+      _id 
+    }
+  }
+`;
+
 export const contactUpdateLink = gql`
   mutation contactUpdateLink(
     $input: LinkInput!
@@ -93,6 +101,19 @@ export const contacts = gql`
         image
       }
       image
+    }
+  }
+`;
+
+export const contactDefault = gql`
+  query contactDefault($type: String, $merchantId: ObjectID) {
+    contactDefault(type: $type, merchantId: $merchantId) {
+      _id
+      link {
+        _id
+        name
+        value
+      }
     }
   }
 `;

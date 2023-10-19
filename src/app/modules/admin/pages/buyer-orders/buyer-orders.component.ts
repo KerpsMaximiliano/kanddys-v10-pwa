@@ -222,4 +222,30 @@ export class BuyerOrdersComponent implements OnInit {
     }
   }
 
+  goToOrderDetail(orderID: string, orderType: string) {
+    console.log(orderID, orderType);
+    if(orderType === 'external') {
+      return this.router.navigate(
+        [
+          `/ecommerce/manual-order-management/${orderID}`
+        ],
+        {
+          queryParams: {
+            redirectTo: this.router.url
+          }
+        }
+      );
+    }
+    return this.router.navigate(
+      [
+        `/ecommerce/order-detail/${orderID}`
+      ],
+      {
+        queryParams: {
+          redirectTo: this.router.url
+        }
+      }
+    );
+  }
+
 }
