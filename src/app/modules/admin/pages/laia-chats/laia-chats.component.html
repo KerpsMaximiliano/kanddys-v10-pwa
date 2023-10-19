@@ -1,22 +1,21 @@
 <div class="container">
   <header>
-    <img
-      class="back-icon"
-      [src]="assetsURL + '/arrow-left-white.svg'"
-      alt="go back"
-      (click)="goBack()"
-    />
-
-    <h1>Chats con la<span>ia</span></h1>
+    <span (click)="goBack()">X</span>
   </header>
 
+  <div class="filters">
+    <div class="filter">Integraciones</div>
+    <div class="filter" [style.margin]="'0 8px'">Personalidad</div>
+    <div class="filter">1 Memorias</div>
+  </div>
+
   <main>
-    <form class="search-bar-wrapper" style="margin-bottom: 21px">
+    <form class="search-bar-wrapper" style="margin-bottom: 10px">
       <input
         type="text"
         name="item-search"
         class="input search-bar"
-        placeholder="Todos los chats"
+        placeholder="Todos los Chats"
         [formControl]="itemSearchbar"
       />
 
@@ -26,7 +25,10 @@
     </form>
 
     <ng-container *ngIf="chatsByMonthCopy?.length === 0">
-      <div class="empty">No tienes ningún chat todavía</div>
+      <ng-container *ngFor="let item of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]">
+        <ng-container *ngTemplateOutlet="emptyChat"
+        ></ng-container>
+      </ng-container>
     </ng-container>
 
     <ng-container *ngIf="chatsByMonthCopy?.length > 0">
@@ -76,6 +78,14 @@
 
     <p class="bottom">
       Lo último escritoID que irá en dos lineas como wl WahtsApp
+    </p>
+  </div>
+</ng-template>
+
+<ng-template #emptyChat>
+  <div class="empty-chat-card">
+    <p class="text">
+      ReceptorID
     </p>
   </div>
 </ng-template>
