@@ -52,7 +52,7 @@
               {{ "new-symbol.access-key-placeholder" | translate }}
             </div>
 
-            <div class="phone-wrapper" *ngIf="isPhoneInputFocused">
+            <!-- <div class="phone-wrapper" *ngIf="isPhoneInputFocused">
               <ngx-intl-tel-input
                 [cssClass]="'no-shadow'"
                 [enableAutoCountrySelect]="true"
@@ -79,7 +79,25 @@
               >
                 {{ postForm.controls["accessKey"]?.value.nationalNumber }}
               </span>
-            </div>
+            </div> -->
+            <div
+            class="textarea-wrapper m-bottom"
+            [ngClass]="{
+              'no-shadow':
+                postForm.controls['emailAccessKey'].value &&
+                postForm.controls['emailAccessKey'].value.length > 0
+            }"
+            *ngIf="isPhoneInputFocused"
+          >
+            <label for="textarea-label" class="textarea-header">Correo Electrónico</label>
+
+            <input
+              class="form-input"
+              type="email"
+              formControlName="emailAccessKey"
+              placeholder="email@example.com"
+            >
+          </div>
           </div>
 
           <div

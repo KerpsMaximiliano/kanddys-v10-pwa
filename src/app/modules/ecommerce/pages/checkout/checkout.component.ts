@@ -1240,7 +1240,7 @@ export class CheckoutComponent implements OnInit {
             entity: 'post',
             access: Boolean(
               this.postsService.privatePost ||
-                this.postsService.postReceiverNumber?.length > 0
+                this.postsService.postReceiverEmail?.length > 0
             )
               ? 'private'
               : 'public',
@@ -1248,16 +1248,16 @@ export class CheckoutComponent implements OnInit {
         );
       }
 
-      const recipientUser = this.postsService.postReceiverNumber;
+      const recipientUser = this.postsService.postReceiverEmail;
 
       if (recipientUser && !withoutAuth) {
         const recipient = await this.entityTemplateService.createRecipient({
-          phone: this.postsService.postReceiverNumber,
+          email: this.postsService.postReceiverEmail,
         });
 
         if (
           this.postsService.privatePost ||
-          this.postsService.postReceiverNumber?.length > 0
+          this.postsService.postReceiverEmail?.length > 0
         ) {
           await this.entityTemplateService.entityTemplateAddRecipient(
             entityTemplate._id,
@@ -1273,14 +1273,14 @@ export class CheckoutComponent implements OnInit {
         const recipient =
           await this.entityTemplateService.createRecipientWithoutAuth(
             {
-              phone: this.postsService.postReceiverNumber,
+              email: this.postsService?.postReceiverEmail,
             },
             userId
           );
 
         if (
           this.postsService.privatePost ||
-          this.postsService.postReceiverNumber?.length > 0
+          this.postsService.postReceiverEmail?.length > 0
         ) {
           await this.entityTemplateService.entityTemplateAddRecipientWithoutAuth(
             entityTemplate._id,
