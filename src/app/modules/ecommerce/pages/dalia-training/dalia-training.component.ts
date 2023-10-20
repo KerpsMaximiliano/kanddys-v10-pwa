@@ -57,6 +57,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   memoryNameDialogSubscription: Subscription;
   vectorId: string = null;
   showTextError = false;
+  timer: any;
 
   constructor(
     private gptService: Gpt3Service,
@@ -186,24 +187,22 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
         );
       }
     );
-
-    this.textareaChanges()
   }
 
-  textareaChanges() {
-    this.form.get('memory').valueChanges.subscribe((value) => {
-      const words = value?.trim()?.split(/\s+/);
+  onKeyUp() {
+    const words = this.form.get('memory')?.value.trim()?.split(/\s+/);
+    
+    if(this.form.get('memory')?.value !== null) this.generatedQA = null;
+    
+    console.log(this.form.get('memory')?.value, words);
+    this.showTextError = this.form.get('memory')?.value === '' ? false : words?.length < 3 ? true : false;
 
-      if(value !== null) this.generatedQA = null;
-
-      this.showTextError = value === '' ? false : words?.length < 3 ? true : false;
-
-      if(words?.length >= 3) {
-        setTimeout(() => {
-          this.testMemory();
-        }, 6000);
-      }
-    });
+    if(words?.length >= 3) {
+      clearTimeout(this.timer);
+      this.timer = setTimeout(() => {
+        this.testMemory();
+      }, 2000);
+    }
   }
 
   async loadVectorData() {
@@ -243,7 +242,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
 
   async testMemory() {
     try {
-      lockUI();
+      // lockUI();
       let response = await this.gptService.generateResponseForTemplate(
         {
           content: (this.form.get('memory').value as string).replace(/"/g, "'"),
@@ -274,9 +273,9 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
         }
       }
 
-      unlockUI();
+      // unlockUI();
     } catch (error) {
-      unlockUI();
+      // unlockUI();
       this.headerService.showErrorToast();
       console.error(error);
     }
@@ -291,7 +290,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
           question: this.generatedQA.question,
           previousResponse: this.generatedQA.response,
           newQuestion: this.questionForm.get('question').value,
-          content: this.form.get('memory').value.replace(/"/g, "'"),
+          content: this.form.get('memory').value ? this.form.get('memory').value.replace(/"/g, "'") : '',
         },
         null,
         'Q&AEdit'
