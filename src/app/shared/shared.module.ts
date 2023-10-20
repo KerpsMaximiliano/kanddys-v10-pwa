@@ -250,6 +250,7 @@ import { UpperCasePipe } from '../core/pipes/upper-case.pipe';
 import { LoginFlowComponent } from './components/login-flow/login-flow.component';
 import { SignupChatComponent } from './dialogs/signup-chat/signup-chat.component';
 import { LoginFormComponent } from './dialogs/login-form/login-form.component';
+import { ContactUsDialogComponent } from './dialogs/contact-us-dialog/contact-us-dialog.component';
 
 const imports = [
   CommonModule,
@@ -510,7 +511,8 @@ const declarations = [
   CompareDialogComponent,
   LoginFlowComponent,
   SignupChatComponent,
-  LoginFormComponent
+  LoginFormComponent,
+  ContactUsDialogComponent
 ];
 
 @NgModule({
