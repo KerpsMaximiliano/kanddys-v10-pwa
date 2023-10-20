@@ -7,14 +7,14 @@
           <span (click)="!headerService.user ? loginflow = true : showRoleDialog()" style="color: #87CD9B;">
             {{ 
               !headerService?.user ?
-              'para miembros de www.flores.club' :
+              'contigo' :
               headerService.user.name ?
-              'de ' + headerService.user.name :
+              'con ' + headerService.user.name :
               headerService.user.email ?
-              'de ' + truncateString(headerService.user.email) :
+              'con ' + truncateString(headerService.user.email) :
               headerService.user.phone ?
-              'de ' + headerService.user.phone :
-              'para miembros de www.flores.club'
+              'con ' + headerService.user.phone :
+              'contigo'
             }}
           </span>
         </div>
@@ -24,12 +24,13 @@
         <div class="close" *ngIf="showGanas === true" (click)="showGanas = false">
           X
         </div>
-        <div *ngIf="headerService.user && showGanas === false" class="icon" (click)="showGanas = true">
+        <div *ngIf="showGanas === false" class="icon" (click)="showGanas = true">
             <p>Gana$</p>
             <mat-icon>ios_share</mat-icon>
         </div>
       </div>
     </div>
+    <input id="imgInput" accept="image/*" type="file" (change)="getImg($event)" hidden #uploader>
     <main>
       <div class="tab-header" *ngIf="showGanas===true">
         <div class="info-container">
@@ -89,27 +90,108 @@
           </div>
         </div>
       </div>
-      <!--
-      <div class="footer-swiper" *ngIf="tabarIndex === 0">
-        <div class="slide-item borderless">
-          <div class="flex">
-            <div class="image">
-              <img width="80px" src="../../../../../assets/images/laia.png" alt="" />
-            </div>
-            <div class="info">
-              <div class="name">La<span>ia</span></div>
-              <div class="role">
-                Asistente Virtual que utiliza Inteligencia Artificial
-              </div>
-            </div>
+      <div class="top-item" *ngIf="!headerService.user && showGanas === false">
+          <div class="image">
+            <img src="../../../../../assets/images/laia.png" alt="" />
+            <p>Laia</p>
           </div>
+          <div class="info">
+            <h1>Laia te Ahorra Tiempo o Dinero</h1>
+            <p>Se convierte en tu asistente virtual con Inteligencia Artificial</p>
+          </div>
+      </div>
+      <div class="tab-index" *ngIf="showGanas === false">
+        <p 
+          (click)="tabIndex = 1"
+          [class]="{'active': tabIndex === 1}"
+        >
+          AHORRA TIEMPO
+        </p>
+        <p 
+          (click)="tabIndex = 2"
+          [class]="{'active': tabIndex === 2}"
+        >
+          ESTRATEGIAS DE GAMIFICACION
+        </p>
+      </div>
+      <div class="tabs" *ngIf="tabIndex === 1 && showGanas === false">
+        <div (click)="headerService.user ? goToDashboard() : uploader.click()" class="card">
+          <img 
+            alt="img"
+            src="{{assetsFolder}}/landing-image-1.png"
+          >
+          <h2>Vende fácilmente a través de enlaces</h2>
+          <mat-icon>chevron_right</mat-icon>
         </div>
-      </div>-->
-      <div class="tab-header" *ngIf="showGanas === false">
+        <hr />
+        <div (click)="headerService.user ? goToAIMemoriesManagement() : goToLaiaTraining()" class="card">
+          <img 
+            alt="img"
+            src="{{assetsFolder}}/landing-image-2.png"
+          >
+          <h2>Brinda respuestas precisas al instante</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+        <hr />
+        <div class="card">
+          <img 
+            alt="img"
+            src="{{assetsFolder}}/landing-image-3.png"
+          >
+          <h2>Selecciona lo que necesitas comprar</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+        <hr />
+        <div (click)="headerService.user ? goToItemsOffers() : ''" class="card">
+          <img 
+            alt="img"
+            src="{{assetsFolder}}/landing-image-4.png"
+          >
+          <h2>Vende con ofertas de 24 horas</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+      </div>
+      <div class="tabs" *ngIf="tabIndex === 2 && showGanas === false">
+        <div class="card">
+          <img 
+            alt="img"
+            src="{{assetsFolder}}/landing-image-5.png"
+          >
+          <h2>Premia a quienes refirieren a compradores</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+        <hr />
+        <div class="card">
+          <img 
+            alt="img"
+            src="{{assetsFolder}}/landing-image-6.png"
+          >
+          <h2>Premia porque si!</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+        <hr />
+        <div class="card">
+          <img 
+            alt="img"
+            src="{{assetsFolder}}/landing-image-7.png"
+          >
+          <h2>Premia a quienes te @mencionan</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+        <hr />
+        <div class="card">
+          <img 
+            alt="img"
+            src="{{assetsFolder}}/landing-image-8.png"
+          >
+          <h2>Premia a tus compradores</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+      </div>
+      <!--<div class="tab-header" *ngIf="showGanas === false">
         <div class="info-container">
           <div class="info-container-title-container">
             <p class="info-container-title">Vende fácilmente </p>
-            <input id="imgInput" accept="image/*" type="file" (change)="getImg($event)" hidden #uploader>
             <div *ngIf="headerService.user">
               <mat-slide-toggle
                 [checked]="statusSwitch"
@@ -134,9 +216,9 @@
             <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToOrders()">
               {{ sales ? sales : '0' }} ventas
             </p>
-            <!-- <p class="info-container-invited-link info-container-invited-link-mr">
+            <p class="info-container-invited-link info-container-invited-link-mr">
               Facturar
-            </p> -->
+            </p>
           </div>
         </div>
         <ng-container *ngIf="headerService.user">
@@ -235,7 +317,7 @@
               Alcanza múltiples comunidades. Incentiva a tus Embajadores a que promocionen y vendan tus artículos.
             </p>
           </div>
-          <!--<div class="flex-space-between">
+          <div class="flex-space-between">
             <ng-container *ngIf="!headerService?.user">
               <p class="info-container-invited-link info-container-invited-link-mr" (click)="openMemoriesLoginDialog()">
                 Adiciona tu primer articulo
@@ -246,7 +328,7 @@
                 {{ saleflow ? saleflow?.items?.length : '0' }} artículos activados
               </p>
             </ng-container>
-          </div>-->
+          </div>
         </div>
         
         <div class="info-container">
@@ -258,11 +340,11 @@
             </p>
           </div>
           <div class="flex-space-between">
-            <!--<ng-container *ngIf="!headerService?.user">
+            <ng-container *ngIf="!headerService?.user">
               <p class="info-container-invited-link info-container-invited-link-mr" (click)="openMemoriesLoginDialog()">
                 Adiciona tu primer articulo
               </p>
-            </ng-container>-->
+            </ng-container>
             <ng-container *ngIf="headerService?.user">
               <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToDashboard()">
                 {{ saleflow ? saleflow?.items?.length : '0' }} artículos activados
@@ -324,32 +406,41 @@
           Compradores puede subir <img alt="foto" src="{{assetsFolder}}/grey-camera.png"> de su factura para empezar el programa.
         </p>
         </ng-container>
-      </div>
+      </div>-->
     </main>
-    <!-- <div 
+    <div 
       class="message"
       *ngIf="showGanas === false"
     >
+      <p class="plus-sign" (click)="openOptionsMenu()">
+        +
+      </p>
       <div 
         [ngClass]="{ 'loggedout': !headerService.user }"
         class="input" 
         (click)="openLaiaDialog()"
       >
-        {{headerService.user ? 'Como te ayudaría Laia (la IA)?' : 'Mensaje'}}
-        <img
-          class="audio-freq"
-          src="{{assetsFolder}}/audio-freq.png"
-          [ngClass]="{ 'brighter': headerService.user }"
-          alt="img"
-        >
+        {{'Soy Laia, que necesitas saber?'}}
+        <div>
+          <img
+            alt="camera"
+            class="darker"
+            src="{{assetsFolder}}/grey-camera.png"
+          >
+          <img
+            class="audio-freq"
+            src="{{assetsFolder}}/audio-freq.png"
+            [ngClass]="{ 'brighter': headerService.user }"
+            alt="img"
+          >
+        </div>
       </div>
-        <img
+        <!--<img
           alt="arrow"
           class="arrow"
           src="{{assetsFolder}}/transparent-arrow-up.png"
-        >
-    </div> -->
-
+        >-->
+    </div>
     <!-- <footer
       *ngIf="!tabarIndex"
       (click)="share()"

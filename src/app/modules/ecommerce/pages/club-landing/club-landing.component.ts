@@ -98,7 +98,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   });
 
   isFlag = false;
-  tabIndex = 0;
+  tabIndex = 1;
   userID = '';
   isVendor = false;
   isProvider = false;
@@ -950,6 +950,10 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     });
   }
 
+  goToItemsOffers() {
+    return this.router.navigate(['/admin/items-offers']);
+  }
+
   truncateString(word) {
     return truncateString(word, 12);
   }
@@ -1024,5 +1028,70 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         ]
       }
     })
+  }
+
+  clickImageInput() {
+    document.getElementById('imgInput').click();
+  }
+
+  openOptionsMenu() {
+    this.bottomSheet.open(OptionsMenuComponent, {
+      data: {
+        options: [
+          {
+            value: 'Adiciónale Memoria a Laia',
+            callback:() => {
+              if(this.headerService.user) {
+                this.goToAIMemoriesManagement();
+              } else {
+                this.goToLaiaTraining();
+              }
+            }
+          },
+          {
+            value: 'Empieza a Vender un Nuevo Articulo',
+            callback:() => {
+              this.clickImageInput();
+            }
+          },
+          {
+            value: 'Crea una Factura',
+            callback: () => {}
+          },
+          {
+            value: 'Crea una Orden de Compra',
+            callback: () => {}
+          },
+          {
+            value: 'Crea una Oferta Flash',
+            callback:() => {
+              if(this.headerService.user) {
+                this.goToItemsOffers();
+              }
+            }
+          },
+          {
+            value: 'Premia las Referencias',
+            callback: () => {}
+          },
+          {
+            value: 'Premia Porque Si!',
+            callback: () => {}
+          },
+          {
+            value: 'Premia las Menciones',
+            callback: () => {}
+          },
+          {
+            value: 'Recompensa las Compras',
+            callback: () => {}
+          },
+          {
+            value: 'Sube foto de tus facturas para Premios',
+            callback: () => {}
+          },
+        ],
+      },
+    });
   }
 }
