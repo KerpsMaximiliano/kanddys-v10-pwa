@@ -413,6 +413,7 @@ export class LoginFlowComponent implements OnInit {
       },
       closeCallback: () => {
         isCommerce = false;
+        console.log('fire closeCallback')
         this.dialog.closeAll();
         this.openTemplateUser(credentials)
       },

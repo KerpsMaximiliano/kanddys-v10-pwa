@@ -172,6 +172,7 @@ export class FormComponent implements OnInit {
 
   async submit() {
     const censorWord = (str: string) => {
+      console.log(str)
       return str[0] + '*'.repeat(str.length - 2) + str[str.length - 1];
     }
     const censorEmail = (str: string) => {
@@ -187,9 +188,10 @@ export class FormComponent implements OnInit {
           let nameTaken = await this.merchantsService.merchantByName(this.formGroup.value.businessName)
           console.log(nameTaken)
           if(nameTaken) {
+            let string = nameTaken.email ? censorEmail(nameTaken.email) : censorEmail(nameTaken.owner.email)
             this.bottomSheet.open(ContactUsDialogComponent, {
               data: {
-                topText: `Este nombre ya se encuentra registrado con otro usuario (${censorEmail(nameTaken.email)})`,
+                topText: `Este nombre ya se encuentra registrado con otro usuario (${string})`,
                 contactText: 'Escribenos por Whatsapp para reclamarlo 👇',
                 phone: '19188156444',
                 message: `Hola, quisiera reclamar el nombre comercial ${this.formGroup.value.businessName}`,
@@ -204,9 +206,10 @@ export class FormComponent implements OnInit {
           let phoneTaken = await this.authService.checkUser(this.formGroup.value.phone.e164Number)
           console.log(phoneTaken)
           if(phoneTaken) {
+            let string = phoneTaken.email ? censorEmail(phoneTaken.email) : 'email no existe'
             this.bottomSheet.open(ContactUsDialogComponent, {
               data: {
-                topText: `Este teléfono ya se encuentra registrado con otro usuario (${censorEmail(phoneTaken.email)})`,
+                topText: `Este teléfono ya se encuentra registrado con otro usuario (${string})`,
                 contactText: 'Escribenos por Whatsapp para reclamarlo 👇',
                 phone: '19188156444',
                 message: `Hola, quisiera reclamar el teléfono ${this.formGroup.value.phone.e164Number}`,
@@ -220,11 +223,11 @@ export class FormComponent implements OnInit {
       } else if(this.data.signInValidation && this.data.signInValidation === 'user') {
         if(this.formGroup.value.phone) {
           let phoneTaken = await this.authService.checkUser(this.formGroup.value.phone.e164Number)
-          console.log(phoneTaken)
           if(phoneTaken) {
+            let string = phoneTaken.email ? censorEmail(phoneTaken.email) : 'email no existe'
             this.bottomSheet.open(ContactUsDialogComponent, {
               data: {
-                topText: `Este teléfono ya se encuentra registrado con otro usuario (${censorEmail(phoneTaken.email)})`,
+                topText: `Este teléfono ya se encuentra registrado con otro usuario (${string})`,
                 contactText: 'Escribenos por Whatsapp para reclamarlo 👇',
                 phone: '19188156444',
                 message: `Hola, quisiera reclamar el teléfono ${this.formGroup.value.phone.e164Number}`,

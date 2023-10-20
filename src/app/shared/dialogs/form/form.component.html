@@ -175,7 +175,7 @@
     </ng-container>
   </div>
   <div [ngStyle]="data.buttonsStyles" mat-dialog-actions class="buttons-flex" *ngIf="!data.hideBottomButtons">
-    <button class="cancel cancel-form-dialog" (click)="data.closeCallback? data.closeCallback : close()">
+    <button class="cancel cancel-form-dialog" (click)="data.closeCallback? data.closeCallback() : close()">
       <ng-container
         *ngIf="
           data.buttonsTexts && data.buttonsTexts.cancel;

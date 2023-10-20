@@ -4,7 +4,7 @@
 }
 
 ::ng-deep.mat-bottom-sheet-container {
-  padding: 24px;
+  padding: 12px;
   width: 100%;
   min-width: 90%;
   // margin: auto;
@@ -22,24 +22,24 @@ div {
   max-width: 500px;
   background-color: #181d17;
   .close {
-    margin: 0;
-    margin-left: auto;
+    margin: 0 0 16px auto;
     text-align: right;
     color: #c4c5c3;
     font-family: InterLight;
     font-size: 24px;
   }
   .text {
-    font-family: "InterSemiBold";
+    font-family: InterSemiBold;
     color: #fff;
     text-align: center;
-    margin-bottom: 0;
+    margin: 16px 24px 0;
   }
   
   .green-link {
     color: var(--El-verdecito, #87cd9b);
-    font-family: "InterSemiBold";
+    font-family: InterSemiBold;
     text-align: center;
+    margin: 16px 16px;
   }
 }
 
