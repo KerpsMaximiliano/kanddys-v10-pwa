@@ -127,6 +127,8 @@ export class ProviderItemsComponent implements OnInit {
   isUserLogged = false
   isUserVerified = false
 
+  plataformFeeTypeActual = 'platform_fee_user'
+
   private keyPresentationState = 'providersPresentationClosed'
   private keyTutorialState = 'tutorialClosed'
   private merchantData: Merchant | null = null;
@@ -266,6 +268,23 @@ export class ProviderItemsComponent implements OnInit {
       this.isSwitchActive = status
       this.isUserVerified = true
     }
+  }
+
+  onUpdate() {
+    this.plataformFeeTypeActual = this.plataformFeeTypeActual === 'platform_fee_user'
+      ? 'platform_fee_merchant'
+      : 'platform_fee_user'
+    const input = {
+      input: {
+        platformFeeType: this.plataformFeeTypeActual
+      }
+    }
+    this.merchantsService
+      .updateMerchantFuncionality(input, this.merchantData._id)
+      .then(() => {
+        console.log("Los datos han sido actualizado. Type actual: ", this.plataformFeeTypeActual)
+
+      })
   }
 
   /**
