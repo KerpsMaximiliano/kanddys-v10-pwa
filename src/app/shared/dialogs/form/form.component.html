@@ -174,8 +174,8 @@
       </div>
     </ng-container>
   </div>
-  <div mat-dialog-actions class="buttons-flex" *ngIf="!data.hideBottomButtons">
-    <button class="cancel cancel-form-dialog" (click)="close()">
+  <div [ngStyle]="data.buttonsStyles" mat-dialog-actions class="buttons-flex" *ngIf="!data.hideBottomButtons">
+    <button class="cancel cancel-form-dialog" (click)="data.closeCallback? data.closeCallback() : close()">
       <ng-container
         *ngIf="
           data.buttonsTexts && data.buttonsTexts.cancel;
@@ -191,7 +191,7 @@
     </button>
     <button
       class="accept"
-      [mat-dialog-close]="formGroup"
+      (click)="submit()"
       [disabled]="!formGroup.valid"
     >
       <ng-container

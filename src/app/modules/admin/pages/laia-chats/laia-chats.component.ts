@@ -10,6 +10,7 @@ import { UsersService } from 'src/app/core/services/users.service';
 import { User } from 'src/app/core/models/user';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 
 interface ExtendedChat extends Chat {
   receiver?: User;
@@ -53,15 +54,21 @@ export class LaiaChatsComponent implements OnInit {
     12: 'Diciembre',
   };
 
+  memoriesCount: number = 0;
+
   constructor(
     private chatsService: ChatService,
     private usersService: UsersService,
     private router: Router,
     private merchantsService: MerchantsService,
-    private headersService: HeaderService
+    private headersService: HeaderService,
+    private gptService: Gpt3Service,
   ) {}
 
   async ngOnInit() {
+    this.memoriesCount = (await this.gptService.getMerchantEmbeddingsMetadata()).vectorsCount;
+    console.log(this.memoriesCount);
+  
     const chats = await this.chatsService.listMyChats();
     let usersToFetch = [];
 
@@ -187,6 +194,10 @@ export class LaiaChatsComponent implements OnInit {
         '/chat-merchant/' +
         chat._id,
     ]);
+  }
+
+  goToAIMemoriesManagement() {
+    this.router.navigate(['/ecommerce/laia-memories-management']);
   }
 
   goBack() {
