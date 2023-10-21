@@ -14,6 +14,7 @@ import {
   imageObjectRecognition,
   requestQAResponse,
   requestResponseFromKnowledgeBase,
+  requestResponseFromKnowledgeBaseJson,
   updateVectorInKnowledgeBase,
 } from '../graphql/gpt3.gql';
 import { environment } from 'src/environments/environment';
@@ -38,6 +39,14 @@ export class Gpt3Service {
       variables: { templateObject, templateId, code },
     });
     return result.generateResponseForTemplate;
+  }
+
+  async requestResponseFromKnowledgeBaseJson(input: any): Promise<any> {
+    const result = await this.graphql.mutate({
+      mutation: requestResponseFromKnowledgeBaseJson,
+      variables: { input },
+    });
+    return result.requestResponseFromKnowledgeBaseJson;
   }
 
   async feedFileToKnowledgeBase(uploadedFile: File): Promise<boolean> {
