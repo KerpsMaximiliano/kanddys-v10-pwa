@@ -100,6 +100,18 @@ export class ProviderItemsComponent implements OnInit {
     };
   reachTheEndOfPagination: boolean = false;
 
+  //Pagination-specific variables for search
+  paginationSearchState: {
+    pageSize: number;
+    page: number;
+    status: 'loading' | 'complete';
+  } = {
+      page: 1,
+      pageSize: 15,
+      status: 'complete',
+    };
+  reachTheEndOfPaginationSearch: boolean = false;
+
   //Items variables
   totalItemsHidden: number = 0
   itemsISell: Array<Item> = [];
@@ -170,7 +182,7 @@ export class ProviderItemsComponent implements OnInit {
 
     if (!existToken) {
       await this.executeInitProcesses();
-      await this.fetchItemsForNotSell(true, false);
+      await this.fetchItemsForNotSell(true);
 
     }
 
@@ -303,6 +315,9 @@ export class ProviderItemsComponent implements OnInit {
     }
   }
 
+  /**
+   *
+   */
   onUpdate() {
     this.plataformFeeTypeActual = this.plataformFeeTypeActual === 'platform_fee_user'
       ? 'platform_fee_merchant'
@@ -318,14 +333,6 @@ export class ProviderItemsComponent implements OnInit {
         console.log("Los datos han sido actualizado. Type actual: ", this.plataformFeeTypeActual)
 
       })
-  }
-
-  /**
-   * Cambia el estado del consumidor de supplier o default
-   */
-  onChangeConsumerState(selected: consumerType) {
-    this.btnConsumerState[selected] = !this.btnConsumerState[selected]
-    this.filteringItemsBySearchbar(this.itemSearchbar.value)
   }
 
   /**
@@ -496,10 +503,13 @@ export class ProviderItemsComponent implements OnInit {
 
   /**
    * Obtiene todos los items para vender
+   *
+   * @param {Boolean} restartPagination - Indica si reinicia la paginación
+   * @param {Boolean} [triggeredFromScroll=false]
    */
   async fetchItemsForSell(
-    restartPagination = false,
-    triggeredFromScroll = false,
+    restartPagination: boolean = false,
+    triggeredFromScroll: boolean = false
   ) {
     this.paginationState.status = 'loading';
 
@@ -530,10 +540,12 @@ export class ProviderItemsComponent implements OnInit {
 
   /**
    * Obtiene todos los items que no se venden
+   * @param {Boolean} restartPagination - Indica si reinicia la paginación
+   * @param {Boolean} [triggeredFromScroll=false]
    */
   async fetchItemsForNotSell(
-    restartPagination = false,
-    triggeredFromScroll = false,
+    restartPagination: boolean = false,
+    triggeredFromScroll: boolean = false
   ) {
     this.paginationState.status = 'loading';
 
@@ -1627,6 +1639,17 @@ export class ProviderItemsComponent implements OnInit {
     this.filteringItemsBySearchbar(this.itemSearchbar.value)
   }
 
+  /**
+ * Cambia el estado del consumidor de supplier o default
+ *
+ * @param selected - tipo de consumidor seleccionado
+ */
+  onChangeConsumerState(selected: consumerType) {
+    this.btnConsumerState[selected] = !this.btnConsumerState[selected]
+    this.hiddenDashboard = Object.values(this.btnConsumerState).some(value => value)
+    this.filteringItemsBySearchbar(this.itemSearchbar.value)
+  }
+
   onCloseSearchbar() {
     this.searchOpened = false
   }
@@ -1663,10 +1686,26 @@ export class ProviderItemsComponent implements OnInit {
     this.router.navigate(['ecommerce/admin-article-detail/' + id]);
   }
 
+  updatePricing(id: string) {
+    const navigationData: NavigationExtras = {
+      replaceUrl: true,
+      queryParams: {
+        stockEdition: true
+      }
+    }
+    return this.router.navigate(['ecommerce/provider-items-editor/' + id], navigationData);
+  }
+
   /**
-   * Muestra el dialog de exibicion segun el rol del merchant.
+   * Muestra el dialog de exibicion segun el rol del merchant y cambia
+   * el rol según la selección del usuario
    */
   openExhibitDialog() {
+    /**
+   * Cambia el rol del comerciante de forma asíncrona.
+   *
+   * @param role El índice del rol al que se cambiará.
+   */
     const roleSwitch = async (role: number) => {
       if (this.merchantRole) {
         await this.merchantsService
@@ -1726,7 +1765,7 @@ export class ProviderItemsComponent implements OnInit {
  *
  * @param itemToSearch item a buscar
  */
-  private filteringItemsBySearchbar(itemName: string) {
+  private filteringItemsBySearchbar(nameItem: string) {
     const input: PaginationInput = {
       findBy: {
         status: this.btnFilterState.hidden ? "disabled" : "active",
@@ -1736,8 +1775,8 @@ export class ProviderItemsComponent implements OnInit {
       },
       options: {
         sortBy: 'createdAt:desc',
-        limit: 15,
-        page: 1,
+        limit: this.paginationSearchState.pageSize,
+        page: this.paginationSearchState.page,
       },
     };
 
@@ -1792,8 +1831,11 @@ export class ProviderItemsComponent implements OnInit {
       }
     }
 
-    this.saleflowService.listItems(input, false, itemName)
-      .then(data => this.itemsFiltering = data.listItems)
+    this.processPaginationItemsBySearch(input, nameItem)
+      .then((arrayItems) => {
+        console.log(arrayItems)
+        this.itemsFiltering = arrayItems
+      })
   }
 
   /**
@@ -1806,25 +1848,12 @@ export class ProviderItemsComponent implements OnInit {
   private async processPaginationItems(
     pagination: PaginationInput,
     triggeredFromScroll: boolean,
-    arrayItems: Item[]
+    items: Item[]
   ) {
     const data = await this.saleflowService.listItems(pagination, true);
-    const itemsQueryResult = data?.listItems || [];
-
-    itemsQueryResult.forEach((item) => {
-      item.stock = 0;
-      item.useStock = true;
-      item.images.forEach((image) => {
-        if (!image.value.includes('http')) {
-          image.value = 'https://' + image.value;
-        }
-      });
-      item.images = item.images.sort(({ index: a }, { index: b }) => (a > b ? 1 : -1));
-    });
-
-
+    const itemsQueryResult = this.initializeItemsPagination(data?.listItems)
     if (!itemsQueryResult.length && this.paginationState.page === 1) {
-      arrayItems = []
+      items = []
     }
 
     // Condición para cuando llegas al final de la página
@@ -1835,6 +1864,43 @@ export class ProviderItemsComponent implements OnInit {
 
     if (itemsQueryResult && itemsQueryResult.length > 0) {
       if (this.paginationState.page === 1) {
+        items.length = 0;
+        items.push(...itemsQueryResult);
+      } else {
+        items.push(...itemsQueryResult);
+      }
+    }
+
+    this.paginationState.status = 'complete';
+    if (!itemsQueryResult.length && !triggeredFromScroll) {
+      items = [];
+    }
+  }
+
+  /**
+* Procesa la paginación de los items
+*
+* @param pagination La información de paginación
+* @param triggeredFromScroll Indica si el proceso fue desencadenado por scroll
+* @param arrayItems El array en el que se guardará el resultado
+* @param input - Nombre del item a buscar en el listado de items
+*/
+  private async processPaginationItemsBySearch(
+    pagination: PaginationInput,
+    input: string = ''
+  ): Promise<Item[]> {
+    const data = await this.saleflowService.listItems(pagination, true, input);
+    const itemsQueryResult = this.initializeItemsPagination(data?.listItems)
+    const arrayItems: Item[] = []
+
+    // Condición para cuando llegas al final de la página
+    if (!itemsQueryResult.length && this.paginationSearchState.page !== 1) {
+      this.paginationSearchState.page--;
+      this.reachTheEndOfPaginationSearch = true;
+    }
+
+    if (itemsQueryResult && itemsQueryResult.length > 0) {
+      if (this.paginationSearchState.page === 1) {
         arrayItems.length = 0;
         arrayItems.push(...itemsQueryResult);
       } else {
@@ -1842,20 +1908,30 @@ export class ProviderItemsComponent implements OnInit {
       }
     }
 
-    this.paginationState.status = 'complete';
-
-    if (!itemsQueryResult.length && !triggeredFromScroll) {
-      arrayItems = [];
-    }
+    this.paginationSearchState.status = 'complete';
+    return arrayItems
   }
-  updatePricing(id) {
-    const navigationData: NavigationExtras = {
-      replaceUrl: true,
-      queryParams: {
-        stockEdition: true
-      }
-    }
-    return this.router.navigate(['ecommerce/provider-items-editor/' + id], navigationData);
 
+  /**
+   * Inicializa la paginación de los elementos.
+   *
+   * @param {Item[]} items - La lista de elementos a inicializar.
+   * @returns {Item[]} - La lista de elementos inicializados.
+   */
+  private initializeItemsPagination(items: Item[]): Item[] {
+    if (!items) {
+      return []
+    }
+    items.forEach((item) => {
+      item.stock = 0;
+      item.useStock = true;
+      item.images.forEach((image) => {
+        if (!image.value.includes('http')) {
+          image.value = 'https://' + image.value;
+        }
+      });
+      item.images = item.images.sort(({ index: a }, { index: b }) => (a > b ? 1 : -1));
+    });
+    return items
   }
 }
