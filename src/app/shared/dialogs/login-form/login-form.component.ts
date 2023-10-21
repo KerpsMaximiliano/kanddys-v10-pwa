@@ -66,6 +66,8 @@ export interface FormData {
     accept?: string;
   };
   automaticallyFocusFirstField?: boolean;
+  buttonsStyles?: Record<string, string | number>
+  closeCallback?: () => void;
 }
 
 @Component({

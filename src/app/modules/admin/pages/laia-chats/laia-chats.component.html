@@ -6,11 +6,11 @@
   <div class="filters">
     <div class="filter">Integraciones</div>
     <div class="filter" [style.margin]="'0 8px'">Personalidad</div>
-    <div class="filter">1 Memorias</div>
+    <div class="filter" (click)="goToAIMemoriesManagement()">{{ memoriesCount }} Memorias</div>
   </div>
 
   <main>
-    <form class="search-bar-wrapper" style="margin-bottom: 10px">
+    <form *ngIf="chatsByMonthCopy?.length > 0" class="search-bar-wrapper" style="margin-bottom: 10px">
       <input
         type="text"
         name="item-search"
@@ -25,10 +25,8 @@
     </form>
 
     <ng-container *ngIf="chatsByMonthCopy?.length === 0">
-      <ng-container *ngFor="let item of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]">
         <ng-container *ngTemplateOutlet="emptyChat"
         ></ng-container>
-      </ng-container>
     </ng-container>
 
     <ng-container *ngIf="chatsByMonthCopy?.length > 0">
@@ -83,9 +81,13 @@
 </ng-template>
 
 <ng-template #emptyChat>
-  <div class="empty-chat-card">
+  <div class="empty-chat">
+    <img src="../../../../../assets/images/person-default.png">
     <p class="text">
-      ReceptorID
+      Aquí estarán los Chats
     </p>
+    <a href="http://https://kanddys.com/" class="text-secondary">
+      Ya Laia me ha ayudado anteriormente
+    </a>
   </div>
 </ng-template>
