@@ -76,10 +76,17 @@ export class ProviderItemsComponent implements OnInit {
   }
 
   /** Total items */
-  totalHidden: number = 0
-  totalAllItems: number = 0
-  totalItemsByCommission: number = 0
-  totalItemsByLowStock: number = 0
+  totalByItems = {
+    hidden: 0,
+    allItems: 0,
+    byCommission: 0,
+    byLowStock: 0,
+  }
+
+  totalByType = {
+    default: 0,
+    supplier: 0,
+  }
 
   //Pagination-specific variables
   paginationState: {
@@ -209,6 +216,7 @@ export class ProviderItemsComponent implements OnInit {
               if (this.merchantData?._id) {
                 await this.fetchItemsForSell();
                 await this.fetchQuantifyFilters();
+                await this.fetchQuantityFiltersByRole()
               }
             }, 1000);
           })
@@ -247,10 +255,30 @@ export class ProviderItemsComponent implements OnInit {
     try {
       const merchantTotal = await this.itemsService.itemsQuantityOfFilters(this.merchantData._id)
       if (merchantTotal) {
-        this.totalHidden = merchantTotal.hidden
-        this.totalAllItems = merchantTotal.all
-        this.totalItemsByCommission = merchantTotal.commissionable
-        this.totalItemsByLowStock = merchantTotal.lowStock
+        this.totalByItems = {
+          hidden: merchantTotal.hidden,
+          allItems: merchantTotal.all,
+          byCommission: merchantTotal.commissionable,
+          byLowStock: merchantTotal.lowStock,
+        }
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  async fetchQuantityFiltersByRole() {
+    try {
+      const paginationInput = {
+        findBy: {
+          type: ["default", "supplier"],
+          merchant: this.merchantData._id
+        }
+      }
+      const totalItems = await this.itemsService.itemsQuantityOfFiltersByType(paginationInput)
+      this.totalByType = {
+        default: totalItems.default,
+        supplier: totalItems.supplier
       }
     } catch (error) {
       console.error(error)
@@ -1640,8 +1668,6 @@ export class ProviderItemsComponent implements OnInit {
    */
   openExhibitDialog() {
     const roleSwitch = async (role: number) => {
-      console.log(role, this.merchantRole)
-      console.log(this.merchantData.roles)
       if (this.merchantRole) {
         await this.merchantsService
           .merchantRemoveRole(this.merchantRole._id, this.merchantData._id)
@@ -1710,8 +1736,8 @@ export class ProviderItemsComponent implements OnInit {
       },
       options: {
         sortBy: 'createdAt:desc',
-        limit: this.paginationState.pageSize,
-        page: this.paginationState.page,
+        limit: 15,
+        page: 1,
       },
     };
 

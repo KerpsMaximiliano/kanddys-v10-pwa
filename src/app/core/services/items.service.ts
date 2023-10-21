@@ -45,7 +45,8 @@ import {
   itemsQuantitySold,
   itemsQuantitySoldTotal,
   itemsSuppliersPaginate,
-  itemAddExpenditure
+  itemAddExpenditure,
+  itemsQuantityOfFiltersByType
 } from '../graphql/items.gql';
 import {
   Item,
@@ -116,7 +117,7 @@ export class ItemsService {
     this.temporalImages = null;
   }
 
-  constructor(private graphql: GraphQLWrapper) {}
+  constructor(private graphql: GraphQLWrapper) { }
 
   async item(id: string): Promise<Item> {
     const result = await this.graphql.query({
@@ -250,7 +251,7 @@ export class ItemsService {
         fetchPolicy: 'no-cache',
       });
       return response;
-    } catch (e) {}
+    } catch (e) { }
   }
 
   async itemsByCategory(
@@ -632,6 +633,25 @@ export class ItemsService {
       return response?.itemsQuantityOfFilters;
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  itemsQuantityOfFiltersByType = async (paginate: PaginationInput): Promise<{
+    default: number,
+    supplier: number
+  } | null> => {
+    try {
+      const response = await this.graphql.query({
+        query: itemsQuantityOfFiltersByType, //add listItems to gqls,
+        variables: { paginate },
+        fetchPolicy: 'no-cache',
+      });
+      if (!response) return;
+
+      return response?.itemsQuantityOfFiltersByType;
+    } catch (e) {
+      console.error(e);
+      return null
     }
   };
 

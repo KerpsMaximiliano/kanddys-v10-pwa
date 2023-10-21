@@ -353,6 +353,12 @@ export const itemsQuantityOfFilters = gql`
   }
 `;
 
+export const itemsQuantityOfFiltersByType = gql`
+  query itemsQuantityOfFiltersByType($paginate: PaginationInput) {
+    itemsQuantityOfFiltersByType(paginate: $paginate)
+  }
+`;
+
 export const providersItemMetrics = gql`
   query providersItemMetrics {
     providersItemMetrics

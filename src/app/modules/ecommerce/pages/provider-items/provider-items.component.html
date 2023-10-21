@@ -30,7 +30,7 @@
       </div>
     </header>
 
-    <section class="info">
+    <section class="info" *ngIf="!searchOpened">
       <div class="container">
         <div class="info-detail">
           <p>Comprador paga 10.30 a Laila</p>
@@ -88,13 +88,13 @@
           [ngClass]="{ active: btnConsumerState.supplier }"
           (click)="onChangeConsumerState('supplier')"
         >
-          Articulos para floristerias
+          Articulos para floristerias ({{ totalByType.default }})
         </button>
         <button
           [ngClass]="{ active: btnConsumerState.default }"
           (click)="onChangeConsumerState('default')"
         >
-          Consumidores finales
+          Consumidores finales ({{ totalByType.supplier }})
         </button>
       </div>
 
@@ -104,14 +104,14 @@
           [ngClass]="{ active: btnFilterState.exhibits }"
           (click)="onChangeBtnFiltering('exhibits')"
         >
-          Todos los exhibidos ({{ totalAllItems }})
+          Todos los exhibidos ({{ totalByItems.allItems }})
         </button>
         <button
           type="button"
           [ngClass]="{ active: btnFilterState.hidden }"
           (click)="onChangeBtnFiltering('hidden')"
         >
-          Los ocultos ({{ totalHidden }})
+          Los ocultos ({{ totalByItems.hidden }})
         </button>
 
         <button
@@ -119,14 +119,14 @@
           [ngClass]="{ active: btnFilterState.byCommission }"
           (click)="onChangeBtnFiltering('byCommission')"
         >
-          Los que pagan comisión ({{ totalItemsByCommission }})
+          Los que pagan comisión ({{ totalByItems.byCommission }})
         </button>
         <button
           type="button"
           [ngClass]="{ active: btnFilterState.lowStock }"
           (click)="onChangeBtnFiltering('lowStock')"
         >
-          Menos de 10 disponibles para vender ({{ totalItemsByLowStock }})
+          Menos de 10 disponibles para vender ({{ totalByItems.byLowStock }})
         </button>
       </div>
     </div>
@@ -190,7 +190,7 @@
                 context: {
                   item: item,
                   itemIndex: itemIndex,
-                  providedByMe: true,
+                  providedByMe: false,
                   firstItem: itemIndex === 0 && itemsISell.length > 0
                 }
               "
