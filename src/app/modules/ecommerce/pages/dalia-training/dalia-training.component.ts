@@ -60,6 +60,12 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   vectorId: string = null;
   showTextError = false;
   timer: any;
+  requestResponse: boolean = false;
+  memories: Array<{
+    content: string;
+    vectorId: string;
+    name?:string;
+  }> = [];
 
   constructor(
     private gptService: Gpt3Service,
@@ -68,7 +74,8 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     private matDialog: MatDialog,
     private bottomSheet: MatBottomSheet,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private merchantsService: MerchantsService,
   ) {}
 
   ngOnInit(): void {
@@ -77,10 +84,49 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
         this.vectorId = vectorId ? vectorId : null;
 
         this.queryParamsSubscription = this.route.queryParams.subscribe(
-          async ({ jsondata }) => {
+          async ({ jsondata, message }) => {
+            if (message) {
+              if(this.headerService.user) {
+                this.requestResponse = true;
+                this.testMemoryQueryParam(message);
+                return;
+              } else this.router.navigate(['/ecommerce/laia-memories-management']);
+            };
+
+            this.memoryTextareaValueChangeSubscription = this.form
+              .get('memory')
+              .valueChanges.subscribe((change) => {
+                this.loginData.jsondata = JSON.stringify({
+                  memoryToSave: this.form.get('memory').value,
+                  memoryName: this.memoryName,
+                });
+              });
+
+            if (jsondata) {
+              let parsedData = JSON.parse(decodeURIComponent(jsondata));
+
+              if (parsedData.memoryToSave) {
+                this.form.get('memory').setValue(parsedData.memoryToSave);
+                this.memoryName = parsedData.memoryName;
+                await this.saveMemoryInKnowledgeBase();
+
+                const urlWithoutQueryParams = this.router.url.split('?')[0];
+
+                window.history.replaceState(
+                  {},
+                  'SaleFlow',
+                  urlWithoutQueryParams
+                );
+              }
+            }
+
+            if (this.vectorId) {
+              await this.loadVectorData();
+            }
+
             const textarea: HTMLElement = document.querySelector('.base-text');
 
-            textarea.addEventListener('input', () => {
+            textarea?.addEventListener('input', () => {
               console.log('textarea scrollHeight', textarea.scrollHeight);
               if (textarea.scrollHeight > 215) {
                 if (this.showExtendButton === false) {
@@ -155,37 +201,6 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
                 event.preventDefault();
               }
             });
-
-            this.memoryTextareaValueChangeSubscription = this.form
-              .get('memory')
-              .valueChanges.subscribe((change) => {
-                this.loginData.jsondata = JSON.stringify({
-                  memoryToSave: this.form.get('memory').value,
-                  memoryName: this.memoryName,
-                });
-              });
-
-            if (jsondata) {
-              let parsedData = JSON.parse(decodeURIComponent(jsondata));
-
-              if (parsedData.memoryToSave) {
-                this.form.get('memory').setValue(parsedData.memoryToSave);
-                this.memoryName = parsedData.memoryName;
-                await this.saveMemoryInKnowledgeBase();
-
-                const urlWithoutQueryParams = this.router.url.split('?')[0];
-
-                window.history.replaceState(
-                  {},
-                  'SaleFlow',
-                  urlWithoutQueryParams
-                );
-              }
-            }
-
-            if (this.vectorId) {
-              await this.loadVectorData();
-            }
           }
         );
       }
@@ -197,7 +212,6 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     
     if(this.form.get('memory')?.value !== null) this.generatedQA = null;
     
-    console.log(this.form.get('memory')?.value, words);
     this.showTextError = this.form.get('memory')?.value === '' ? false : words?.length < 3 ? true : false;
 
     if(words?.length >= 3) {
@@ -219,6 +233,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
       if (vectorData?.length) {
         this.form.get('memory').setValue(vectorData[0].text);
         this.memoryName = vectorData[0].name ? vectorData[0].name : null;
+        this.testMemory();
 
         setTimeout(() => {
           const textarea: HTMLElement = document.querySelector('.base-text');
@@ -319,13 +334,78 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     }
   }
 
+  async testMemoryQueryParam(message: string) {
+    try {
+      lockUI();
+
+      const merchant = await this.merchantsService.merchantDefault();
+
+      const input = {
+        prompt: message,
+        userId: merchant?.owner?._id,
+        merchantId: merchant?._id,
+        isAuthorization: true,
+      };
+
+      let response = (await this.gptService.requestResponseFromKnowledgeBaseJson(input))?.response;
+
+      if (response) {
+        this.memories = response?.metadatas;
+        this.generatedQA = {
+          question: message,
+          response: response?.message,
+        };
+      }
+
+      unlockUI();
+    } catch (error) {
+      unlockUI();
+      this.generatedQA = {
+        question: message,
+        response: 'No tenemos respuesta a eso en este momento',
+      };
+      console.error(error);
+    }
+  }
+
+  async editQAQueryParam() {
+    try {
+      lockUI();
+
+      const merchant = await this.merchantsService.merchantDefault();
+
+      const input = {
+        prompt: this.questionForm.get('question').value,
+        userId: merchant?.owner?._id,
+        merchantId: merchant?._id,
+        isAuthorization: true,
+      };
+
+      let response = (await this.gptService.requestResponseFromKnowledgeBaseJson(input))?.response;
+
+      if (response) {
+        this.memories = response?.metadatas;
+        this.generatedQA = {
+          question: this.questionForm.get('question').value,
+          response: response?.message,
+        };
+      }
+
+      unlockUI();
+    } catch (error) {
+      unlockUI();
+      this.headerService.showErrorToast();
+      console.error(error);
+    }
+  }
+
   async editOrApplyQuestionChange() {
     if (this.editingQuestion) {
       const inputDivContent = document.querySelector(
         '#question-box-input'
       ).textContent;
       this.questionForm.get('question').setValue(inputDivContent)
-      await this.editQA();
+      this.requestResponse ? await this.editQAQueryParam() : await this.editQA();
     }
 
     this.editingQuestion = !this.editingQuestion;
@@ -415,8 +495,8 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     return textareaHeight >= windowHeight;
   }
 
-  back() {
-    if (this.vectorId) {
+  goBack() {
+    if (this.vectorId || this.requestResponse) {
       return this.router.navigate(['/ecommerce/laia-memories-management']);
     }
 
@@ -425,6 +505,10 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
         tabarIndex: 2,
       },
     });
+  }
+
+  editMemory(id: string) {
+    this.router.navigate(['/ecommerce/laia-training/' + id]);
   }
 
   editMemoryName = () => {
@@ -535,7 +619,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.routeParamsSubscription.unsubscribe();
     this.queryParamsSubscription.unsubscribe();
-    this.memoryTextareaValueChangeSubscription.unsubscribe();
+    this.memoryTextareaValueChangeSubscription?.unsubscribe();
     this.memoryNameDialogSubscription?.unsubscribe();
   }
 }

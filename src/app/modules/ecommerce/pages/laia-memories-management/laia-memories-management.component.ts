@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray } from '@angular/forms';
+import { FormArray, FormControl } from '@angular/forms';
 import { SaleFlow } from 'src/app/core/models/saleflow';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -30,6 +30,8 @@ export class LaiaMemoriesManagementComponent implements OnInit {
   merchantSaleflow: SaleFlow = null;
   loadingKnowledge: boolean = false;
   authEventSubscription: Subscription;
+  assetsFolder: string = environment.assetsUrl;
+  message: FormControl = new FormControl(null);
 
   constructor(
     private gptService: Gpt3Service,
@@ -96,6 +98,14 @@ export class LaiaMemoriesManagementComponent implements OnInit {
 
   addMemory() {
     this.router.navigate(['/ecommerce/laia-training']);
+  }
+
+  goLaiaTraining() {
+    this.router.navigate(['/ecommerce/laia-training'], {
+      queryParams: {
+        message: this.message.value,
+      },
+    });
   }
 
   goBack() {
