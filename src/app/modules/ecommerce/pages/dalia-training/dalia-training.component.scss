@@ -10,7 +10,6 @@
     padding-bottom: 13px;
     padding-top: 15px;
     display: flex;
-    justify-content: flex-end;
     padding-left: 20px;
     padding-right: 23px;
     margin: auto;
@@ -35,6 +34,20 @@
       font-style: normal;
       font-weight: 400;
       line-height: normal;
+    }
+
+    h2 {
+      color: var(--Fondo-de-Pantallas, #f6f6f6);
+      font-family: InterLight;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      margin: 0px;
+      padding: 0px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .close-button {
@@ -80,6 +93,52 @@
 
     &.inputPending {
       padding-bottom: 95px;
+    }
+
+    .container-memories {
+      margin-top: 48px;
+      padding-top: 5px;
+
+      .memory {
+        padding: 17px 22px 29px;
+        height: 132px;
+        border-radius: 15px;
+        border: 1px solid var(--Plomo, #7b7b7b);
+        margin-top: 5px;
+        margin-bottom: 7px;
+  
+        &:hover {
+          cursor: pointer;
+        }
+  
+        .name {
+          text-transform: uppercase;
+          color: var(--Fondo-de-Pantallas, #f6f6f6);
+          font-family: InterRegular;
+          font-size: 11px;
+          font-style: normal;
+          line-height: normal;
+          margin-bottom: 16px;
+          width: 100%;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+  
+        .content {
+          color: var(--Blanco, #fff);
+          font-family: InterRegular;
+          font-size: 16.107px;
+          font-style: normal;
+          line-height: normal;
+          -webkit-line-clamp: 3;
+          line-clamp: 3;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+        }
+      }
     }
   }
 
