@@ -7,7 +7,7 @@
       </span>
     </div> -->
     <h2 *ngIf="requestResponse">Memorias utilizadas en la respuesta</h2>
-    <div class="close-button" (click)="back()">X</div>
+    <div class="close-button" (click)="goBack()">X</div>
   </header>
 
   <ng-container *ngIf="requestResponse; else default">

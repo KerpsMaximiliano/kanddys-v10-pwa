@@ -357,7 +357,10 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
       unlockUI();
     } catch (error) {
       unlockUI();
-      this.headerService.showErrorToast();
+      this.generatedQA = {
+        question: message,
+        response: 'No tenemos respuesta a eso en este momento',
+      };
       console.error(error);
     }
   }
@@ -489,8 +492,8 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     return textareaHeight >= windowHeight;
   }
 
-  back() {
-    if (this.vectorId) {
+  goBack() {
+    if (this.vectorId || this.requestResponse) {
       return this.router.navigate(['/ecommerce/laia-memories-management']);
     }
 
