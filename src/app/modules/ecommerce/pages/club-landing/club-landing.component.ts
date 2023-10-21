@@ -239,7 +239,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   vectorsCount: number = 0;
   chatsCount: number = 0;
   @ViewChild('qrcode', { read: ElementRef }) qrcode: ElementRef;
-  
+
   constructor(
     public headerService: HeaderService,
     private app: AppService,
@@ -330,7 +330,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         headers: {
           token: localStorage.getItem('session-token'),
         },
-      }) 
+      })
     } catch (error) {
       console.log(error);
     }
@@ -364,9 +364,9 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   showRoleDialog() {
     let options : [
       {
-        value:string, 
+        value:string,
         callback: () => void,
-         active?: boolean, 
+         active?: boolean,
          noSettings?: boolean
       }
     ] = [
@@ -423,7 +423,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       }
     });
     dialogRef.afterClosed().subscribe((role) => {
-      
+
     });
   }
 
@@ -450,7 +450,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   shareDialog(store = false) {
-    let data; 
+    let data;
     if(store) {
       let storeLink = `${this.URI}/ecommerce/${this.merchantSlug}/store`;
       data = {
@@ -905,7 +905,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       this.router.navigate(['/ecommerce/provider-items-editor']);
       }
   }
-  
+
   isUserAdmin() {
     if (this.headerService?.user)
       return this.headerService.user?.roles?.some(

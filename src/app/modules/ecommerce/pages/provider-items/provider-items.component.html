@@ -48,7 +48,18 @@
           </button>
         </div>
         <p class="info-detail-text">
-          Le vendes <span>{{ "al consumidor final" }}</span>
+          Le vendes
+          <span (click)="openExhibitDialog()">
+            {{
+              this.merchantRole?.code === "PRODUCTOR"
+                ? "a fincas"
+                : this.merchantRole?.code === "PROVIDER"
+                ? "a floristerías"
+                : this.merchantRole?.code === "SUPPLIER"
+                ? "a wholesalers"
+                : "al consumidor final"
+            }}.
+          </span>
         </p>
       </div>
     </section>

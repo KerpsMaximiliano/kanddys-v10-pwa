@@ -10,7 +10,7 @@ import { urltoFile } from 'src/app/core/helpers/files.helpers';
 import { completeImageURL, isVideo } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item, ItemImageInput, ItemInput } from 'src/app/core/models/item';
-import { Merchant } from 'src/app/core/models/merchant';
+import { Merchant, Roles } from 'src/app/core/models/merchant';
 import { SlideInput } from 'src/app/core/models/post';
 import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
 import { User } from 'src/app/core/models/user';
@@ -128,6 +128,8 @@ export class ProviderItemsComponent implements OnInit {
   isUserVerified = false
 
   plataformFeeTypeActual = 'platform_fee_user'
+  merchantRole: Roles | null = null;
+  roles: Roles[] = [];
 
   private keyPresentationState = 'providersPresentationClosed'
   private keyTutorialState = 'tutorialClosed'
@@ -194,6 +196,9 @@ export class ProviderItemsComponent implements OnInit {
         this.getDefaultMerchantAndSaleflows(data.user)
           .then(async ({ merchantDefault, saleflowDefault }) => {
             this.merchantData = merchantDefault;
+            const roles = await this.merchantsService.rolesPublic()
+            this.roles = roles;
+            this.merchantRole = this.merchantData.roles[0]
             this.saleflowData = saleflowDefault
             this.isUserLogged = true
 
@@ -1625,8 +1630,67 @@ export class ProviderItemsComponent implements OnInit {
       }
     });
   }
-  goToArticleDetail(id) {
+
+  goToArticleDetail(id: string) {
     this.router.navigate(['ecommerce/admin-article-detail/' + id]);
+  }
+
+  /**
+   * Muestra el dialog de exibicion segun el rol del merchant.
+   */
+  openExhibitDialog() {
+    const roleSwitch = async (role: number) => {
+      console.log(role, this.merchantRole)
+      console.log(this.merchantData.roles)
+      if (this.merchantRole) {
+        await this.merchantsService
+          .merchantRemoveRole(this.merchantRole._id, this.merchantData._id)
+        await this.merchantsService
+          .merchantAddRole(this.roles[role]._id, this.merchantData._id)
+          .then(() => this.merchantRole = this.roles[role])
+      } else {
+        this.merchantsService
+          .merchantAddRole(this.roles[role]._id, this.merchantData._id)
+          .then(() => {
+            this.merchantRole = this.roles[role]
+          })
+      }
+    }
+    this.dialog.open(OptionsDialogComponent, {
+      data: {
+        title: '¿A quién le vendes?',
+        options: [
+          {
+            value: 'Consumidor final',
+            callback: () => {
+              let index = this.roles.findIndex((role) => role.code === 'STORE')
+              roleSwitch(index)
+            }
+          },
+          {
+            value: 'Floristerías',
+            callback: () => {
+              let index = this.roles.findIndex((role) => role.code === 'PROVIDER')
+              roleSwitch(index)
+            }
+          },
+          {
+            value: 'Wholesalers',
+            callback: () => {
+              let index = this.roles.findIndex((role) => role.code === 'SUPPLIER')
+              roleSwitch(index)
+            }
+          },
+          {
+            value: 'Fincas',
+            callback: () => {
+              let index = this.roles.findIndex((role) => role.code === 'PRODUCTOR')
+              roleSwitch(index)
+            }
+          },
+        ]
+      }
+    })
   }
 
   /**
