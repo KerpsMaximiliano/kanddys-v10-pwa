@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -14,6 +15,7 @@ import {
   FormData,
 } from 'src/app/shared/dialogs/form/form.component';
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
+import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -64,6 +66,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     public headerService: HeaderService,
     private dialog: DialogService,
     private matDialog: MatDialog,
+    private bottomSheet: MatBottomSheet,
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -470,6 +473,64 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
         }
       });
   };
+
+  openIntegrationsDialog() {
+    const dialog = this.bottomSheet.open(
+      OptionsMenuComponent,
+      {
+        data: {
+          options: [
+            {
+              value: 'Custom Website',
+              callback: () => {
+                
+              },
+            },
+            {
+              value: 'WhatsApp (dura 20segs. y debes escanear el QR que te saldrá desde tu WhatsApp Mobile)',
+              callback: () => {
+                return this.router.navigate(['/admin/wizard-training'], {
+                  queryParams: {
+                    triggerWhatsappClient: true
+                  }
+                });
+              },
+            },
+            {
+              value: 'Enlace',
+              callback: () => {
+                
+              },
+            },
+            {
+              value: 'Shopify',
+              callback: () => {
+                
+              },
+            },
+            {
+              value: 'WordPress',
+              callback: () => {
+                
+              },
+            },
+            {
+              value: 'Squarespace',
+              callback: () => {
+                
+              },
+            },
+            {
+              value: 'Instagram',
+              callback: () => {
+                
+              },
+            },
+          ],
+        },
+      }
+    )
+  }
 
   ngOnDestroy() {
     this.routeParamsSubscription.unsubscribe();

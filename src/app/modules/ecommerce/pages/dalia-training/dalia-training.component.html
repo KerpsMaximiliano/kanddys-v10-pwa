@@ -29,6 +29,19 @@
 
         <img *ngIf="form.get('memory').value" src="../../../../../assets/icons/shortcut.svg" alt="" class="shortcut" (click)="form.get('memory').setValue(null)"/>
 
+        <p 
+          *ngIf="
+            !showTextError &&
+            !form.get('memory').value &&
+            !generatedQA?.response && 
+            !showExtendButton
+          "
+          class="settings-text"
+          (click)="openIntegrationsDialog()"
+        >
+          Integraciones
+        </p>
+
         <p *ngIf="showTextError" class="show-text-error">
           Según lo escrito no se pueden generar preguntas todavía
         </p>
