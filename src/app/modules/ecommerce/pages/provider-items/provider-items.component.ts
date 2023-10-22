@@ -363,10 +363,16 @@ export class ProviderItemsComponent implements OnInit {
         this.paginationState.status === 'complete' &&
         !this.reachTheEndOfPagination
       ) {
-        if (this.isUserLogged) {
+        if (this.isUserLogged && !this.hiddenDashboard) {
           await this.fetchItemsForSell(false, true);
-        } else {
+        }
+
+        if (!this.isUserLogged && !this.hiddenDashboard) {
           await this.fetchItemsForNotSell(false, true);
+        }
+
+        if (this.hiddenDashboard) {
+          this.filteringItemsBySearchbar(false, this.itemSearchbar.value)
         }
       }
     }
@@ -514,9 +520,7 @@ export class ProviderItemsComponent implements OnInit {
     this.paginationState.status = 'loading';
 
     if (restartPagination) {
-      this.reachTheEndOfPagination = false;
-      this.paginationState.page = 1;
-      this.itemsISell = [];
+      this.resetPagination(this.itemsISell)
     } else {
       this.paginationState.page++;
     }
@@ -550,12 +554,11 @@ export class ProviderItemsComponent implements OnInit {
     this.paginationState.status = 'loading';
 
     if (restartPagination) {
-      this.reachTheEndOfPagination = false;
-      this.paginationState.page = 1;
-      this.itemsIDontSell = [];
+      this.resetPagination(this.itemsIDontSell)
     } else {
       this.paginationState.page++;
     }
+
     const pagination: PaginationInput = {
       findBy: {
         type: 'supplier',
@@ -1636,7 +1639,7 @@ export class ProviderItemsComponent implements OnInit {
   onChangeBtnFiltering(selected: btnFilterName) {
     this.btnFilterState[selected] = !this.btnFilterState[selected]
     this.hiddenDashboard = Object.values(this.btnFilterState).some(value => value)
-    this.filteringItemsBySearchbar(this.itemSearchbar.value)
+    this.filteringItemsBySearchbar(true, this.itemSearchbar.value)
   }
 
   /**
@@ -1647,7 +1650,7 @@ export class ProviderItemsComponent implements OnInit {
   onChangeConsumerState(selected: consumerType) {
     this.btnConsumerState[selected] = !this.btnConsumerState[selected]
     this.hiddenDashboard = Object.values(this.btnConsumerState).some(value => value)
-    this.filteringItemsBySearchbar(this.itemSearchbar.value)
+    this.filteringItemsBySearchbar(true, this.itemSearchbar.value)
   }
 
   onCloseSearchbar() {
@@ -1666,7 +1669,7 @@ export class ProviderItemsComponent implements OnInit {
 
     if (this.itemSearchbar.value) {
       this.hiddenDashboard = true
-      this.filteringItemsBySearchbar(this.itemSearchbar.value)
+      this.filteringItemsBySearchbar(true, this.itemSearchbar.value)
     }
 
     if (!this.itemSearchbar.value && !isSomeBtnActive) {
@@ -1765,7 +1768,18 @@ export class ProviderItemsComponent implements OnInit {
  *
  * @param itemToSearch item a buscar
  */
-  private filteringItemsBySearchbar(nameItem: string) {
+  private filteringItemsBySearchbar(
+    restartPagination: boolean = false,
+    nameItem: string
+  ) {
+    if (restartPagination) {
+      this.reachTheEndOfPaginationSearch = false;
+      this.paginationSearchState.page = 1;
+      this.itemsFiltering = [];
+    } else {
+      this.paginationSearchState.page++;
+    }
+
     const input: PaginationInput = {
       findBy: {
         status: this.btnFilterState.hidden ? "disabled" : "active",
@@ -1775,8 +1789,8 @@ export class ProviderItemsComponent implements OnInit {
       },
       options: {
         sortBy: 'createdAt:desc',
-        limit: this.paginationSearchState.pageSize,
-        page: this.paginationSearchState.page,
+        limit: 15,
+        page: -1,
       },
     };
 
@@ -1832,10 +1846,7 @@ export class ProviderItemsComponent implements OnInit {
     }
 
     this.processPaginationItemsBySearch(input, nameItem)
-      .then((arrayItems) => {
-        console.log(arrayItems)
-        this.itemsFiltering = arrayItems
-      })
+      .then((arrayItems) => this.itemsFiltering = arrayItems)
   }
 
   /**
@@ -1923,8 +1934,6 @@ export class ProviderItemsComponent implements OnInit {
       return []
     }
     items.forEach((item) => {
-      item.stock = 0;
-      item.useStock = true;
       item.images.forEach((image) => {
         if (!image.value.includes('http')) {
           image.value = 'https://' + image.value;
@@ -1933,5 +1942,16 @@ export class ProviderItemsComponent implements OnInit {
       item.images = item.images.sort(({ index: a }, { index: b }) => (a > b ? 1 : -1));
     });
     return items
+  }
+
+  /**
+   * Reset the pagination dashboard
+   *
+   * @param items - list of items
+   */
+  private resetPagination(items: Item[]) {
+    this.reachTheEndOfPagination = false;
+    this.paginationState.page = 1;
+    items = [];
   }
 }
