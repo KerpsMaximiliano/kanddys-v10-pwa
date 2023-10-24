@@ -4,7 +4,7 @@
   </header>
 
   <div class="filters">
-    <div class="filter">Integraciones</div>
+    <div class="filter" (click)="openIntegrationsDialog()">Integraciones</div>
     <div class="filter" [style.margin]="'0 8px'">Personalidad</div>
     <div class="filter" (click)="goToAIMemoriesManagement()">{{ memoriesCount }} Memorias</div>
   </div>
@@ -86,7 +86,7 @@
     <p class="text">
       Aquí estarán los Chats
     </p>
-    <a href="http://https://kanddys.com/" class="text-secondary">
+    <a class="text-secondary">
       Ya Laia me ha ayudado anteriormente
     </a>
   </div>

@@ -11,6 +11,8 @@ import { User } from 'src/app/core/models/user';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
 
 interface ExtendedChat extends Chat {
   receiver?: User;
@@ -63,6 +65,7 @@ export class LaiaChatsComponent implements OnInit {
     private merchantsService: MerchantsService,
     private headersService: HeaderService,
     private gptService: Gpt3Service,
+    private bottomSheet: MatBottomSheet
   ) {}
 
   async ngOnInit() {
@@ -206,5 +209,63 @@ export class LaiaChatsComponent implements OnInit {
         tabarIndex: 2,
       },
     });
+  }
+
+  openIntegrationsDialog() {
+    const dialog = this.bottomSheet.open(
+      OptionsMenuComponent,
+      {
+        data: {
+          options: [
+            {
+              value: 'Custom Website',
+              callback: () => {
+                
+              },
+            },
+            {
+              value: 'WhatsApp (dura 20segs. y debes escanear el QR que te saldrá desde tu WhatsApp Mobile)',
+              callback: () => {
+                return this.router.navigate(['/admin/wizard-training'], {
+                  queryParams: {
+                    triggerWhatsappClient: true
+                  }
+                });
+              },
+            },
+            {
+              value: 'Enlace',
+              callback: () => {
+                
+              },
+            },
+            {
+              value: 'Shopify',
+              callback: () => {
+                
+              },
+            },
+            {
+              value: 'WordPress',
+              callback: () => {
+                
+              },
+            },
+            {
+              value: 'Squarespace',
+              callback: () => {
+                
+              },
+            },
+            {
+              value: 'Instagram',
+              callback: () => {
+                
+              },
+            },
+          ],
+        },
+      }
+    )
   }
 }
