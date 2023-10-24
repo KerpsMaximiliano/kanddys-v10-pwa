@@ -65,7 +65,6 @@ export class MerchantProfileComponent implements OnInit {
       const { merchantId } = routeParams;
       // if(merchantId) this.location.back();
       this.initData(merchantId);
-      this.applyConfigurationsForSlidesDimensions();
     });
   }
 
@@ -86,7 +85,7 @@ export class MerchantProfileComponent implements OnInit {
         title: this.merchant.name || null,
         type: 'MODEL',
         description: this.merchant.bio || null,
-        id: this.merchant._id,
+        id: this.merchant?._id,
         slides: this.merchant.image ? [{
           src: this.merchant.image,
           type: 'IMAGE',
@@ -94,18 +93,19 @@ export class MerchantProfileComponent implements OnInit {
         socialMedia: [],
       };
 
-      if (contactDefault.link && contactDefault.link?.length > 0) {
-        contactDefault.link.forEach(contact => this.genericModelTemplate.socialMedia.push({ type: contact?.name?.toLowerCase(), url: contact?.value }));
+      if (contactDefault?.link && contactDefault.link?.length > 0) {
+        contactDefault?.link?.forEach(contact => this.genericModelTemplate.socialMedia.push({ type: contact?.name?.toLowerCase(), url: contact?.value }));
       }
   
       this.layout = 'EXPANDED-SLIDE';
+
+      if(this.genericModelTemplate?.slides?.length > 0) this.applyConfigurationsForSlidesDimensions();
 
       setTimeout(() => {
         this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
       }, 200);
     } catch (error) {
       console.error(error);
-      this.router.navigate([`others/error-screen/`]);
     }
   }
 
