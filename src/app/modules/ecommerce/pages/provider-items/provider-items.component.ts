@@ -372,7 +372,7 @@ export class ProviderItemsComponent implements OnInit {
         }
 
         if (this.hiddenDashboard) {
-          this.filteringItemsBySearchbar(false, this.itemSearchbar.value)
+          await this.filteringItemsBySearchbar(false, this.itemSearchbar.value, true)
         }
       }
     }
@@ -1636,10 +1636,10 @@ export class ProviderItemsComponent implements OnInit {
    *
    * @param {btnFilterName} selected nombre del button del filtrado seleccionado
    */
-  onChangeBtnFiltering(selected: btnFilterName) {
+  async onChangeBtnFiltering(selected: btnFilterName) {
     this.btnFilterState[selected] = !this.btnFilterState[selected]
     this.hiddenDashboard = Object.values(this.btnFilterState).some(value => value)
-    this.filteringItemsBySearchbar(true, this.itemSearchbar.value)
+    await this.filteringItemsBySearchbar(true, this.itemSearchbar.value, true)
   }
 
   /**
@@ -1647,10 +1647,10 @@ export class ProviderItemsComponent implements OnInit {
  *
  * @param selected - tipo de consumidor seleccionado
  */
-  onChangeConsumerState(selected: consumerType) {
+  async onChangeConsumerState(selected: consumerType) {
     this.btnConsumerState[selected] = !this.btnConsumerState[selected]
     this.hiddenDashboard = Object.values(this.btnConsumerState).some(value => value)
-    this.filteringItemsBySearchbar(true, this.itemSearchbar.value)
+    await this.filteringItemsBySearchbar(true, this.itemSearchbar.value, true)
   }
 
   onCloseSearchbar() {
@@ -1663,13 +1663,13 @@ export class ProviderItemsComponent implements OnInit {
    *
    * @param {EventTarget} event evento del input
    */
-  onFilteringItemsBySearchbar(event: any) {
+  async onFilteringItemsBySearchbar(event: any) {
     this.itemSearchbar.setValue(event.target.value)
     const isSomeBtnActive = Object.values(this.btnFilterState).some(value => value)
 
     if (this.itemSearchbar.value) {
       this.hiddenDashboard = true
-      this.filteringItemsBySearchbar(true, this.itemSearchbar.value)
+      await this.filteringItemsBySearchbar(true, this.itemSearchbar.value, true)
     }
 
     if (!this.itemSearchbar.value && !isSomeBtnActive) {
@@ -1766,11 +1766,14 @@ export class ProviderItemsComponent implements OnInit {
  * Puede obtener un filtrado más especifico dependiendo de si
  * alguno de los botones de filtrado han sido activados
  *
- * @param itemToSearch item a buscar
+ * @param {Boolean} restartPagination - Indica si reinicia la paginación
+ * @param {Boolean} [triggeredFromScroll=false] -  Indica si el proceso fue desencadenado por scroll
+ * @param itemToSearch - item a buscar
  */
-  private filteringItemsBySearchbar(
+  private async filteringItemsBySearchbar(
     restartPagination: boolean = false,
-    nameItem: string
+    nameItem: string,
+    triggeredFromScroll: boolean = false,
   ) {
     if (restartPagination) {
       this.reachTheEndOfPaginationSearch = false;
@@ -1789,8 +1792,8 @@ export class ProviderItemsComponent implements OnInit {
       },
       options: {
         sortBy: 'createdAt:desc',
-        limit: 15,
-        page: -1,
+        limit: this.paginationSearchState.pageSize,
+        page: this.paginationSearchState.page,
       },
     };
 
@@ -1845,16 +1848,16 @@ export class ProviderItemsComponent implements OnInit {
       }
     }
 
-    this.processPaginationItemsBySearch(input, nameItem)
-      .then((arrayItems) => this.itemsFiltering = arrayItems)
+    await this.processPaginationItemsBySearch(input, nameItem, triggeredFromScroll, this.itemsFiltering)
   }
 
   /**
  * Procesa la paginación de los items
  *
- * @param pagination La información de paginación
- * @param triggeredFromScroll Indica si el proceso fue desencadenado por scroll
+ * @param pagination La configuración de la paginación
+ * @param {Boolean} [triggeredFromScroll=false]  Indica si el proceso fue desencadenado por scroll
  * @param arrayItems El array en el que se guardará el resultado
+ *
  */
   private async processPaginationItems(
     pagination: PaginationInput,
@@ -1876,10 +1879,8 @@ export class ProviderItemsComponent implements OnInit {
     if (itemsQueryResult && itemsQueryResult.length > 0) {
       if (this.paginationState.page === 1) {
         items.length = 0;
-        items.push(...itemsQueryResult);
-      } else {
-        items.push(...itemsQueryResult);
       }
+      items.push(...itemsQueryResult);
     }
 
     this.paginationState.status = 'complete';
@@ -1892,17 +1893,22 @@ export class ProviderItemsComponent implements OnInit {
 * Procesa la paginación de los items
 *
 * @param pagination La información de paginación
-* @param triggeredFromScroll Indica si el proceso fue desencadenado por scroll
-* @param arrayItems El array en el que se guardará el resultado
 * @param input - Nombre del item a buscar en el listado de items
+* @param triggeredFromScroll Indica si el proceso fue desencadenado por scroll
+* @returns arrayItems en el que se guardará el resultado
 */
   private async processPaginationItemsBySearch(
     pagination: PaginationInput,
-    input: string = ''
-  ): Promise<Item[]> {
+    input: string = '',
+    triggeredFromScroll: boolean = false,
+    arrayItems: Item[]
+  ) {
     const data = await this.saleflowService.listItems(pagination, true, input);
     const itemsQueryResult = this.initializeItemsPagination(data?.listItems)
-    const arrayItems: Item[] = []
+
+    if (!itemsQueryResult.length && this.paginationSearchState.page === 1) {
+      arrayItems.length = 0
+    }
 
     // Condición para cuando llegas al final de la página
     if (!itemsQueryResult.length && this.paginationSearchState.page !== 1) {
@@ -1910,17 +1916,17 @@ export class ProviderItemsComponent implements OnInit {
       this.reachTheEndOfPaginationSearch = true;
     }
 
-    if (itemsQueryResult && itemsQueryResult.length > 0) {
+    if (itemsQueryResult.length > 0) {
       if (this.paginationSearchState.page === 1) {
         arrayItems.length = 0;
-        arrayItems.push(...itemsQueryResult);
-      } else {
-        arrayItems.push(...itemsQueryResult);
       }
+      arrayItems.push(...itemsQueryResult);
     }
 
     this.paginationSearchState.status = 'complete';
-    return arrayItems
+    if (itemsQueryResult.length === 0 && !triggeredFromScroll) {
+      arrayItems.length = 0;
+    }
   }
 
   /**
