@@ -30,7 +30,7 @@ export class OrderImageLoadComponent implements OnInit {
   merchantId: string = '';
   merchantName: string = '';
   merchantImage: string = ''
-  activeStatusIndex = 0;
+  activeStatusIndex : number = 0;
   isMerchant: boolean;
   statusList: Array<{
     name: string;
@@ -239,8 +239,10 @@ export class OrderImageLoadComponent implements OnInit {
   }
 
   returnEvent() {
+    if(!this.redirectTo && !this.from) {
+      this.router.navigate(['/admin/order-progress']);
+    }
     if (!this.redirectTo && this.from) return this.redirectFromQueryParams();
-
     let queryParams = {};
     if (this.redirectTo.includes('?')) {
       const url = this.redirectTo.split('?');
@@ -368,7 +370,7 @@ export class OrderImageLoadComponent implements OnInit {
         status: status
       });
     }
-    const orderStatusDelivery = this.order.orderStatus;
+    const orderStatusDelivery = this.order.orderStatusDelivery;
     this.activeStatusIndex = statusList.findIndex(
       (status) => status === orderStatusDelivery
     );
@@ -377,10 +379,10 @@ export class OrderImageLoadComponent implements OnInit {
 
   openNotificationDialog() {
     const link = `${environment.uri}/ecommerce/manual-order-management/${this.order._id}`;
-    if (this.order.user.email && this.order.user.phone) {
+    if (this.order.user && this.order.user?.email && this.order.user?.phone) {
       this._bottomSheet.open(OptionsMenuComponent, {
         data: {
-          title: `¿Notificar del nuevo Status a ${this.order.user.name || this.order.user.email || this.order.user.phone}?`,
+          title: `¿Notificar del nuevo Status a ${this.order.user?.name || this.order.user?.email || this.order.user?.phone}?`,
           options: [
             {
               value: `Copia el enlace de la factura`,
@@ -415,7 +417,7 @@ export class OrderImageLoadComponent implements OnInit {
           },
         }
       });
-    } else if(!this.order.user.email) {
+    } else if(this.order.user && !this.order.user?.email) {
       this._bottomSheet.open(OptionsMenuComponent, {
         data: {
           title: `¿Notificar del nuevo Status a ${this.order.user.name || this.order.user.email || this.order.user.phone}?`,
@@ -447,7 +449,7 @@ export class OrderImageLoadComponent implements OnInit {
           },
         }
       });
-    } else {
+    } else if(this.order.user && !this.order.user?.phone) {
       this._bottomSheet.open(OptionsMenuComponent, {
         data: {
           title: `¿Notificar del nuevo Status a ${this.order.user.name || this.order.user.email || this.order.user.phone}?`,
@@ -471,6 +473,32 @@ export class OrderImageLoadComponent implements OnInit {
               value: `Compártecelo por correo electronico`,
               callback: () => {
                 this.openEmail();
+              },
+            },
+          ],
+          styles: {
+            fullScreen: true,
+          },
+        }
+      });
+    } else if(!this.order.user) {
+      this._bottomSheet.open(OptionsMenuComponent, {
+        data: {
+          title: `¿Notificar del nuevo Status al comprador?`,
+          options: [
+            {
+              value: `Copia el enlace de la factura`,
+              callback: () => {
+                this.clipboard.copy(link);
+              },
+            },
+            {
+              value: `Comparte el enlace de la factura`,
+              callback: () => {
+                this.NgNavigatorShareService.share({
+                  title: '',
+                  url: link,
+                });
               },
             },
           ],

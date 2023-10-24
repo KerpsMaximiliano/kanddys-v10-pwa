@@ -49,12 +49,12 @@
   <div class="content">
       <p class="section-label mt-zero">IMAGEN</p>
       <img alt="imagen" [src]="image" class="img-container" (click)="fileUpload.click()" />
-      <!-- <p class="section-label">COMPRADOR</p>
+      <p class="section-label">COMPRADOR</p>
       <div class="questions" (click)="goToUserSearch()">
         <p class="label body gray-out capitalize">
           {{user ? user.name || user.email || user.phone :'Adiciona quien lo compró'}}
         </p>
-      </div> -->
+      </div>
       <p class="section-label">MONTO</p>
       <div class="questions" (click)="openInputDialog('amount')">
         <p class="label body gray-out capitalize">
