@@ -9,6 +9,7 @@ import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { WhatsappService } from 'src/app/core/services/whatsapp.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import {
   FormComponent,
@@ -72,6 +73,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   }> = [];
   showDots: boolean = false;
   editingIndex: number = -1;
+  clientConnectionStatus = false;
 
   constructor(
     private gptService: Gpt3Service,
@@ -82,9 +84,13 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private merchantsService: MerchantsService,
+    private whatsappService: WhatsappService,
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit() {
+    this.clientConnectionStatus = await this.whatsappService.clientConnectionStatus();
+    console.log(this.clientConnectionStatus);
+
     this.routeParamsSubscription = this.route.params.subscribe(
       async ({ vectorId }) => {
         this.vectorId = vectorId ? vectorId : null;
@@ -587,60 +593,126 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   };
 
   openIntegrationsDialog() {
+    let data: {
+      data: {
+        description: string;
+        options: {
+            value: string;
+            callback: () => void;
+            settings?: {
+              value: string;
+              callback: () => void;
+            }
+        }[];
+      };
+    } = {
+      data: {
+        description: 'Integraciones:',
+        options: [
+          {
+            value: 'Custom Website',
+            callback: () => {
+              
+            },
+          },
+          {
+            value: 'Enlace',
+            callback: () => {
+              
+            },
+          },
+          {
+            value: 'Shopify',
+            callback: () => {
+              
+            },
+          },
+          {
+            value: 'WordPress',
+            callback: () => {
+              
+            },
+          },
+          {
+            value: 'Squarespace',
+            callback: () => {
+              
+            },
+          },
+          {
+            value: 'Instagram',
+            callback: () => {
+              
+            },
+          },
+        ],
+      },
+    };
+
+    if (this.clientConnectionStatus) {
+      data.data.options.splice(1, 0, {
+        value: 'WhatsApp vinculado',
+        callback: () => {
+          return this.router.navigate(['/admin/wizard-training'], {
+            queryParams: {
+              triggerWhatsappClient: true
+            }
+          });
+        },
+        settings: {
+          value: 'fa fa-gear',
+          callback: () => {
+            this.bottomSheet.open(
+              OptionsMenuComponent,
+              {
+                data: {
+                  title: '¿Desvincular WhatsApp?',
+                  options: [
+                    {
+                      value: 'Si, desvincular',
+                      callback: async () => {
+                        lockUI();
+                        try {
+                          await this.whatsappService.destroyClient();
+                          this.clientConnectionStatus = false;
+                        } catch (error) {
+                          console.error(error);
+                        }
+                        unlockUI();
+                      },
+                    },
+                    {
+                      value: 'Volver atrás',
+                      callback: () => {
+                        this.bottomSheet.open(
+                          OptionsMenuComponent,
+                          data
+                        );
+                      },
+                    },
+                  ],
+                },
+              }
+            )
+          },
+        }
+      });
+    } else {
+      data.data.options.splice(1, 0, {
+        value: 'WhatsApp (dura 20segs. y debes escanear el QR que te saldrá desde tu WhatsApp Mobile)',
+        callback: () => {
+          return this.router.navigate(['/admin/wizard-training'], {
+            queryParams: {
+              triggerWhatsappClient: true
+            }
+          });
+        },
+      });
+    }
+
     const dialog = this.bottomSheet.open(
       OptionsMenuComponent,
-      {
-        data: {
-          options: [
-            {
-              value: 'Custom Website',
-              callback: () => {
-                
-              },
-            },
-            {
-              value: 'WhatsApp (dura 20segs. y debes escanear el QR que te saldrá desde tu WhatsApp Mobile)',
-              callback: () => {
-                return this.router.navigate(['/admin/wizard-training'], {
-                  queryParams: {
-                    triggerWhatsappClient: true
-                  }
-                });
-              },
-            },
-            {
-              value: 'Enlace',
-              callback: () => {
-                
-              },
-            },
-            {
-              value: 'Shopify',
-              callback: () => {
-                
-              },
-            },
-            {
-              value: 'WordPress',
-              callback: () => {
-                
-              },
-            },
-            {
-              value: 'Squarespace',
-              callback: () => {
-                
-              },
-            },
-            {
-              value: 'Instagram',
-              callback: () => {
-                
-              },
-            },
-          ],
-        },
-      }
+      data
     )
   }
 

@@ -3,16 +3,37 @@
   <p class="description" *ngIf="data?.description">{{ data.description }}</p>
 
   <div style="display: flex; flex-direction: column; margin-top: 28px">
-    <div class="button-flex" *ngFor="let option of data.options; let i = index">
-      <div class="left-border"></div>
-      <button
-        mat-button
-        class="option-button"
-        [ngClass]="{ active: selectedIndex === i }"
-        (click)="onClick(i)"
-      >
-        {{ option.value }}
-      </button>
+    <div 
+      *ngFor="let option of data.options; let i = index"
+      class="button-flex"
+      [style.justifyContent]="option?.settings ? 'space-between' : 'flex-start'">
+      <ng-container *ngIf="option?.settings; else elseTemplate">
+        <div class="container">
+          <div class="left-border"></div>
+          <button
+            mat-button
+            class="option-button"
+            [ngClass]="{ active: selectedIndex === i }"
+            (click)="onClick(i)"
+          >
+            {{ option.value }}
+          </button>
+        </div>
+      </ng-container>
+      <ng-template #elseTemplate>
+        <div class="left-border"></div>
+        <button
+          mat-button
+          class="option-button"
+          [ngClass]="{ active: selectedIndex === i }"
+          (click)="onClick(i)"
+        >
+          {{ option.value }}
+        </button>
+      </ng-template>
+      <div *ngIf="option?.settings" class="config" (click)="onClickSettings(i)">
+        <i [class]="option?.settings?.value"></i>
+      </div>
     </div>
   </div>
   <p class="bottom-label" *ngIf="data?.bottomLabel">{{data.bottomLabel}}</p>
