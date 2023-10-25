@@ -64,10 +64,16 @@ export class OrderProgressComponent implements OnInit {
   paymentStatus: any[] = [];
   totalPaymentStatus: number = 0;
   paymentStatusName: any[] = [];
-  page:number = 1;
-  isMethodRunning:boolean = false;
-  reachTheEndOfPagination:boolean = false;
-  loadingStatus:string = "";
+  paginationState: {
+    pageSize: number;
+    page: number;
+    status: 'loading' | 'complete';
+  } = {
+      page: 1,
+      pageSize: 25,
+      status: 'loading',
+    };
+  reachedTheEndOfPagination = false;
 
 
   constructor(
@@ -118,7 +124,8 @@ export class OrderProgressComponent implements OnInit {
   }
 
   async ngOnInit() {
-    await this.generate()
+    //await this.generate()
+    await this.fetchPaginationData(false, true)
     this.toggleTutorial();
     await this.getDeliveryTime();
     await this.getOrdersTotal();
@@ -128,6 +135,7 @@ export class OrderProgressComponent implements OnInit {
   }
 
   selectProgress(id) {
+    this.paginationState.page = 1;
     this.progress.forEach((e) => {
       if (e.id == id) {
         e.selected = !e.selected;
@@ -142,6 +150,7 @@ export class OrderProgressComponent implements OnInit {
   }
 
   selectZone(id) {
+    this.paginationState.page = 1;
     this.deliveryZones.forEach((e) => {
       if (e._id == id) {
         e.selected = !e.selected;
@@ -179,7 +188,6 @@ export class OrderProgressComponent implements OnInit {
   }
 
   async generate() {
-    this.isMethodRunning = false;
     lockUI()
 
     if (!this.merchantId) {
@@ -205,7 +213,7 @@ export class OrderProgressComponent implements OnInit {
     let options = {
       limit: 25,
       sortBy: 'createdAt:desc',
-      page: this.page
+      page: this.paginationState.page
     }
 
     if (this.selectedProgress.length > 0) {
@@ -252,7 +260,11 @@ export class OrderProgressComponent implements OnInit {
     });
     await this.getOrdersIds();
     await this.getOrdersTotal();
-    await this.orderService.orderQuantityOfFiltersStatusDelivery({ findBy: { merchant: this.merchantId }, options: options }).then((res) => {
+    let orderQuantityDeliveryOptions = {
+      limit: 25,
+        sortBy: 'createdAt:desc'
+    }
+    await this.orderService.orderQuantityOfFiltersStatusDelivery({ findBy: { merchant: this.merchantId }, options: orderQuantityDeliveryOptions }).then((res) => {
       this.deliveryStatus = res
     })
 
@@ -301,7 +313,7 @@ export class OrderProgressComponent implements OnInit {
         merchant: this.merchantId,
         orderStatusDelivery: this.selectedProgress,
       },
-      options: options
+      options: orderQuantityDeliveryOptions
     }).then((res) => {
       this.pickUp = {
         amount: res.pickup,
@@ -518,6 +530,7 @@ export class OrderProgressComponent implements OnInit {
   }
 
   async selectDeliveryTime(id) {
+    this.paginationState.page = 1;
     let hourRangeSelected = [];
     this.deliveryTime.forEach((e) => {
       if (e.id == id) {
@@ -687,161 +700,199 @@ export class OrderProgressComponent implements OnInit {
     const difference = Math.abs(verticalScroll - pageScrollHeight);
 
     if (verticalScroll >= pageScrollHeight || difference <= 50) {
-      // if (
-      //   this.loadingStatus === 'complete' &&
-      //   !this.reachTheEndOfPagination
-      // ){
-        this.isMethodRunning = true;
-        this.page += 1;
-        await this.paginateItems();
-      //}
+      if (
+        this.paginationState.status === 'complete'
+      ) {
+        await this.fetchPaginationData(false, true)
+      }
+      
+    //   if (!this.executed) {
+    //     this.isMethodRunning = true;
+        
+    //     setTimeout(async ()=>{
+    //       await this.paginateItems();
+    //       this.executed = true; // Marcar como ejecutado para que no se ejecute de nuevo
+    //     },800)
+    //     console.log("Entro por aca");
+    //   }
+    // } else {
+    //   this.executed = false; // Restablecer la variable si el usuario desplaza hacia arriba
+    // }
     }
   }
 
+  async fetchPaginationData(
+    restartPagination = false,
+    triggeredFromScroll = false){
+      this.paginationState.status = 'loading';
+  
+      if (restartPagination) {
+        this.paginationState.page = 1;
+      } else {
+        this.paginationState.page++;
+      }
+
+      if (!this.orders.length && this.paginationState.page !== 1) {
+        this.paginationState.page--;
+        this.reachedTheEndOfPagination = true;
+      }
+      await this.paginateItems();
+
+      this.paginationState.status = 'complete';
+
+      if (this.orders.length === 0 && !triggeredFromScroll) {
+        this.ordersByMonth = [];
+      }
+
+
+  }
+
   async paginateItems() {
-    this.loadingStatus = 'loading';
-    this.isMethodRunning = false;
-
-    let ShippingType;
-    if (this.pickUp.selected && this.delivery.selected) {
-      ShippingType = ["pickup", "delivery"]
-    } else if (this.pickUp.selected) {
-      ShippingType = "pickup"
-    } else if (this.delivery.selected) {
-      ShippingType = "delivery"
-    } else {
-      ShippingType = null
+  
+    if (!this.merchantId) {
+      await this.merchantsService.merchantDefault().then((res) => {
+        this.merchantId = res._id;
+        this.userId = res.owner._id;
+      });
     }
-    let findBy = {
-      merchant: this.merchantId,
-    }
-
-    let options = {
-      limit: 25,
-      sortBy: 'createdAt:desc',
-      page: this.page
-    }
-
-    if (this.selectedProgress.length > 0) {
-      findBy["orderStatusDelivery"] = this.selectedProgress
-    }
-    if (this.selectedZones.length > 0) {
-      findBy["deliveryZone"] = this.selectedZones
-    }
-    if (ShippingType) {
-      findBy["shippingType"] = ShippingType
-    }
-    if (Object.keys(this.hourRange).length > 0) {
-      findBy["estimatedDeliveryTime"] = this.hourRange;
-    }
-    if (this.paymentStatusName.length > 0) {
-      findBy["orderStatus"] = this.paymentStatusName;
-    }
-    if (this.startDate && this.endDate) {
-      options["range"] = {
-        from: this.startDate,
-        to: this.endDate
+      let ShippingType;
+      if (this.pickUp.selected && this.delivery.selected) {
+        ShippingType = ["pickup", "delivery"]
+      } else if (this.pickUp.selected) {
+        ShippingType = "pickup"
+      } else if (this.delivery.selected) {
+        ShippingType = "delivery"
+      } else {
+        ShippingType = null
       }
-    }
-    const pagination: PaginationInput = {
-      findBy: findBy,
-      options: options
-    };
-
-    if (!this.ordersByMonth.length && this.page !== 1) {
-      this.page--;
-      this.reachTheEndOfPagination = true;
-    }else{
-
-    const orders = (
-      await this.orderService.orderPaginate(
-        pagination
-      )
-    )
-    
-    if(orders.orderPaginate){
-      orders.orderPaginate.forEach(order=>{
-        this.orders.push(order)
-      })
-    }
-
-    this.ordersByMonth = [];
-    this.months.forEach(month => {
-      const data = this.orders.filter(order => moment(order.createdAt).locale("es").format('MMMM') === month.month)
-      if (data.length > 0) {
-        this.ordersByMonth.push({
-          month: month.month,
-          orders: data
-        });
+      let findBy = {
+        merchant: this.merchantId,
       }
-    });
-    await this.getOrdersIds();
-    await this.getOrdersTotal();
-    await this.orderService.orderQuantityOfFiltersStatusDelivery({ findBy: { merchant: this.merchantId }, options: options }).then((res) => {
-      this.deliveryStatus = res
-    })
-
-    if (!this.deliveryZones) {
-      let deliverOptions = {
-        sortBy: "createdAt:desc",
-        limit: -1
+  
+      let options = {
+        limit: this.paginationState.pageSize,
+        sortBy: 'createdAt:desc',
+        page: this.paginationState.page
+      }
+  
+      if (this.selectedProgress.length > 0) {
+        findBy["orderStatusDelivery"] = this.selectedProgress
+      }
+      if (this.selectedZones.length > 0) {
+        findBy["deliveryZone"] = this.selectedZones
+      }
+      if (ShippingType) {
+        findBy["shippingType"] = ShippingType
+      }
+      if (Object.keys(this.hourRange).length > 0) {
+        findBy["estimatedDeliveryTime"] = this.hourRange;
+      }
+      if (this.paymentStatusName.length > 0) {
+        findBy["orderStatus"] = this.paymentStatusName;
       }
       if (this.startDate && this.endDate) {
-        deliverOptions["range"] = {
+        options["range"] = {
           from: this.startDate,
           to: this.endDate
         }
       }
-
-      await this.deliveryZonesService.deliveryZones(
-        {
-          findBy: { merchant: this.merchantId },
-          options: deliverOptions
-        }).then((res) => {
-          this.deliveryZones = res.map((deliveryZone) => {
-            let zone = {
-              ...deliveryZone,
-              selected: false,
-            }
-            return zone;
-          })
+      const pagination: PaginationInput = {
+        findBy: findBy,
+        options: options
+      };
+  
+      const orders = (
+        await this.orderService.orderPaginate(
+          pagination
+        )
+      )
+      
+      if(orders.orderPaginate){
+        orders.orderPaginate.forEach(order=>{
+          this.orders.push(order)
         })
-    }
-    let deliveryZonesIds = this.deliveryZones.map((deliveryZone) => deliveryZone._id)
-    await this.orderService.orderQuantityOfFiltersDeliveryZone({
-      findBy:
-      {
-        merchant: this.merchantId,
-        orderStatusDelivery: this.selectedProgress,
-        deliveryZone: deliveryZonesIds,
-      },
-      options: options
-    }).then((res) => {
-      this.deliveryZoneQuantities = res
-    })
-
-    await this.orderService.orderQuantityOfFiltersShippingType({
-      findBy:
-      {
-        merchant: this.merchantId,
-        orderStatusDelivery: this.selectedProgress,
-      },
-      options: options
-    }).then((res) => {
-      this.pickUp = {
-        amount: res.pickup,
-        selected: false,
+      }else{
+        this.orders = [];
       }
-      this.delivery = {
-        amount: res.delivery,
-        selected: false,
+  
+      this.ordersByMonth = [];
+      this.months.forEach(month => {
+        const data = this.orders.filter(order => moment(order.createdAt).locale("es").format('MMMM') === month.month)
+        if (data.length > 0) {
+          this.ordersByMonth.push({
+            month: month.month,
+            orders: data
+          });
+        }
+      });
+      await this.getOrdersIds();
+      await this.getOrdersTotal();
+      let orderQuantityDeliveryOptions = {
+        limit: 25,
+          sortBy: 'createdAt:desc'
       }
-    })    
-
+      await this.orderService.orderQuantityOfFiltersStatusDelivery({ findBy: { merchant: this.merchantId }, options: orderQuantityDeliveryOptions }).then((res) => {
+        this.deliveryStatus = res
+      })
+  
+      if (!this.deliveryZones) {
+        let deliverOptions = {
+          sortBy: "createdAt:desc",
+          limit: -1
+        }
+        if (this.startDate && this.endDate) {
+          deliverOptions["range"] = {
+            from: this.startDate,
+            to: this.endDate
+          }
+        }
+  
+        await this.deliveryZonesService.deliveryZones(
+          {
+            findBy: { merchant: this.merchantId },
+            options: deliverOptions
+          }).then((res) => {
+            this.deliveryZones = res.map((deliveryZone) => {
+              let zone = {
+                ...deliveryZone,
+                selected: false,
+              }
+              return zone;
+            })
+          })
+      }
+      let deliveryZonesIds = this.deliveryZones.map((deliveryZone) => deliveryZone._id)
+      await this.orderService.orderQuantityOfFiltersDeliveryZone({
+        findBy:
+        {
+          merchant: this.merchantId,
+          orderStatusDelivery: this.selectedProgress,
+          deliveryZone: deliveryZonesIds,
+        },
+        options: orderQuantityDeliveryOptions
+      }).then((res) => {
+        this.deliveryZoneQuantities = res
+      })
+  
+      await this.orderService.orderQuantityOfFiltersShippingType({
+        findBy:
+        {
+          merchant: this.merchantId,
+          orderStatusDelivery: this.selectedProgress,
+        },
+        options: orderQuantityDeliveryOptions
+      }).then((res) => {
+        this.pickUp = {
+          amount: res.pickup,
+          selected: false,
+        }
+        this.delivery = {
+          amount: res.delivery,
+          selected: false,
+        }
+      })    
     
-    this.loadingStatus = 'complete';
-  }
-
+      this.paginationState.status = 'complete';
   }
 
 }

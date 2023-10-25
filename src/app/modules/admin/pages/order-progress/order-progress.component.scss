@@ -591,3 +591,26 @@
   left: calc(50vw - 250px) !important;
   right: 0px;
 }
+
+@media (max-width: 460px) {
+  .tutorial-title{
+    text-align: left;
+    padding-left: 20px;
+  }
+  .dialog {
+    align-items: normal;
+  }
+  .arrow-svg{
+    right: 72px;
+  }
+
+  ::ng-deep .mat-datepicker-content {
+    max-width: 417px !important;
+    width: 398px !important;
+    display: flex;
+    bottom: 0;
+    position: absolute;
+    margin-left: 50px;
+}
+
+}
