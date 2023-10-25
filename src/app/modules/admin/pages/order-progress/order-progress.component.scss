@@ -3,30 +3,32 @@
   overflow-y: scroll;
   background: #f6f6f6;
 
-  .bottom-footer {
-    position: absolute;
-    bottom: 0;
-    background-color: #6fcf97 !important;
-    padding: 0 16px;
+ 
+  footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 29px;
-    text-align: left;
+    position: fixed;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
     width: 100%;
-    z-index: 55;
+    max-width: 500px;
+    height: 29px;
+    padding: 0 16px;
+    margin: auto;
+    background-color: #6fcf97;
     p {
-      color: #181d17;
-      text-align: left;
-      font-family: InterBold;
-      font-size: 17px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: normal;
-    }
+          color: #181d17;
+          text-align: left;
+          font-family: InterBold;
+          font-size: 17px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: normal;
+        }
   }
-
-  .benefits{
+  .benefits {
     font-family: InterRegular !important;
     font-size: 17px;
     font-weight: 400;
@@ -36,8 +38,16 @@
   }
 }
 
+.dashboard-page {
+  height: 100vh;
+  max-height: 100vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  position: relative;
+}
+
 .header {
-  background: #181D17;
+  background: #181d17;
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.06));
   height: 46px;
   padding-left: 14px;
@@ -67,16 +77,15 @@
     margin: 0;
   }
 
-  .right-icons{
+  .right-icons {
     display: flex;
     justify-content: space-between;
     text-align: center;
     align-items: center;
 
-    .add-icon{
+    .add-icon {
       margin-left: 28px;
     }
-
   }
 }
 
@@ -85,7 +94,7 @@
   width: 100%;
   height: 100%;
   opacity: 0.7;
-  background: var(--blanco, #FFF);
+  background: var(--blanco, #fff);
   filter: blur(3px);
   z-index: 0;
 }
@@ -101,7 +110,7 @@
   width: 90%;
   height: 295px;
   flex-shrink: 0;
-  border-radius: 15.591px; 
+  border-radius: 15.591px;
   top: 63px;
   margin-left: 16px;
   margin-right: 16px;
@@ -109,7 +118,7 @@
 
 .tutorial-title {
   font-family: InterLight;
-  color: #F6F6F6;
+  color: #f6f6f6;
   font-size: 13px;
   line-height: 16px;
   margin-top: 40px;
@@ -148,35 +157,34 @@
   font-size: 17px;
   border: 0;
   background: transparent;
-  color: #C4C5C3;
+  color: #c4c5c3;
 }
 
 .ok-button {
   cursor: pointer;
   font-family: InterBold;
   font-size: 17px;
-  border:0;
+  border: 0;
   width: 176px;
   height: 32px;
   color: #181d17;
   border-radius: 8px;
-  background: #87CD9B;
+  background: #87cd9b;
 }
 
 .dates-container {
   display: flex;
   flex-direction: column;
-  background: #D9D9D9;
+  background: #d9d9d9;
   padding-bottom: 5px;
   border-radius: 8px;
   margin: 0px 17px;
 }
 
-
 .progress-camera {
   display: flex;
   justify-content: space-between;
-  background: #D9D9D9;
+  background: #d9d9d9;
   align-items: center;
   padding-top: 14px;
   z-index: 50;
@@ -196,7 +204,7 @@
 
 .selection-text {
   font-family: InterBold;
-  color: #181D17;
+  color: #181d17;
   font-size: 17px;
   line-height: 20.57px;
   font-weight: 700;
@@ -221,7 +229,7 @@
 }
 
 .progress {
-  color: #7B7B7B;
+  color: #7b7b7b;
   font-family: InterBold;
   font-size: 17px;
   font-style: normal;
@@ -233,7 +241,7 @@
   padding-bottom: 3px;
   border-radius: 29px;
   cursor: pointer;
-  white-space: nowrap; 
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -262,14 +270,14 @@
 
 .expand-icon {
   height: 20px;
-  color:#87CD9B;
+  color: #87cd9b;
 }
 
 .content {
   padding-top: 10px;
   padding-left: 16px;
   padding-right: 16px;
-  padding-bottom: 120px;
+  padding-bottom: 16px;
 }
 
 .content-title-container {
@@ -293,7 +301,6 @@
 .content-cards-container {
   margin-top: 10px;
   margin-bottom: 20px;
-  
 }
 
 .content-card {
@@ -332,12 +339,12 @@
   margin: 0;
 }
 
-.right-side{
-    justify-content: end;
-    align-items: end;
-    text-align: end;
-    display: flex;
-    flex-direction: column;
+.right-side {
+  justify-content: end;
+  align-items: end;
+  text-align: end;
+  display: flex;
+  flex-direction: column;
 }
 
 .content-card-extra-info {
@@ -352,20 +359,20 @@
   margin-bottom: 0;
 }
 
-.flex{
-    display:flex;
-    align-items: center;
+.flex {
+  display: flex;
+  align-items: center;
 
-    .add-icon{
-        margin-left: 25px;
-    }
+  .add-icon {
+    margin-left: 25px;
+  }
 
-    mat-icon{
-        color:#87CD9B;
-        font-size: 40px;
-        width: 40px;
-        height: 40px;
-    }
+  mat-icon {
+    color: #87cd9b;
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+  }
 }
 
 .display-flex {
@@ -400,8 +407,7 @@
   }
 }
 
-
-@media(max-width:365px){
+@media (max-width: 365px) {
   .header {
     p {
       font-size: 15px;
@@ -564,7 +570,7 @@
       }
     }
   }
-  .btn-close{
+  .btn-close {
     background: #181d17;
     border: none;
   }
@@ -575,14 +581,36 @@
   display: flex;
   bottom: 0;
   position: absolute;
-
 }
 ::ng-deep .mat-datepicker-content .mat-calendar {
-  height: auto!important;
-  width: auto!important;
+  height: auto !important;
+  width: auto !important;
 }
 ::ng-deep .cdk-overlay-pane {
-  bottom: 32px!important;
-  left: calc(50vw - 250px)!important;
+  bottom: 32px !important;
+  left: calc(50vw - 250px) !important;
   right: 0px;
+}
+
+@media (max-width: 460px) {
+  .tutorial-title{
+    text-align: left;
+    padding-left: 20px;
+  }
+  .dialog {
+    align-items: normal;
+  }
+  .arrow-svg{
+    right: 72px;
+  }
+
+  ::ng-deep .mat-datepicker-content {
+    max-width: 417px !important;
+    width: 398px !important;
+    display: flex;
+    bottom: 0;
+    position: absolute;
+    margin-left: 50px;
+}
+
 }

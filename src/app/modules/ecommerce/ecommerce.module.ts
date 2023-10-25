@@ -81,6 +81,7 @@ import { DaliahChatComponent } from './pages/daliah-chat/daliah-chat.component';
 import { DaliaTrainingComponent } from './pages/dalia-training/dalia-training.component';
 import { LaiaMemoriesManagementComponent } from './pages/laia-memories-management/laia-memories-management.component';
 import { LaiaAssistantComponent } from './pages/laia-assistant/laia-assistant.component';
+import { MerchantProfileComponent } from './pages/merchant-profile/merchant-profile.component';
 
 const routes: Routes = [
   {
@@ -324,6 +325,10 @@ const routes: Routes = [
     component: AdminArticleDetailComponent,
   },
   {
+    path: 'merchant-profile/:merchantId',
+    component: MerchantProfileComponent,
+  },
+  {
     path: ':merchantSlug',
     component: EcommerceComponent,
     children: [
@@ -534,7 +539,8 @@ const routes: Routes = [
     DaliahChatComponent,
     DaliaTrainingComponent,
     LaiaMemoriesManagementComponent,
-    LaiaAssistantComponent
+    LaiaAssistantComponent,
+    MerchantProfileComponent
   ],
   imports: [
     CommonModule,
