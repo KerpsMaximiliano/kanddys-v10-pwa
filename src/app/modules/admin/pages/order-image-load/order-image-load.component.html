@@ -114,6 +114,11 @@
     ]"
     #fileUpload
   />
+  <a
+    id="mailLink"
+    [style.display]="'none'"
+    href="mailto:{{ order?.user?.email }}"
+  ></a>
 </div>
 <div class="footer">
   <p class="footer-title"></p>
