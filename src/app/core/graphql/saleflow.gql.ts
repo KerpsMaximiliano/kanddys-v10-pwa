@@ -40,6 +40,7 @@ export const body = `
         referencePoint
         nickName
         note
+        googleMapsURL
       }
     }
     paymentMethod {

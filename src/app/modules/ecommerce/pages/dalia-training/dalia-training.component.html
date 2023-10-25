@@ -1,41 +1,29 @@
 <div class="container">
-  <header>
-    <div class="knowledge-slot-header" (click)="editMemoryName()">
+  <header [style.justifyContent]="requestResponse ? 'space-between': 'flex-end'">
+    <!-- <div class="knowledge-slot-header" (click)="editMemoryName()">
       Memoria
       <span class="knowledge-slot-name">
         {{ memoryName ? memoryName : "Sin nombre" }}
       </span>
-    </div>
-    <div class="close-button" (click)="back()">X</div>
+    </div> -->
+    <h2 *ngIf="requestResponse">Memorias utilizadas en la respuesta</h2>
+    <div class="close-button" (click)="goBack()">X</div>
   </header>
 
-  <main
-    [ngClass]="{
-      inputPending: form.get('memory').value && !generatedQA?.response
-    }"
-  >
-    <div class="base-text-wrapper">
-      <label for="base-text">TEXTOS PARA FORMULAR RESPUESTAS</label>
-
-      <div class="textarea-wrapper" [formGroup]="form">
-        <textarea
-          name="base-text"
-          formControlName="memory"
-          id="base-text"
-          [placeholder]="laiaPlaceholder"
-          class="base-text"
-        ></textarea>
-
-        <button
-          class="see-more"
-          (click)="showMoreText()"
-          *ngIf="showExtendButton && form.get('memory').value"
+  <ng-container *ngIf="requestResponse; else default">
+    <main>
+      <div class="container-memories">
+        <div
+          *ngFor="let memorie of memories; index as i"
+          class="memory"
+          (click)="editMemory(memorie?.vectorId)"
         >
-          VER TODO
-        </button>
+          <div class="name">{{ memorie.name ? memorie.name : "Sin nombre" }} <span>#{{i}}</span></div>
+          <div class="content">{{ memorie.content }}</div>
+        </div>
       </div>
 
-      <div class="request-response-box" *ngIf="generatedQA">
+      <div *ngIf="generatedQA" class="request-response-box" [style.marginTop.px]="28">
         <div class="question-box-wrapper">
           <div class="content" [formGroup]="questionForm">
             <div class="question-box" *ngIf="!editingQuestion">
@@ -88,21 +76,134 @@
           </div>
         </div>
       </div>
+    </main>
+  </ng-container>
+  <ng-template #default>
+    <main
+      [ngClass]="{
+        inputPending: form.get('memory').value && !generatedQA?.response
+      }"
+    >
+      <div class="base-text-wrapper">
+        <label for="base-text">Ahorra Tiempo Brindando Respuestas Precisas al Instante.</label>
 
-      <div id="question-response-bottom"></div>
-    </div>
-  </main>
+        <div class="textarea-wrapper" [formGroup]="form">
+          <textarea
+            name="base-text"
+            formControlName="memory"
+            id="base-text"
+            [placeholder]="laiaPlaceholder"
+            class="base-text"
+            (keyup)="onKeyUp()"
+          ></textarea>
 
-  <footer *ngIf="!generatedQA?.response">Escribe en la Memoria de Laia</footer>
-  <footer
-    class="save"
-    *ngIf="form.get('memory').value && generatedQA?.response"
-    (click)="saveMemoryInKnowledgeBase()"
-  >
-    {{ vectorId ? "Actualiza la memoria" : "Salva la Memoria" }}
-  </footer>
+          <img *ngIf="form.get('memory').value" src="../../../../../assets/icons/shortcut.svg" alt="" class="shortcut" (click)="form.get('memory').setValue(null)"/>
 
-  <section
+          <p 
+            *ngIf="
+              !showTextError &&
+              !form.get('memory').value &&
+              !generatedQA?.response && 
+              !showExtendButton
+            "
+            class="settings-text"
+            (click)="openIntegrationsDialog()"
+          >
+            Integraciones
+          </p>
+
+          <p *ngIf="showTextError" class="show-text-error">
+            Según lo escrito no se pueden generar preguntas todavía
+          </p>
+
+          <button
+            class="see-more"
+            (click)="showMoreText()"
+            *ngIf="showExtendButton && form.get('memory').value"
+          >
+            VER TODO
+          </button>
+        </div>
+
+        <div class="request-response-box" *ngIf="form.get('memory').value && !generatedQA">
+          <div class="question-box-wrapper">
+            <div class="content" [formGroup]="questionForm">
+              <div class="question-box">
+                <div class="dots">...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="request-response-box" *ngIf="generatedQA">
+          <div class="question-box-wrapper">
+            <div class="content" [formGroup]="questionForm">
+              <div class="question-box" *ngIf="!editingQuestion">
+                {{ generatedQA.question }}
+              </div>
+
+              <div
+                *ngIf="editingQuestion"
+                id="question-box-input"
+                class="question-box-input"
+                contenteditable="true"
+              ></div>
+
+              <img
+                class="edit-or-confirm"
+                (click)="
+                  !(editingQuestion && !questionForm.get('question').value)
+                    ? editOrApplyQuestionChange()
+                    : null
+                "
+                [ngClass]="{
+                  editing: true,
+                  notAllowed:
+                    editingQuestion && !questionForm.get('question').value
+                }"
+                [src]="
+                  assetsFolder +
+                  (editingQuestion ? '/check-black.svg' : '/edit-comment.svg')
+                "
+                alt="edit question"
+              />
+            </div>
+
+            <div class="sender" *ngIf="headerService.user">
+              {{
+                headerService.user.name ||
+                  headerService.user.email ||
+                  headerService.user.phone
+              }}
+            </div>
+
+            <div class="sender" *ngIf="!headerService.user">DESCONOCIDO</div>
+          </div>
+
+          <div class="response-box-wrapper">
+            <div class="content">
+              <div class="response-box">{{ generatedQA.response }}</div>
+
+              <div class="sender">LAIA</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="question-response-bottom"></div>
+      </div>
+    </main>
+
+    <footer *ngIf="!generatedQA?.response">Escribe más para que se generen preguntas</footer>
+    <footer
+      class="save"
+      *ngIf="(form.get('memory').value && generatedQA?.response) || (form.get('memory').value === null && generatedQA?.response)"
+      (click)="saveMemoryInKnowledgeBase()"
+    >
+      {{ vectorId ? "Actualiza la memoria" : "Salva la Memoria y crea más" }}
+    </footer>
+  </ng-template>
+
+  <!-- <section
     class="input-area"
     [formGroup]="inputQuestionForm"
     *ngIf="form.get('memory').value && !generatedQA?.response"
@@ -122,7 +223,7 @@
         (click)="inputQuestionForm.get('question').value ? testMemory() : null"
       />
     </button>
-  </section>
+  </section> -->
 </div>
 
 <app-login-flow

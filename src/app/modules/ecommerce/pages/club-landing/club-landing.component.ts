@@ -44,6 +44,7 @@ import { URL } from 'url';
 import { FilesService } from 'src/app/core/services/files.service';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { OptionsDialogComponent } from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
+import { ContactUsDialogComponent } from 'src/app/shared/dialogs/contact-us-dialog/contact-us-dialog.component';
 
 interface ReviewsSwiper {
   title: string;
@@ -98,7 +99,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   });
 
   isFlag = false;
-  tabIndex = 0;
+  tabIndex = 1;
   userID = '';
   isVendor = false;
   isProvider = false;
@@ -773,6 +774,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   async getMerchantDefault() {
     try {
       const merchantDefault: Merchant = await this.merchantsService.merchantDefault();
+      console.log(merchantDefault)
       this.merchant = merchantDefault._id;
       this.merchantSlug = merchantDefault.slug;
       this.merchantName = merchantDefault.name;
@@ -950,6 +952,10 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     });
   }
 
+  goToItemsOffers() {
+    return this.router.navigate(['/admin/items-offers']);
+  }
+
   truncateString(word) {
     return truncateString(word, 12);
   }
@@ -1022,6 +1028,82 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
             }
           },
         ]
+      }
+    })
+  }
+
+  clickImageInput() {
+    document.getElementById('imgInput').click();
+  }
+
+  openOptionsMenu() {
+    this.bottomSheet.open(OptionsMenuComponent, {
+      data: {
+        options: [
+          {
+            value: 'Adiciónale Memoria a Laia',
+            callback:() => {
+              if(this.headerService.user) {
+                this.goToAIMemoriesManagement();
+              } else {
+                this.goToLaiaTraining();
+              }
+            }
+          },
+          {
+            value: 'Empieza a Vender un Nuevo Articulo',
+            callback:() => {
+              this.clickImageInput();
+            }
+          },
+          {
+            value: 'Crea una Factura',
+            callback: () => {}
+          },
+          {
+            value: 'Crea una Orden de Compra',
+            callback: () => {}
+          },
+          {
+            value: 'Crea una Oferta Flash',
+            callback:() => {
+              if(this.headerService.user) {
+                this.goToItemsOffers();
+              }
+            }
+          },
+          {
+            value: 'Premia las Referencias',
+            callback: () => {}
+          },
+          {
+            value: 'Premia Porque Si!',
+            callback: () => {}
+          },
+          {
+            value: 'Premia las Menciones',
+            callback: () => {}
+          },
+          {
+            value: 'Recompensa las Compras',
+            callback: () => {}
+          },
+          {
+            value: 'Sube foto de tus facturas para Premios',
+            callback: () => {}
+          },
+        ],
+      },
+    });
+  }
+
+  contactUsDialog(feature: string) {
+    this.bottomSheet.open(ContactUsDialogComponent, {
+      data: {
+        topText: 'Contemplemos las adaptaciones que necesitas según tu proceso con esta modalidad',
+        contactText: 'Escribenos por Whatsapp 👇',
+        phone: '19188156444',
+        message: `Hola, me interesa la funcionalidad ${feature}`,
       }
     })
   }

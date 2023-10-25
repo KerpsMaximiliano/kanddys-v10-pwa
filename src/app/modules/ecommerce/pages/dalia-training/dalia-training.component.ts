@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -8,12 +9,14 @@ import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
+import { WhatsappService } from 'src/app/core/services/whatsapp.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import {
   FormComponent,
   FormData,
 } from 'src/app/shared/dialogs/form/form.component';
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
+import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -56,100 +59,45 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   memoryTextareaValueChangeSubscription: Subscription;
   memoryNameDialogSubscription: Subscription;
   vectorId: string = null;
+  showTextError = false;
+  timer: any;
+  requestResponse: boolean = false;
+  memories: Array<{
+    content: string;
+    vectorId: string;
+    name?:string;
+  }> = [];
+  clientConnectionStatus = false;
 
   constructor(
     private gptService: Gpt3Service,
     public headerService: HeaderService,
     private dialog: DialogService,
     private matDialog: MatDialog,
+    private bottomSheet: MatBottomSheet,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private merchantsService: MerchantsService,
+    private whatsappService: WhatsappService,
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit() {
+    this.clientConnectionStatus = await this.whatsappService.clientConnectionStatus();
+    console.log(this.clientConnectionStatus);
+
     this.routeParamsSubscription = this.route.params.subscribe(
       async ({ vectorId }) => {
         this.vectorId = vectorId ? vectorId : null;
 
         this.queryParamsSubscription = this.route.queryParams.subscribe(
-          async ({ jsondata }) => {
-            const textarea: HTMLElement = document.querySelector('.base-text');
-
-            textarea.addEventListener('input', () => {
-              console.log('textarea scrollHeight', textarea.scrollHeight);
-              if (textarea.scrollHeight > 171) {
-                if (this.showExtendButton === false) {
-                  this.showExtendButton = true;
-                }
-
-                if (this.alreadyClickedShowButton) {
-                  textarea.style.height = 'auto'; // Reset height to auto
-                  textarea.style.height = textarea.scrollHeight + 'px'; // Set the new height based on content
-                  this.showExtendButton = false;
-                }
-                this.passedTextLimit = true;
-              } else {
-                this.showExtendButton = false;
-
-                if (this.passedTextLimit) {
-                  textarea.style.height = '171px';
-                }
-              }
-            });
-
-            document.addEventListener('keydown', (event: KeyboardEvent) => {
-              const targetElement: HTMLElement = event.target as HTMLElement;
-
-              if (
-                (event.key === 'Delete' || event.key === 'Backspace') &&
-                this.passedTextLimit &&
-                targetElement.classList.contains('base-text') &&
-                textarea.scrollHeight <= 171
-              ) {
-                textarea.style.height = '171px';
-                this.showExtendButton = false;
-                this.alreadyClickedShowButton = false;
-              } else if (
-                (event.key === 'Delete' || event.key === 'Backspace') &&
-                this.passedTextLimit &&
-                targetElement.classList.contains('base-text') &&
-                textarea.scrollHeight >= 171
-              ) {
-                if (!this.timeoutDeleteKey)
-                  this.timeoutDeleteKey = setTimeout(() => {
-                    if (textarea.scrollHeight <= 171) {
-                      textarea.style.height = '171px';
-                      this.showExtendButton = false;
-                      this.alreadyClickedShowButton = false;
-                    }
-
-                    clearTimeout(this.timeoutDeleteKey);
-                  }, 400);
-              }
-
-              if (
-                event.ctrlKey &&
-                (event.key === 'x' || event.key === 'X') &&
-                this.passedTextLimit &&
-                targetElement.classList.contains('base-text')
-              ) {
-                // Your code to handle Ctrl + X here
-                // Prevent the default behavior (cut action) if needed
-
-                textarea.style.height = '171px';
-                this.showExtendButton = false;
-                this.alreadyClickedShowButton = false;
-
-                if (!this.timeoutCutKey) {
-                  this.timeoutCutKey = setTimeout(() => {
-                    textarea.style.height = '171px';
-                    this.showExtendButton = false;
-                    this.alreadyClickedShowButton = false;
-                  }, 400);
-                }
-                event.preventDefault();
-              }
-            });
+          async ({ jsondata, message }) => {
+            if (message) {
+              if(this.headerService.user) {
+                this.requestResponse = true;
+                this.testMemoryQueryParam(message);
+                return;
+              } else this.router.navigate(['/ecommerce/laia-memories-management']);
+            };
 
             this.memoryTextareaValueChangeSubscription = this.form
               .get('memory')
@@ -181,10 +129,103 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
             if (this.vectorId) {
               await this.loadVectorData();
             }
+
+            const textarea: HTMLElement = document.querySelector('.base-text');
+
+            textarea?.addEventListener('input', () => {
+              console.log('textarea scrollHeight', textarea.scrollHeight);
+              if (textarea.scrollHeight > 215) {
+                if (this.showExtendButton === false) {
+                  this.showExtendButton = true;
+                }
+
+                if (this.alreadyClickedShowButton) {
+                  textarea.style.height = 'auto'; // Reset height to auto
+                  textarea.style.height = textarea.scrollHeight + 'px'; // Set the new height based on content
+                  this.showExtendButton = false;
+                }
+                this.passedTextLimit = true;
+              } else {
+                this.showExtendButton = false;
+
+                if (this.passedTextLimit) {
+                  textarea.style.height = '215px';
+                }
+              }
+            });
+
+            document.addEventListener('keydown', (event: KeyboardEvent) => {
+              const targetElement: HTMLElement = event.target as HTMLElement;
+
+              if (
+                (event.key === 'Delete' || event.key === 'Backspace') &&
+                this.passedTextLimit &&
+                targetElement.classList.contains('base-text') &&
+                textarea.scrollHeight <= 215
+              ) {
+                textarea.style.height = '215px';
+                this.showExtendButton = false;
+                this.alreadyClickedShowButton = false;
+              } else if (
+                (event.key === 'Delete' || event.key === 'Backspace') &&
+                this.passedTextLimit &&
+                targetElement.classList.contains('base-text') &&
+                textarea.scrollHeight >= 215
+              ) {
+                if (!this.timeoutDeleteKey)
+                  this.timeoutDeleteKey = setTimeout(() => {
+                    if (textarea.scrollHeight <= 215) {
+                      textarea.style.height = '215px';
+                      this.showExtendButton = false;
+                      this.alreadyClickedShowButton = false;
+                    }
+
+                    clearTimeout(this.timeoutDeleteKey);
+                  }, 400);
+              }
+
+              if (
+                event.ctrlKey &&
+                (event.key === 'x' || event.key === 'X') &&
+                this.passedTextLimit &&
+                targetElement.classList.contains('base-text')
+              ) {
+                // Your code to handle Ctrl + X here
+                // Prevent the default behavior (cut action) if needed
+
+                textarea.style.height = '215px';
+                this.showExtendButton = false;
+                this.alreadyClickedShowButton = false;
+
+                if (!this.timeoutCutKey) {
+                  this.timeoutCutKey = setTimeout(() => {
+                    textarea.style.height = '215px';
+                    this.showExtendButton = false;
+                    this.alreadyClickedShowButton = false;
+                  }, 400);
+                }
+                event.preventDefault();
+              }
+            });
           }
         );
       }
     );
+  }
+
+  onKeyUp() {
+    const words = this.form.get('memory')?.value.trim()?.split(/\s+/);
+    
+    if(this.form.get('memory')?.value !== null) this.generatedQA = null;
+    
+    this.showTextError = this.form.get('memory')?.value === '' ? false : words?.length < 3 ? true : false;
+
+    if(words?.length >= 3) {
+      clearTimeout(this.timer);
+      this.timer = setTimeout(() => {
+        this.testMemory();
+      }, 2000);
+    }
   }
 
   async loadVectorData() {
@@ -198,6 +239,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
       if (vectorData?.length) {
         this.form.get('memory').setValue(vectorData[0].text);
         this.memoryName = vectorData[0].name ? vectorData[0].name : null;
+        this.testMemory();
 
         setTimeout(() => {
           const textarea: HTMLElement = document.querySelector('.base-text');
@@ -224,11 +266,11 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
 
   async testMemory() {
     try {
-      lockUI();
+      // lockUI();
       let response = await this.gptService.generateResponseForTemplate(
         {
           content: (this.form.get('memory').value as string).replace(/"/g, "'"),
-          question: this.inputQuestionForm.get('question').value,
+          question: '',
         },
         null,
         'Q&AExamples'
@@ -255,9 +297,9 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
         }
       }
 
-      unlockUI();
+      // unlockUI();
     } catch (error) {
-      unlockUI();
+      // unlockUI();
       this.headerService.showErrorToast();
       console.error(error);
     }
@@ -272,7 +314,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
           question: this.generatedQA.question,
           previousResponse: this.generatedQA.response,
           newQuestion: this.questionForm.get('question').value,
-          content: this.form.get('memory').value.replace(/"/g, "'"),
+          content: this.form.get('memory').value ? this.form.get('memory').value.replace(/"/g, "'") : '',
         },
         null,
         'Q&AEdit'
@@ -298,13 +340,78 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     }
   }
 
+  async testMemoryQueryParam(message: string) {
+    try {
+      lockUI();
+
+      const merchant = await this.merchantsService.merchantDefault();
+
+      const input = {
+        prompt: message,
+        userId: merchant?.owner?._id,
+        merchantId: merchant?._id,
+        isAuthorization: true,
+      };
+
+      let response = (await this.gptService.requestResponseFromKnowledgeBaseJson(input))?.response;
+
+      if (response) {
+        this.memories = response?.metadatas;
+        this.generatedQA = {
+          question: message,
+          response: response?.message,
+        };
+      }
+
+      unlockUI();
+    } catch (error) {
+      unlockUI();
+      this.generatedQA = {
+        question: message,
+        response: 'No tenemos respuesta a eso en este momento',
+      };
+      console.error(error);
+    }
+  }
+
+  async editQAQueryParam() {
+    try {
+      lockUI();
+
+      const merchant = await this.merchantsService.merchantDefault();
+
+      const input = {
+        prompt: this.questionForm.get('question').value,
+        userId: merchant?.owner?._id,
+        merchantId: merchant?._id,
+        isAuthorization: true,
+      };
+
+      let response = (await this.gptService.requestResponseFromKnowledgeBaseJson(input))?.response;
+
+      if (response) {
+        this.memories = response?.metadatas;
+        this.generatedQA = {
+          question: this.questionForm.get('question').value,
+          response: response?.message,
+        };
+      }
+
+      unlockUI();
+    } catch (error) {
+      unlockUI();
+      this.headerService.showErrorToast();
+      console.error(error);
+    }
+  }
+
   async editOrApplyQuestionChange() {
     if (this.editingQuestion) {
       const inputDivContent = document.querySelector(
         '#question-box-input'
       ).textContent;
       this.questionForm.get('question').setValue(inputDivContent)
-      await this.editQA();
+      this.requestResponse ? await this.editQAQueryParam() : await this.editQA();
     }
 
     this.editingQuestion = !this.editingQuestion;
@@ -394,8 +501,8 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     return textareaHeight >= windowHeight;
   }
 
-  back() {
-    if (this.vectorId) {
+  goBack() {
+    if (this.vectorId || this.requestResponse) {
       return this.router.navigate(['/ecommerce/laia-memories-management']);
     }
 
@@ -404,6 +511,10 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
         tabarIndex: 2,
       },
     });
+  }
+
+  editMemory(id: string) {
+    this.router.navigate(['/ecommerce/laia-training/' + id]);
   }
 
   editMemoryName = () => {
@@ -453,10 +564,134 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
       });
   };
 
+  openIntegrationsDialog() {
+    let data: {
+      data: {
+        description: string;
+        options: {
+            value: string;
+            callback: () => void;
+            settings?: {
+              value: string;
+              callback: () => void;
+            }
+        }[];
+      };
+    } = {
+      data: {
+        description: 'Integraciones:',
+        options: [
+          {
+            value: 'Custom Website',
+            callback: () => {
+              
+            },
+          },
+          {
+            value: 'Enlace',
+            callback: () => {
+              
+            },
+          },
+          {
+            value: 'Shopify',
+            callback: () => {
+              
+            },
+          },
+          {
+            value: 'WordPress',
+            callback: () => {
+              
+            },
+          },
+          {
+            value: 'Squarespace',
+            callback: () => {
+              
+            },
+          },
+          {
+            value: 'Instagram',
+            callback: () => {
+              
+            },
+          },
+        ],
+      },
+    };
+
+    if (this.clientConnectionStatus) {
+      data.data.options.splice(1, 0, {
+        value: 'WhatsApp vinculado',
+        callback: () => {
+          return this.router.navigate(['/admin/wizard-training'], {
+            queryParams: {
+              triggerWhatsappClient: true
+            }
+          });
+        },
+        settings: {
+          value: 'fa fa-gear',
+          callback: () => {
+            this.bottomSheet.open(
+              OptionsMenuComponent,
+              {
+                data: {
+                  title: '¿Desvincular WhatsApp?',
+                  options: [
+                    {
+                      value: 'Si, desvincular',
+                      callback: async () => {
+                        lockUI();
+                        try {
+                          await this.whatsappService.destroyClient();
+                          this.clientConnectionStatus = false;
+                        } catch (error) {
+                          console.error(error);
+                        }
+                        unlockUI();
+                      },
+                    },
+                    {
+                      value: 'Volver atrás',
+                      callback: () => {
+                        this.bottomSheet.open(
+                          OptionsMenuComponent,
+                          data
+                        );
+                      },
+                    },
+                  ],
+                },
+              }
+            )
+          },
+        }
+      });
+    } else {
+      data.data.options.splice(1, 0, {
+        value: 'WhatsApp (dura 20segs. y debes escanear el QR que te saldrá desde tu WhatsApp Mobile)',
+        callback: () => {
+          return this.router.navigate(['/admin/wizard-training'], {
+            queryParams: {
+              triggerWhatsappClient: true
+            }
+          });
+        },
+      });
+    }
+
+    const dialog = this.bottomSheet.open(
+      OptionsMenuComponent,
+      data
+    )
+  }
+
   ngOnDestroy() {
     this.routeParamsSubscription.unsubscribe();
     this.queryParamsSubscription.unsubscribe();
-    this.memoryTextareaValueChangeSubscription.unsubscribe();
+    this.memoryTextareaValueChangeSubscription?.unsubscribe();
     this.memoryNameDialogSubscription?.unsubscribe();
   }
 }

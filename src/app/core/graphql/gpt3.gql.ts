@@ -14,6 +14,12 @@ export const generateResponseForTemplate = gql`
   }
 `;
 
+export const requestResponseFromKnowledgeBaseJson = gql`
+  query requestResponseFromKnowledgeBaseJson($input: GptRequestResponseInput!) {
+    requestResponseFromKnowledgeBaseJson(input: $input)
+  }
+`;
+
 export const requestResponseFromKnowledgeBase = gql`
   query requestResponseFromKnowledgeBase(
     $prompt: String!

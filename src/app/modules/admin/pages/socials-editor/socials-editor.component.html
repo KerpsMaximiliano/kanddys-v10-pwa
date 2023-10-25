@@ -1,0 +1,83 @@
+<div class="page-container">
+  <header class="page-header">
+    <button type="button" (click)="close()">
+      <img src="../../../../../assets/icons/icon-close.svg" alt="">
+    </button>
+  </header>
+  <main>
+    <h3>Enlaces</h3>
+    <form class="page-form">
+      <section class="form-group form-full" *ngIf="isThereAnyLink()">
+        <p class="form-title">ENLACES ACTIVOS</p>
+        <div class="card-group" *ngFor="let prop of Object.keys(links)">
+          <div class="card" *ngIf="links[prop].length > 0">
+            <p class="left">{{ links[prop] }}</p>
+            <p class="right" (click)="removeLink(prop)">Eliminar</p>
+          </div>
+        </div>
+      </section>
+      <section class="form-group form-optional">
+        <p class="form-title">
+          ADICIONA TUS ENLACES
+        </p>
+        <div class="card-group">
+          <div class="card" *ngIf="links['Facebook'] === ''">
+            <p class="left">Copia el de Facebook</p>
+            <input
+              type="text"
+              name="linkFacebook"
+              id="linkFacebook"
+              class="link"
+              placeholder="Pégalo"
+              [(ngModel)]="linkFacebook"
+            />
+          </div>
+          <div class="card" *ngIf="links['Instagram'] === ''">
+            <p class="left">Copia el de Instagram</p>
+            <input
+              type="text"
+              name="linkInstagram"
+              id="linkInstagram"
+              class="link"
+              placeholder="Pégalo"
+              [(ngModel)]="linkInstagram"
+            />
+          </div>
+          <div class="card" *ngIf="links['Twitter'] === ''">
+            <p class="left">Copia el de Twitter</p>
+            <input
+              type="text"
+              name="linkTwitter"
+              id="linkTwitter"
+              class="link"
+              placeholder="Pégalo"
+              [(ngModel)]="linkTwitter"
+            />
+          </div>
+           <div class="card" *ngIf="links['TikTok'] === ''">
+            <p class="left">Copia el de TikTok</p>
+            <input
+              type="text"
+              name="linkTikTok"
+              id="linkTikTok"
+              class="link"
+              placeholder="Pégalo"
+              [(ngModel)]="linkTikTok"
+            />
+          </div>
+          <div class="card" *ngIf="links['Threads'] === ''">
+            <p class="left">Copia el de @threads</p>
+            <input
+              type="text"
+              name="linkThreads"
+              id="linkThreads"
+              class="link"
+              placeholder="Pégalo"
+              [(ngModel)]="linkThreads"
+            />
+          </div>
+        </div>
+      </section>
+    </form>
+  </main>
+</div>

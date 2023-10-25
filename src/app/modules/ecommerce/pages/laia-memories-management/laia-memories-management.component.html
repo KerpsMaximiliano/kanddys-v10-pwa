@@ -17,4 +17,28 @@
       <div class="content">{{ vector.text }}</div>
     </div>
   </main>
+
+  <div 
+    class="message"
+  >
+    <p class="plus-sign">
+      +
+    </p>
+    <div class="custom-input">
+      <input type="text" [formControl]="message" placeholder="Pregúntale como visitante">
+      <ng-container *ngIf="message.value; else elseTemplate">
+        <img 
+          class="arrow-green"
+          src="{{assetsFolder}}/arrow-green-background.png"
+          alt="img"
+          [style.marginRight.px]="5"
+          (click)="goLaiaTraining()"
+        >
+      </ng-container>
+      <ng-template #elseTemplate>
+        <img class="darker" src="{{assetsFolder}}/grey-camera.png" alt="camera">
+        <img class="audio-freq" src="{{assetsFolder}}/audio-freq.png" alt="img">
+      </ng-template>
+    </div>
+  </div>
 </div>

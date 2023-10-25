@@ -4,10 +4,15 @@
   width: 90vw;
   max-width: 500px !important;
   margin: auto;
+  background-color: #181d17;
 }
 
 ::ng-deep .mat-dialog-actions {
   margin-bottom: 0px;
+}
+
+::ng-deep .mat-dialog-content {
+  overflow: unset;
 }
 
 .dialog-container {
@@ -18,6 +23,7 @@
   font-size: 17px;
   font-family: InterLight;
   font-style: normal;
+  height: 100%;
 }
 
 .external-field-wrapper {
