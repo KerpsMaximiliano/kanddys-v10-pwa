@@ -515,21 +515,7 @@ export class OrderImageLoadComponent implements OnInit {
   }
 
   goToWhatsapp() {
-    let address = '';
-    const location = this.order.items[0].deliveryLocation;
-    if (location) {
-      address = '\n\nDirección: ';
-      if (location.street) {
-        if (location.houseNumber) address += '#' + location.houseNumber + ', ';
-        address += location.street + ', ';
-        if (location.referencePoint) address += location.referencePoint + ', ';
-        address += location.city + ', República Dominicana';
-        if (location.note) address += ` (${location.note})`;
-      } else {
-        address += location.nickName;
-      }
-    }
-    const fullLink = `${environment.uri}/ecommerce/order-detail/${this.order._id}`;
+    const fullLink = `${environment.uri}/ecommerce/manual-order-management/${this.order._id}`;
     const message = `*🐝 FACTURA ${formatID(
       this.order.dateId
     )}* \n\nLink de lo facturado por $${this.amount.toLocaleString(
@@ -539,7 +525,8 @@ export class OrderImageLoadComponent implements OnInit {
       this.order.user?.phone ||
       this.order.user?.email ||
       'Anónimo'
-    }${address}\n\n`;
+    }
+    \n\n Status de delivery : ${this.statusList[this.activeStatusIndex].name}`;
     this.messageLink = `https://api.whatsapp.com/send?phone=${
       this.order.user?.phone
     }&text=${encodeURIComponent(message)}`;
