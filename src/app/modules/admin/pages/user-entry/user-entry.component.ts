@@ -68,7 +68,16 @@ export class UserEntryComponent implements OnInit {
       const merchantDefault = await this.merchantsService.merchantDefault();
       
       const { phone, email, name, lastname, clientOfMerchants } = this.form.value;
-      const inputData = { phone: phone?.e164Number, email, name, lastname, clientOfMerchants };
+
+      let inputData;
+      if(!email) {
+        inputData = { phone: phone?.e164Number, name, lastname, clientOfMerchants };
+      } else if (!phone) {
+        inputData = { email, name, lastname, clientOfMerchants };
+      } else {
+        console.log('both')
+        inputData = { phone: phone?.e164Number, email, name, lastname, clientOfMerchants };
+      }
       inputData.clientOfMerchants = [merchantDefault._id];
       
       const data = await this.authService.signup(inputData, '');
