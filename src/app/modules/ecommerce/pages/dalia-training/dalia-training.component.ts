@@ -37,10 +37,14 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   inputQuestionForm: FormGroup = new FormGroup({
     question: new FormControl(''),
   });
-  generatedQA: {
+  generatedQAQueryParam: {
     question: string;
     response: string;
   } = null;
+  generatedQA: Array<{
+    question: string;
+    response: string;
+  }> = null;
   editingQuestion: boolean = false;
   laiaPlaceholder = `Ejemplo:\n\nTrabajamos de 8 a 9 de la noche, de lunes a viernes, y de 8 a 12pm los sábados, los domingos estamos cerrados.`;
   timeoutDeleteKey: any = null;
@@ -66,6 +70,8 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     vectorId: string;
     name?:string;
   }> = [];
+  showDots: boolean = false;
+  editingIndex: number = -1;
 
   constructor(
     private gptService: Gpt3Service,
@@ -121,6 +127,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
             }
 
             if (this.vectorId) {
+              this.showDots = true;
               await this.loadVectorData();
             }
 
@@ -208,9 +215,10 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   }
 
   onKeyUp() {
+    this.showDots = true;
     const words = this.form.get('memory')?.value.trim()?.split(/\s+/);
     
-    if(this.form.get('memory')?.value !== null) this.generatedQA = null;
+    // if(this.form.get('memory')?.value !== null) this.generatedQA = null;
     
     this.showTextError = this.form.get('memory')?.value === '' ? false : words?.length < 3 ? true : false;
 
@@ -231,6 +239,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
       );
 
       if (vectorData?.length) {
+        this.showDots = true;
         this.form.get('memory').setValue(vectorData[0].text);
         this.memoryName = vectorData[0].name ? vectorData[0].name : null;
         this.testMemory();
@@ -277,10 +286,17 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
 
         const qaObject = JSON.parse(response);
 
-        this.generatedQA = {
-          question: qaObject.question,
-          response: qaObject.response,
-        };
+        if (this.generatedQA) {
+          this.generatedQA.push({
+            question: qaObject.question,
+            response: qaObject.response,
+          });
+        } else {
+          this.generatedQA = [{
+            question: qaObject.question,
+            response: qaObject.response,
+          }];
+        }
 
         // Usage example:
         if (this.isTextareaFullHeight('base-text')) {
@@ -291,22 +307,26 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
         }
       }
 
+      this.showDots = false;
+
       // unlockUI();
     } catch (error) {
       // unlockUI();
+      this.showDots = false;
       this.headerService.showErrorToast();
       console.error(error);
     }
   }
 
-  async editQA() {
+  async editQA(index?: number) {
+    console.log(this.generatedQA[index])
     try {
       lockUI();
 
       let response = await this.gptService.generateResponseForTemplate(
         {
-          question: this.generatedQA.question,
-          previousResponse: this.generatedQA.response,
+          question: this.generatedQA[index]?.question,
+          previousResponse: this.generatedQA[index]?.response,
           newQuestion: this.questionForm.get('question').value,
           content: this.form.get('memory').value ? this.form.get('memory').value.replace(/"/g, "'") : '',
         },
@@ -320,14 +340,20 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
           : response;
         const qaObject = JSON.parse(response);
 
-        this.generatedQA = {
+        this.generatedQA.splice(index, 1, {
           question: qaObject.question,
           response: qaObject.response,
-        };
+        });
+        // this.generatedQA = {
+        //   question: qaObject.question,
+        //   response: qaObject.response,
+        // };
       }
 
+      this.editingIndex = -1;
       unlockUI();
     } catch (error) {
+      this.editingIndex = -1;
       unlockUI();
       this.headerService.showErrorToast();
       console.error(error);
@@ -351,7 +377,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
 
       if (response) {
         this.memories = response?.metadatas;
-        this.generatedQA = {
+        this.generatedQAQueryParam = {
           question: message,
           response: response?.message,
         };
@@ -360,7 +386,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
       unlockUI();
     } catch (error) {
       unlockUI();
-      this.generatedQA = {
+      this.generatedQAQueryParam = {
         question: message,
         response: 'No tenemos respuesta a eso en este momento',
       };
@@ -385,7 +411,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
 
       if (response) {
         this.memories = response?.metadatas;
-        this.generatedQA = {
+        this.generatedQAQueryParam = {
           question: this.questionForm.get('question').value,
           response: response?.message,
         };
@@ -399,25 +425,27 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     }
   }
 
-  async editOrApplyQuestionChange() {
+  async editOrApplyQuestionChange(index?: number) {
+    this.editingIndex = index;
+    console.log(index);
     if (this.editingQuestion) {
       const inputDivContent = document.querySelector(
-        '#question-box-input'
+        (index || index === 0) ? `#question-box-input${index}` : '#question-box-input'
       ).textContent;
       this.questionForm.get('question').setValue(inputDivContent)
-      this.requestResponse ? await this.editQAQueryParam() : await this.editQA();
+      this.requestResponse ? await this.editQAQueryParam() : await this.editQA(index);
     }
 
     this.editingQuestion = !this.editingQuestion;
 
     if (this.editingQuestion) {
       setTimeout(() => {
-        this.questionForm.get('question').setValue(this.generatedQA.question);
-        const inputDiv = document.querySelector('#question-box-input');
+        this.questionForm.get('question').setValue('');
+        const inputDiv = document.querySelector((index || index === 0) ? `#question-box-input${index}` : '#question-box-input');
         inputDiv.textContent = this.questionForm.get('question').value;
 
         (
-          document.querySelector('#question-box-input') as HTMLInputElement
+          document.querySelector((index || index === 0) ? `#question-box-input${index}` : '#question-box-input') as HTMLInputElement
         ).focus();
       }, 200);
     }
