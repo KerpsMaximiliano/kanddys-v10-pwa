@@ -476,12 +476,14 @@ export const ordersTotal = gql`
     $merchantId: ObjectID!
     $orders: [ObjectID!]
     $itemCategoryId: ObjectID
+    $range: PaginationRangeInput
   ) {
     ordersTotal(
       status: $status
       merchantId: $merchantId
       orders: $orders
       itemCategoryId: $itemCategoryId
+      range: $range
     )
   }
 `;

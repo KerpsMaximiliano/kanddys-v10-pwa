@@ -184,6 +184,26 @@ export class OrderService {
     }
   }
 
+  async ordersTotalV2(
+    status: OrderStatusType[],
+    merchantId: string,
+    orders: string[] = [],
+    range: any,
+    itemCategoryId?: string
+  ): Promise<{ total: number; lenght: number; items: number }> {
+    try {
+      const response = await this.graphql.query({
+        query: ordersTotal,
+        variables: { status, merchantId, orders, range,itemCategoryId },
+        fetchPolicy: 'no-cache',
+      });
+      if (!response || response?.errors) return undefined;
+      return response.ordersTotal;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   async authOrder(
     orderId: string,
     userId?: string
