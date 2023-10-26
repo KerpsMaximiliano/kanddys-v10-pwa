@@ -23,11 +23,11 @@
         </div>
       </div>
 
-      <div *ngIf="generatedQA" class="request-response-box" [style.marginTop.px]="28">
+      <div *ngIf="generatedQAQueryParam" class="request-response-box" [style.marginTop.px]="28">
         <div class="question-box-wrapper">
           <div class="content" [formGroup]="questionForm">
             <div class="question-box" *ngIf="!editingQuestion">
-              {{ generatedQA.question }}
+              {{ generatedQAQueryParam.question }}
             </div>
 
             <div
@@ -40,14 +40,12 @@
             <img
               class="edit-or-confirm"
               (click)="
-                !(editingQuestion && !questionForm.get('question').value)
+                !(editingQuestion && !questionForm.get('question').value) || (editingQuestion && !questionForm.get('question').value)
                   ? editOrApplyQuestionChange()
                   : null
               "
               [ngClass]="{
-                editing: true,
-                notAllowed:
-                  editingQuestion && !questionForm.get('question').value
+                editing: true
               }"
               [src]="
                 assetsFolder +
@@ -70,7 +68,7 @@
 
         <div class="response-box-wrapper">
           <div class="content">
-            <div class="response-box">{{ generatedQA.response }}</div>
+            <div class="response-box">{{ generatedQAQueryParam.response }}</div>
 
             <div class="sender">LAIA</div>
           </div>
@@ -81,7 +79,7 @@
   <ng-template #default>
     <main
       [ngClass]="{
-        inputPending: form.get('memory').value && !generatedQA?.response
+        inputPending: form.get('memory').value && !(generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response)
       }"
     >
       <div class="base-text-wrapper">
@@ -103,7 +101,7 @@
             *ngIf="
               !showTextError &&
               !form.get('memory').value &&
-              !generatedQA?.response && 
+              !(generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response) && 
               !showExtendButton
             "
             class="settings-text"
@@ -125,7 +123,61 @@
           </button>
         </div>
 
-        <div class="request-response-box" *ngIf="form.get('memory').value && !generatedQA">
+        <ng-container *ngIf="generatedQA">
+          <div *ngFor="let generated of generatedQA; let i=index" class="request-response-box">
+            <div class="question-box-wrapper">
+              <div class="content" [formGroup]="questionForm">
+                <div class="question-box" *ngIf="!editingQuestion || (editingQuestion && (i !== editingIndex))">
+                  {{ generated.question }}
+                </div>
+  
+                <div
+                  *ngIf="editingQuestion && (i === editingIndex)"
+                  [id]="'question-box-input' + i"
+                  class="question-box-input"
+                  contenteditable="true"
+                ></div>
+  
+                <img
+                  class="edit-or-confirm"
+                  (click)="
+                    !(editingQuestion && !questionForm.get('question').value) || (editingQuestion && !questionForm.get('question').value)
+                      ? editOrApplyQuestionChange(i)
+                      : null
+                  "
+                  [ngClass]="{
+                    editing: true
+                  }"
+                  [src]="
+                    assetsFolder +
+                    (editingQuestion && (i === editingIndex) ? '/check-black.svg' : '/edit-comment.svg')
+                  "
+                  alt="edit question"
+                />
+              </div>
+  
+              <div class="sender" *ngIf="headerService.user">
+                {{
+                  headerService.user.name ||
+                    headerService.user.email ||
+                    headerService.user.phone
+                }}
+              </div>
+  
+              <div class="sender" *ngIf="!headerService.user">DESCONOCIDO</div>
+            </div>
+  
+            <div class="response-box-wrapper">
+              <div class="content">
+                <div class="response-box">{{ generated.response }}</div>
+  
+                <div class="sender">LAIA</div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <div class="request-response-box" *ngIf="form.get('memory').value && showDots">
           <div class="question-box-wrapper">
             <div class="content" [formGroup]="questionForm">
               <div class="question-box">
@@ -135,68 +187,14 @@
           </div>
         </div>
 
-        <div class="request-response-box" *ngIf="generatedQA">
-          <div class="question-box-wrapper">
-            <div class="content" [formGroup]="questionForm">
-              <div class="question-box" *ngIf="!editingQuestion">
-                {{ generatedQA.question }}
-              </div>
-
-              <div
-                *ngIf="editingQuestion"
-                id="question-box-input"
-                class="question-box-input"
-                contenteditable="true"
-              ></div>
-
-              <img
-                class="edit-or-confirm"
-                (click)="
-                  !(editingQuestion && !questionForm.get('question').value)
-                    ? editOrApplyQuestionChange()
-                    : null
-                "
-                [ngClass]="{
-                  editing: true,
-                  notAllowed:
-                    editingQuestion && !questionForm.get('question').value
-                }"
-                [src]="
-                  assetsFolder +
-                  (editingQuestion ? '/check-black.svg' : '/edit-comment.svg')
-                "
-                alt="edit question"
-              />
-            </div>
-
-            <div class="sender" *ngIf="headerService.user">
-              {{
-                headerService.user.name ||
-                  headerService.user.email ||
-                  headerService.user.phone
-              }}
-            </div>
-
-            <div class="sender" *ngIf="!headerService.user">DESCONOCIDO</div>
-          </div>
-
-          <div class="response-box-wrapper">
-            <div class="content">
-              <div class="response-box">{{ generatedQA.response }}</div>
-
-              <div class="sender">LAIA</div>
-            </div>
-          </div>
-        </div>
-
         <div id="question-response-bottom"></div>
       </div>
     </main>
 
-    <footer *ngIf="!generatedQA?.response">Escribe más para que se generen preguntas</footer>
+    <footer *ngIf="!(generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response)">Escribe más para que se generen preguntas</footer>
     <footer
       class="save"
-      *ngIf="(form.get('memory').value && generatedQA?.response) || (form.get('memory').value === null && generatedQA?.response)"
+      *ngIf="(form.get('memory').value && (generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response)) || (form.get('memory').value === null && (generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response))"
       (click)="saveMemoryInKnowledgeBase()"
     >
       {{ vectorId ? "Actualiza la memoria" : "Salva la Memoria y crea más" }}
