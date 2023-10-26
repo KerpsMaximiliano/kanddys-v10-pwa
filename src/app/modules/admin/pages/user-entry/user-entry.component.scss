@@ -1,3 +1,18 @@
+::ng-deep .customPhone {
+  background-color: transparent;
+  color: #ffffff;
+  box-shadow: none;
+  border: none;
+  border-radius: 0;
+  margin: auto;
+  width: 100%;
+  border-bottom: 1px solid #82f18d;
+}
+
+::ng-deep .selected-dial-code {
+  color: #ffffff;
+}
+
 .container {
   height: 100vh;
   width: 100%;
@@ -29,6 +44,7 @@
   font-style: normal;
   font-weight: 300;
   line-height: normal;
+  cursor: pointer;
 }
 
 .input-container {

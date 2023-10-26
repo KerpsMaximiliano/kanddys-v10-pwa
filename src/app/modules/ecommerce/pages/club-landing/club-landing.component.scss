@@ -14,7 +14,7 @@
   .left-part,
   .right-part {
     display: flex;
-    align-items: flex-end;
+    align-items: flex-end;  
     .icon {
       display: flex;
       align-items: flex-end;
@@ -37,7 +37,19 @@
     font-family: InterRegular;
     font-size: 17px;
     display: flex;
+    align-items: center;
     gap: 6px;
+    .sign-in {
+      color: #87cd9b;
+      font-size: 15px;
+      font-family: InterMedium;
+      cursor: pointer;
+    }
+    img {
+      filter: brightness(210%);
+      width: 31px;
+      cursor: pointer;
+    }
     span {
       color: #87cd9b;
     }
@@ -60,10 +72,9 @@
   .close {
     margin: 0;
     text-align: right;
-    color: #c4c5c3;
-    font-family: InterLight;
-    font-size: 24px;
-
+    color: #fff;
+    font-family: InterMedium;
+    font-size: 19px;
     * {
       font-size: 19px;
       font-family: InterRegular;
@@ -179,6 +190,16 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
+    .referrals-button {
+      border: 1px solid var(--Plomo, #7B7B7B);
+      color: var(--Plomito, #C4C5C3); 
+      font-size: 15px;
+      border-radius: 6px;
+      padding: 12px 16px;
+      align-self: flex-start;
+      font-family: InterMedium;
+      cursor: pointer;
+    }
     .subject {
       text-align: center;
       color: #fff;
@@ -564,9 +585,6 @@ hr{
   color: #25638f;
   font-family: InterMedium;
   font-size: 15px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: normal;
   margin-top: 15px;
   margin-bottom: 0;
 }
@@ -592,12 +610,12 @@ hr{
 
 .ganas-desc {
   color: #f6f6f6;
-  font-family: InterMedium;
-  font-size: 16px;
+  font-family: InterRegular;
+  font-size: 14px;
   font-style: normal;
-  font-weight: 400;
   line-height: normal;
   margin-bottom: 0;
+  margin-top: 10px;
   span {
     color: #87cd9b;
   }
@@ -607,6 +625,10 @@ hr{
     filter: brightness(1.75);
     vertical-align: top;
   }
+}
+
+.ganas-desc:last-child {
+  margin-top: 0;
 }
 
 .ganas-desc.left {
