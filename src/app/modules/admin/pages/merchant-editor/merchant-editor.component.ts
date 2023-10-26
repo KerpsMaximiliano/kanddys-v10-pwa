@@ -6,7 +6,7 @@ import { WalletService } from 'src/app/core/services/wallet.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { ExchangeData, PaymentReceiver } from 'src/app/core/models/wallet';
 import { CommunityCategoriesService } from 'src/app/core/services/community-categories.service';
-import { MerchantInput } from 'src/app/core/models/merchant';
+import { MerchantInput, Roles } from 'src/app/core/models/merchant';
 import { ItemCategory } from 'src/app/core/models/item';
 import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
@@ -16,6 +16,11 @@ import { HeaderService } from 'src/app/core/services/header.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FormComponent, FormData } from 'src/app/shared/dialogs/form/form.component';
 import { MatDialog } from '@angular/material/dialog';
+import { Location } from '@angular/common';
+import { environment } from 'src/environments/environment';
+import { SaleFlow } from 'src/app/core/models/saleflow';
+import { OptionsDialogComponent } from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
+import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 
 @Component({
   selector: 'app-merchant-editor',
@@ -42,18 +47,37 @@ export class MerchantEditorComponent implements OnInit {
   saleflowModuleId: string | null = null;
   itemFormData: FormGroup;
 
+  merchantForm = this.fb.group({
+    name: [null],
+    bio: [null],
+    owner: this.fb.group({
+      email: [null],
+      phone: [null]
+    }),
+    slug: [null],
+    address: [null],
+  });
+  tabIndex: number = 1;
+  assetsURL: string = environment.assetsUrl;
+  isSwitchActive = false;
+  private saleflowData: SaleFlow | null = null;
+  merchantRole: Roles | null = null;
+  roles : Roles[] = [];
+  switchPlatformFee = false;
+
   constructor(
     private router: Router,
     private fb: FormBuilder,
     private merchantsService: MerchantsService,
     private walletService: WalletService,
-    private saleflowService: SaleFlowService,
+    public saleflowService: SaleFlowService,
     private communityCategoriesService: CommunityCategoriesService,
     private authService: AuthService,
     private _DomSanitizer: DomSanitizer,
     private _bottomSheet: MatBottomSheet,
     public dialog: MatDialog,
     public headerService: HeaderService,
+    private location: Location,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -72,15 +96,22 @@ export class MerchantEditorComponent implements OnInit {
         try {
           const merchant = await this.merchantsService.merchantDefault(user._id);
           if (merchant && merchant?._id) {
-            if (merchant?.owner?.email) this.email = merchant?.owner?.email;
+            this.merchantForm.patchValue(merchant);
+            // if (merchant?.owner?.email) this.email = merchant?.owner?.email;
             this.userId = merchant?.owner?._id;
             this.merchantId = merchant._id;
-            this.name = merchant.name;
-            this.slug = merchant.slug;
+            // this.name = merchant.name;
+            // this.slug = merchant.slug;
             this.image = merchant.image;
             if (merchant?.categories) {
               this.categoriesIds = merchant.categories.map(item => item._id);
               this.categoriesString = this.categoriesIds.map((categoryId) => this.categories.filter(obj => obj._id === categoryId)[0].name).join(', ');
+            }
+            this.merchantsService.rolesPublic().then((res) => {
+              this.roles = res;
+            });
+            if(merchant.roles.length > 0) {
+              this.merchantRole = merchant.roles[0];
             }
             this.paymentReceivers = await this.walletService.paymentReceivers({});
             const exchangeData = await this.walletService.exchangeDataByUser(merchant.owner._id);
@@ -106,7 +137,10 @@ export class MerchantEditorComponent implements OnInit {
               }
             }
             const saleflowDefault = await this.saleflowService.saleflowDefault(this.merchantId);
+            this.saleflowData = saleflowDefault;
             this.saleflowModuleId = saleflowDefault?.module?._id;
+            this.getStatusSwitch();
+            this.getPlatformFeeType();
             if (saleflowDefault?.module?.delivery?.pickUpLocations[0].nickName) this.pickupAddressString = saleflowDefault.module.delivery.pickUpLocations[0].nickName;
           }
         } catch (error) {
@@ -131,6 +165,9 @@ export class MerchantEditorComponent implements OnInit {
       this.paymentMethodsString = this.merchantsService.temporalMerchantInput?.paymentMethodsString;
       this.pickupAddressString = this.merchantsService.temporalMerchantInput?.pickupAddressString;
       this.saleflowModuleId = this.merchantsService.temporalMerchantInput?.saleflowModuleId;
+      this.merchantForm.patchValue(this.merchantsService.temporalMerchantInput?.merchantForm);
+      this.merchantRole = this.merchantsService.temporalMerchantInput?.merchantRole;
+      this.roles = this.merchantsService.temporalMerchantInput?.roles;
     }
   }
 
@@ -146,7 +183,12 @@ export class MerchantEditorComponent implements OnInit {
 
   goLinksView() {
     this.saveTemporalMerchantInMemory();
-    this.router.navigate([`/ecommerce/links-view/${this.userId}`]);
+    this.router.navigate(['/admin/socials-editor']);
+  }
+
+  goMerchantProfile() {
+    // this.saveTemporalMerchantInMemory();
+    this.router.navigate([`/ecommerce/merchant-profile/${this.merchantId}`]);
   }
 
   saveTemporalMerchantInMemory = () => {
@@ -168,6 +210,9 @@ export class MerchantEditorComponent implements OnInit {
       paymentMethodsString: this.paymentMethodsString,
       pickupAddressString: this.pickupAddressString,
       saleflowModuleId: this.saleflowModuleId,
+      merchantForm: this.merchantForm.value,
+      merchantRole: this.merchantRole,
+      roles: this.roles,
     };
   }
 
@@ -185,19 +230,138 @@ export class MerchantEditorComponent implements OnInit {
     this.imageName = event.target.files[0].name as string;
   }
 
+  getStatusSwitch() {
+    const isValidMerchant = this.merchantsService.verifyValidMerchant()
+    if (!isValidMerchant) {
+      this.isSwitchActive = false
+    } else {
+      const status = !this.saleflowData?.status || this.saleflowData?.status === 'open'
+      this.isSwitchActive = status;
+    }
+  }
+
+  async getPlatformFeeType() {
+    let result = await this.merchantsService.merchantFuncionality(
+      this.merchantId
+    );
+    if (result) {
+      this.switchPlatformFee = result?.platformFeeType === 'platform-fee-user' ? true : false;
+    }
+  }
+
+  async toggleStoreVisibility() {
+    const input = {
+      status: this.isSwitchActive ? "closed" : "open"
+    }
+
+    try {
+      await this.saleflowService.updateSaleflow(
+        input,
+        this.saleflowData._id
+      );
+
+      this.isSwitchActive = !this.isSwitchActive
+    } catch (error) {
+      console.error(error);
+
+      this.headerService.showErrorToast(
+        'Ocurrió un error al intentar cambiar la visibilidad de tu tienda, intenta más tarde'
+      );
+    }
+  }
+
+  async togglePlatformFeeType() {
+    const input = {
+      platformFeeType: this.switchPlatformFee ? "platform-fee-merchant" : "platform-fee-user"
+    }
+
+    try {
+      await this.merchantsService.updateMerchantFuncionality(
+        input,
+        this.merchantId
+      );
+
+      this.switchPlatformFee = !this.switchPlatformFee
+    } catch (error) {
+      console.error(error);
+      this.headerService.showErrorToast(
+        'Ocurrió un error al intentar cambiar la visibilidad de tu tienda, intenta más tarde'
+      );
+    }
+  }
+
+  openExhibitDialog() {
+    const roleSwitch = async (role : number) => {
+      if(this.merchantRole) {
+        await this.merchantsService.merchantRemoveRole(this.merchantRole._id, this.merchantId).then((res)=> {
+          console.log(res)
+        })
+        this.merchantsService.merchantAddRole(this.roles[role]._id, this.merchantId).then((res)=> {
+          this.merchantRole = this.roles[role]
+        })
+      } else {
+        this.merchantsService.merchantAddRole(this.roles[role]._id, this.merchantId).then((res)=> {
+          this.merchantRole = this.roles[role]
+        })
+      }
+    }
+    this.dialog.open(OptionsDialogComponent, {
+      data: {
+        title: '¿A quién le vendes?',
+        options: [
+          {
+            value: 'Consumidor final',
+            callback: () => {
+              let index = this.roles.findIndex((role) => role.code === 'STORE')
+              roleSwitch(index)
+            }
+          },
+          {
+            value: 'Floristerías',
+            callback: () => {
+              let index = this.roles.findIndex((role) => role.code === 'PROVIDER')
+              roleSwitch(index)
+            }
+          },
+          {
+            value: 'Wholesalers',
+            callback: () => {
+              let index = this.roles.findIndex((role) => role.code === 'SUPPLIER')
+              roleSwitch(index)
+            }
+          },
+          {
+            value: 'Fincas',
+            callback: () => {
+              let index = this.roles.findIndex((role) => role.code === 'PRODUCTOR')
+              roleSwitch(index)
+            }
+          },
+        ]
+      }
+    })
+  }
+
   async save() {
-    if (this.email) {
+    lockUI();
+    const merchantValue = this.merchantForm.value;
+    if (merchantValue?.owner?.email || merchantValue?.owner?.phone) {
       try {
-        await this.authService.updateMe({email: this.email});
+        let userInput = {}
+        if(merchantValue?.owner?.email) userInput['email'] = merchantValue?.owner?.email;
+        if(merchantValue?.owner?.phone) userInput['phone'] = merchantValue?.owner?.phone;
+        await this.authService.updateMe(userInput);
       } catch (error) {
         console.log(error);
       }
     }
-    if (this.name || this.slug || this.image) {
+    if (merchantValue.name || merchantValue.slug || this.image) {
       try {
         let merchantInput = {};
-        if(this.name) merchantInput['name'] = this.name;
-        if(this.slug) merchantInput['slug'] = this.slug;
+        if(merchantValue.name) merchantInput['name'] = merchantValue.name;
+        if(merchantValue.slug) merchantInput['slug'] = merchantValue.slug;
+        if(merchantValue.bio) merchantInput['bio'] = merchantValue.bio;
+        if(merchantValue.address) merchantInput['address'] = merchantValue.address;
         if(this.imageName) merchantInput['image'] = this.imageName;
         if(this.categoriesString) merchantInput['categories'] = this.categoriesIds;
         await this.merchantsService.updateMerchant(
@@ -253,6 +417,8 @@ export class MerchantEditorComponent implements OnInit {
         }
       }, this.saleflowModuleId);
     }
+
+    unlockUI();
   }
 
   formatImage(image: string): SafeStyle {
@@ -481,5 +647,9 @@ export class MerchantEditorComponent implements OnInit {
         }
       });
     });
+  }
+
+  goBack() {
+    this.location.back();
   }
 }

@@ -1,38 +1,377 @@
 <div class="page-container">
-  <header class="page-header">
+  <!-- <header class="page-header">
     <button type="button">
       <img src="../../../../../assets/icons/triangle.svg" alt="">
     </button>
     <p>Perfil de Membresía</p>
+  </header> -->
+  <header class="page-header">
+    <span (click)="goBack()">X</span>
   </header>
-  <form class="page-form">
-    <section class="form-group form-full">
-      <p class="form-title">DATOS LLENOS</p>
-      <div class="input-group">
-        <label for="phone"
-          >WhatsApp que recibe las facturas de las órdenes</label
+
+  <form class="page-form" [formGroup]="merchantForm">
+    <div class="items-container">
+      <div class="article-content flex">
+        <div
+          class="image"
+          [style.background]="image ? formatImage(image) : '#D9D9D9'"
+          (click)="uploader.click()"
         >
-        <input
-          type="phone"
-          name="phone"
-          id="phone"
-          placeholder="(000) 000 - 0000"
-          pattern="^\(\d{3}\)\d{3}\d{4}$"
+        <input id="imgInput" accept="image/*" type="file" hidden #uploader (change)="onFileUpload($event)">
+      </div>
+        <div class="article">
+          <div class="input-container">
+            <input 
+              type="text" 
+              class="article-id"
+              formControlName="name"
+              placeholder="Sin nombre">
+          </div>
+          <div class="input-container">
+            <textarea 
+              rows="3" 
+              cols="33"
+              class="context"
+              formControlName="bio"
+              placeholder="Opcional, adiciona una descripción"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      <p 
+        (click)="tabIndex = 1"
+        [class]="{'active': tabIndex === 1}"
+      >DATOS</p>
+      <p 
+        (click)="tabIndex = 2"
+        [class]="{'active': tabIndex === 2}"
+      >🌼 VITRINA</p>
+      <p 
+        (click)="tabIndex = 3"
+        [class]="{'active': tabIndex === 3}"
+      >LAIA</p>
+    </div>
+
+    <section *ngIf="tabIndex === 1" class="form-group form-full">
+      <p class="form-title">Personal</p>
+
+      <div
+        class="add-card"
+      >
+        <p class="plus">+</p>
+        <p>Adiciona CEO / Propietario</p>
+      </div>
+
+      <div
+        class="add-card"
+      >
+        <p class="plus">+</p>
+        <p>Adiciona el teléfono</p>
+      </div>
+
+      <div
+        class="add-card"
+      >
+        <p class="plus">+</p>
+        <p>Adiciona a Vendedores</p>
+      </div>
+  
+      <form class="form-full" formGroupName="owner">
+        <ng-container *ngIf="this.merchantForm.get('owner').get('email').value || this.merchantForm.get('owner').get('email').value === ''; else elseEmail">
+          <div class="input-group">
+            <div class="label-header">
+              <label for="email"
+                >Correo electrónico que recibe las facturas de la órdenes</label
+              >
+              <mat-icon>chevron_right</mat-icon>
+            </div>
+            <input
+              type="email"
+              name="email"
+              id="email"
+              placeholder="correo@mail.com"
+              pattern="[\w\._]{5,30}\+?[\w]{0,10}@[\w\.\~]{3,}\.\w{2,5}"
+              formControlName="email"
+            />
+          </div>
+        </ng-container>
+        <ng-template #elseEmail>
+          <div
+            class="add-card" 
+            (click)="this.merchantForm.get('owner').get('email').setValue('')"
+          >
+            <p class="plus">+</p>
+            <p>Adiciona el Correo Electrónico General de Ventas</p>
+          </div>
+        </ng-template>
+
+        <ng-container *ngIf="this.merchantForm.get('owner').get('phone').value || this.merchantForm.get('owner').get('phone').value === ''; else elsePhone">
+          <div class="input-group">
+            <div class="label-header">
+              <label for="phone"
+                >WhatsApp que recibe las facturas de las órdenes</label
+              >
+              <mat-icon>chevron_right</mat-icon>
+            </div>
+            <input
+              type="phone"
+              name="phone"
+              id="phone"
+              formControlName="phone"
+              placeholder="(000) 000 - 0000"
+              pattern="^\(\d{3}\)\d{3}\d{4}$"
+            />
+          </div>
+        </ng-container>
+        <ng-template #elsePhone>
+          <div
+            class="add-card" 
+            (click)="this.merchantForm.get('owner').get('phone').setValue('')"
+          >
+            <p class="plus">+</p>
+            <p>Adiciona el WhatsApp General de Ventas</p>
+          </div>
+        </ng-template>
+      </form>
+
+      <p class="form-title" [style.marginTop.px]="30">Comercial</p>
+
+      <ng-container *ngIf="categoriesString === null; else elseIndustry">
+        <div
+          class="add-card" 
+          (click)="openIndustriesDialog()"
+        >
+          <p class="plus">+</p>
+          <p>Adiciona Industria</p>
+        </div>
+      </ng-container>
+      <ng-template #elseIndustry>
+        <div class="input-group" *ngIf="categoriesString && categoriesString.length > 0" (click)="openIndustriesDialog()">
+          <div class="label-header">
+            <label for="slug">Industria</label>
+            <mat-icon>chevron_right</mat-icon>
+          </div>
+          <span>{{ categoriesString }}</span>
+        </div>
+      </ng-template>
+
+      <ng-container *ngIf="this.merchantForm.get('address').value || this.merchantForm.get('address').value === ''; else elseAddress">
+        <div class="input-group">
+          <div class="label-header">
+            <label for="address"
+              >Dirección Comercial</label
+            >
+            <mat-icon>chevron_right</mat-icon>
+          </div>
+          <input
+            type="text"
+            name="slug"
+            id="slug"
+            placeholder="ID"
+            formControlName="address"
+          />
+        </div>
+      </ng-container>
+      <ng-template #elseAddress>
+        <div
+          class="add-card" 
+          (click)="this.merchantForm.get('address').setValue('')"
+        >
+          <p class="plus">+</p>
+          <p>Adiciona Dirección Comercial</p>
+        </div>
+      </ng-template>
+
+      <div
+        class="add-card" 
+        (click)="goLinksView()"
+      >
+        <p class="plus">+</p>
+        <p>Adiciona Cuentas Sociales</p>
+      </div>
+
+      <ng-container *ngIf="this.merchantForm.get('slug').value || this.merchantForm.get('slug').value === ''; else elseSlug">
+        <div class="input-group">
+          <div class="label-header">
+            <label for="slug"
+              >ID del comercio (Slug)</label
+            >
+            <mat-icon>chevron_right</mat-icon>
+          </div>
+          <input
+            type="text"
+            name="slug"
+            id="slug"
+            placeholder="ID"
+            formControlName="slug"
+          />
+        </div>
+      </ng-container>
+      <ng-template #elseSlug>
+        <div
+          class="add-card" 
+          (click)="this.merchantForm.get('slug').setValue('')"
+        >
+          <p class="plus">+</p>
+          <p>Adiciona el Slug</p>
+        </div>
+      </ng-template>
+    </section>
+
+    <section *ngIf="tabIndex === 2" class="form-group form-optional">
+      <div class="container-toggle" [style.marginBottom.px]="25" (click)="toggleStoreVisibility()">
+        <span class="title">
+          {{
+            isSwitchActive ? 'Activa (está vendiendo)' : 'Inactiva (no está vendiendo)'
+          }}
+        </span>
+        <img
+          class="toggle-icon"
+          [src]="
+            assetsURL +
+            (isSwitchActive
+              ? '/toggle-on.svg'
+              : '/toggle-off.svg')
+          "
         />
       </div>
-      <div class="input-group" *ngIf="email || email === ''">
-        <label for="email"
-          >Correo electrónico que recibe las facturas de la órdenes</label
+
+      <p class="form-title">Compradores</p>
+
+      <ng-container *ngIf="paymentMethodsString === null; else elsePaymentMethods">
+        <div
+          class="add-card" 
+          (click)="openFormForField('PAYMENT-METHODS')"
         >
-        <input
-          type="email"
-          name="email"
-          id="email"
-          placeholder="correo@mail.com"
-          pattern="[\w\._]{5,30}\+?[\w]{0,10}@[\w\.\~]{3,}\.\w{2,5}"
-          [(ngModel)]="email"
+          <p class="plus">+</p>
+          <p>Métodos de Pago</p>
+        </div>
+      </ng-container>
+      <ng-template #elsePaymentMethods>
+        <div class="input-group" (click)="openFormForField('PAYMENT-METHODS')">
+          <div class="label-header">
+            <label for="slug">Métodos de Pago</label>
+            <mat-icon>chevron_right</mat-icon>
+          </div>
+          <span>{{ paymentMethodsString }}</span>
+        </div>
+      </ng-template>
+
+      <div class="add-card">
+        <p class="plus">+</p>
+        <p [style.paddingRight.px]="20">Que tengan la Opción de Mensajes de Regalos Tradicional</p>
+      </div>
+
+      <div class="add-card">
+        <p class="plus">+</p>
+        <p [style.paddingRight.px]="20">Que tengan la Opción de Mensajes de Regalos Virtual con QR</p>
+      </div>
+
+      <div class="add-card">
+        <p class="plus">+</p>
+        <p>Que tengan que reservar un tiempo</p>
+      </div>
+
+      <ng-container *ngIf="merchantRole === null; else elseRole">
+        <div
+          class="add-card" 
+          (click)="openExhibitDialog()"
+        >
+          <p class="plus">+</p>
+          <p>Adiciona el Nicho</p>
+        </div>
+      </ng-container>
+      <ng-template #elseRole>
+        <div class="input-group" (click)="openExhibitDialog()">
+          <div class="label-header">
+            <label for="slug">Nicho</label>
+            <mat-icon>chevron_right</mat-icon>
+          </div>
+          <span> 
+            {{this.merchantRole?.code === 'PRODUCTOR' ?
+              'Fincas' :
+              this.merchantRole?.code === 'PROVIDER' ?
+              'Floristerías' :
+              this.merchantRole?.code === 'SUPPLIER' ?
+              'Wholesalers' : 'Consumidor Final'
+            }}
+          </span>
+        </div>
+      </ng-template>
+
+      <p class="form-title" [style.marginTop.px]="30">Entregas</p>
+
+      <ng-container *ngIf="pickupAddressString === null; else elsePickupAddressString">
+        <div
+          class="add-card" 
+          (click)="openFormForField('PICK-UP-ADDRESS')"
+        >
+          <p class="plus">+</p>
+          <p>Adiciona las entregas por pick up</p>
+        </div>
+      </ng-container>
+      <ng-template #elsePickupAddressString>
+        <div class="input-group" (click)="openFormForField('PICK-UP-ADDRESS')">
+          <div class="label-header">
+            <label for="slug">Dirección de Pick Up</label>
+            <mat-icon>chevron_right</mat-icon>
+          </div>
+          <span>{{ pickupAddressString }}</span>
+        </div>
+      </ng-template>
+
+      <div class="add-card" (click)="goDeliveryZonesManager()">
+        <p class="plus">+</p>
+        <p>Adiciona Zonas de Entregas</p>
+      </div>
+
+      <p class="form-title" [style.marginTop.px]="30">Exhibición</p>
+
+      <div class="add-card">
+        <p class="plus">+</p>
+        <p>Adiciona vista en biblioteca</p>
+      </div>
+      <div class="add-card">
+        <p class="plus">+</p>
+        <p>Adiciona banner en artículos regulares</p>
+      </div>
+      <div class="add-card">
+        <p class="plus">+</p>
+        <p [style.paddingRight.px]="20">Adiciona banner en artículos de Suscripciones</p>
+      </div>
+    </section>
+
+    <section *ngIf="tabIndex === 3" class="form-group form-optional">
+      <p class="form-title">Contabilidad</p>
+
+      <div class="container-toggle" (click)="togglePlatformFeeType()">
+        <span class="title">
+          Comprador paga $0.30 a Laia ({{ switchPlatformFee ? 'Activado' : 'Desactivado' }})
+        </span>
+        <img
+          class="toggle-icon"
+          [src]="
+            assetsURL +
+            (switchPlatformFee
+              ? '/toggle-on.svg'
+              : '/toggle-off.svg')
+          "
         />
       </div>
+
+      <div class="add-card">
+        <p class="plus">+</p>
+        <p [style.paddingRight.px]="20">Costos fijos mensuales para el control de beneficios</p>
+      </div>
+    </section>
+
+    <!-- <section *ngIf="tabIndex === 4" class="form-group form-optional">
+      <p class="form-title">
+        OPCIONAL- DATOS QUE LOS COMPRADORES CONSIDERAN IMPORTANTES
+      </p>
+
       <div class="input-group" (click)="goViewConfigurationCards()">
         <label for="layout"
           >Layout de la exhibición de los artículos en venta</label
@@ -40,6 +379,7 @@
         <span class="title">Grande (imagen, título, descripción, precio)</span>
         <span class="subtitle">Cambiar a pequeño (imagen, precio)</span>
       </div>
+
       <div class="input-group" *ngIf="name || name === ''">
         <label for="name"
           >Nombre comercial</label
@@ -50,20 +390,9 @@
           id="name"
           placeholder="Nombre"
           [(ngModel)]="name"
-        />
+          [ngModelOptions]="{standalone: true}">
       </div>
-      <div class="input-group" *ngIf="slug || slug === ''">
-        <label for="slug"
-          >ID del comercio (Slug)</label
-        >
-        <input
-          type="text"
-          name="slug"
-          id="slug"
-          placeholder="ID"
-          [(ngModel)]="slug"
-        />
-      </div>
+
       <div class="input-group" *ngIf="image || image === ''">
         <label for="image"
           >Imagen Comercial</label
@@ -78,26 +407,19 @@
         />
         <label class="square" [style.background]="image? formatImage(image) : '#936105'" for="image"></label>
       </div>
-      <div class="input-group" *ngIf="categoriesString && categoriesString.length > 0" (click)="openIndustriesDialog()">
-        <label for="slug">Industria</label
-        >
-        <span>{{ categoriesString }}</span>
-      </div>
+
       <div class="input-group" *ngIf="paymentMethodsString && paymentMethodsString.length > 0" (click)="openFormForField('PAYMENT-METHODS')">
         <label for="slug">Métodos de Pago</label
         >
         <span>{{ paymentMethodsString }}</span>
       </div>
+
       <div class="input-group" *ngIf="pickupAddressString" (click)="openFormForField('PICK-UP-ADDRESS')">
         <label for="slug">Dirección de Pick Up</label
         >
         <span>{{ pickupAddressString }}</span>
       </div>
-    </section>
-    <section class="form-group form-optional">
-      <p class="form-title">
-        OPCIONAL- DATOS QUE LOS COMPRADORES CONSIDERAN IMPORTANTES
-      </p>
+
       <div class="card-group">
         <div class="card" *ngIf="image === null">
           <p>Logo</p>
@@ -149,7 +471,8 @@
         </div>
       </div>
     </section>
-    <section class="form-group form-optional-function">
+
+    <section *ngIf="tabIndex === 5" class="form-group form-optional-function">
       <p class="form-title">FUNCIONALIDADES OPCIONALES</p>
       <div class="card">
         <p>Costos fijos para el control de beneficios</p>
@@ -157,9 +480,16 @@
           <img src="../../../../../assets/icons/add-button.svg" alt="" />
         </button>
       </div>
-    </section>
+    </section> -->
   </form>
+
   <footer class="page-footer">
-    <a (click)="save()"><p>Salvar</p></a>
+    <div class="save">
+      <a (click)="save()"><p>Salvar cambios</p></a>
+    </div>
+    <div class="preview">
+      <p (click)="goMerchantProfile()">Preview</p>
+      <p>Comparte</p>
+    </div>
   </footer>
 </div>
