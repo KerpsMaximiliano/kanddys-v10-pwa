@@ -64,6 +64,8 @@ export class MerchantEditorComponent implements OnInit {
   merchantRole: Roles | null = null;
   roles : Roles[] = [];
   switchPlatformFee = false;
+  initData = null;
+  saveChanges: boolean = false;
 
   constructor(
     private router: Router,
@@ -147,6 +149,7 @@ export class MerchantEditorComponent implements OnInit {
           console.error(error);
         }
       }
+      this.saveInitialData();
     } else {
       this.email = this.merchantsService.temporalMerchantInput?.email;
       this.image = this.merchantsService.temporalMerchantInput?.image;
@@ -216,6 +219,34 @@ export class MerchantEditorComponent implements OnInit {
     };
   }
 
+  saveInitialData() {
+    const data = {
+      image: this.image,
+      categoriesString: this.categoriesString,
+      paymentMethodsString: this.paymentMethodsString,
+      pickupAddressString: this.pickupAddressString,
+      merchantForm: this.merchantForm.value,
+      merchantRole: this.merchantRole,
+    };
+
+    this.initData = JSON.parse(JSON.stringify(data));
+  }
+
+  compareData() {
+    if (this.initData) {
+      const changeData = {
+        image: this.image,
+        categoriesString: this.categoriesString,
+        paymentMethodsString: this.paymentMethodsString,
+        pickupAddressString: this.pickupAddressString,
+        merchantForm: this.merchantForm.value,
+        merchantRole: this.merchantRole,
+      };
+  
+      this.saveChanges = JSON.stringify(this.initData) !== JSON.stringify(changeData);
+    }
+  }
+
   addField(field) {
     this[field] = '';
   }
@@ -228,6 +259,7 @@ export class MerchantEditorComponent implements OnInit {
     };
     reader.readAsDataURL(event.target.files[0] as File);
     this.imageName = event.target.files[0].name as string;
+    this.compareData();
   }
 
   getStatusSwitch() {
@@ -450,6 +482,8 @@ export class MerchantEditorComponent implements OnInit {
         this.categoriesString = this.categoriesIds
           .map((categoryId) => this.categories.filter(obj => obj._id === categoryId)[0].name)
           .join(', ');
+
+        this.compareData();
       }
     );
   }
@@ -638,6 +672,7 @@ export class MerchantEditorComponent implements OnInit {
                 }
               }
             }
+            this.compareData();
           } else {
             this.headerService.showErrorToast(error);
           }

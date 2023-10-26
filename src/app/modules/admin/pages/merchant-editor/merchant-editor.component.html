@@ -25,7 +25,9 @@
               type="text" 
               class="article-id"
               formControlName="name"
-              placeholder="Sin nombre">
+              placeholder="Sin nombre"
+              (ngModelChange)="compareData()"
+            >
           </div>
           <div class="input-container">
             <textarea 
@@ -33,7 +35,9 @@
               cols="33"
               class="context"
               formControlName="bio"
-              placeholder="Opcional, adiciona una descripción"></textarea>
+              placeholder="Opcional, adiciona una descripción"
+              (ngModelChange)="compareData()"
+            ></textarea>
           </div>
         </div>
       </div>
@@ -94,6 +98,7 @@
               placeholder="correo@mail.com"
               pattern="[\w\._]{5,30}\+?[\w]{0,10}@[\w\.\~]{3,}\.\w{2,5}"
               formControlName="email"
+              (ngModelChange)="compareData()"
             />
           </div>
         </ng-container>
@@ -122,6 +127,7 @@
               formControlName="phone"
               placeholder="(000) 000 - 0000"
               pattern="^\(\d{3}\)\d{3}\d{4}$"
+              (ngModelChange)="compareData()"
             />
           </div>
         </ng-container>
@@ -171,6 +177,7 @@
             id="slug"
             placeholder="ID"
             formControlName="address"
+            (ngModelChange)="compareData()"
           />
         </div>
       </ng-container>
@@ -206,6 +213,7 @@
             id="slug"
             placeholder="ID"
             formControlName="slug"
+            (ngModelChange)="compareData()"
           />
         </div>
       </ng-container>
@@ -366,128 +374,13 @@
         <p [style.paddingRight.px]="20">Costos fijos mensuales para el control de beneficios</p>
       </div>
     </section>
-
-    <!-- <section *ngIf="tabIndex === 4" class="form-group form-optional">
-      <p class="form-title">
-        OPCIONAL- DATOS QUE LOS COMPRADORES CONSIDERAN IMPORTANTES
-      </p>
-
-      <div class="input-group" (click)="goViewConfigurationCards()">
-        <label for="layout"
-          >Layout de la exhibición de los artículos en venta</label
-        >
-        <span class="title">Grande (imagen, título, descripción, precio)</span>
-        <span class="subtitle">Cambiar a pequeño (imagen, precio)</span>
-      </div>
-
-      <div class="input-group" *ngIf="name || name === ''">
-        <label for="name"
-          >Nombre comercial</label
-        >
-        <input
-          type="text"
-          name="name"
-          id="name"
-          placeholder="Nombre"
-          [(ngModel)]="name"
-          [ngModelOptions]="{standalone: true}">
-      </div>
-
-      <div class="input-group" *ngIf="image || image === ''">
-        <label for="image"
-          >Imagen Comercial</label
-        >
-        <input
-          type="file"
-          style="display: none"
-          [accept]="['.png', '.jpg', '.jpeg']"
-          name="image"
-          id="image"
-          (change)="onFileUpload($event)"
-        />
-        <label class="square" [style.background]="image? formatImage(image) : '#936105'" for="image"></label>
-      </div>
-
-      <div class="input-group" *ngIf="paymentMethodsString && paymentMethodsString.length > 0" (click)="openFormForField('PAYMENT-METHODS')">
-        <label for="slug">Métodos de Pago</label
-        >
-        <span>{{ paymentMethodsString }}</span>
-      </div>
-
-      <div class="input-group" *ngIf="pickupAddressString" (click)="openFormForField('PICK-UP-ADDRESS')">
-        <label for="slug">Dirección de Pick Up</label
-        >
-        <span>{{ pickupAddressString }}</span>
-      </div>
-
-      <div class="card-group">
-        <div class="card" *ngIf="image === null">
-          <p>Logo</p>
-          <button type="button" (click)="addField('image')">
-            <img src="../../../../../assets/icons/add-button.svg" alt="" />
-          </button>
-        </div>
-        <div class="card" *ngIf="name === null">
-          <p>Nombre comercial</p>
-          <button type="button" (click)="addField('name')">
-            <img src="../../../../../assets/icons/add-button.svg" alt="" />
-          </button>
-        </div>
-        <div class="card" *ngIf="slug === null">
-          <p>ID del comercio (Slug)</p>
-          <button type="button" (click)="addField('slug')">
-            <img src="../../../../../assets/icons/add-button.svg" alt="" />
-          </button>
-        </div>
-        <div class="card">
-          <p>Zonas de las entregas por delivery</p>
-          <button type="button" (click)="goDeliveryZonesManager()">
-            <img src="../../../../../assets/icons/add-button.svg" alt="" />
-          </button>
-        </div>
-        <div class="card" *ngIf="pickupAddressString === null">
-          <p>Lugar de las entregas por pick up</p>
-          <button type="button" (click)="openFormForField('PICK-UP-ADDRESS')">
-            <img src="../../../../../assets/icons/add-button.svg" alt="" />
-          </button>
-        </div>
-        <div class="card" *ngIf="categoriesString === null">
-          <p>Industria</p>
-          <button type="button" (click)="openIndustriesDialog()">
-            <img src="../../../../../assets/icons/add-button.svg" alt="" />
-          </button>
-        </div>
-        <div class="card" *ngIf="paymentMethodsString === null">
-          <p>Métodos donde recibes los pagos de los compradores</p>
-          <button type="button" (click)="openFormForField('PAYMENT-METHODS')">
-            <img src="../../../../../assets/icons/add-button.svg" alt="" />
-          </button>
-        </div>
-        <div class="card">
-          <p>Cuentas sociales</p>
-          <button type="button" (click)="goLinksView()">
-            <img src="../../../../../assets/icons/add-button.svg" alt="" />
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <section *ngIf="tabIndex === 5" class="form-group form-optional-function">
-      <p class="form-title">FUNCIONALIDADES OPCIONALES</p>
-      <div class="card">
-        <p>Costos fijos para el control de beneficios</p>
-        <button type="button">
-          <img src="../../../../../assets/icons/add-button.svg" alt="" />
-        </button>
-      </div>
-    </section> -->
   </form>
 
   <footer class="page-footer">
-    <div class="save">
+    <div *ngIf="saveChanges" class="save">
       <a (click)="save()"><p>Salvar cambios</p></a>
     </div>
-    <div class="preview">
+    <div *ngIf="!saveChanges" class="preview">
       <p (click)="goMerchantProfile()">Preview</p>
       <p>Comparte</p>
     </div>
