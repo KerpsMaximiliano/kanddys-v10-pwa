@@ -215,22 +215,22 @@ export class ProviderItemsComponent implements OnInit {
         this.getDefaultMerchantAndSaleflows(data.user)
           .then(async ({ merchantDefault, saleflowDefault }) => {
             this.merchantData = merchantDefault;
+            this.saleflowData = saleflowDefault
+            this.isUserLogged = true
+            this.isSupplier = this.verifyIfIsSupplier(this.merchantData);
+
+            if (this.merchantData?._id) {
+              await this.fetchItemsForSell()
+              await this.fetchQuantifyFilters();
+              await this.fetchQuantityFiltersByRole()
+            }
+
+            this.getStatusSwitch();
+            await this.executeInitProcesses();
+
             const roles = await this.merchantsService.rolesPublic()
             this.roles = roles;
             this.merchantRole = this.merchantData.roles[0]
-            this.saleflowData = saleflowDefault
-            this.isUserLogged = true
-
-            this.isSupplier = this.verifyIfIsSupplier(this.merchantData);
-            this.getStatusSwitch();
-            await this.executeInitProcesses();
-            setTimeout(async () => {
-              if (this.merchantData?._id) {
-                await this.fetchItemsForSell();
-                await this.fetchQuantifyFilters();
-                await this.fetchQuantityFiltersByRole()
-              }
-            }, 1000);
           })
         subscription.unsubscribe();
       });
@@ -318,7 +318,7 @@ export class ProviderItemsComponent implements OnInit {
   /**
    *
    */
-  onUpdate() {
+  onSelectPlataformFee() {
     this.plataformFeeTypeActual = this.plataformFeeTypeActual === 'platform_fee_user'
       ? 'platform_fee_merchant'
       : 'platform_fee_user'
@@ -331,7 +331,6 @@ export class ProviderItemsComponent implements OnInit {
       .updateMerchantFuncionality(input, this.merchantData._id)
       .then(() => {
         console.log("Los datos han sido actualizado. Type actual: ", this.plataformFeeTypeActual)
-
       })
   }
 
@@ -371,6 +370,12 @@ export class ProviderItemsComponent implements OnInit {
           await this.fetchItemsForNotSell(false, true);
         }
 
+      }
+
+      if (
+        this.paginationSearchState.status === 'complete' &&
+        !this.reachTheEndOfPaginationSearch
+      ) {
         if (this.hiddenDashboard) {
           await this.filteringItemsBySearchbar(false, this.itemSearchbar.value, true)
         }
@@ -1655,6 +1660,9 @@ export class ProviderItemsComponent implements OnInit {
 
   onCloseSearchbar() {
     this.searchOpened = false
+    this.hiddenDashboard = false
+    this.resetBtn(this.btnFilterState)
+    this.resetBtn(this.btnConsumerState)
   }
 
   /**
@@ -1775,6 +1783,7 @@ export class ProviderItemsComponent implements OnInit {
     nameItem: string,
     triggeredFromScroll: boolean = false,
   ) {
+    this.paginationSearchState.status = 'loading';
     if (restartPagination) {
       this.reachTheEndOfPaginationSearch = false;
       this.paginationSearchState.page = 1;
@@ -1955,9 +1964,23 @@ export class ProviderItemsComponent implements OnInit {
    *
    * @param items - list of items
    */
-  private resetPagination(items: Item[]) {
+  private resetPagination(items: Item[]): void {
     this.reachTheEndOfPagination = false;
     this.paginationState.page = 1;
-    items = [];
+    items.length = 0;
+  }
+
+
+  /**
+   * Resets the button object by setting all properties to false.
+   * @param btn - The button object to reset.
+   * @returns The reset button object.
+   */
+  private resetBtn(btn: any) {
+    for (const key in btn) {
+      if (btn.hasOwnProperty(key) && btn[key] === true) {
+        btn[key] = false;
+      }
+    }
   }
 }

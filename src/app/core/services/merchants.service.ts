@@ -758,39 +758,37 @@ export class MerchantsService {
   }
 
   /**
- * Verifica si el comerciante es válido.
- *
- * Obtiene los datos del comerciante predeterminado, luego los verifica.
- * Si es valido, obtiene la configuración de la venta para el comerciante
- * predeterminado y verifica si es válido.
- *
- * @returns {Promise<boolean>} Indica si el comerciante es válido o no.
- */
+   * Verifies if the merchant is valid.
+   *
+   * Retrieves the data of the default merchant and checks if it is valid.
+   * If it is valid, retrieves the sale configuration for the default merchant
+   * and checks if it is valid.
+   *
+   * @returns {Promise<boolean>} Indicates whether the merchant is valid or not.
+   */
   async verifyValidMerchant(): Promise<boolean> {
-    const merchant = await this.merchantDefault()
-    const isValidMerchant = merchant._id && merchant.slug && merchant.roles.length > 0
+    const merchant = this.merchantData;
+    const isValidMerchant = merchant?._id && merchant?.slug && merchant?.roles.length > 0;
 
     if (!isValidMerchant) {
-      return false
+      return false;
     }
 
-    if (isValidMerchant) {
-      const saleflow = await this.saleflowService.saleflowDefault(merchant._id)
-      if (!saleflow || !saleflow.module) {
-        return false;
-      }
-
-      const { paymentMethod, delivery } = saleflow.module;
-      if (!paymentMethod.isActive || !paymentMethod.paymentModule._id) {
-        return false;
-      }
-
-      if (!delivery.isActive || !delivery.pickUpLocations.length || !delivery.pickUpLocations[0]?.nickName) {
-        return false;
-      }
-
-      return true;
+    const saleflow = this.saleflowService.saleflowData;
+    if (!saleflow || !saleflow?.module) {
+      return false;
     }
+
+    const { paymentMethod, delivery } = saleflow.module;
+    if (!paymentMethod.isActive || !paymentMethod.paymentModule._id) {
+      return false;
+    }
+
+    if (!delivery.isActive || !delivery.pickUpLocations.length || !delivery.pickUpLocations[0]?.nickName) {
+      return false;
+    }
+
+    return true;
   }
 
   async rolesPublic() {
