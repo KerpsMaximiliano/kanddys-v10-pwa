@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
@@ -85,6 +86,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private merchantsService: MerchantsService,
     private whatsappService: WhatsappService,
+    private toastrService: ToastrService,
   ) {}
 
   async ngOnInit() {
@@ -714,6 +716,81 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
       OptionsMenuComponent,
       data
     )
+  }
+
+  openUploadFile() {
+    const dialog = this.bottomSheet.open(
+      OptionsMenuComponent,
+      {
+        data: {
+          description: 'Agrega:',
+          options: [
+            {
+              value: 'URL',
+              callback: () => {
+                
+              },
+            },
+            {
+              value: 'PDF',
+              callback: () => {
+                const fileInput = document.getElementById('file') as HTMLInputElement;
+                fileInput.accept = '.pdf';
+                fileInput.click();
+              },
+            },
+            {
+              value: 'CSV',
+              callback: () => {
+                
+              },
+            },
+            {
+              value: 'XLS',
+              callback: () => {
+                const fileInput = document.getElementById('file') as HTMLInputElement;
+                fileInput.accept = '.xls';
+                fileInput.click();
+              },
+            },
+            {
+              value: 'TXT',
+              callback: () => {
+                const fileInput = document.getElementById('file') as HTMLInputElement;
+                fileInput.accept = '.txt';
+                fileInput.click();
+              },
+            },
+          ],
+        },
+      }
+    )
+  }
+
+  async loadFile(event: Event) {
+    const fileList = (event.target as HTMLInputElement).files;
+
+    try {
+      lockUI();
+
+      if (!fileList.length) return;
+      for (let i = 0; i < fileList.length; i++) {
+        const file = fileList.item(i);
+
+        await this.gptService.feedFileToKnowledgeBase(file);
+      }
+
+      unlockUI();
+
+      this.toastrService.success(
+        'Se ha entrenado al mago exitosamente con la data proporcionada'
+      );
+    } catch (error) {
+      unlockUI();
+
+      console.error(error);
+      this.headerService.showErrorToast();
+    }
   }
 
   ngOnDestroy() {

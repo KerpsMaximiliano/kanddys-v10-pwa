@@ -535,6 +535,7 @@ export const merchantFuncionality = gql`
       maxOrder
       countOrder
       payPlataformFee
+      platformFeeType
       questionDeliveryZone{
         value
       }
