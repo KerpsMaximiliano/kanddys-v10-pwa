@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { CountryISO, PhoneNumberFormat } from 'ngx-intl-tel-input';
 
 @Component({
   selector: 'app-user-entry',
@@ -13,6 +14,13 @@ export class UserEntryComponent implements OnInit {
   form: FormGroup;
   returnTo: string;
   manualOrderId: string;
+
+  CountryISO = CountryISO.DominicanRepublic;
+  preferredCountries: CountryISO[] = [
+    CountryISO.DominicanRepublic,
+    CountryISO.UnitedStates,
+  ];
+  PhoneNumberFormat = PhoneNumberFormat;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -32,11 +40,21 @@ export class UserEntryComponent implements OnInit {
       }
     })
     this.form = this.formBuilder.group({
-      phone: ['', Validators.required],
-      name: ['', Validators.required],
-      email: [''],
+      phone: [''],
+      name: [''],
+      lastname: [''],
+      email: ['', Validators.email],
       clientOfMerchants: [''],
-    });
+    },{validator: this.hasEmailOrPhone});
+  }
+
+  hasEmailOrPhone(group: FormGroup) {
+    const email = group.controls.email.value;
+    const phone = group.controls.phone.value;
+    if(!email && !phone) {
+      return { hasEmailOrPhone: true };
+    }
+    return null;
   }
 
   /**
@@ -47,11 +65,19 @@ export class UserEntryComponent implements OnInit {
    * @returns {Promise<void>} Una promesa que se resuelve cuando se completa el registro.
    */
   async sendForm(): Promise<void> {
-    if (!this.form.invalid) {
       const merchantDefault = await this.merchantsService.merchantDefault();
       
-      const { phone, name, clientOfMerchants } = this.form.value;
-      const inputData = { phone, name, clientOfMerchants };
+      const { phone, email, name, lastname, clientOfMerchants } = this.form.value;
+
+      let inputData;
+      if(!email) {
+        inputData = { phone: phone?.e164Number, name, lastname, clientOfMerchants };
+      } else if (!phone) {
+        inputData = { email, name, lastname, clientOfMerchants };
+      } else {
+        console.log('both')
+        inputData = { phone: phone?.e164Number, email, name, lastname, clientOfMerchants };
+      }
       inputData.clientOfMerchants = [merchantDefault._id];
       
       const data = await this.authService.signup(inputData, '');
@@ -61,7 +87,6 @@ export class UserEntryComponent implements OnInit {
         this.router.navigate(["/ecommerce/recipient-info-select"]);
       }
       console.log(data);
-    }
   }
 
   goBack() {

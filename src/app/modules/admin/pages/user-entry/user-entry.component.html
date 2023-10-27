@@ -1,15 +1,11 @@
 <div class="container">
   <div class="flex-space-between">
     <mat-icon class="back-icon" (click)="goBack()">chevron_left</mat-icon>
-    <div class="continue-text" (click)="sendForm()" *ngIf="!form.invalid">
+    <div class="continue-text" (click)="sendForm()" *ngIf="form.valid">
       Continuar
     </div>
   </div>
   <form [formGroup]="form">
-    <div class="input-container">
-      <p>Escribe el WhatsApp de la persona que recibirá la factura:</p>
-      <input type="phone" formControlName="phone" placeholder="+xx-xxx-xxxx" />
-    </div>
     <div class="input-container">
       <p>Escribe el correo de la persona que recibirá la factura:</p>
       <input
@@ -19,20 +15,48 @@
         pattern="[\w\._]{5,30}\+?[\w]{0,10}@[\w\.\~]{3,}\.\w{2,5}"
       />
     </div>
-    <div class="input-container input-container-margin">
-      <p>¿Cómo se llama este nuevo comprador?</p>
+    <div class="input-container">
+      <p>¿Cómo se llama?</p>
       <input
         type="text"
         formControlName="name"
-        placeholder="Pedro García"
+        placeholder="Escribe Nombre..."
         pattern="^[a-zA-Z]+( [a-zA-Z]+)?$"
       />
     </div>
-    <div class="option-buttons-container">
+    <div class="input-container">
+      <p>Apellido</p>
+      <input
+        type="text"
+        formControlName="lastname"
+        placeholder="Escribe Apellido..."
+        pattern="^[a-zA-Z]+( [a-zA-Z]+)?$"
+      />
+    </div>
+    <div class="input-container input-container-margin">
+      <p>Escribe el WhatsApp de la persona que recibirá la factura:</p>
+      <ngx-intl-tel-input
+        [cssClass]="'customPhone'"
+        [enableAutoCountrySelect]="true"
+        [enablePlaceholder]="true"
+        [searchCountryFlag]="true"
+        [selectFirstCountry]="false"
+        [preferredCountries]="preferredCountries"
+        [selectedCountryISO]="CountryISO"
+        maxLength="13"
+        minlength="10"
+        [phoneValidation]="true"
+        [separateDialCode]="true"
+        [customPlaceholder]="'(000) 000-0000'"
+        [numberFormat]="PhoneNumberFormat.International"
+        formControlName="phone"
+      ></ngx-intl-tel-input>
+    </div>
+    <!--<div class="option-buttons-container">
       <div class="option-button option-button-selected">
         No puede comprar a crédito
       </div>
       <div class="option-button">Si puede comprar a crédito</div>
-    </div>
+    </div>-->
   </form>
 </div>
