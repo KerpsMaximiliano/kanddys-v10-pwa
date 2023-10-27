@@ -105,8 +105,8 @@
       </form>
 
       <div class="items-metrics" *ngIf="!searchOpened">
-        {{ metrics.mine }} creados por mi. {{ metrics.hidden }} ocultos.
-        {{ metrics.notMine }} creados por otros. {{ metrics.toBeApproved }} en
+        {{ metrics?.mine }} creados por mi. {{ metrics?.hidden }} ocultos.
+        {{ metrics?.notMine }} creados por otros. {{ metrics?.toBeApproved }} en
         espera de aprobación
       </div>
 
