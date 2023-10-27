@@ -203,8 +203,8 @@
         border: none;
         border-radius: 10px;
         position: absolute;
-        bottom: 32px;
-        left: 22px;
+        bottom: 50px;
+        left: 13px;
 
         &:hover {
           cursor: pointer;
@@ -219,18 +219,6 @@
         cursor: pointer;
       }
 
-      .show-text-error {
-        color: #7B7B7B;
-        font-family: InterRegular;
-        font-size: 16.1px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: normal;
-        position: absolute;
-        bottom: 0;
-        left: 22px;
-      }
-
       .settings-text {
         cursor: pointer;
         color: #F6F6F6;
@@ -242,6 +230,15 @@
         position: absolute;
         bottom: 7px;
         left: 22px;
+      }
+
+      .container-icon {
+        font-size: 20px;
+        cursor: pointer;
+        color: #F6F6F6;
+        position: absolute;
+        bottom: 20px;
+        right: 22px;
       }
 
       .save {
@@ -264,6 +261,16 @@
           background-color: lighten($color: #181d17, $amount: 20);
         }
       }
+    }
+
+    .show-text-error {
+      color: #7B7B7B;
+      font-family: InterRegular;
+      font-size: 16.1px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      margin-bottom: 0;
     }
   }
 
