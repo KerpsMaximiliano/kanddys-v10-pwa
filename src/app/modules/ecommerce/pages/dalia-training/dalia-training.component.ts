@@ -719,51 +719,64 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   }
 
   openUploadFile() {
+    let data = {
+      data: {
+        description: 'Agrega:',
+        options: [
+          {
+            value: 'URL',
+            callback: () => {
+              
+            },
+          },
+          {
+            value: 'PDF',
+            callback: () => {
+              const fileInput = document.getElementById('file') as HTMLInputElement;
+              fileInput.accept = '.pdf';
+              fileInput.click();
+            },
+          },
+          {
+            value: 'CSV',
+            callback: () => {
+              
+            },
+          },
+          {
+            value: 'XLS',
+            callback: () => {
+              const fileInput = document.getElementById('file') as HTMLInputElement;
+              fileInput.accept = '.xls';
+              fileInput.click();
+            },
+          },
+          {
+            value: 'TXT',
+            callback: () => {
+              const fileInput = document.getElementById('file') as HTMLInputElement;
+              fileInput.accept = '.txt';
+              fileInput.click();
+            },
+          },
+        ],
+      },
+    };
+
+    if(window.location.hostname === 'laiachat.com') {
+      data.data.options.push(
+        {
+          value: 'Funcionalidades del Ecommerce',
+          callback: () => {
+            this.router.navigate(['/ecommerce/club-landing']);
+          },
+        },
+      );
+    }
+
     const dialog = this.bottomSheet.open(
       OptionsMenuComponent,
-      {
-        data: {
-          description: 'Agrega:',
-          options: [
-            {
-              value: 'URL',
-              callback: () => {
-                
-              },
-            },
-            {
-              value: 'PDF',
-              callback: () => {
-                const fileInput = document.getElementById('file') as HTMLInputElement;
-                fileInput.accept = '.pdf';
-                fileInput.click();
-              },
-            },
-            {
-              value: 'CSV',
-              callback: () => {
-                
-              },
-            },
-            {
-              value: 'XLS',
-              callback: () => {
-                const fileInput = document.getElementById('file') as HTMLInputElement;
-                fileInput.accept = '.xls';
-                fileInput.click();
-              },
-            },
-            {
-              value: 'TXT',
-              callback: () => {
-                const fileInput = document.getElementById('file') as HTMLInputElement;
-                fileInput.accept = '.txt';
-                fileInput.click();
-              },
-            },
-          ],
-        },
-      }
+      data
     )
   }
 

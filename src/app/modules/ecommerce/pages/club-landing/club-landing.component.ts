@@ -278,7 +278,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     await this.getMerchantDefault();
     this.queryParamsSubscription = this.route.queryParams.subscribe(
-      async ({ affiliateCode, tabarIndex }) => {
+      async ({ affiliateCode, tabarIndex, showGanas }) => {
+        if(showGanas) this.showGanas = true;
         if (tabarIndex) {
           this.tabarIndex = parseInt(tabarIndex);
         }

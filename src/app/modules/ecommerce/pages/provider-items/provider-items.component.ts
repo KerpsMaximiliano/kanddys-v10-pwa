@@ -818,6 +818,8 @@ export class ProviderItemsComponent implements OnInit {
             item
           );
 
+          delete itemInput.images;
+
           unlockUI();
 
           this.openMagicLinkDialog(itemInput);
@@ -1018,6 +1020,7 @@ export class ProviderItemsComponent implements OnInit {
   };
 
   async openMagicLinkDialog(itemInput: ItemInput) {
+    delete itemInput.images;
     let fieldsToCreateInEmailDialog: FormData = {
       title: {
         text: 'Correo Electrónico para guardarlo:',
@@ -1445,8 +1448,8 @@ export class ProviderItemsComponent implements OnInit {
             }
 
 
-            window.location.href =
-              environment.uri + '/ecommerce/provider-items';
+            // window.location.href =
+            //   environment.uri + '/ecommerce/provider-items';
 
             unlockUI();
           } else if (result?.controls?.password.valid === false) {
