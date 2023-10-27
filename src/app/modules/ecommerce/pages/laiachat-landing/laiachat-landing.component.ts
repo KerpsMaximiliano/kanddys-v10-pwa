@@ -1,13 +1,18 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { truncateString } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { Merchant } from 'src/app/core/models/merchant';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { HeaderService } from 'src/app/core/services/header.service';
+import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { WhatsappService } from 'src/app/core/services/whatsapp.service';
+import { MessageDialogComponent } from 'src/app/shared/dialogs/message-dialog/message-dialog.component';
 import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
+import { SelectRoleDialogComponent } from 'src/app/shared/dialogs/select-role-dialog/select-role-dialog.component';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -28,6 +33,9 @@ export class LaiachatLandingComponent implements OnInit {
     openNavigation: true,
   });
   clientConnectionStatus = false;
+  merchantSlug: string;
+  merchantName: string;
+  merchantEmail: string;
 
   constructor(
     public headerService: HeaderService,
@@ -36,13 +44,132 @@ export class LaiachatLandingComponent implements OnInit {
     private bottomSheet: MatBottomSheet,
     private gptService: Gpt3Service,
     private toastrService: ToastrService,
-    private whatsappService: WhatsappService
+    private whatsappService: WhatsappService,
+    private dialog: MatDialog,
+    private merchantsService: MerchantsService
   ) { }
 
   async ngOnInit() {
+    await this.getMerchantDefault();
     if(this.headerService.user) {
       this.clientConnectionStatus = await this.whatsappService.clientConnectionStatus();
       console.log(this.clientConnectionStatus);
+    }
+  }
+
+  openMsgDialog() {
+    const dialogRef = this.dialog.open(MessageDialogComponent, {});
+
+    dialogRef.afterClosed().subscribe((role) => {
+      if (!role) {
+        // this.setRole(parseInt(role))
+        return;
+      }
+      console.log(role);
+    });
+  }
+
+  showRoleDialog() {
+    let options : [
+      {
+        value:string, 
+        callback: () => void,
+         active?: boolean, 
+         noSettings?: boolean
+      }
+    ] = [
+      {
+        value: `${this.merchantName? this.merchantName : this.merchantSlug? this.merchantSlug : this.headerService.user.name}`,
+        callback: () => {},
+        active: true,
+      },
+    ];
+    if(this.headerService.user.roles.length > 0) {
+      this.headerService.user.roles.forEach((role) => {
+        if(role.code === 'ADMIN') {
+          options.push({
+            value: 'De Super Admin',
+            callback: ()=> {}
+          })
+        }
+      })
+    }
+    options.push({
+      value: 'Crear un nuevo comercio',
+      callback: () => {
+        this.loginEmail = null;
+        this.dialog.closeAll();
+        console.log(this.loginflow)
+        setTimeout(() => {
+          this.loginflow = true;
+        }, 1000)
+      },
+      noSettings: true,
+    })
+    let logins : any[] = JSON.parse(window.localStorage.getItem('logins'));
+    if(logins) {
+      logins.forEach((login) => {
+        if(login.email !== this.headerService.user.email) {
+          options.push({
+            value: `${login.name}`,
+            callback: () => {
+              this.userSwitchDialog(login.email)
+            }
+          })
+        }
+      })
+    }
+
+    const dialogRef = this.dialog.open(SelectRoleDialogComponent, {
+      data: {
+        title: "Perfil de:",
+        options,
+        bottomLeft: {
+          text: '',
+          callback: () => {
+          }
+        }
+      }
+    });
+    dialogRef.afterClosed().subscribe((role) => {
+      
+    });
+  }
+
+  userSwitchDialog(email: string) {
+    this.bottomSheet.open(OptionsMenuComponent, {
+      data: {
+        title: 'Bienvenido de vuelta, prefieres acceder:',
+        options: [
+          {
+            value: 'Con mi clave provisional que es "123"',
+            callback: () => {
+              this.loginEmail = email;
+              this.loginflow = true;
+            }
+          },
+          {
+            value: `Desde mi correo electronico (recibirás el acceso en ${email})`,
+            callback: () => {
+              this.loginEmail = email;
+              this.magicLink = true;
+              this.loginflow = true;
+            }
+          }
+        ]
+      }
+    })
+  }
+
+  async getMerchantDefault() {
+    try {
+      const merchantDefault: Merchant = await this.merchantsService.merchantDefault();
+      console.log(merchantDefault)
+      this.merchantSlug = merchantDefault.slug;
+      this.merchantName = merchantDefault.name;
+      this.merchantEmail = merchantDefault.email;
+    } catch (error) {
+      console.log('error');
     }
   }
 
