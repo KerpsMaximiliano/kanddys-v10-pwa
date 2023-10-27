@@ -16,15 +16,50 @@ a {
   padding-bottom: 50px;
 }
 
+.user-id {
+  font-family: InterSemiBold;
+  font-size: 15px;
+  color: var(--Verde-Oscurito, #3B654A); 
+}
+
+.bio {
+  border-radius: 6px;
+  border: 1px solid #7B7B7B; 
+  width: 95%;
+  font-family: InterRegular;
+  font-size: 15px;
+  padding: 10px 18px;
+}
+
 .header {
   background-color: #ffffff;
   display: flex;
   align-items: center;
-  position: fixed;
+  position: sticky;
+  top: 0;
   width: 100%;
   z-index: 999;
   flex-direction: column;
   max-width: 500px;
+
+  .buttons-bar {
+    display: flex;
+    padding: 14px 12px;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    .sub-button {
+      color: var(--verde-oscuro, #435A4A);
+      font-family: InterMedium;
+      padding: 12px 20px;
+      border-radius: 6px;
+      border: 2px solid var(--verde-oscuro, #435A4A);
+    }
+    .sub-button.logged-in {
+      background: var(--verde-oscuro, #435a4a);
+      color: #f6f6f6;
+    }
+  }
 
   .title {
     margin-left: 11px;
@@ -55,6 +90,20 @@ a {
         width: 30px;
         font-size: 30px;
         margin-left: -10px;
+      }
+
+      .left-end {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        p {
+          font-family: InterSemiBold;
+          font-size: 15px;
+          color: var(--Verde-Oscurito, #3B654A);
+        }
+        img {
+          width: 31px;
+        }
       }
 
       .icon {
@@ -170,7 +219,7 @@ a {
   }
 }
 .contact-bar {
-  background-color: #171d16;
+  background-color: var(--verde-oscuro, #435A4A);
   display: flex;
   justify-content: space-between;
   align-items: center;

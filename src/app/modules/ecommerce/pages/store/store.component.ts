@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -16,6 +16,7 @@ import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/option
 import { TagFilteringComponent } from 'src/app/shared/dialogs/tag-filtering/tag-filtering.component';
 import { environment } from 'src/environments/environment';
 import SwiperCore, { Virtual } from 'swiper/core';
+import { truncateString } from 'src/app/core/helpers/strings.helpers';
 
 SwiperCore.use([Virtual]);
 
@@ -40,6 +41,8 @@ export class StoreComponent implements OnInit {
   };
   // hasCollections: boolean = false;
 
+  searchBar : boolean = false;
+
   azulPaymentsSupported: boolean = false;
 
   windowWidth: number = 0;
@@ -58,6 +61,18 @@ export class StoreComponent implements OnInit {
 
   mode: 'standard' | 'supplier' = 'standard';
 
+  loginflow: boolean = false;
+  redirectionRoute: string = `/ecommerce/${this.headerService.saleflow.merchant.slug}/store`;
+  redirectionRouteId: string | null = null;
+  entity: string = 'MerchantAccess';
+  jsondata: string = JSON.stringify({
+    openNavigation: true,
+  });
+  loginEmail: string = null;
+  magicLink: boolean = false;
+
+  assetsFolder: string = environment.assetsUrl;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -67,7 +82,8 @@ export class StoreComponent implements OnInit {
     private tagsService: TagsService,
     public _DomSanitizer: DomSanitizer,
     private ngNavigatorShareService: NgNavigatorShareService,
-    private _bottomSheet: MatBottomSheet
+    private _bottomSheet: MatBottomSheet,
+    private changeDetectorRef: ChangeDetectorRef
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -441,5 +457,23 @@ export class StoreComponent implements OnInit {
 
   goToAdmin() {
     this.router.navigate(['/admin/dashboard']);
+  }
+
+  goToBuyerOrders() {
+    this.router.navigate(['/admin/buyer-orders'], {
+      queryParams: {
+        redirectTo: 'store',
+        merchant: this.headerService.saleflow.merchant.slug,
+      },
+    });
+  }
+
+  resetLoginDialog(event) {
+    this.loginflow = false;
+    this.changeDetectorRef.detectChanges();
+  }
+
+  truncateString(word) {
+    return truncateString(word, 12);
   }
 }

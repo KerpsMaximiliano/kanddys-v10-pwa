@@ -286,8 +286,14 @@
   }
 
   .price {
-    font-family: "RobotoRegular";
-    margin-bottom: 0;
+    color: #272727; 
+    font-family: InterRegular;
+    font-size: 17px;
+    padding: 0;
+    display: flex;
+    .small {
+      font-size: 8.9px;
+    }
     &.left {
       text-align: left;
       padding: 0 0px !important;
@@ -366,11 +372,8 @@
     .itemImg {
       width: 100%;
       height: 201px;
-      border-radius: 0;
-      border-top-left-radius: 14px;
-      border-top-right-radius: 14px;
+      border-radius: 9px;
       box-shadow: none;
-      background-color: #c7c7c7;
       cursor: pointer;
       position: relative;
       overflow: hidden;
@@ -396,12 +399,10 @@
     }
 
     .info-area {
+      display: flex;
+      flex-direction: column;
       padding: 12px 4.83%;
       padding-bottom: 8px;
-      box-shadow: 0px 3px 6px 0px rgb(0 0 0 / 15%);
-      border-bottom-left-radius: 14px;
-      border-bottom-right-radius: 14px;
-      background-color: white;
       font-size: 16px;
 
       &.inactive2 {
@@ -422,9 +423,9 @@
         margin-bottom: 5.4px;
 
         .price {
-          font-family: "SfProBold";
-          font-size: 16px;
-          color: #7b7b7b;
+          color: #272727; 
+          font-family: InterRegular;
+          font-size: 17px;
           padding: 0;
         }
       }
@@ -463,7 +464,7 @@
 .flex-row-2 {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   width: 100%;
 
   .tags-list {
@@ -729,5 +730,26 @@
     color: white;
     padding-right: 9px;
     margin-left: auto;
+  }
+}
+
+.heart-div {
+  border-radius: 100%;
+  width: 39px;
+  height: 39px;
+  background-color: #f6f6f6;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  mat-icon {
+    color: #87CD9B;
+    width: 35px;
+    height: 33px;
+    font-size: 35px;
+    text-align: center;
+    vertical-align: middle;
   }
 }
