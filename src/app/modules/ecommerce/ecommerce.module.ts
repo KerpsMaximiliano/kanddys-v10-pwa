@@ -324,6 +324,10 @@ const routes: Routes = [
     component: AdminArticleDetailComponent,
   },
   {
+    path: 'admin-article-detail',
+    component: AdminArticleDetailComponent,
+  },
+  {
     path: ':merchantSlug',
     component: EcommerceComponent,
     children: [
