@@ -82,6 +82,7 @@ import { DaliaTrainingComponent } from './pages/dalia-training/dalia-training.co
 import { LaiaMemoriesManagementComponent } from './pages/laia-memories-management/laia-memories-management.component';
 import { LaiaAssistantComponent } from './pages/laia-assistant/laia-assistant.component';
 import { MerchantProfileComponent } from './pages/merchant-profile/merchant-profile.component';
+import { RedirectGuard } from 'src/app/core/guards/redirect-guard.guard';
 
 const routes: Routes = [
   {
@@ -295,6 +296,7 @@ const routes: Routes = [
   {
     path: 'club-landing',
     component: ClubLandingComponent,
+    canActivate: [RedirectGuard],
   },
   {
     path: 'proflora-campaign',
