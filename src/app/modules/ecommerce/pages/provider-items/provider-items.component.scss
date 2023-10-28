@@ -471,8 +471,8 @@ section {
       width: 90%;
       margin: 0 auto;
       padding: 20px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+      display: flex;
+      flex-direction: column;
       gap: 20px;
       background: #d9d9d9;
       border-radius: 6px;
@@ -694,6 +694,40 @@ footer {
       background: none;
       border: none;
       cursor: pointer;
+    }
+  }
+}
+
+.info {
+  background: #d9d9d9;
+  width: 100%;
+  padding: 7px 0 6px;
+
+  p {
+    font-family: Inter, sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 18px;
+  }
+
+  .container {
+    width: 92%;
+    margin: 0 auto;
+    .info-detail {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 16px;
+      border: 1px solid #7b7b7b;
+      border-radius: 6px;
+
+      &-text {
+        text-align: center;
+        margin: 12px 0;
+        span {
+          text-decoration: underline;
+        }
+      }
     }
   }
 }

@@ -1,4 +1,4 @@
-h3h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
+<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
   <div class="dashboard-page container" (scroll)="infinitePagination()">
     <header class="header" *ngIf="!searchOpened">
       <div class="btn-container principal">
@@ -6,7 +6,7 @@ h3h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
           <mat-icon>keyboard_arrow_left</mat-icon>
         </button>
         <button class="title" (click)="drawerOpened = true">
-          🌻 Vitrina Online
+          Vende fácilmente
         </button>
       </div>
 
@@ -27,17 +27,42 @@ h3h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
         <button mat-icon-button (click)="sendWhatsappToAppOwner()">
           <mat-icon [ngStyle]="{ color: 'white' }">add</mat-icon>
         </button>
-
-        <button mat-icon-button class="info" (click)="(null)">
-          <img
-            [src]="assetsFolder + '/icon_info.png'"
-            class="info-button"
-            alt="open internal information"
-            (click)="(null)"
-          />
-        </button>
       </div>
     </header>
+
+    <section class="info" *ngIf="!searchOpened">
+      <div class="container">
+        <div class="info-detail">
+          <p>Comprador paga 0.30 a Laila</p>
+          <button mat-icon-button (click)="onSelectPlataformFee()">
+            <img
+              [src]="
+                plataformFeeTypeActual === 'platform_fee_user'
+                  ? '../../../../../assets/icons/switch-green.svg'
+                  : '../../../../../assets/icons/switch-red.svg'
+              "
+              class="info-button"
+              alt="open internal information"
+              style="filter: none"
+            />
+          </button>
+        </div>
+        <p class="info-detail-text">
+          Le vendes
+          <span (click)="openExhibitDialog()">
+            {{
+              this.merchantRole?.code === "PRODUCTOR"
+                ? "a fincas"
+                : this.merchantRole?.code === "PROVIDER"
+                ? "a floristerías"
+                : this.merchantRole?.code === "SUPPLIER"
+                ? "a wholesalers"
+                : "al consumidor final"
+            }}.
+          </span>
+        </p>
+      </div>
+    </section>
 
     <div class="search-opened" *ngIf="searchOpened">
       <header>
@@ -63,13 +88,13 @@ h3h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
           [ngClass]="{ active: btnConsumerState.supplier }"
           (click)="onChangeConsumerState('supplier')"
         >
-          Articulos para floristerias
+          Articulos para floristerias ({{ totalByType.default }})
         </button>
         <button
           [ngClass]="{ active: btnConsumerState.default }"
           (click)="onChangeConsumerState('default')"
         >
-          Consumidores finales
+          Consumidores finales ({{ totalByType.supplier }})
         </button>
       </div>
 
@@ -79,14 +104,14 @@ h3h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
           [ngClass]="{ active: btnFilterState.exhibits }"
           (click)="onChangeBtnFiltering('exhibits')"
         >
-          Todos los exhibidos ({{ totalAllItems }})
+          Todos los exhibidos ({{ totalByItems.allItems }})
         </button>
         <button
           type="button"
           [ngClass]="{ active: btnFilterState.hidden }"
           (click)="onChangeBtnFiltering('hidden')"
         >
-          Los ocultos ({{ totalHidden }})
+          Los ocultos ({{ totalByItems.hidden }})
         </button>
 
         <button
@@ -94,14 +119,14 @@ h3h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
           [ngClass]="{ active: btnFilterState.byCommission }"
           (click)="onChangeBtnFiltering('byCommission')"
         >
-          Los que pagan comisión ({{ totalItemsByCommission }})
+          Los que pagan comisión ({{ totalByItems.byCommission }})
         </button>
         <button
           type="button"
           [ngClass]="{ active: btnFilterState.lowStock }"
           (click)="onChangeBtnFiltering('lowStock')"
         >
-          Menos de 10 disponibles para vender ({{ totalItemsByLowStock }})
+          Menos de 10 disponibles para vender ({{ totalByItems.byLowStock }})
         </button>
       </div>
     </div>
@@ -165,7 +190,7 @@ h3h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
                 context: {
                   item: item,
                   itemIndex: itemIndex,
-                  providedByMe: true,
+                  providedByMe: false,
                   firstItem: itemIndex === 0 && itemsISell.length > 0
                 }
               "
@@ -229,7 +254,9 @@ h3h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
       </section>
     </main>
 
-    <footer *ngIf="!searchOpened && itemsIDontSell?.length > 0 && !isUserLogged">
+    <footer
+      *ngIf="!searchOpened && itemsIDontSell?.length > 0 && !isUserLogged"
+    >
       <p>Preview</p>
       <p>Comparte</p>
     </footer>
@@ -276,8 +303,12 @@ h3h3<app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
     </div>
 
     <div class="middle-column fixedWidth" (click)="(null)">
-      <div class="item-name" (click)="goToArticleDetail(item._id)">{{ item.name }}</div>
-      <div class="item-description" (click)="goToArticleDetail(item._id)">{{ item.description }}</div>
+      <div class="item-name" (click)="goToArticleDetail(item._id)">
+        {{ item.name }}
+      </div>
+      <div class="item-description" (click)="goToArticleDetail(item._id)">
+        {{ item.description }}
+      </div>
       <div class="item-price" (click)="editPrice(item, itemIndex)">
         <ng-container *ngIf="item.pricing !== null && isUserLogged">
           ${{ item.pricing | number : "1.2-2" }}

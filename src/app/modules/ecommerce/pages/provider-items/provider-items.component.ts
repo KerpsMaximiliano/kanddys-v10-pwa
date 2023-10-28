@@ -10,7 +10,7 @@ import { urltoFile } from 'src/app/core/helpers/files.helpers';
 import { completeImageURL, isVideo } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item, ItemImageInput, ItemInput } from 'src/app/core/models/item';
-import { Merchant } from 'src/app/core/models/merchant';
+import { Merchant, Roles } from 'src/app/core/models/merchant';
 import { SlideInput } from 'src/app/core/models/post';
 import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
 import { User } from 'src/app/core/models/user';
@@ -76,10 +76,17 @@ export class ProviderItemsComponent implements OnInit {
   }
 
   /** Total items */
-  totalHidden: number = 0
-  totalAllItems: number = 0
-  totalItemsByCommission: number = 0
-  totalItemsByLowStock: number = 0
+  totalByItems = {
+    hidden: 0,
+    allItems: 0,
+    byCommission: 0,
+    byLowStock: 0,
+  }
+
+  totalByType = {
+    default: 0,
+    supplier: 0,
+  }
 
   //Pagination-specific variables
   paginationState: {
@@ -92,6 +99,18 @@ export class ProviderItemsComponent implements OnInit {
       status: 'complete',
     };
   reachTheEndOfPagination: boolean = false;
+
+  //Pagination-specific variables for search
+  paginationSearchState: {
+    pageSize: number;
+    page: number;
+    status: 'loading' | 'complete';
+  } = {
+      page: 1,
+      pageSize: 15,
+      status: 'complete',
+    };
+  reachTheEndOfPaginationSearch: boolean = false;
 
   //Items variables
   totalItemsHidden: number = 0
@@ -127,6 +146,10 @@ export class ProviderItemsComponent implements OnInit {
   isUserLogged = false
   isUserVerified = false
 
+  plataformFeeTypeActual = 'platform_fee_user'
+  merchantRole: Roles | null = null;
+  roles: Roles[] = [];
+
   private keyPresentationState = 'providersPresentationClosed'
   private keyTutorialState = 'tutorialClosed'
   private merchantData: Merchant | null = null;
@@ -159,7 +182,7 @@ export class ProviderItemsComponent implements OnInit {
 
     if (!existToken) {
       await this.executeInitProcesses();
-      await this.fetchItemsForNotSell(true, false);
+      await this.fetchItemsForNotSell(true);
 
     }
 
@@ -194,16 +217,20 @@ export class ProviderItemsComponent implements OnInit {
             this.merchantData = merchantDefault;
             this.saleflowData = saleflowDefault
             this.isUserLogged = true
-
             this.isSupplier = this.verifyIfIsSupplier(this.merchantData);
+
+            if (this.merchantData?._id) {
+              await this.fetchItemsForSell()
+              await this.fetchQuantifyFilters();
+              await this.fetchQuantityFiltersByRole()
+            }
+
             this.getStatusSwitch();
             await this.executeInitProcesses();
-            setTimeout(async () => {
-              if (this.merchantData?._id) {
-                await this.fetchItemsForSell();
-                await this.fetchQuantifyFilters();
-              }
-            }, 1000);
+
+            const roles = await this.merchantsService.rolesPublic()
+            this.roles = roles;
+            this.merchantRole = this.merchantData.roles[0]
           })
         subscription.unsubscribe();
       });
@@ -240,10 +267,30 @@ export class ProviderItemsComponent implements OnInit {
     try {
       const merchantTotal = await this.itemsService.itemsQuantityOfFilters(this.merchantData._id)
       if (merchantTotal) {
-        this.totalHidden = merchantTotal.hidden
-        this.totalAllItems = merchantTotal.all
-        this.totalItemsByCommission = merchantTotal.commissionable
-        this.totalItemsByLowStock = merchantTotal.lowStock
+        this.totalByItems = {
+          hidden: merchantTotal.hidden,
+          allItems: merchantTotal.all,
+          byCommission: merchantTotal.commissionable,
+          byLowStock: merchantTotal.lowStock,
+        }
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  async fetchQuantityFiltersByRole() {
+    try {
+      const paginationInput = {
+        findBy: {
+          type: ["default", "supplier"],
+          merchant: this.merchantData._id
+        }
+      }
+      const totalItems = await this.itemsService.itemsQuantityOfFiltersByType(paginationInput)
+      this.totalByType = {
+        default: totalItems.default,
+        supplier: totalItems.supplier
       }
     } catch (error) {
       console.error(error)
@@ -269,11 +316,22 @@ export class ProviderItemsComponent implements OnInit {
   }
 
   /**
-   * Cambia el estado del consumidor de supplier o default
+   *
    */
-  onChangeConsumerState(selected: consumerType) {
-    this.btnConsumerState[selected] = !this.btnConsumerState[selected]
-    this.filteringItemsBySearchbar(this.itemSearchbar.value)
+  onSelectPlataformFee() {
+    this.plataformFeeTypeActual = this.plataformFeeTypeActual === 'platform_fee_user'
+      ? 'platform_fee_merchant'
+      : 'platform_fee_user'
+    const input = {
+      input: {
+        platformFeeType: this.plataformFeeTypeActual
+      }
+    }
+    this.merchantsService
+      .updateMerchantFuncionality(input, this.merchantData._id)
+      .then(() => {
+        console.log("Los datos han sido actualizado. Type actual: ", this.plataformFeeTypeActual)
+      })
   }
 
   /**
@@ -304,10 +362,22 @@ export class ProviderItemsComponent implements OnInit {
         this.paginationState.status === 'complete' &&
         !this.reachTheEndOfPagination
       ) {
-        if (this.isUserLogged) {
+        if (this.isUserLogged && !this.hiddenDashboard) {
           await this.fetchItemsForSell(false, true);
-        } else {
+        }
+
+        if (!this.isUserLogged && !this.hiddenDashboard) {
           await this.fetchItemsForNotSell(false, true);
+        }
+
+      }
+
+      if (
+        this.paginationSearchState.status === 'complete' &&
+        !this.reachTheEndOfPaginationSearch
+      ) {
+        if (this.hiddenDashboard) {
+          await this.filteringItemsBySearchbar(false, this.itemSearchbar.value, true)
         }
       }
     }
@@ -444,17 +514,18 @@ export class ProviderItemsComponent implements OnInit {
 
   /**
    * Obtiene todos los items para vender
+   *
+   * @param {Boolean} restartPagination - Indica si reinicia la paginación
+   * @param {Boolean} [triggeredFromScroll=false]
    */
   async fetchItemsForSell(
-    restartPagination = false,
-    triggeredFromScroll = false,
+    restartPagination: boolean = false,
+    triggeredFromScroll: boolean = false
   ) {
     this.paginationState.status = 'loading';
 
     if (restartPagination) {
-      this.reachTheEndOfPagination = false;
-      this.paginationState.page = 1;
-      this.itemsISell = [];
+      this.resetPagination(this.itemsISell)
     } else {
       this.paginationState.page++;
     }
@@ -478,20 +549,21 @@ export class ProviderItemsComponent implements OnInit {
 
   /**
    * Obtiene todos los items que no se venden
+   * @param {Boolean} restartPagination - Indica si reinicia la paginación
+   * @param {Boolean} [triggeredFromScroll=false]
    */
   async fetchItemsForNotSell(
-    restartPagination = false,
-    triggeredFromScroll = false,
+    restartPagination: boolean = false,
+    triggeredFromScroll: boolean = false
   ) {
     this.paginationState.status = 'loading';
 
     if (restartPagination) {
-      this.reachTheEndOfPagination = false;
-      this.paginationState.page = 1;
-      this.itemsIDontSell = [];
+      this.resetPagination(this.itemsIDontSell)
     } else {
       this.paginationState.page++;
     }
+
     const pagination: PaginationInput = {
       findBy: {
         type: 'supplier',
@@ -1572,14 +1644,28 @@ export class ProviderItemsComponent implements OnInit {
    *
    * @param {btnFilterName} selected nombre del button del filtrado seleccionado
    */
-  onChangeBtnFiltering(selected: btnFilterName) {
+  async onChangeBtnFiltering(selected: btnFilterName) {
     this.btnFilterState[selected] = !this.btnFilterState[selected]
     this.hiddenDashboard = Object.values(this.btnFilterState).some(value => value)
-    this.filteringItemsBySearchbar(this.itemSearchbar.value)
+    await this.filteringItemsBySearchbar(true, this.itemSearchbar.value, true)
+  }
+
+  /**
+ * Cambia el estado del consumidor de supplier o default
+ *
+ * @param selected - tipo de consumidor seleccionado
+ */
+  async onChangeConsumerState(selected: consumerType) {
+    this.btnConsumerState[selected] = !this.btnConsumerState[selected]
+    this.hiddenDashboard = Object.values(this.btnConsumerState).some(value => value)
+    await this.filteringItemsBySearchbar(true, this.itemSearchbar.value, true)
   }
 
   onCloseSearchbar() {
     this.searchOpened = false
+    this.hiddenDashboard = false
+    this.resetBtn(this.btnFilterState)
+    this.resetBtn(this.btnConsumerState)
   }
 
   /**
@@ -1588,13 +1674,13 @@ export class ProviderItemsComponent implements OnInit {
    *
    * @param {EventTarget} event evento del input
    */
-  onFilteringItemsBySearchbar(event: any) {
+  async onFilteringItemsBySearchbar(event: any) {
     this.itemSearchbar.setValue(event.target.value)
     const isSomeBtnActive = Object.values(this.btnFilterState).some(value => value)
 
     if (this.itemSearchbar.value) {
       this.hiddenDashboard = true
-      this.filteringItemsBySearchbar(this.itemSearchbar.value)
+      await this.filteringItemsBySearchbar(true, this.itemSearchbar.value, true)
     }
 
     if (!this.itemSearchbar.value && !isSomeBtnActive) {
@@ -1609,8 +1695,81 @@ export class ProviderItemsComponent implements OnInit {
       }
     });
   }
-  goToArticleDetail(id) {
+
+  goToArticleDetail(id: string) {
     this.router.navigate(['ecommerce/admin-article-detail/' + id]);
+  }
+
+  updatePricing(id: string) {
+    const navigationData: NavigationExtras = {
+      replaceUrl: true,
+      queryParams: {
+        stockEdition: true
+      }
+    }
+    return this.router.navigate(['ecommerce/provider-items-editor/' + id], navigationData);
+  }
+
+  /**
+   * Muestra el dialog de exibicion segun el rol del merchant y cambia
+   * el rol según la selección del usuario
+   */
+  openExhibitDialog() {
+    /**
+   * Cambia el rol del comerciante de forma asíncrona.
+   *
+   * @param role El índice del rol al que se cambiará.
+   */
+    const roleSwitch = async (role: number) => {
+      if (this.merchantRole) {
+        await this.merchantsService
+          .merchantRemoveRole(this.merchantRole._id, this.merchantData._id)
+        await this.merchantsService
+          .merchantAddRole(this.roles[role]._id, this.merchantData._id)
+          .then(() => this.merchantRole = this.roles[role])
+      } else {
+        this.merchantsService
+          .merchantAddRole(this.roles[role]._id, this.merchantData._id)
+          .then(() => {
+            this.merchantRole = this.roles[role]
+          })
+      }
+    }
+    this.dialog.open(OptionsDialogComponent, {
+      data: {
+        title: '¿A quién le vendes?',
+        options: [
+          {
+            value: 'Consumidor final',
+            callback: () => {
+              let index = this.roles.findIndex((role) => role.code === 'STORE')
+              roleSwitch(index)
+            }
+          },
+          {
+            value: 'Floristerías',
+            callback: () => {
+              let index = this.roles.findIndex((role) => role.code === 'PROVIDER')
+              roleSwitch(index)
+            }
+          },
+          {
+            value: 'Wholesalers',
+            callback: () => {
+              let index = this.roles.findIndex((role) => role.code === 'SUPPLIER')
+              roleSwitch(index)
+            }
+          },
+          {
+            value: 'Fincas',
+            callback: () => {
+              let index = this.roles.findIndex((role) => role.code === 'PRODUCTOR')
+              roleSwitch(index)
+            }
+          },
+        ]
+      }
+    })
   }
 
   /**
@@ -1618,9 +1777,24 @@ export class ProviderItemsComponent implements OnInit {
  * Puede obtener un filtrado más especifico dependiendo de si
  * alguno de los botones de filtrado han sido activados
  *
- * @param itemToSearch item a buscar
+ * @param {Boolean} restartPagination - Indica si reinicia la paginación
+ * @param {Boolean} [triggeredFromScroll=false] -  Indica si el proceso fue desencadenado por scroll
+ * @param itemToSearch - item a buscar
  */
-  private filteringItemsBySearchbar(itemName: string) {
+  private async filteringItemsBySearchbar(
+    restartPagination: boolean = false,
+    nameItem: string,
+    triggeredFromScroll: boolean = false,
+  ) {
+    this.paginationSearchState.status = 'loading';
+    if (restartPagination) {
+      this.reachTheEndOfPaginationSearch = false;
+      this.paginationSearchState.page = 1;
+      this.itemsFiltering = [];
+    } else {
+      this.paginationSearchState.page++;
+    }
+
     const input: PaginationInput = {
       findBy: {
         status: this.btnFilterState.hidden ? "disabled" : "active",
@@ -1630,8 +1804,8 @@ export class ProviderItemsComponent implements OnInit {
       },
       options: {
         sortBy: 'createdAt:desc',
-        limit: this.paginationState.pageSize,
-        page: this.paginationState.page,
+        limit: this.paginationSearchState.pageSize,
+        page: this.paginationSearchState.page,
       },
     };
 
@@ -1686,39 +1860,26 @@ export class ProviderItemsComponent implements OnInit {
       }
     }
 
-    this.saleflowService.listItems(input, false, itemName)
-      .then(data => this.itemsFiltering = data.listItems)
+    await this.processPaginationItemsBySearch(input, nameItem, triggeredFromScroll, this.itemsFiltering)
   }
 
   /**
  * Procesa la paginación de los items
  *
- * @param pagination La información de paginación
- * @param triggeredFromScroll Indica si el proceso fue desencadenado por scroll
+ * @param pagination La configuración de la paginación
+ * @param {Boolean} [triggeredFromScroll=false]  Indica si el proceso fue desencadenado por scroll
  * @param arrayItems El array en el que se guardará el resultado
+ *
  */
   private async processPaginationItems(
     pagination: PaginationInput,
     triggeredFromScroll: boolean,
-    arrayItems: Item[]
+    items: Item[]
   ) {
     const data = await this.saleflowService.listItems(pagination, true);
-    const itemsQueryResult = data?.listItems || [];
-
-    itemsQueryResult.forEach((item) => {
-      item.stock = 0;
-      item.useStock = true;
-      item.images.forEach((image) => {
-        if (!image.value.includes('http')) {
-          image.value = 'https://' + image.value;
-        }
-      });
-      item.images = item.images.sort(({ index: a }, { index: b }) => (a > b ? 1 : -1));
-    });
-
-
+    const itemsQueryResult = this.initializeItemsPagination(data?.listItems)
     if (!itemsQueryResult.length && this.paginationState.page === 1) {
-      arrayItems = []
+      items = []
     }
 
     // Condición para cuando llegas al final de la página
@@ -1729,27 +1890,100 @@ export class ProviderItemsComponent implements OnInit {
 
     if (itemsQueryResult && itemsQueryResult.length > 0) {
       if (this.paginationState.page === 1) {
-        arrayItems.length = 0;
-        arrayItems.push(...itemsQueryResult);
-      } else {
-        arrayItems.push(...itemsQueryResult);
+        items.length = 0;
       }
+      items.push(...itemsQueryResult);
     }
 
     this.paginationState.status = 'complete';
-
     if (!itemsQueryResult.length && !triggeredFromScroll) {
-      arrayItems = [];
+      items = [];
     }
   }
-  updatePricing(id) {
-    const navigationData: NavigationExtras = {
-      replaceUrl: true,
-      queryParams: {
-        stockEdition: true
+
+  /**
+* Procesa la paginación de los items
+*
+* @param pagination La información de paginación
+* @param input - Nombre del item a buscar en el listado de items
+* @param triggeredFromScroll Indica si el proceso fue desencadenado por scroll
+* @returns arrayItems en el que se guardará el resultado
+*/
+  private async processPaginationItemsBySearch(
+    pagination: PaginationInput,
+    input: string = '',
+    triggeredFromScroll: boolean = false,
+    arrayItems: Item[]
+  ) {
+    const data = await this.saleflowService.listItems(pagination, true, input);
+    const itemsQueryResult = this.initializeItemsPagination(data?.listItems)
+
+    if (!itemsQueryResult.length && this.paginationSearchState.page === 1) {
+      arrayItems.length = 0
+    }
+
+    // Condición para cuando llegas al final de la página
+    if (!itemsQueryResult.length && this.paginationSearchState.page !== 1) {
+      this.paginationSearchState.page--;
+      this.reachTheEndOfPaginationSearch = true;
+    }
+
+    if (itemsQueryResult.length > 0) {
+      if (this.paginationSearchState.page === 1) {
+        arrayItems.length = 0;
+      }
+      arrayItems.push(...itemsQueryResult);
+    }
+
+    this.paginationSearchState.status = 'complete';
+    if (itemsQueryResult.length === 0 && !triggeredFromScroll) {
+      arrayItems.length = 0;
+    }
+  }
+
+  /**
+   * Inicializa la paginación de los elementos.
+   *
+   * @param {Item[]} items - La lista de elementos a inicializar.
+   * @returns {Item[]} - La lista de elementos inicializados.
+   */
+  private initializeItemsPagination(items: Item[]): Item[] {
+    if (!items) {
+      return []
+    }
+    items.forEach((item) => {
+      item.images.forEach((image) => {
+        if (!image.value.includes('http')) {
+          image.value = 'https://' + image.value;
+        }
+      });
+      item.images = item.images.sort(({ index: a }, { index: b }) => (a > b ? 1 : -1));
+    });
+    return items
+  }
+
+  /**
+   * Reset the pagination dashboard
+   *
+   * @param items - list of items
+   */
+  private resetPagination(items: Item[]): void {
+    this.reachTheEndOfPagination = false;
+    this.paginationState.page = 1;
+    items.length = 0;
+  }
+
+
+  /**
+   * Resets the button object by setting all properties to false.
+   * @param btn - The button object to reset.
+   * @returns The reset button object.
+   */
+  private resetBtn(btn: any) {
+    for (const key in btn) {
+      if (btn.hasOwnProperty(key) && btn[key] === true) {
+        btn[key] = false;
       }
     }
-    return this.router.navigate(['ecommerce/provider-items-editor/' + id], navigationData);
-
   }
 }
