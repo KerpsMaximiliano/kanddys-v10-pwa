@@ -61,6 +61,7 @@ import {
   merchantAddRole,
   rolesPublic,
   merchantRemoveRole,
+  dataPagination,
 } from './../graphql/merchants.gql';
 import {
   EmployeeContract,
@@ -577,11 +578,27 @@ export class MerchantsService {
   async entryMerchant(
     merchantID: string,
     merchantInput: MerchantInput,
-    userInput: UserInput
+    userInput: UserInput,
+    addressPickUp: string,
+    deliveryLocations: { country: string, cityReference: string },
+    role: string[],
   ) {
+    const input = {
+      merchantID,
+      merchantInput,
+      userInput,
+      addressPickUp,
+      deliveryLocations,
+      role
+    };
+    Object.keys(input).forEach(key => {
+      if (input[key] === null) {
+        delete input[key];
+      }
+    });
     const result = await this.graphql.mutate({
       mutation: entryMerchant,
-      variables: { merchantID, merchantInput, userInput },
+      variables: { input },
       fetchPolicy: 'no-cache',
       context: { useMultipart: true },
     });
@@ -715,6 +732,17 @@ export class MerchantsService {
 
     if (!result || result?.errors) return undefined;
     return result?.dataCountries;
+  }
+
+  async getDataPagination(paginate: PaginationInput) {
+    const result = await this.graphql.query({
+      query: dataPagination,
+      variables: { paginate },
+      fetchPolicy: 'no-cache',
+    });
+
+    if (!result || result?.errors) return undefined;
+    return result?.dataPagination;
   }
 
   async merchantQuantityOfFiltersRole() {

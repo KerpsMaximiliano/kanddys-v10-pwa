@@ -46,7 +46,8 @@ import {
   itemsQuantitySoldTotal,
   itemsSuppliersPaginate,
   itemAddExpenditure,
-  itemsQuantityOfFiltersByType
+  itemsQuantityOfFiltersByType,
+  itemsQuantityOfFiltersByEstimatedDeliveryTime
 } from '../graphql/items.gql';
 import {
   Item,
@@ -686,5 +687,15 @@ export class ItemsService {
     });
     if (!result || result?.errors) return undefined;
     return result;
+  }
+
+  async itemsQuantityOfFiltersByEstimatedDeliveryTime(input: PaginationInput) {
+    const result = await this.graphql.query({
+      query: itemsQuantityOfFiltersByEstimatedDeliveryTime,
+      variables: { input },
+      fetchPolicy: 'no-cache',
+    });
+    if (!result) return;
+    return result.itemsQuantityOfFiltersByEstimatedDeliveryTime;
   }
 }

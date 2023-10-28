@@ -100,6 +100,7 @@ export class NewSymbolComponent implements OnInit {
           slides: [],
         };
         this.postForm = this.fb.group({
+          emailAccessKey: ['', Validators.email],
           accessKey: [''],
           title: [''],
           message: [''],
@@ -109,10 +110,11 @@ export class NewSymbolComponent implements OnInit {
           ctaLink: [''],
         });
       } else {
-        if (this.postsService.postReceiverNumberObject)
+        if (this.postsService.postReceiverEmail)
           this.isPhoneInputFocused = true;
 
         this.postForm = this.fb.group({
+          emailAccessKey: [this.postsService.postReceiverEmail, Validators.email],
           accessKey: [this.postsService.postReceiverNumberObject],
           title: [this.postsService.post.title],
           message: [this.postsService.post.message],
@@ -182,13 +184,13 @@ export class NewSymbolComponent implements OnInit {
       this.postForm.controls['envelopeText'].value;
 
     if (
-      this.postForm.controls['accessKey'].valid &&
-      this.postForm.controls['accessKey'].value
+      this.postForm.controls['emailAccessKey'].valid &&
+      this.postForm.controls['emailAccessKey'].value
     ) {
-      this.postsService.postReceiverNumberObject =
-        this.postForm.controls['accessKey'].value;
-      this.postsService.postReceiverNumber =
-        this.postForm.controls['accessKey'].value.e164Number.split('+')[1];
+      // this.postsService.postReceiverNumberObject =
+      //   this.postForm.controls['accessKey'].value;
+      this.postsService.postReceiverEmail =
+        this.postForm.controls['emailAccessKey'].value;
     }
 
     let redirectionRoute = !editSlide
@@ -311,16 +313,16 @@ export class NewSymbolComponent implements OnInit {
     this.postsService.post.virtualMessage = this.virtualMessage;
 
     if (
-      this.postForm.controls['accessKey'].valid &&
-      this.postForm.controls['accessKey'].value
+      this.postForm.controls['emailAccessKey'].valid &&
+      this.postForm.controls['emailAccessKey'].value
     ) {
-      this.postsService.postReceiverNumberObject =
-        this.postForm.controls['accessKey'].value;
-      this.postsService.postReceiverNumber =
-        this.postForm.controls['accessKey'].value.e164Number.split('+')[1];
+      // this.postsService.postReceiverNumberObject =
+      //   this.postForm.controls['accessKey'].value;
+      this.postsService.postReceiverEmail =
+        this.postForm.controls['emailAccessKey'].value
     }
 
-    if (this.postForm.controls['accessKey'].value) {
+    if (this.postForm.controls['emailAccessKey'].value) {
       this.postsService.privatePost = true;
       localStorage.setItem('privatePost', 'true');
     }

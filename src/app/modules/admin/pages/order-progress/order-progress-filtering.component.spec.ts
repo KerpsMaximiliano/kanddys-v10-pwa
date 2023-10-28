@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { OrderProgressFilteringComponent } from '../order-progress-filtering/order-progress-filtering.component';
 
-import { OrderProgressFilteringComponent } from './order-progress.component';
 
 describe('OrderProgressFilteringComponent', () => {
   let component: OrderProgressFilteringComponent;

@@ -10,7 +10,6 @@
     padding-bottom: 13px;
     padding-top: 15px;
     display: flex;
-    justify-content: space-between;
     padding-left: 20px;
     padding-right: 23px;
     margin: auto;
@@ -35,6 +34,20 @@
       font-style: normal;
       font-weight: 400;
       line-height: normal;
+    }
+
+    h2 {
+      color: var(--Fondo-de-Pantallas, #f6f6f6);
+      font-family: InterLight;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      margin: 0px;
+      padding: 0px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .close-button {
@@ -81,21 +94,70 @@
     &.inputPending {
       padding-bottom: 95px;
     }
+
+    .container-memories {
+      margin-top: 48px;
+      padding-top: 5px;
+
+      .memory {
+        padding: 17px 22px 29px;
+        height: 132px;
+        border-radius: 15px;
+        border: 1px solid var(--Plomo, #7b7b7b);
+        margin-top: 5px;
+        margin-bottom: 7px;
+  
+        &:hover {
+          cursor: pointer;
+        }
+  
+        .name {
+          text-transform: uppercase;
+          color: var(--Fondo-de-Pantallas, #f6f6f6);
+          font-family: InterRegular;
+          font-size: 11px;
+          font-style: normal;
+          line-height: normal;
+          margin-bottom: 16px;
+          width: 100%;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+  
+        .content {
+          color: var(--Blanco, #fff);
+          font-family: InterRegular;
+          font-size: 16.107px;
+          font-style: normal;
+          line-height: normal;
+          -webkit-line-clamp: 3;
+          line-clamp: 3;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+        }
+      }
+    }
   }
 
   .base-text-wrapper {
     display: flex;
     flex-direction: column;
-    margin-top: 50px;
+    margin-top: 48px;
 
     label {
-      color: #c4c5c3;
-      font-family: InterRegular;
-      font-size: 12px;
+      color: #F6F6F6;
+      font-family: FiraSansMedium;
+      font-size: 25px;
       font-style: normal;
-      font-weight: 400;
+      font-weight: 500;
       line-height: 128.023%; /* 15.363px */
-      margin-bottom: 4px;
+      margin-top: 20px;
+      margin-bottom: 18px;
+      text-align: center;
+      letter-spacing: 1.265px;
     }
 
     .textarea-wrapper {
@@ -105,7 +167,7 @@
         border-radius: 15px;
         border: 1px solid var(--Plomo, #7b7b7b);
         width: 100%;
-        height: 171px;
+        height: 215px;
         resize: none;
         flex-shrink: 0;
         background-color: #181d17;
@@ -141,13 +203,42 @@
         border: none;
         border-radius: 10px;
         position: absolute;
-        bottom: 32px;
-        left: 22px;
+        bottom: 50px;
+        left: 13px;
 
         &:hover {
           cursor: pointer;
           background-color: lighten($color: #181d17, $amount: 20);
         }
+      }
+      
+      .shortcut {
+        position: absolute;
+        top: 13px;
+        right: 15px;
+        cursor: pointer;
+      }
+
+      .settings-text {
+        cursor: pointer;
+        color: #F6F6F6;
+        font-family: InterRegular;
+        font-size: 16.1px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+        position: absolute;
+        bottom: 7px;
+        left: 22px;
+      }
+
+      .container-icon {
+        font-size: 20px;
+        cursor: pointer;
+        color: #F6F6F6;
+        position: absolute;
+        bottom: 20px;
+        right: 22px;
       }
 
       .save {
@@ -170,6 +261,16 @@
           background-color: lighten($color: #181d17, $amount: 20);
         }
       }
+    }
+
+    .show-text-error {
+      color: #7B7B7B;
+      font-family: InterRegular;
+      font-size: 16.1px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      margin-bottom: 0;
     }
   }
 
@@ -205,6 +306,24 @@
       min-width: 70%;
       max-width: 100%;
       padding: 8px 19px;
+
+      .dots {
+        opacity: 0;
+        animation: dots 1s infinite steps(3);
+        display: flex;
+      }
+      
+      @keyframes dots {
+        33% {
+          opacity: 1;
+        }
+        66% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
     }
 
     .question-box-input {

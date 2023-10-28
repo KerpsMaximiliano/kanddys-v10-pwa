@@ -476,12 +476,14 @@ export const ordersTotal = gql`
     $merchantId: ObjectID!
     $orders: [ObjectID!]
     $itemCategoryId: ObjectID
+    $range: PaginationRangeInput
   ) {
     ordersTotal(
       status: $status
       merchantId: $merchantId
       orders: $orders
       itemCategoryId: $itemCategoryId
+      range: $range
     )
   }
 `;
@@ -879,6 +881,12 @@ export const orderQuantityOfFiltersDeliveryZone = gql`
 export const orderQuantityOfFiltersShippingType = gql`
   query orderQuantityOfFiltersShippingType($pagination: PaginationInput) {
     orderQuantityOfFiltersShippingType(pagination: $pagination)
+  }
+`;
+
+export const orderQuantityOfFiltersOrderStatus = gql`
+  query orderQuantityOfFiltersOrderStatus($isMerchant: Boolean!, $pagination: PaginationInput!) {
+    orderQuantityOfFiltersOrderStatus(isMerchant: $isMerchant, pagination: $pagination)
   }
 `;
 

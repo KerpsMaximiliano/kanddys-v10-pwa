@@ -392,3 +392,15 @@ footer {
     width: calc(100% - 100px);
   }
 }
+
+.form-input {
+  border: none;
+  font-size: 17px;
+  font-family: InterBold;
+  width: 100%;
+  margin-top: 10px;
+
+  &::placeholder {
+    color: #7b7b7b;
+  }
+}

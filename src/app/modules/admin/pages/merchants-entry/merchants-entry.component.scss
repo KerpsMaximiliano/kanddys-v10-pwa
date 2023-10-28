@@ -10,6 +10,72 @@
   .form-group {
     margin-bottom: 20px;
   }
+
+  .textarea {
+    resize: vertical;
+    width: 100%;
+  }
+
+  .input-area {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    .label {
+      font-style: normal;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .input {
+        input {
+            background: none;
+            border: none;
+            border-bottom: 2px solid #87CD9B;
+            width: 100%;
+            color: #FFF;
+            font-family: InterBold;
+            font-size: 21px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: normal;
+            padding-bottom: 13px;
+        }
+
+        ::ng-deep .mat-form-field {
+            width: 48%;
+            margin: 0px 1%
+        }
+
+        ::ng-deep .mat-form-field-underline {
+            border-bottom: 2px solid #87CD9B;
+        }
+
+
+        ::ng-deep .mat-select-arrow {
+            color: #87CD9B;
+        }
+
+        ::ng-deep .mat-select-value {
+            text-align: center;
+        }
+
+        ::ng-deep .mat-select-value-text {
+            font-family: InterBold;
+            font-size: 21px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: normal;
+        }
+
+        ::ng-deep .mat-form-field-label {
+            text-align: center;
+            top: 8px;
+            font-family: InterBold;
+            font-size: 21px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: normal;
+        }
+    }
+  }
   
   label {
     display: block;

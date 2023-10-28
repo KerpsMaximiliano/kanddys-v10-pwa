@@ -14,7 +14,7 @@
   .left-part,
   .right-part {
     display: flex;
-    align-items: flex-end;
+    align-items: flex-end;  
     .icon {
       display: flex;
       align-items: flex-end;
@@ -37,7 +37,19 @@
     font-family: InterRegular;
     font-size: 17px;
     display: flex;
+    align-items: center;
     gap: 6px;
+    .sign-in {
+      color: #87cd9b;
+      font-size: 15px;
+      font-family: InterMedium;
+      cursor: pointer;
+    }
+    img {
+      filter: brightness(210%);
+      width: 31px;
+      cursor: pointer;
+    }
     span {
       color: #87cd9b;
     }
@@ -60,10 +72,9 @@
   .close {
     margin: 0;
     text-align: right;
-    color: #c4c5c3;
-    font-family: InterLight;
-    font-size: 24px;
-
+    color: #fff;
+    font-family: InterMedium;
+    font-size: 19px;
     * {
       font-size: 19px;
       font-family: InterRegular;
@@ -90,49 +101,60 @@
   }
 }
 
+.tab-index {
+  display: flex;
+  margin-bottom: 10px;
+  gap: 25px;
+  p {
+    margin: 0;
+    color: var(--Fondo-de-Pantallas, #F6F6F6);
+    font-family: FiraSansMedium;
+    font-size: 13px;
+    letter-spacing: 0.715px; 
+  }
+  .active {
+    text-decoration: underline;
+    text-decoration-color: #87CD9B;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  @media(max-width: 450px) {
+    margin-top:10px;
+  }
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  .card {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    cursor: pointer;
+    img {
+      flex-shrink: 0;
+      height: 70px;
+      width: 70px;
+    }
+    h2 {
+      color: var(--Fondo-de-Pantallas, #F6F6F6);
+      font-family: InterRegular;
+      font-size: 23px;
+      font-weight: 500;
+      letter-spacing: 1.265px;
+      margin: 0 16px;
+      flex-grow: 1;
+    }
+    mat-icon {
+      color: var(--Plomo, #7B7B7B); 
+    }
+  }
+}
+
 main {
   padding: 15px 19px 28px 19px;
   padding-bottom: 140px;
-  .tab-bar {
-    width: 500px;
-    white-space: nowrap;
-    display: flex;
-    justify-content: space-between;
-    overflow-x: scroll;
-    position: relative;
-    right: 19px;
-    background-color: #4d4b4b;
-    padding: 0px 20px 0px 14px;
-    @media (max-width: 500px) {
-      width: 100vw;
-      display: block;
-    }
-    .tab {
-      padding: 6px 18px;
-      margin: 6px 0px;
-      flex: none;
-      @media (max-width: 500px) {
-        display: inline-block;
-      }
-      .text {
-        color: #f6f6f6;
-        font-family: InterRegular;
-        text-align: center;
-        font-size: 16px;
-        margin: auto;
-        vertical-align: middle;
-        span {
-          color: #87cd9b;
-        }
-      }
-      .icon {
-        margin-right: 10px;
-      }
-    }
-    .tab.active {
-      background-color: #181d17;
-      border-radius: 4px;
-    }
   }
   .explain-text {
     color: var(--Fondo-de-Pantallas, #f6f6f6);
@@ -168,6 +190,16 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
+    .referrals-button {
+      border: 1px solid var(--Plomo, #7B7B7B);
+      color: var(--Plomito, #C4C5C3); 
+      font-size: 15px;
+      border-radius: 6px;
+      padding: 12px 16px;
+      align-self: flex-start;
+      font-family: InterMedium;
+      cursor: pointer;
+    }
     .subject {
       text-align: center;
       color: #fff;
@@ -291,7 +323,6 @@ main {
         color: #f7d455;
       }
     }
-  }
 }
 
 .footer-swiper-title {
@@ -304,77 +335,46 @@ main {
   margin-left: 1em;
 }
 
-.footer-swiper {
-  margin-top: 14px;
-  .swiper-custom-container {
-    ::ng-deep .swiper-pagination-bullet {
-      background-color: #181d17 !important;
-      border: 1px solid white !important;
-      width: 14px;
-      height: 14px;
+.top-item {
+  display: flex;
+  gap: 18px;
+  .image {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    img {
+      width: 102px;
+      height: 102px;
     }
-
-    ::ng-deep .swiper-pagination-bullet-active {
-      background-color: white !important;
-      border: 1px solid white !important;
-    }
-  }
-
-  ::ng-deep .swiper-pagination {
-    display: none;
-  }
-
-  .slide-item {
-    border: 1px solid gray;
-    border-radius: 17px;
-    margin: 6px 10px;
-    padding: 0px 10px;
-    .slide-content {
-      color: var(--plomito, #c4c5c3);
+    p {
+      color: var(--Fondo-de-Pantallas, #F6F6F6);
       text-align: center;
       font-family: InterRegular;
-      font-size: 17px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: normal;
-      width: 86.91%;
-      margin: 25px auto;
-    }
-    .flex {
-      display: flex;
-      align-items: center;
-      margin-bottom: 24px;
-      .image {
-        text-align: center;
-        margin-left: 10px;
-      }
-      .info {
-        margin-left: 16px;
-        .name {
-          color: #f6f6f6;
-          font-family: InterBold;
-          font-size: 15px;
-          font-style: normal;
-          font-weight: 700;
-          line-height: normal;
-          margin-bottom: 7px;
-          span {
-            color: #87cd9b;
-          }
-        }
-        .role {
-          color: #f6f6f6;
-          font-family: InterRegular;
-          font-size: 15px;
-          font-style: normal;
-          font-weight: 300;
-          line-height: normal;
-        }
-      }
+      font-size: 16px; 
     }
   }
-  .slide-item.borderless {
-    border: none;
+  .info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 31px;
+    h1 {
+      color: var(--Fondo-de-Pantallas, #F6F6F6);
+      text-align: center;
+      font-family: InterMedium;
+      font-size: 25.177px;
+      letter-spacing: 1.385px; 
+      font-weight: 500;
+      margin: 0;
+      margin-bottom: 5px;
+    }
+    p {
+      margin: 0;
+      color: var(--Fondo-de-Pantallas, #F6F6F6);
+      text-align: center;
+      font-family: InterRegular;
+      font-size: 16px; 
+    }
   }
 }
 
@@ -417,17 +417,25 @@ footer {
   justify-content: center;
   align-items: flex-end;
   background-color: #181d17;
-
+  .plus-sign {
+    color: var(--El-verdecito, #87CD9B);
+    font-family: InterBold;
+    font-size: 35.412px;
+    margin: 0;
+    margin-bottom: 5px;
+    cursor: pointer;
+  }
   .input {
     height: 39px;
-    color: var(--El-verdecito, #87CD9B); 
+    color: #7B7B7B;
+    background-color: #d9d9d9;
     font-family: InterRegular;
     font-size: 16px;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
     padding: 10px 19px;
-    margin-right: 6px;
+    margin-left: 15px;
     border-radius: 300px;
     border: 1px solid #7B7B7B; 
     width: calc(100% - 28px);
@@ -435,8 +443,21 @@ footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    ::placeholder {
-      color: #4d4b4b;
+    div {
+      display: flex;
+      gap: 10px;
+      .audio-freq {
+        width: 27px;
+        height: 24px;
+      }    
+      .audio-freq.brighter {
+        filter: invert(90%) sepia() saturate(0);
+      }
+      .darker {
+        width: 32px;
+        height: 24px; 
+        filter: brightness(1%)
+      }
     }
   }
   .input.loggedout {
@@ -519,8 +540,7 @@ footer.no-green {
 
 hr{
   border:1px solid #403d3d;
-  margin-top:20px;
-  margin-bottom: 20px;
+  margin: 16px 0;
   width: 100%;
 }
 
@@ -565,9 +585,6 @@ hr{
   color: #25638f;
   font-family: InterMedium;
   font-size: 15px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: normal;
   margin-top: 15px;
   margin-bottom: 0;
 }
@@ -593,12 +610,12 @@ hr{
 
 .ganas-desc {
   color: #f6f6f6;
-  font-family: InterMedium;
-  font-size: 16px;
+  font-family: InterRegular;
+  font-size: 14px;
   font-style: normal;
-  font-weight: 400;
   line-height: normal;
   margin-bottom: 0;
+  margin-top: 10px;
   span {
     color: #87cd9b;
   }
@@ -608,6 +625,10 @@ hr{
     filter: brightness(1.75);
     vertical-align: top;
   }
+}
+
+.ganas-desc:last-child {
+  margin-top: 0;
 }
 
 .ganas-desc.left {
@@ -695,14 +716,7 @@ hr{
   height: 39px;
 }
 
-.audio-freq {
-  width: 27px;
-  height: 24px;
-}
 
-.audio-freq.brighter {
-  filter: invert(90%) sepia() saturate(0);
-}
 
 .memory-options {
   display: flex;

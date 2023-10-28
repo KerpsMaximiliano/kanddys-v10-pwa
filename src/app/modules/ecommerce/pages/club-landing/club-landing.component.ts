@@ -44,6 +44,7 @@ import { URL } from 'url';
 import { FilesService } from 'src/app/core/services/files.service';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { OptionsDialogComponent } from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
+import { ContactUsDialogComponent } from 'src/app/shared/dialogs/contact-us-dialog/contact-us-dialog.component';
 
 interface ReviewsSwiper {
   title: string;
@@ -98,7 +99,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   });
 
   isFlag = false;
-  tabIndex = 0;
+  tabIndex = 1;
   userID = '';
   isVendor = false;
   isProvider = false;
@@ -234,6 +235,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   merchant: string;
   merchantSlug: string;
   merchantName: string;
+  merchantEmail: string;
   saleflow: SaleFlow;
   referralsCount: number = 0;
   vectorsCount: number = 0;
@@ -299,6 +301,23 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     if (this.merchant) {
       await this.getReferrals();
       await this.getSaleflowDefault();
+      let logins : any[] = JSON.parse(window.localStorage.getItem('logins'));
+      if(!logins) {
+        logins = [];
+        logins.push({
+          name: this.merchantName ? this.merchantName : this.headerService.user.name,
+          email: this.merchantEmail ? this.merchantEmail : this.headerService.user.email,
+        })
+        console.log(logins)
+        window.localStorage.setItem('logins', JSON.stringify(logins));
+      } else if(!logins.find((login) => login.name === this.merchantName || login.name === this.headerService.user.name)) {
+        logins.push({
+          name: this.merchantName ? this.merchantName : this.headerService.user.name,
+          email: this.merchantEmail ? this.merchantEmail : this.headerService.user.email,
+        })
+        console.log(logins)
+        window.localStorage.setItem('logins', JSON.stringify(logins));
+      }
       await Promise.all([
         this.gptService.getMerchantEmbeddingsMetadata(),
         this.getChats(),
@@ -371,7 +390,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       }
     ] = [
       {
-        value: `${this.merchantName? this.merchantName : this.merchantSlug}`,
+        value: `${this.merchantName? this.merchantName : this.merchantSlug? this.merchantSlug : this.headerService.user.name}`,
         callback: () => {},
         active: true,
       },
@@ -389,6 +408,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     options.push({
       value: 'Crear un nuevo comercio',
       callback: () => {
+        this.loginEmail = null;
         this.dialog.closeAll();
         console.log(this.loginflow)
         setTimeout(() => {
@@ -397,14 +417,14 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       },
       noSettings: true,
     })
-    let logins = JSON.parse(window.localStorage.getItem('logins'));
+    let logins : any[] = JSON.parse(window.localStorage.getItem('logins'));
     if(logins) {
       logins.forEach((login) => {
-        if(!this.headerService.user || login.name !== this.headerService.user.email) {
+        if(login.email !== this.headerService.user.email) {
           options.push({
             value: `${login.name}`,
             callback: () => {
-              this.userSwitchDialog(login.name)
+              this.userSwitchDialog(login.email)
             }
           })
         }
@@ -416,7 +436,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         title: "Perfil de:",
         options,
         bottomLeft: {
-          text: 'Cambiar de industria',
+          text: '',
           callback: () => {
           }
         }
@@ -754,9 +774,11 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   async getMerchantDefault() {
     try {
       const merchantDefault: Merchant = await this.merchantsService.merchantDefault();
+      console.log(merchantDefault)
       this.merchant = merchantDefault._id;
       this.merchantSlug = merchantDefault.slug;
       this.merchantName = merchantDefault.name;
+      this.merchantEmail = merchantDefault.email;
       this.orderService.ordersTotal(
         ['to confirm', 'completed'],
         this.merchant
@@ -930,6 +952,10 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     });
   }
 
+  goToItemsOffers() {
+    return this.router.navigate(['/admin/items-offers']);
+  }
+
   truncateString(word) {
     return truncateString(word, 12);
   }
@@ -1002,6 +1028,82 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
             }
           },
         ]
+      }
+    })
+  }
+
+  clickImageInput() {
+    document.getElementById('imgInput').click();
+  }
+
+  openOptionsMenu() {
+    this.bottomSheet.open(OptionsMenuComponent, {
+      data: {
+        options: [
+          {
+            value: 'Adiciónale Memoria a Laia',
+            callback:() => {
+              if(this.headerService.user) {
+                this.goToAIMemoriesManagement();
+              } else {
+                this.goToLaiaTraining();
+              }
+            }
+          },
+          {
+            value: 'Empieza a Vender un Nuevo Articulo',
+            callback:() => {
+              this.clickImageInput();
+            }
+          },
+          {
+            value: 'Crea una Factura',
+            callback: () => {}
+          },
+          {
+            value: 'Crea una Orden de Compra',
+            callback: () => {}
+          },
+          {
+            value: 'Crea una Oferta Flash',
+            callback:() => {
+              if(this.headerService.user) {
+                this.goToItemsOffers();
+              }
+            }
+          },
+          {
+            value: 'Premia las Referencias',
+            callback: () => {}
+          },
+          {
+            value: 'Premia Porque Si!',
+            callback: () => {}
+          },
+          {
+            value: 'Premia las Menciones',
+            callback: () => {}
+          },
+          {
+            value: 'Recompensa las Compras',
+            callback: () => {}
+          },
+          {
+            value: 'Sube foto de tus facturas para Premios',
+            callback: () => {}
+          },
+        ],
+      },
+    });
+  }
+
+  contactUsDialog(feature: string) {
+    this.bottomSheet.open(ContactUsDialogComponent, {
+      data: {
+        topText: 'Contemplemos las adaptaciones que necesitas según tu proceso con esta modalidad',
+        contactText: 'Escribenos por Whatsapp 👇',
+        phone: '19188156444',
+        message: `Hola, me interesa la funcionalidad ${feature}`,
       }
     })
   }

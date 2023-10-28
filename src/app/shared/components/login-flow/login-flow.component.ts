@@ -7,8 +7,8 @@ import { OptionsMenuComponent, DialogTemplate } from 'src/app/shared/dialogs/opt
 import { GoogleSigninService } from 'src/app/core/services/google-signin.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
-import { FormComponent } from 'src/app/shared/dialogs/form/form.component';
-import { LoginFormComponent, FormData } from 'src/app/shared/dialogs/login-form/login-form.component';
+import { FormComponent, FormData } from 'src/app/shared/dialogs/form/form.component';
+import { LoginFormComponent } from 'src/app/shared/dialogs/login-form/login-form.component';
 import { FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -16,6 +16,7 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { AppService } from 'src/app/app.service';
 import { Router } from '@angular/router';
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
+import { ContactUsDialogComponent } from '../../dialogs/contact-us-dialog/contact-us-dialog.component';
 
 
 @Component({
@@ -31,7 +32,7 @@ export class LoginFlowComponent implements OnInit {
   @Input() jsondata: string = JSON.stringify({
     openNavigation: true,
   });
-  @Input() loginEmail: string = null;
+  @Input() loginEmail: string | null = null;
   @Input() magicLink: boolean = false;
   openNavigation: boolean = false;
 
@@ -67,12 +68,6 @@ export class LoginFlowComponent implements OnInit {
           []
         );
 
-        let logins = JSON.parse(window.localStorage.getItem('logins')) || [];
-        logins.push({
-          name: this.loginEmail,
-        });
-        window.localStorage.setItem('logins', JSON.stringify(logins));
-
         this.dialogIsOpen.emit(false);
 
         this.dialogService.open(
@@ -89,8 +84,10 @@ export class LoginFlowComponent implements OnInit {
             flags: ['no-header'],
           }
         );
+        this.magicLink = false;
       } else {
-        this.addPassword(this.loginEmail)
+        let loginEmail = this.loginEmail;
+        this.addPassword(loginEmail)
       }
     } else {
       this.share()
@@ -304,19 +301,6 @@ export class LoginFlowComponent implements OnInit {
           name: 'name',
           type: 'text',
           validators: [Validators.pattern(/[\S]/), Validators.required],
-          bottomButton: {
-            text: 'Tengo un comercio',
-            callback: () => {
-              isUser = false;
-              this.dialog.closeAll();
-              this.openTemplateCommerce(credentials)
-            },
-            containerStyles: {
-              position: 'absolute',
-              top: '0px',
-              left: '308px'
-            }
-          }
         },
         {
           label: 'Apellido:',
@@ -324,7 +308,25 @@ export class LoginFlowComponent implements OnInit {
           type: 'text',
           validators: [Validators.pattern(/[\S]/), Validators.required],
         },
-      ]
+        {
+          label: 'Whatsapp (opcional):',
+          name: 'phone',
+          type: 'phone',
+          validators: [],
+        },
+      ],
+      buttonsTexts: {
+        accept: 'Guardar mis datos personales',
+        cancel: 'Tengo un Comercio',
+      },
+      buttonsStyles: {
+        flexDirection: 'column-reverse',
+      },
+      closeCallback: () => {
+        isUser = false;
+        this.dialog.closeAll();
+        this.openTemplateCommerce(credentials)
+      }
     }
 
     let dialogRef = this.dialog.open(FormComponent, {
@@ -334,7 +336,7 @@ export class LoginFlowComponent implements OnInit {
       }
     });
     if(isUser) {
-      await dialogRef.afterClosed().subscribe((result) => {
+      await dialogRef.afterClosed().subscribe(async (result) => {
           this.dialogIsOpen.emit(false);
           if (result.value.name && result.value.lastname) {
             this.authService.signup(
@@ -342,6 +344,7 @@ export class LoginFlowComponent implements OnInit {
                 email: credentials,
                 name: result.value.name,
                 lastname: result.value.lastname,
+                phone: result.value.phone ? result.value.phone.e164Number : null,
                 password: "123"
               },
               "none"
@@ -360,7 +363,8 @@ export class LoginFlowComponent implements OnInit {
             );
             let logins = JSON.parse(window.localStorage.getItem('logins')) || [];
             logins.push({
-              name: credentials,
+              name: result.value.name,
+              email: credentials,
             });
             window.localStorage.setItem('logins', JSON.stringify(logins));
 
@@ -388,32 +392,32 @@ export class LoginFlowComponent implements OnInit {
     let formTemplateCommerce: FormData = {
       fields: [
         {
-          label: 'Nombre Comercial:',
+          label: 'Comercio (opcional):',
           name: 'businessName',
           type: 'text',
-          validators: [Validators.pattern(/[\S]/), Validators.required],
-          /*bottomButton: {
-            text: 'No tengo un comercio',
-            callback: () => {
-              isCommerce = false;
-              this.dialog.closeAll();
-              this.openTemplateUser(credentials)
-            },
-            containerStyles: {
-              position: 'absolute',
-              top: '0px',
-              left: '283px'
-            }
-          }*/
+          validators: [Validators.pattern(/[\S]/)],
         },
         {
-          label: 'Whatsapp donde tus compradores te contactan:',
+          label: 'Whatsapp donde tus compradores te contactan (opcional):',
           name: 'phone',
           type: 'phone',
-          validators: [Validators.required],
+          validators: [],
         },
       ],
-
+      buttonsTexts: {
+        accept: 'Guardar mis datos personales',
+        cancel: 'Tengo un Comercio',
+      },
+      buttonsStyles: {
+        flexDirection: 'column-reverse',
+      },
+      closeCallback: () => {
+        isCommerce = false;
+        console.log('fire closeCallback')
+        this.dialog.closeAll();
+        this.openTemplateUser(credentials)
+      },
+      signInValidation: 'commerce'
     };
 
     let dialogRef = this.dialog.open(FormComponent, {
@@ -427,19 +431,18 @@ export class LoginFlowComponent implements OnInit {
       await dialogRef.afterClosed().subscribe((result) => {
           this.dialogIsOpen.emit(false);
           console.log(result)
-          if (result.value.phone && result.value.businessName) {
             let businessName = result.value.businessName;
             this.authService.signup(
               {
                 email: credentials,
-                phone: result.value.phone.e164Number,
+                phone: result.value.phone ? result.value.phone.e164Number : null,
                 password: "123"
               },
               "none"
             ).then((res) => {
               this.merchantsService.createMerchant(
                 {
-                  name: businessName,
+                  name: businessName ? businessName : null,
                   owner: res._id,
                 }
               ).then((res) => {
@@ -457,7 +460,8 @@ export class LoginFlowComponent implements OnInit {
 
               let logins = JSON.parse(window.localStorage.getItem('logins')) || [];
               logins.push({
-                name: credentials,
+                name: businessName,
+                email: credentials,
               });
               window.localStorage.setItem('logins', JSON.stringify(logins));
 
@@ -476,7 +480,6 @@ export class LoginFlowComponent implements OnInit {
                 }
               );
             })
-        }
       });
     }
   }
@@ -529,11 +532,6 @@ export class LoginFlowComponent implements OnInit {
                 },
                 []
               );
-              let logins = JSON.parse(window.localStorage.getItem('logins')) || [];
-              logins.push({
-                name: emailOrPhone,
-              });
-              window.localStorage.setItem('logins', JSON.stringify(logins));
 
               unlockUI();
               
@@ -615,7 +613,12 @@ export class LoginFlowComponent implements OnInit {
   }
 
   private async addPassword(emailOrPhone: string) {
-    if(!this.loginEmail) this.emailDialogRef.close();
+    if(this.emailDialogRef) {
+      console.log('no mail')
+      this.emailDialogRef.close()
+    };
+    this.loginEmail = null;
+    console.log(emailOrPhone, 'notnull')
     let fieldsToCreate: FormData = {
       title: {
         text: 'Clave de Acceso:',
@@ -634,7 +637,7 @@ export class LoginFlowComponent implements OnInit {
             text: 'Prefiero recibir el correo con el enlace de acceso',
             callback: () => {
               //Cerrar 2do dialog
-
+              this.loginEmail = null;
               return switchToMagicLinkDialog();
             },
           },
@@ -648,8 +651,11 @@ export class LoginFlowComponent implements OnInit {
     });
 
     dialog2Ref.afterClosed().subscribe(async (result: FormGroup) => {
-      try {
-        if (result?.controls?.password.valid) {
+      this.loginEmail = null;
+      if(!result) {
+        this.dialogIsOpen.emit(false)
+      }
+      if (result?.controls?.password.valid) {
           let password = result?.value['password'];
 
           lockUI();
@@ -661,29 +667,30 @@ export class LoginFlowComponent implements OnInit {
           );
           console.log("🚀 ~ file: login-flow.component.ts:579 ~ LoginFlowComponent ~ dialog2Ref.afterClosed ~ session:", session)
 
-          if (!session) throw new Error('invalid credentials');
-
-          this.openNavigation = true;
-
-          let logins = JSON.parse(window.localStorage.getItem('logins')) || [];
-          logins.push({
-            name: emailOrPhone,
-          });
-          window.localStorage.setItem('logins',JSON.stringify(logins));
-
-          unlockUI();
+          if (!session) {
+            unlockUI();
+            this.addPassword(emailOrPhone)
+            this.headerService.showErrorToast('Contraseña Incorrecta')
+          } else {
+            this.openNavigation = true;
+            let merchantName;
+            await this.merchantsService.merchantDefault().then((res) => {
+              merchantName = res.name;
+            })
+            let logins : any[] = JSON.parse(window.localStorage.getItem('logins')) || [];
+            if(!logins.find((login) => login.email === emailOrPhone)) {
+              logins.push({
+                name: merchantName ? merchantName: this.headerService.user.name,
+                email: emailOrPhone,
+              });
+              window.localStorage.setItem('logins',JSON.stringify(logins));
+            }
+            unlockUI();
+            this.dialogIsOpen.emit(false);
+          }
+        } else {
           this.dialogIsOpen.emit(false);
-        } else if (result?.controls?.password.valid === false) {
-          unlockUI();
-          this.snackbar.open('Datos invalidos', 'Cerrar', {
-            duration: 3000,
-          });
         }
-      } catch (error) {
-        unlockUI();
-        console.error(error);
-        this.headerService.showErrorToast();
-      }
     });
 
     const switchToMagicLinkDialog = () => {

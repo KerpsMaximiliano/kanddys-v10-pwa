@@ -7,6 +7,10 @@ export interface DialogTemplate {
   options: Array<{
     value: string;
     callback: () => void;
+    settings?: {
+      value: boolean,
+      callback: () => void;
+    }
   }>;
   styles?: Record<string, Record<string, string>>;
   bottomLabel?: string;
@@ -72,4 +76,9 @@ export class OptionsMenuComponent implements OnInit {
     this._bottomSheetRef.dismiss();
   }
 
+  onClickSettings(index: number) {
+    this.selectedIndex = index;
+    this.data.options[index]?.settings.callback();
+    this._bottomSheetRef.dismiss();
+  }
 }

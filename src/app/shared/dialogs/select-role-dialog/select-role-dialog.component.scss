@@ -4,6 +4,7 @@
 
 ::ng-deep .cdk-overlay-pane {
   width: 100%;
+  max-width: 100% !important;
 }
 
 ::ng-deep .mat-dialog-container {
@@ -39,6 +40,7 @@
       margin-top: 15px;
       mat-icon {
         color: #7b7b7b;
+        margin-left: 15px;
       }
     }
     .role {

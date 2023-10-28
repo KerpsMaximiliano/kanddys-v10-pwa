@@ -200,16 +200,8 @@ export const createMerchant = gql`
 `;
 
 export const entryMerchant = gql`
-  mutation entryMerchant(
-    $merchantID: ObjectID!
-    $merchantInput: MerchantInput
-    $userInput: UserInput
-  ) {
-    entryMerchant(
-      merchantID: $merchantID
-      merchantInput: $merchantInput
-      userInput: $userInput
-    )
+  mutation entryMerchant($input: EntryMerchantInput!) {
+    entryMerchant(input: $input)
   }
 `;
 
@@ -543,6 +535,7 @@ export const merchantFuncionality = gql`
       maxOrder
       countOrder
       payPlataformFee
+      platformFeeType
       questionDeliveryZone{
         value
       }
@@ -669,6 +662,12 @@ query dataCountries{
     value
   }
 }`;
+
+export const dataPagination = gql`
+  query dataPagination($paginate: PaginationInput!) {
+    dataPagination(paginate: $paginate)
+  }
+`;
 
 export const merchantQuantityOfFiltersRole = gql`
 query merchantQuantityOfFiltersRole{

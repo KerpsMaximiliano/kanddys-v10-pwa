@@ -55,6 +55,7 @@ import {
   orderPaginate,
   updateOrderExternal,
   orderIncomeCompletedByUser,
+  orderQuantityOfFiltersOrderStatus,
 } from '../graphql/order.gql';
 import {
   ItemOrder,
@@ -174,6 +175,26 @@ export class OrderService {
       const response = await this.graphql.query({
         query: ordersTotal,
         variables: { status, merchantId, orders, itemCategoryId },
+        fetchPolicy: 'no-cache',
+      });
+      if (!response || response?.errors) return undefined;
+      return response.ordersTotal;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async ordersTotalV2(
+    status: OrderStatusType[],
+    merchantId: string,
+    orders: string[] = [],
+    range: any,
+    itemCategoryId?: string
+  ): Promise<{ total: number; lenght: number; items: number }> {
+    try {
+      const response = await this.graphql.query({
+        query: ordersTotal,
+        variables: { status, merchantId, orders, range,itemCategoryId },
         fetchPolicy: 'no-cache',
       });
       if (!response || response?.errors) return undefined;
@@ -738,5 +759,14 @@ export class OrderService {
       context:{ useMultipart: true }
     });
     return result?.updateOrderExternal;
+  }
+
+  async orderQuantityOfFiltersOrderStatus(isMerchant: boolean, pagination: PaginationInput) {
+    const result = await this.graphql.query({
+      query: orderQuantityOfFiltersOrderStatus,
+      variables: { isMerchant, pagination },
+      fetchPolicy: 'no-cache',
+    });
+    return result?.orderQuantityOfFiltersOrderStatus;
   }
 }
