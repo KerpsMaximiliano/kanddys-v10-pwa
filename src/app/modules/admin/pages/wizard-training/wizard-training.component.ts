@@ -322,7 +322,7 @@ export class WizardTrainingComponent implements OnInit, OnDestroy {
   };
 
   back() {
-    return this.router.navigate(['/ecommerce/club-landing']);
+    return this.router.navigate(['/ecommerce/laiachat-landing']);
   }
 
   ngOnDestroy(): void {

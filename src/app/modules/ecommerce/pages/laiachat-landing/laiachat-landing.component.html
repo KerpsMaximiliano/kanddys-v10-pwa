@@ -1,0 +1,152 @@
+<div class="container">
+    <div class="header-wrapper">
+      <div class="left-part">
+        <div class="title">
+          <ng-container *ngIf="!headerService.user">
+            <img alt="user" (click)="loginflow = true" src="{{assetsFolder}}/user-placeholder.png">
+            <p (click)="loginflow = true" class="sign-in">
+              Registro
+            </p>
+          </ng-container>
+          <ng-container *ngIf="headerService.user">
+            <p (click)="openMsgDialog()">La<span style="color: #87CD9B;">ia</span>Chat</p>
+            <span (click)="showRoleDialog()" style="color: #87CD9B;">
+              {{
+                headerService.user.name ?
+                'con ' + headerService.user.name :
+                headerService.user.email ?
+                'con ' + truncateString(headerService.user.email) :
+                'con ' + headerService.user.phone
+              }}
+            </span>
+          </ng-container>
+        </div>
+      </div>
+  
+      <div class="right-part">
+        <div class="icon" (click)="goClubLandingShowGanas()">
+            <p>Gana$</p>
+            <mat-icon>ios_share</mat-icon>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-title">
+        <p class="title">LAIACHAT ES TU ASISTENTE VIRTUAL</p>
+        <p class="subtitle">Ahorra Tiempo Brindando Respuestas Precisas al Instante</p>
+    </div>
+
+    <div class="container-title">
+        <p class="title" [style.marginBottom.px]="23">MEMORIA DE LAIA</p>
+        
+        <div class="textarea-wrapper">
+            <textarea
+              name="base-text"
+              id="base-text"
+              placeholder="Escribe algo para probarla.."
+              class="base-text"
+              (click)="goLaiaTraining()"
+            ></textarea>
+
+            <input
+                type="file"
+                id="file"
+                [style.display]="'none'"
+                (change)="loadFile($event)"
+                multiple
+            />
+
+            <div class="container-icon" (click)="openUploadFile()">
+                <i class="fa fa-plus"></i>
+            </div>
+        </div>
+
+        <p class="text" [style.marginTop.px]="12">Escribe en su memoria y Laia con IA formulará preguntas y verás sus respuestas</p>
+    </div>
+    
+    <div class="social-media">
+        <p class="title">INTEGRACIONES DE LAIA</p>
+
+        <div class="socials" [style.marginTop.px]="20">
+            <div class="media">
+                Websites
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19" fill="none">
+                    <ellipse cx="10" cy="9.5" rx="10" ry="9.5" fill="#7B7B7B"/>
+                </svg>
+            </div>
+            <div class="media">
+                Enlace
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19" fill="none">
+                    <ellipse cx="10" cy="9.5" rx="10" ry="9.5" fill="#7B7B7B"/>
+                </svg>
+            </div>
+            <div class="media" (click)="goLaiaWhatsapp()">
+                WhatsApp
+                <img width="20" alt="user" (click)="loginflow = true" src="{{assetsFolder}}/semi-circle.png">
+            </div>
+            <div class="media">
+                Shopify
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19" fill="none">
+                    <path d="M19.5 9.5C19.5 14.4467 15.2712 18.5 10 18.5C4.72882 18.5 0.5 14.4467 0.5 9.5C0.5 4.55329 4.72882 0.5 10 0.5C15.2712 0.5 19.5 4.55329 19.5 9.5Z" stroke="#7B7B7B"/>
+                </svg>
+            </div>
+            <div class="media">
+                Wix
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19" fill="none">
+                    <path d="M19.5 9.5C19.5 14.4467 15.2712 18.5 10 18.5C4.72882 18.5 0.5 14.4467 0.5 9.5C0.5 4.55329 4.72882 0.5 10 0.5C15.2712 0.5 19.5 4.55329 19.5 9.5Z" stroke="#7B7B7B"/>
+                </svg>
+            </div>
+            <div class="media">
+                Foursquare
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19" fill="none">
+                    <path d="M19.5 9.5C19.5 14.4467 15.2712 18.5 10 18.5C4.72882 18.5 0.5 14.4467 0.5 9.5C0.5 4.55329 4.72882 0.5 10 0.5C15.2712 0.5 19.5 4.55329 19.5 9.5Z" stroke="#7B7B7B"/>
+                </svg>
+            </div>
+            <div class="media">
+                Instagram
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19" fill="none">
+                    <path d="M19.5 9.5C19.5 14.4467 15.2712 18.5 10 18.5C4.72882 18.5 0.5 14.4467 0.5 9.5C0.5 4.55329 4.72882 0.5 10 0.5C15.2712 0.5 19.5 4.55329 19.5 9.5Z" stroke="#7B7B7B"/>
+                </svg>
+            </div>
+            <div class="media">
+                Wordpress
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19" fill="none">
+                    <path d="M19.5 9.5C19.5 14.4467 15.2712 18.5 10 18.5C4.72882 18.5 0.5 14.4467 0.5 9.5C0.5 4.55329 4.72882 0.5 10 0.5C15.2712 0.5 19.5 4.55329 19.5 9.5Z" stroke="#7B7B7B"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div 
+    class="message"
+>
+    <p class="plus-sign" (click)="goClubLanding()">
+    +
+    </p>
+    <div 
+    [ngClass]="{ 'loggedout': !headerService.user }"
+    class="input"
+    >
+    {{'Qué necesitas saber de Laia?..'}}
+    <div>
+        <img
+        class="audio-freq"
+        src="{{assetsFolder}}/audio-freq.png"
+        alt="img"
+        >
+    </div>
+    </div>
+</div>
+
+<app-login-flow
+    *ngIf="loginflow"
+    [loginEmail]="loginEmail"
+    [magicLink]="magicLink"
+    [redirectionRoute]="redirectionRoute"
+    [redirectionRouteId]="redirectionRouteId"
+    [entity]="entity"
+    [jsondata]="jsondata"
+    (dialogIsOpen)="resetLoginDialog($event)"
+></app-login-flow>
