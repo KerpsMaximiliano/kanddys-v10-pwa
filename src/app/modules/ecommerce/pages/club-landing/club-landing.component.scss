@@ -376,6 +376,11 @@ main {
       font-size: 16px; 
     }
   }
+  @media (max-width: 444px) {
+    .info {
+      margin: 0;
+    }
+  }
 }
 
 .header-border {
