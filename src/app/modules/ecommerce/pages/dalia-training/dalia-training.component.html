@@ -97,22 +97,30 @@
 
           <img *ngIf="form.get('memory').value" src="../../../../../assets/icons/shortcut.svg" alt="" class="shortcut" (click)="form.get('memory').setValue(null)"/>
 
+          <!-- *ngIf="
+            !showTextError &&
+            !form.get('memory').value &&
+            !(generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response) && 
+            !showExtendButton
+          " -->
           <p 
-            *ngIf="
-              !showTextError &&
-              !form.get('memory').value &&
-              !(generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response) && 
-              !showExtendButton
-            "
             class="settings-text"
             (click)="openIntegrationsDialog()"
           >
             Integraciones
           </p>
 
-          <p *ngIf="showTextError" class="show-text-error">
-            Según lo escrito no se pueden generar preguntas todavía
-          </p>
+          <div class="container-icon" (click)="openUploadFile()">
+            <i class="fa fa-plus"></i>
+          </div>
+
+          <input
+            type="file"
+            id="file"
+            [style.display]="'none'"
+            (change)="loadFile($event)"
+            multiple
+          />
 
           <button
             class="see-more"
@@ -122,6 +130,10 @@
             VER TODO
           </button>
         </div>
+
+        <p *ngIf="showTextError" class="show-text-error">
+          Según lo escrito no se pueden generar preguntas todavía
+        </p>
 
         <ng-container *ngIf="generatedQA">
           <div *ngFor="let generated of generatedQA; let i=index" class="request-response-box">
