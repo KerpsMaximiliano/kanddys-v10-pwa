@@ -25,14 +25,13 @@ a {
 .bio {
   border-radius: 6px;
   border: 1px solid #7B7B7B; 
-  width: 95%;
+  width: 93%;
   font-family: InterRegular;
   font-size: 15px;
   padding: 10px 18px;
 }
 
 .header {
-  background-color: #ffffff;
   display: flex;
   align-items: center;
   position: sticky;
@@ -63,8 +62,8 @@ a {
 
   .title {
     margin-left: 11px;
-    color: #181d17;
-    font-size: 16px;
+    color: var(--Verde-Oscurito, #3B654A); 
+    font-size: 18px;
     font-family: "InterBold";
     text-transform: capitalize;
   }
@@ -78,6 +77,7 @@ a {
   .contact-button {
     padding: 7px 21px;
     width: 100%;
+    background: #fff;
 
     div {
       display: flex;
@@ -326,12 +326,6 @@ a {
         height: 30px;
         width: 30px;
         border-radius: 50%;
-      }
-      .title {
-        margin-left: 11px;
-        color: #181d17;
-        font-size: 18.84px;
-        font-family: "InterBold";
       }
     }
   }

@@ -285,9 +285,17 @@
     }
   }
 
-  .price {
+  .name {
     color: #272727; 
     font-family: InterRegular;
+    font-size: 17px;
+    padding: 0;
+    display: flex;
+  }
+
+  .price {
+    color: #272727; 
+    font-family: InterMedium;
     font-size: 17px;
     padding: 0;
     display: flex;
@@ -567,7 +575,6 @@
     }
 
     .price {
-      margin-top: 9.64px;
       .quantity {
         font-size: 10px;
       }
@@ -744,12 +751,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  mat-icon {
-    color: #87CD9B;
-    width: 35px;
-    height: 33px;
-    font-size: 35px;
-    text-align: center;
-    vertical-align: middle;
+  img {
+    width: 34px;
+    margin-top: 4px;
+    margin-left: 1px;
   }
 }
