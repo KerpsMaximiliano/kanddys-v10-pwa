@@ -2,120 +2,143 @@
 <div class="container">
   <header class="header-wrapper">
     <p class="title">FUNCIONALIDADES SEGUN PERFILES</p>
-    <button type="button" class="btn-close" (click)="showGanas = false">
+    <button type="button" class="btn-close" (click)="showGanas = !showGanas">
       <div class="close">X</div>
     </button>
   </header>
   <main>
+    <div class="tab-header" *ngIf="showGanas === true">
+      <div
+        class="referrals-button"
+        *ngIf="isUserLogged"
+        (click)="goToReferrals()"
+      >
+        {{
+          !headerService.user
+            ? "Mira tus invitados"
+            : referralsCount
+            ? referralsCount + " invitados"
+            : "0 invitados"
+        }}
+      </div>
+      <div class="info-container">
+        <p class="info-container-title">Gana Dinero</p>
+        <div class="flex-space-between">
+          <p class="info-container-icon">🤑</p>
+          <div>
+            <p class="info-container-desc">
+              Crecemos con el boca a boca. Prepárate a ganar $ ayudándonos a
+              crecer.
+            </p>
+          </div>
+        </div>
+        <p class="info-container-desc-justify">
+          Ganas por tus invitados directos y por todos los que ellos inviten
+          para cubrir toda una cadena de suministro (limitado a 4 niveles, 15%,
+          10%, 5% y 2.5%).
+        </p>
+      </div>
+    </div>
+
     <!--Slide tabs-->
-    <div class="tab-index" *ngIf="showGanas === false">
-      <p (click)="tabIndex = 1" [class]="{ active: tabIndex === 1 }">
-        Admin de Ecommerce
-      </p>
-      <p (click)="tabIndex = 2" [class]="{ active: tabIndex === 2 }">
-        Admin de Comunidad
-      </p>
-      <p (click)="tabIndex = 3" [class]="{ active: tabIndex === 3 }">Miembro</p>
-    </div>
+    <ng-container *ngIf="showGanas === false">
+      <div class="tab-index">
+        <p (click)="tabIndex = 1" [class]="{ active: tabIndex === 1 }">
+          Admin de Ecommerce
+        </p>
+        <p (click)="tabIndex = 2" [class]="{ active: tabIndex === 2 }">
+          Admin de Comunidad
+        </p>
+        <p (click)="tabIndex = 3" [class]="{ active: tabIndex === 3 }">
+          Miembro
+        </p>
+      </div>
 
-    <!-- Tab Ahorra tiempo -->
-    <div class="tabs" *ngIf="tabIndex === 1">
-      <div (click)="goToDashboard()" class="card">
-        <img alt="img" src="{{ assetsFolder }}/landing-image-1.png" />
-        <h2>Vende fácilmente a través de enlaces</h2>
-        <mat-icon>chevron_right</mat-icon>
+      <!-- Tab Ahorra tiempo -->
+      <div class="tabs" *ngIf="tabIndex === 1">
+        <div (click)="goToDashboard()" class="card">
+          <img alt="img" src="{{ assetsFolder }}/landing-image-1.png" />
+          <h2>Vende fácilmente a través de enlaces</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+        <hr />
+        <div
+          class="card"
+          (click)="contactUsDialog('Venden más a través de las Comunidades')"
+        >
+          <img alt="img" src="{{ assetsFolder }}/landing-image-1.png" />
+          <h2>Venden más a través de las Comunidades</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+        <hr />
+        <div
+          class="card"
+          (click)="contactUsDialog('Crean Ofertas de 24 Horas para Vender')"
+        >
+          <img alt="img" src="{{ assetsFolder }}/landing-image-1.png" />
+          <h2>Crean Ofertas de 24 Horas para Vender</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+        <hr />
+        <div class="card" (click)="contactUsDialog('Premian a Compradores')">
+          <img alt="img" src="{{ assetsFolder }}/landing-image-1.png" />
+          <h2>Premian a Compradores</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+        <hr />
+        <div
+          class="card"
+          (click)="contactUsDialog('Premian a Quienes lo @Mencionaron')"
+        >
+          <img alt="img" src="{{ assetsFolder }}/landing-image-1.png" />
+          <h2>Premian a Quienes lo @Mencionaron</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+        <hr />
+        <div class="card" (click)="contactUsDialog('Crean Ordenes de Compras')">
+          <img alt="img" src="{{ assetsFolder }}/landing-image-1.png" />
+          <h2>Crean Ordenes de Compras</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
       </div>
-      <hr />
-      <div class="card">
-        <img alt="img" src="{{ assetsFolder }}/landing-image-1.png" />
-        <h2>Venden más a través de las Comunidades</h2>
-        <mat-icon>chevron_right</mat-icon>
-      </div>
-      <hr />
-      <div class="card">
-        <img alt="img" src="{{ assetsFolder }}/landing-image-1.png" />
-        <h2>Crean Ofertas de 24 Horas para Vender</h2>
-        <mat-icon>chevron_right</mat-icon>
-      </div>
-      <hr />
-      <div class="card">
-        <img alt="img" src="{{ assetsFolder }}/landing-image-1.png" />
-        <h2>Premian a Compradores</h2>
-        <mat-icon>chevron_right</mat-icon>
-      </div>
-      <hr />
-      <div class="card">
-        <img alt="img" src="{{ assetsFolder }}/landing-image-1.png" />
-        <h2>Premian a Quienes lo @Mencionaron</h2>
-        <mat-icon>chevron_right</mat-icon>
-      </div>
-      <hr />
-      <div class="card">
-        <img alt="img" src="{{ assetsFolder }}/landing-image-1.png" />
-        <h2>Crean Ordenes de Compras</h2>
-        <mat-icon>chevron_right</mat-icon>
-      </div>
-    </div>
 
-    <!-- Tab Ahorra tiempo -->
-    <div class="tabs" *ngIf="tabIndex === 2">
-      <div (click)="contactUsDialog('Premia Referencias')" class="card">
-        <img alt="img" src="{{ assetsFolder }}/landing-image-5.png" />
-        <h2>Recauda Fondos</h2>
-        <mat-icon>chevron_right</mat-icon>
+      <!-- Tab Ahorra tiempo -->
+      <div class="tabs" *ngIf="tabIndex === 2">
+        <div (click)="contactUsDialog('Premia Referencias')" class="card">
+          <img alt="img" src="{{ assetsFolder }}/landing-image-5.png" />
+          <h2>Recauda Fondos</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+        <hr />
+        <div (click)="contactUsDialog('Premia Referencias')" class="card">
+          <img alt="img" src="{{ assetsFolder }}/landing-image-5.png" />
+          <h2>Premia a tus Miembros que Compran</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
       </div>
-      <hr />
-      <div (click)="contactUsDialog('Premia Referencias')" class="card">
-        <img alt="img" src="{{ assetsFolder }}/landing-image-5.png" />
-        <h2>Premia a tus Miembros que Compran</h2>
-        <mat-icon>chevron_right</mat-icon>
-      </div>
-    </div>
 
-    <!-- Tab Ahorra tiempo -->
-    <div class="tabs" *ngIf="tabIndex === 3">
-      <div (click)="contactUsDialog('Premia Referencias')" class="card">
-        <img alt="img" src="{{ assetsFolder }}/landing-image-5.png" />
-        <h2>Premios & Compras</h2>
-        <mat-icon>chevron_right</mat-icon>
+      <!-- Tab Ahorra tiempo -->
+      <div class="tabs" *ngIf="tabIndex === 3">
+        <div (click)="contactUsDialog('Premia Referencias')" class="card">
+          <img alt="img" src="{{ assetsFolder }}/landing-image-5.png" />
+          <h2>Premios & Compras</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+        <hr />
+        <div (click)="contactUsDialog('Premia Referencias')" class="card">
+          <img alt="img" src="{{ assetsFolder }}/landing-image-5.png" />
+          <h2>Comunidad ID #1</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+        <div (click)="contactUsDialog('Premia Referencias')" class="card">
+          <img alt="img" src="{{ assetsFolder }}/landing-image-5.png" />
+          <h2>Comunidad ID #2</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
       </div>
-      <hr />
-      <div (click)="contactUsDialog('Premia Referencias')" class="card">
-        <img alt="img" src="{{ assetsFolder }}/landing-image-5.png" />
-        <h2>Comunidad ID #1</h2>
-        <mat-icon>chevron_right</mat-icon>
-      </div>
-      <div (click)="contactUsDialog('Premia Referencias')" class="card">
-        <img alt="img" src="{{ assetsFolder }}/landing-image-5.png" />
-        <h2>Comunidad ID #2</h2>
-        <mat-icon>chevron_right</mat-icon>
-      </div>
-    </div>
+    </ng-container>
   </main>
 
-  <!--Modal-->
-  <div class="message" *ngIf="showGanas === false">
-    <p class="plus-sign" (click)="openOptionsMenu()">+</p>
-    <div
-      [ngClass]="{ loggedout: !headerService.user }"
-      class="input"
-      (click)="contactUsDialog('Laia Chat')"
-    >
-      {{ "Soy Laia, que necesitas saber?" }}
-      <div>
-        <img
-          alt="camera"
-          class="darker"
-          src="{{ assetsFolder }}/grey-camera.png"
-        />
-        <img
-          class="audio-freq"
-          src="{{ assetsFolder }}/audio-freq.png"
-          alt="img"
-        />
-      </div>
-    </div>
-  </div>
   <app-login-flow
     *ngIf="loginflow"
     [loginEmail]="loginEmail"
@@ -140,5 +163,4 @@
     [allowEmptyString]="true"
     colorDark="#000"
   ></qrcode>
-  <!-- </app-navigation> -->
 </div>
