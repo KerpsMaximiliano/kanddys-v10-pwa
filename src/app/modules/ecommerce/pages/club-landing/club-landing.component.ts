@@ -9,13 +9,9 @@ import {
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
-import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { GoogleSigninService } from 'src/app/core/services/google-signin.service';
 import { HeaderService } from 'src/app/core/services/header.service';
-import { ItemsService } from 'src/app/core/services/items.service';
-import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
 import { OrderService } from 'src/app/core/services/order.service';
 import { ClubDialogComponent } from 'src/app/shared/dialogs/club-dialog/club-dialog.component';
 import { MessageDialogComponent } from 'src/app/shared/dialogs/message-dialog/message-dialog.component';
@@ -40,11 +36,12 @@ import { CompareDialogComponent } from 'src/app/shared/dialogs/compare-dialog/co
 import { SelectRoleDialogComponent } from 'src/app/shared/dialogs/select-role-dialog/select-role-dialog.component';
 import { SignupChatComponent } from 'src/app/shared/dialogs/signup-chat/signup-chat.component';
 import { SpecialDialogComponent } from 'src/app/shared/dialogs/special-dialog/special-dialog.component';
-import { URL } from 'url';
 import { FilesService } from 'src/app/core/services/files.service';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { OptionsDialogComponent } from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
 import { ContactUsDialogComponent } from 'src/app/shared/dialogs/contact-us-dialog/contact-us-dialog.component';
+import { filter } from 'rxjs/internal/operators/filter';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 interface ReviewsSwiper {
   title: string;
@@ -53,15 +50,6 @@ interface ReviewsSwiper {
   }>;
 }
 
-interface Tabs {
-  text: string;
-  subTabs?: Array<{
-    text: string;
-    active: boolean;
-    content?: string[];
-  }>;
-  active?: boolean;
-}
 
 @Component({
   selector: 'app-club-landing',
@@ -73,7 +61,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   showGanas: boolean = false;
 
   merchantRole: Roles | null = null;
-  roles : Roles[] = [];
+  roles: Roles[] = [];
 
   paymentSwitch: boolean = false;
   statusSwitch: boolean = false;
@@ -98,11 +86,9 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     openNavigation: true,
   });
 
-  isFlag = false;
+  isUserLogged = false
   tabIndex = 1;
   userID = '';
-  isVendor = false;
-  isProvider = false;
   mainTitle = 'HERRAMIENTAS GRATIS  PARA PROVEEDORES';
   isOpen = false;
   curRole = 0;
@@ -247,8 +233,6 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     private app: AppService,
     private ngNavigatorShareService: NgNavigatorShareService,
     private bottomSheet: MatBottomSheet,
-    private itemsService: ItemsService,
-    private dialogService: DialogService,
     private googleSigninService: GoogleSigninService,
     private orderService: OrderService,
     private dialog: MatDialog,
@@ -264,13 +248,17 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     private filesService: FilesService,
     private gptService: Gpt3Service
   ) {
-    const sub = this.app.events
+    this.app.events
       .pipe(filter((e) => e.type === 'auth'))
       .subscribe(async (e) => {
+        console.log(e.data)
         if (e.data) {
+          this.isUserLogged = true
           await this.getMerchantDefault();
           await this.getReferrals();
           await this.getSaleflowDefault();
+        } else {
+          this.isUserLogged = false
         }
       });
   }
@@ -279,7 +267,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     await this.getMerchantDefault();
     this.queryParamsSubscription = this.route.queryParams.subscribe(
       async ({ affiliateCode, tabarIndex, showGanas }) => {
-        if(showGanas) this.showGanas = true;
+        if (showGanas) this.showGanas = true;
         if (tabarIndex) {
           this.tabarIndex = parseInt(tabarIndex);
         }
@@ -291,7 +279,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
             try {
               await this.affiliateService.createAffiliate(affiliateCode, input);
             } catch (error) {
-              console.log(error);
+              console.error(error);
             }
           } else {
             localStorage.setItem('affiliateCode', affiliateCode);
@@ -302,21 +290,19 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     if (this.merchant) {
       await this.getReferrals();
       await this.getSaleflowDefault();
-      let logins : any[] = JSON.parse(window.localStorage.getItem('logins'));
-      if(!logins) {
+      let logins: any[] = JSON.parse(window.localStorage.getItem('logins'));
+      if (!logins) {
         logins = [];
         logins.push({
           name: this.merchantName ? this.merchantName : this.headerService.user.name,
           email: this.merchantEmail ? this.merchantEmail : this.headerService.user.email,
         })
-        console.log(logins)
         window.localStorage.setItem('logins', JSON.stringify(logins));
-      } else if(!logins.find((login) => login.name === this.merchantName || login.name === this.headerService.user.name)) {
+      } else if (!logins.find((login) => login.name === this.merchantName || login.name === this.headerService.user.name)) {
         logins.push({
           name: this.merchantName ? this.merchantName : this.headerService.user.name,
           email: this.merchantEmail ? this.merchantEmail : this.headerService.user.email,
         })
-        console.log(logins)
         window.localStorage.setItem('logins', JSON.stringify(logins));
       }
       await Promise.all([
@@ -336,7 +322,6 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     }
     this.googleSigninService.observable().subscribe((user) => {
       this.user = user;
-      console.log(user);
       this.changeDetectorRef.detectChanges();
     });
     if (this.tabarIndex === undefined) {
@@ -352,7 +337,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         },
       })
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
@@ -382,26 +367,26 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   showRoleDialog() {
-    let options : [
+    let options: [
       {
-        value:string,
+        value: string,
         callback: () => void,
-         active?: boolean,
-         noSettings?: boolean
+        active?: boolean,
+        noSettings?: boolean
       }
     ] = [
-      {
-        value: `${this.merchantName? this.merchantName : this.merchantSlug? this.merchantSlug : this.headerService.user.name}`,
-        callback: () => {},
-        active: true,
-      },
-    ];
-    if(this.headerService.user.roles.length > 0) {
+        {
+          value: `${this.merchantName ? this.merchantName : this.merchantSlug ? this.merchantSlug : this.headerService.user.name}`,
+          callback: () => { },
+          active: true,
+        },
+      ];
+    if (this.headerService.user.roles.length > 0) {
       this.headerService.user.roles.forEach((role) => {
-        if(role.code === 'ADMIN') {
+        if (role.code === 'ADMIN') {
           options.push({
             value: 'De Super Admin',
-            callback: ()=> {}
+            callback: () => { }
           })
         }
       })
@@ -411,17 +396,16 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       callback: () => {
         this.loginEmail = null;
         this.dialog.closeAll();
-        console.log(this.loginflow)
         setTimeout(() => {
           this.loginflow = true;
         }, 1000)
       },
       noSettings: true,
     })
-    let logins : any[] = JSON.parse(window.localStorage.getItem('logins'));
-    if(logins) {
+    let logins: any[] = JSON.parse(window.localStorage.getItem('logins'));
+    if (logins) {
       logins.forEach((login) => {
-        if(login.email !== this.headerService.user.email) {
+        if (login.email !== this.headerService.user.email) {
           options.push({
             value: `${login.name}`,
             callback: () => {
@@ -472,7 +456,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
   shareDialog(store = false) {
     let data;
-    if(store) {
+    if (store) {
       let storeLink = `${this.URI}/ecommerce/${this.merchantSlug}/store`;
       data = {
         title: 'Comparte el Enlace de Ventas:',
@@ -552,7 +536,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         ],
       };
     }
-    const dialogRef = this.bottomSheet.open(OptionsMenuComponent, {
+    this.bottomSheet.open(OptionsMenuComponent, {
       data: data,
     });
   }
@@ -566,7 +550,6 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         // this.setRole(parseInt(role))
         return;
       }
-      console.log(role);
       switch (role) {
         case '0':
           this.ngNavigatorShareService.share({
@@ -653,7 +636,6 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         // this.setRole(parseInt(role))
         return;
       }
-      console.log(role);
     });
   }
 
@@ -705,7 +687,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   async openLinkDialog(merchant?: Merchant) {
-    let slug;
+    let slug: string;
     if (merchant) {
       slug = merchant.slug;
     } else {
@@ -714,7 +696,6 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       });
     }
     let link = `${this.URI}/ecommerce/club-landing?affiliateCode=${slug}`;
-    console.log(link);
     let dialogData = {
       title: 'Gana dinero cada mes, recurrente y sin limites',
       bottomLabel: 'Tu enlace es: ' + link,
@@ -750,7 +731,6 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     let dialogRef = this.bottomSheet.open(OptionsMenuComponent, {
       data: dialogData,
     });
-    console.log(dialogRef);
   }
 
   downloadQr() {
@@ -775,7 +755,6 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   async getMerchantDefault() {
     try {
       const merchantDefault: Merchant = await this.merchantsService.merchantDefault();
-      console.log(merchantDefault)
       this.merchant = merchantDefault._id;
       this.merchantSlug = merchantDefault.slug;
       this.merchantName = merchantDefault.name;
@@ -787,15 +766,13 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         this.sales = res.length;
       })
       this.merchantsService.rolesPublic().then((res) => {
-        console.log(res);
         this.roles = res;
       })
-      if(merchantDefault.roles.length > 0) {
-        console.log(merchantDefault.roles)
+      if (merchantDefault.roles.length > 0) {
         this.merchantRole = merchantDefault.roles[0];
       }
     } catch (error) {
-      console.log('error');
+      console.error('error');
     }
   }
 
@@ -804,13 +781,13 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       const saleflowDefault: SaleFlow =
         await this.saleflowsService.saleflowDefault(this.merchant);
       this.saleflow = saleflowDefault;
-      if(this.saleflow.status === 'open') {
+      if (this.saleflow.status === 'open') {
         this.statusSwitch = true;
       } else {
         this.statusSwitch = false;
       }
     } catch (error) {
-      console.log('error');
+      console.error('error');
     }
   }
 
@@ -827,7 +804,7 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
 
       this.referralsCount = result?.totalResults;
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
@@ -890,7 +867,6 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
           let merchant = await this.merchantsService.createMerchant({
             owner: exists._id,
           });
-          console.log(merchant);
           this.openLinkDialog(merchant.createMerchant);
         }
       } else {
@@ -913,20 +889,20 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
   }
 
   async getImg(e) {
-      console.log("🚀 ~ file: club-landing.component.ts:707 ~ ClubLandingComponent ~ getImg ~ e:", e)
-      const inputElement = e.target as HTMLInputElement;
-      if (inputElement.files && inputElement.files[0]) {
-        const selectedFile = inputElement.files[0];
-        const toBase64 = selectedFile => new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.readAsDataURL(selectedFile);
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = reject;
+    console.log("🚀 ~ file: club-landing.component.ts:707 ~ ClubLandingComponent ~ getImg ~ e:", e)
+    const inputElement = e.target as HTMLInputElement;
+    if (inputElement.files && inputElement.files[0]) {
+      const selectedFile = inputElement.files[0];
+      const toBase64 = selectedFile => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(selectedFile);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
       });
       const base64Data = await toBase64(selectedFile);
       this.filesService.setFile(base64Data);
       this.router.navigate(['/ecommerce/provider-items-editor']);
-      }
+    }
   }
 
   isUserAdmin() {
@@ -976,63 +952,6 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
       })
   }
 
-  openExhibitDialog() {
-    const roleSwitch = async (role : number) => {
-      console.log(this.merchantRole)
-      console.log(this.roles)
-      if(this.merchantRole) {
-        await this.merchantsService.merchantRemoveRole(this.merchantRole._id, this.merchant).then((res)=> {
-          console.log(res)
-        })
-        this.merchantsService.merchantAddRole(this.roles[role]._id, this.merchant).then((res)=> {
-          console.log(res)
-          console.log(this.roles[role])
-          this.merchantRole = this.roles[role]
-        })
-      } else {
-        this.merchantsService.merchantAddRole(this.roles[role]._id, this.merchant).then((res)=> {
-          console.log(res)
-          this.merchantRole = this.roles[role]
-        })
-      }
-    }
-    this.dialog.open(OptionsDialogComponent, {
-      data: {
-        title: '¿A quién le vendes?',
-        options: [
-          {
-            value: 'Consumidor final',
-            callback: () => {
-              let index = this.roles.findIndex((role) => role.code === 'STORE')
-              roleSwitch(index)
-            }
-          },
-          {
-            value: 'Floristerías',
-            callback: () => {
-              let index = this.roles.findIndex((role) => role.code === 'PROVIDER')
-              roleSwitch(index)
-            }
-          },
-          {
-            value: 'Wholesalers',
-            callback: () => {
-              let index = this.roles.findIndex((role) => role.code === 'SUPPLIER')
-              roleSwitch(index)
-            }
-          },
-          {
-            value: 'Fincas',
-            callback: () => {
-              let index = this.roles.findIndex((role) => role.code === 'PRODUCTOR')
-              roleSwitch(index)
-            }
-          },
-        ]
-      }
-    })
-  }
-
   clickImageInput() {
     document.getElementById('imgInput').click();
   }
@@ -1043,8 +962,8 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
         options: [
           {
             value: 'Adiciónale Memoria a Laia',
-            callback:() => {
-              if(this.headerService.user) {
+            callback: () => {
+              if (this.headerService.user) {
                 this.goToAIMemoriesManagement();
               } else {
                 this.goToLaiaTraining();
@@ -1053,45 +972,45 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
           },
           {
             value: 'Empieza a Vender un Nuevo Articulo',
-            callback:() => {
+            callback: () => {
               this.clickImageInput();
             }
           },
           {
             value: 'Crea una Factura',
-            callback: () => {}
+            callback: () => { }
           },
           {
             value: 'Crea una Orden de Compra',
-            callback: () => {}
+            callback: () => { }
           },
           {
             value: 'Crea una Oferta Flash',
-            callback:() => {
-              if(this.headerService.user) {
+            callback: () => {
+              if (this.headerService.user) {
                 this.goToItemsOffers();
               }
             }
           },
           {
             value: 'Premia las Referencias',
-            callback: () => {}
+            callback: () => { }
           },
           {
             value: 'Premia Porque Si!',
-            callback: () => {}
+            callback: () => { }
           },
           {
             value: 'Premia las Menciones',
-            callback: () => {}
+            callback: () => { }
           },
           {
             value: 'Recompensa las Compras',
-            callback: () => {}
+            callback: () => { }
           },
           {
             value: 'Sube foto de tus facturas para Premios',
-            callback: () => {}
+            callback: () => { }
           },
         ],
       },

@@ -536,11 +536,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
       return this.router.navigate(['/ecommerce/laia-memories-management']);
     }
 
-    return this.router.navigate(['/ecommerce/club-landing'], {
-      queryParams: {
-        tabarIndex: 2,
-      },
-    });
+    return this.router.navigate(['/ecommerce/laiachat-landing']);
   }
 
   editMemory(id: string) {
