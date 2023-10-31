@@ -84,6 +84,7 @@ import { LaiaAssistantComponent } from './pages/laia-assistant/laia-assistant.co
 import { MerchantProfileComponent } from './pages/merchant-profile/merchant-profile.component';
 import { RedirectGuard } from 'src/app/core/guards/redirect-guard.guard';
 import { LaiachatLandingComponent } from './pages/laiachat-landing/laiachat-landing.component';
+import { InvisibleMarketingLandingComponent } from './pages/invisible-marketing-landing/invisible-marketing-landing.component';
 
 const routes: Routes = [
   {
@@ -336,6 +337,10 @@ const routes: Routes = [
     component: MerchantProfileComponent,
   },
   {
+    path: 'invisible-marketing',
+    component: InvisibleMarketingLandingComponent,
+  },
+  {
     path: ':merchantSlug',
     component: EcommerceComponent,
     children: [
@@ -549,6 +554,7 @@ const routes: Routes = [
     LaiaAssistantComponent,
     MerchantProfileComponent,
     LaiachatLandingComponent,
+    InvisibleMarketingLandingComponent,
   ],
   imports: [
     CommonModule,
