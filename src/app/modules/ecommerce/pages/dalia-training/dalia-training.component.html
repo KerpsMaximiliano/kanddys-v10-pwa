@@ -1,12 +1,17 @@
 <div class="container">
-  <header [style.justifyContent]="requestResponse ? 'space-between': 'flex-end'">
+  <header>
     <!-- <div class="knowledge-slot-header" (click)="editMemoryName()">
       Memoria
       <span class="knowledge-slot-name">
         {{ memoryName ? memoryName : "Sin nombre" }}
       </span>
     </div> -->
-    <h2 *ngIf="requestResponse">Memorias utilizadas en la respuesta</h2>
+    <ng-container *ngIf="requestResponse; else elseTemplate">
+      <h2>Memorias utilizadas en la respuesta</h2>
+    </ng-container>
+    <ng-template #elseTemplate>
+      <h2>MEMORIA DE LAIA</h2>
+    </ng-template>
     <div class="close-button" (click)="goBack()">X</div>
   </header>
 
@@ -83,15 +88,16 @@
       }"
     >
       <div class="base-text-wrapper">
-        <label for="base-text">Ahorra Tiempo Brindando Respuestas Precisas al Instante.</label>
+        <!-- <label for="base-text">Ahorra Tiempo Brindando Respuestas Precisas al Instante.</label> -->
 
         <div class="textarea-wrapper" [formGroup]="form">
           <textarea
             name="base-text"
             formControlName="memory"
             id="base-text"
-            [placeholder]="laiaPlaceholder"
+            [placeholder]="'Escribe o pega un texto..'"
             class="base-text"
+            [style.backgroundColor]="form.get('memory').value ? '#181d17' : '#F6F6F6'"
             (keyup)="onKeyUp()"
           ></textarea>
 
@@ -103,15 +109,16 @@
             !(generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response) && 
             !showExtendButton
           " -->
-          <p 
+          <!-- <p 
             class="settings-text"
             (click)="openIntegrationsDialog()"
           >
             Integraciones
-          </p>
+          </p> -->
 
-          <div class="container-icon" (click)="openUploadFile()">
+          <div *ngIf="!form.get('memory').value" class="container-icon" (click)="openUploadFile()">
             <i class="fa fa-plus"></i>
+            <h3 class="text">Adiciona el contenido desde..</h3>
           </div>
 
           <input
@@ -122,13 +129,13 @@
             multiple
           />
 
-          <button
+          <!-- <button
             class="see-more"
             (click)="showMoreText()"
             *ngIf="showExtendButton && form.get('memory').value"
           >
             VER TODO
-          </button>
+          </button> -->
         </div>
 
         <p *ngIf="showTextError" class="show-text-error">
@@ -203,14 +210,26 @@
       </div>
     </main>
 
-    <footer *ngIf="!(generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response)">Escribe más para que se generen preguntas</footer>
+    <div 
+      class="message"
+    >
+      <p class="title">
+        PRUEBA LAS RESPUESTAS DE LAIA
+      </p>
+      <div class="custom-input">
+        <input type="text" placeholder="Haz una pregunta de ejemplo..">
+        <img class="audio-freq" src="{{assetsFolder}}/audio-freq.png" alt="img">
+      </div>
+    </div>
+
+    <!-- <footer *ngIf="!(generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response)">Escribe más para que se generen preguntas</footer>
     <footer
       class="save"
       *ngIf="(form.get('memory').value && (generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response)) || (form.get('memory').value === null && (generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response))"
       (click)="saveMemoryInKnowledgeBase()"
     >
       {{ vectorId ? "Actualiza la memoria" : "Salva la Memoria y crea más" }}
-    </footer>
+    </footer> -->
   </ng-template>
 
   <!-- <section

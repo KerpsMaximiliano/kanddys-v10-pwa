@@ -139,83 +139,83 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
               await this.loadVectorData();
             }
 
-            const textarea: HTMLElement = document.querySelector('.base-text');
+            // const textarea: HTMLElement = document.querySelector('.base-text');
 
-            textarea?.addEventListener('input', () => {
-              console.log('textarea scrollHeight', textarea.scrollHeight);
-              if (textarea.scrollHeight > 215) {
-                if (this.showExtendButton === false) {
-                  this.showExtendButton = true;
-                }
+            // textarea?.addEventListener('input', () => {
+            //   console.log('textarea scrollHeight', textarea.scrollHeight);
+            //   if (textarea.scrollHeight > 215) {
+            //     if (this.showExtendButton === false) {
+            //       this.showExtendButton = true;
+            //     }
 
-                if (this.alreadyClickedShowButton) {
-                  textarea.style.height = 'auto'; // Reset height to auto
-                  textarea.style.height = textarea.scrollHeight + 'px'; // Set the new height based on content
-                  this.showExtendButton = false;
-                }
-                this.passedTextLimit = true;
-              } else {
-                this.showExtendButton = false;
+            //     if (this.alreadyClickedShowButton) {
+            //       textarea.style.height = 'auto'; // Reset height to auto
+            //       textarea.style.height = textarea.scrollHeight + 'px'; // Set the new height based on content
+            //       this.showExtendButton = false;
+            //     }
+            //     this.passedTextLimit = true;
+            //   } else {
+            //     this.showExtendButton = false;
 
-                if (this.passedTextLimit) {
-                  textarea.style.height = '215px';
-                }
-              }
-            });
+            //     if (this.passedTextLimit) {
+            //       textarea.style.height = '215px';
+            //     }
+            //   }
+            // });
 
-            document.addEventListener('keydown', (event: KeyboardEvent) => {
-              const targetElement: HTMLElement = event.target as HTMLElement;
+            // document.addEventListener('keydown', (event: KeyboardEvent) => {
+            //   const targetElement: HTMLElement = event.target as HTMLElement;
 
-              if (
-                (event.key === 'Delete' || event.key === 'Backspace') &&
-                this.passedTextLimit &&
-                targetElement.classList.contains('base-text') &&
-                textarea.scrollHeight <= 215
-              ) {
-                textarea.style.height = '215px';
-                this.showExtendButton = false;
-                this.alreadyClickedShowButton = false;
-              } else if (
-                (event.key === 'Delete' || event.key === 'Backspace') &&
-                this.passedTextLimit &&
-                targetElement.classList.contains('base-text') &&
-                textarea.scrollHeight >= 215
-              ) {
-                if (!this.timeoutDeleteKey)
-                  this.timeoutDeleteKey = setTimeout(() => {
-                    if (textarea.scrollHeight <= 215) {
-                      textarea.style.height = '215px';
-                      this.showExtendButton = false;
-                      this.alreadyClickedShowButton = false;
-                    }
+            //   if (
+            //     (event.key === 'Delete' || event.key === 'Backspace') &&
+            //     this.passedTextLimit &&
+            //     targetElement.classList.contains('base-text') &&
+            //     textarea.scrollHeight <= 215
+            //   ) {
+            //     textarea.style.height = '215px';
+            //     this.showExtendButton = false;
+            //     this.alreadyClickedShowButton = false;
+            //   } else if (
+            //     (event.key === 'Delete' || event.key === 'Backspace') &&
+            //     this.passedTextLimit &&
+            //     targetElement.classList.contains('base-text') &&
+            //     textarea.scrollHeight >= 215
+            //   ) {
+            //     if (!this.timeoutDeleteKey)
+            //       this.timeoutDeleteKey = setTimeout(() => {
+            //         if (textarea.scrollHeight <= 215) {
+            //           textarea.style.height = '215px';
+            //           this.showExtendButton = false;
+            //           this.alreadyClickedShowButton = false;
+            //         }
 
-                    clearTimeout(this.timeoutDeleteKey);
-                  }, 400);
-              }
+            //         clearTimeout(this.timeoutDeleteKey);
+            //       }, 400);
+            //   }
 
-              if (
-                event.ctrlKey &&
-                (event.key === 'x' || event.key === 'X') &&
-                this.passedTextLimit &&
-                targetElement.classList.contains('base-text')
-              ) {
-                // Your code to handle Ctrl + X here
-                // Prevent the default behavior (cut action) if needed
+            //   if (
+            //     event.ctrlKey &&
+            //     (event.key === 'x' || event.key === 'X') &&
+            //     this.passedTextLimit &&
+            //     targetElement.classList.contains('base-text')
+            //   ) {
+            //     // Your code to handle Ctrl + X here
+            //     // Prevent the default behavior (cut action) if needed
 
-                textarea.style.height = '215px';
-                this.showExtendButton = false;
-                this.alreadyClickedShowButton = false;
+            //     textarea.style.height = '215px';
+            //     this.showExtendButton = false;
+            //     this.alreadyClickedShowButton = false;
 
-                if (!this.timeoutCutKey) {
-                  this.timeoutCutKey = setTimeout(() => {
-                    textarea.style.height = '215px';
-                    this.showExtendButton = false;
-                    this.alreadyClickedShowButton = false;
-                  }, 400);
-                }
-                event.preventDefault();
-              }
-            });
+            //     if (!this.timeoutCutKey) {
+            //       this.timeoutCutKey = setTimeout(() => {
+            //         textarea.style.height = '215px';
+            //         this.showExtendButton = false;
+            //         this.alreadyClickedShowButton = false;
+            //       }, 400);
+            //     }
+            //     event.preventDefault();
+            //   }
+            // });
           }
         );
       }
@@ -267,13 +267,13 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     }
   }
 
-  showMoreText() {
-    const textarea: HTMLElement = document.querySelector('.base-text');
-    textarea.style.height = 'auto'; // Reset height to auto
-    textarea.style.height = textarea.scrollHeight + 'px'; // Set the new height based on content
-    this.showExtendButton = false;
-    this.alreadyClickedShowButton = true;
-  }
+  // showMoreText() {
+  //   const textarea: HTMLElement = document.querySelector('.base-text');
+  //   textarea.style.height = 'auto'; // Reset height to auto
+  //   textarea.style.height = textarea.scrollHeight + 'px'; // Set the new height based on content
+  //   this.showExtendButton = false;
+  //   this.alreadyClickedShowButton = true;
+  // }
 
   async testMemory() {
     try {
@@ -532,6 +532,13 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
+    if (
+      (this.form.get('memory').value && (this.generatedQA && this.generatedQA?.length > 0 && this.generatedQA[0]?.response)) 
+      || (this.form.get('memory').value === null && (this.generatedQA && this.generatedQA?.length > 0 && this.generatedQA[0]?.response))
+    ) {
+      this.saveMemoryInKnowledgeBase();
+    }
+
     if (this.vectorId || this.requestResponse) {
       return this.router.navigate(['/ecommerce/laia-memories-management']);
     }
