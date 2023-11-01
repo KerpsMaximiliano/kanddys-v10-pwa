@@ -5,13 +5,17 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { Merchant } from 'src/app/core/models/merchant';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
+import { RecordRTCService } from 'src/app/core/services/recordrtc.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { WhatsappService } from 'src/app/core/services/whatsapp.service';
 import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { AudioRecorderComponent } from 'src/app/shared/components/audio-recorder/audio-recorder.component';
 import {
   FormComponent,
   FormData,
@@ -58,6 +62,12 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     entity: 'MerchantAccess',
     jsondata: '',
   };
+  loginDataUpload = {
+    redirectionRoute: '/ecommerce/laia-training',
+    redirectionRouteId: null,
+    entity: 'MerchantAccess',
+    jsondata: '',
+  };
   memoryName: string = null;
   queryParamsSubscription: Subscription;
   routeParamsSubscription: Subscription;
@@ -75,6 +85,15 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   showDots: boolean = false;
   editingIndex: number = -1;
   clientConnectionStatus = false;
+  uploadFile: boolean = false;
+  sendUrl: boolean = false;
+  event: Event;
+  url: string;
+  audio: {
+    blob: Blob;
+    title: string;
+  }
+  audioText = new FormControl({ value: null, disabled: false }, Validators.required);
 
   constructor(
     private gptService: Gpt3Service,
@@ -87,6 +106,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     private merchantsService: MerchantsService,
     private whatsappService: WhatsappService,
     private toastrService: ToastrService,
+    private recordRTCService: RecordRTCService,
   ) {}
 
   async ngOnInit() {
@@ -132,12 +152,32 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
                   urlWithoutQueryParams
                 );
               }
+
+              if(parsedData.url) {
+                this.url = parsedData.url;
+                await this.saveUrl();
+
+                const urlWithoutQueryParams = this.router.url.split('?')[0];
+
+                window.history.replaceState(
+                  {},
+                  'SaleFlow',
+                  urlWithoutQueryParams
+                );
+              }
             }
 
             if (this.vectorId) {
               this.showDots = true;
               await this.loadVectorData();
             }
+
+            const textarea = document.getElementById('autoExpandTextarea');
+
+            textarea.addEventListener('input', function () {
+              this.style.height = 'auto';
+              this.style.height = (this.scrollHeight) + 'px';
+            });
 
             // const textarea: HTMLElement = document.querySelector('.base-text');
 
@@ -275,13 +315,13 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   //   this.alreadyClickedShowButton = true;
   // }
 
-  async testMemory() {
+  async testMemory(audioQuestion?: boolean) {
     try {
-      // lockUI();
+      if(audioQuestion) lockUI();
       let response = await this.gptService.generateResponseForTemplate(
         {
-          content: (this.form.get('memory').value as string).replace(/"/g, "'"),
-          question: '',
+          content: this.form.get('memory').value ? (this.form.get('memory').value as string).replace(/"/g, "'") : '',
+          question: audioQuestion ? this.audioText.value : '',
         },
         null,
         'Q&AExamples'
@@ -317,9 +357,14 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
 
       this.showDots = false;
 
-      // unlockUI();
+      if(audioQuestion) {
+        unlockUI();
+        this.audioText.setValue(null);
+        const textarea = document.getElementById('autoExpandTextarea');
+        textarea.style.height = '51px';
+      };
     } catch (error) {
-      // unlockUI();
+      if(audioQuestion) unlockUI();
       this.showDots = false;
       this.headerService.showErrorToast();
       console.error(error);
@@ -729,7 +774,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
           {
             value: 'URL',
             callback: () => {
-              
+              this.openFormUrl();
             },
           },
           {
@@ -783,8 +828,113 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     )
   }
 
-  async loadFile(event: Event) {
-    const fileList = (event.target as HTMLInputElement).files;
+  async openFormUrl() {
+    let fieldsToCreate: FormData = {
+      fields: [],
+    };
+
+    const urlPattern = /^(https?|ftp|file):\/\/[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]/;
+
+    fieldsToCreate.fields = [
+      {
+        label: 'URL',
+        name: 'url',
+        type: 'text',
+        validators: [Validators.compose([Validators.required, Validators.pattern(urlPattern)])],
+      },
+    ];
+
+    const dialogRef = this.matDialog.open(FormComponent, {
+      data: fieldsToCreate,
+    });
+
+    dialogRef.afterClosed().subscribe(async (result: FormGroup) => {
+      if (result.value['url']) {
+        this.url = result.value['url'];
+        if(!this.headerService.user) {
+          this.loginDataUpload.jsondata = JSON.stringify({
+            url: this.url,
+          });
+          this.showLogin = !this.showLogin;
+          this.sendUrl = true;
+          return;
+        }
+
+        lockUI()
+
+        try {
+          const merchantId: string = await this.getMerchantDefault();
+          const resultScraper = await this.gptService.scraperMerchant(
+            [this.url],
+            merchantId
+          );
+
+          this.toastrService.success(
+            'Todas las solicitudes se han completado correctamente.'
+          );
+          
+          unlockUI();
+        } catch (error) {
+          console.log(error);
+          this.headerService.showErrorToast(error);
+          unlockUI();
+        }
+      }
+    });
+  }
+
+  async saveUrl() {
+    lockUI()
+    this.sendUrl = false;
+
+    try {
+      const merchantId: string = await this.getMerchantDefault();
+      const resultScraper = await this.gptService.scraperMerchant(
+        [this.url],
+        merchantId
+      );
+
+      let success = resultScraper ? true : false;
+
+      this.dialog.open(GeneralFormSubmissionDialogComponent, {
+        type: 'centralized-fullscreen',
+        props: {
+          message: success
+            ? 'Todas las solicitudes se han completado correctamente.'
+            : 'Ocurrió un error inesperado',
+          icon: success ? 'check-circle.svg' : 'sadFace.svg',
+          showCloseButton: success ? false : true,
+        },
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+      });
+      unlockUI();
+    } catch (error) {
+      console.log(error);
+      this.headerService.showErrorToast(error);
+      unlockUI();
+    }
+  }
+
+  async getMerchantDefault() {
+    try {
+      const merchantDefault: Merchant = await this.merchantsService.merchantDefault();
+      return merchantDefault._id;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async loadFile(event?: Event) {
+    if(!this.headerService.user) {
+      this.showLogin = !this.showLogin;
+      this.uploadFile = true;
+      this.event = event;
+      return;
+    }
+    
+    const fileList = event ? (event.target as HTMLInputElement).files : (this.event.target as HTMLInputElement).files;
+    this.uploadFile = false;
 
     try {
       lockUI();
@@ -801,6 +951,46 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
       this.toastrService.success(
         'Se ha entrenado al mago exitosamente con la data proporcionada'
       );
+    } catch (error) {
+      unlockUI();
+
+      console.error(error);
+      this.headerService.showErrorToast();
+    }
+  }
+
+  openRecorder() {
+    const dialogref = this.dialog.open(AudioRecorderComponent,{
+      type: 'flat-action-sheet',
+      props: { canRecord: true, isDialog: true },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+    const dialogSub = dialogref.events
+      .pipe(filter((e) => e.type === 'result'))
+      .subscribe((e) => {
+        if(e.data) {
+          this.audio = e.data;
+          this.saveAudio();
+        }
+        this.audio = null;
+        this.recordRTCService.abortRecording();
+        dialogSub.unsubscribe();
+      });
+  }
+
+  async saveAudio() {
+    try {
+      lockUI();
+
+      if (!this.audio) return;
+      const result = await this.gptService.openAiWhisper((this.audio && new File([this.audio.blob], this.audio.title || 'audio.mp3', {type: (<Blob>this.audio.blob)?.type})),);
+
+      this.audioText.setValue(result);
+      const textarea = document.getElementById('autoExpandTextarea');
+      const inputEvent = new Event('input', { bubbles: true });
+      textarea.dispatchEvent(inputEvent);
+      unlockUI();
     } catch (error) {
       unlockUI();
 

@@ -121,6 +121,21 @@ export const generateCompletionForMerchant = gql`
   }
 `;
 
+export const scraperMerchant = gql`
+  mutation scraperMerchant(
+    $urls: [String!]!
+    $merchantId: ObjectID!
+  ) {
+    scraperMerchant(urls: $urls, merchantId: $merchantId)
+  }
+`;
+
+export const openAiWhisper = gql`
+  mutation openAiWhisper($input: Upload!) {
+    openAiWhisper(input: $input)
+  }
+`;
+
 export const imageObjectRecognition = gql`
   mutation imageObjectRecognition($merchantId: ObjectID!, $file: Upload) {
     imageObjectRecognition(merchantId: $merchantId, file: $file)

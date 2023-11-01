@@ -12,9 +12,11 @@ import {
   getMerchantEmbeddingsMetadata,
   getVectorByIdInKnowledgeBase,
   imageObjectRecognition,
+  openAiWhisper,
   requestQAResponse,
   requestResponseFromKnowledgeBase,
   requestResponseFromKnowledgeBaseJson,
+  scraperMerchant,
   updateVectorInKnowledgeBase,
 } from '../graphql/gpt3.gql';
 import { environment } from 'src/environments/environment';
@@ -223,6 +225,29 @@ export class Gpt3Service {
       variables: { merchantID, prompt },
     });
     return result.generateCompletionForMerchant;
+  }
+
+  async scraperMerchant(
+    urls: string[],
+    merchantId: string,
+  ): Promise<string> {
+    const result = await this.graphql.mutate({
+      mutation: scraperMerchant,
+      variables: { urls, merchantId },
+    });
+    return result.scraperMerchant;
+  }
+
+  async openAiWhisper(
+    input: File
+  ): Promise<string> {
+    console.log(input)
+    const result = await this.graphql.mutate({
+      mutation: openAiWhisper,
+      variables: { input },
+      context: { useMultipart: true },
+    });
+    return result.openAiWhisper;
   }
 
   async imageObjectRecognition(

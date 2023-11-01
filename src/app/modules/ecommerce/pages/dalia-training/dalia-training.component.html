@@ -216,9 +216,30 @@
       <p class="title">
         PRUEBA LAS RESPUESTAS DE LAIA
       </p>
-      <div class="custom-input">
-        <input type="text" placeholder="Haz una pregunta de ejemplo..">
-        <img class="audio-freq" src="{{assetsFolder}}/audio-freq.png" alt="img">
+      <div 
+        class="custom-input"
+        [style.backgroundColor]="audioText.value ? 'transparent' : '#87CD9B'"
+        [style.alignItems]="audioText.value ? 'end' : 'center'"
+      >
+        <textarea 
+          id="autoExpandTextarea"
+          type="text"
+          [formControl]="audioText"
+          placeholder="Haz una pregunta de ejemplo.."
+          [style.backgroundColor]="audioText.value ? '#F6F6F6' : 'transparent'"
+          [style.padding]="audioText.value ? '12px 14px 10px' : '14px 14px 10px'"
+        ></textarea>
+        <img *ngIf="!audioText.value" (click)="openRecorder()" class="audio-freq" src="{{assetsFolder}}/audio-freq.png" alt="img">
+        <ng-container *ngIf="audioText.value">
+          <div class="container-send" (click)="testMemory(true)">
+            <img 
+              class="icon"
+              src="{{assetsFolder}}/chat-send-button.png"
+              alt="img"
+              [style.marginRight.px]="0"
+            >
+          </div>
+        </ng-container>
       </div>
     </div>
 
@@ -257,9 +278,9 @@
 
 <app-login-flow
   *ngIf="showLogin"
-  [redirectionRoute]="loginData.redirectionRoute"
-  [redirectionRouteId]="loginData.redirectionRouteId"
-  [entity]="loginData.entity"
-  [jsondata]="loginData.jsondata"
-  (dialogIsOpen)="saveMemoryInKnowledgeBase()"
+  [redirectionRoute]="uploadFile || sendUrl ? loginDataUpload.redirectionRoute : loginData.redirectionRoute"
+  [redirectionRouteId]="uploadFile || sendUrl ? loginDataUpload.redirectionRouteId : loginData.redirectionRouteId"
+  [entity]="uploadFile || sendUrl ? loginDataUpload.entity : loginData.entity"
+  [jsondata]="uploadFile || sendUrl ? loginDataUpload.jsondata : loginData.jsondata"
+  (dialogIsOpen)="uploadFile || sendUrl ? loadFile() : this.sendUrl ? saveUrl() : saveMemoryInKnowledgeBase()"
 ></app-login-flow>
