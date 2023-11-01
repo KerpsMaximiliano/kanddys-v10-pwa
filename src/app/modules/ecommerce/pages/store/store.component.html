@@ -45,15 +45,40 @@
         <!-- <div class="flex">
 
         <mat-icon>favorite_filled</mat-icon>4
-      </div> -->
-        <div
+        </div> -->
+        <div (click)="loginflow = true" class="left-end" *ngIf="!headerService.user">
+          <p>
+            Sign in
+          </p>
+          <img src="{{assetsFolder}}/user-placeholder.png" alt="user">
+        </div>
+        <app-login-flow
+          *ngIf="loginflow"
+          [loginEmail]="loginEmail"
+          [magicLink]="magicLink"
+          [redirectionRoute]="redirectionRoute"
+          [redirectionRouteId]="redirectionRouteId"
+          [entity]="entity"
+          [jsondata]="jsondata"
+          (dialogIsOpen)="resetLoginDialog($event)"
+        ></app-login-flow>
+        <p *ngIf="headerService.user" class="user-id" (click)="goToBuyerOrders()">
+          {{
+            headerService.user.name ?
+            headerService.user.name :
+            headerService.user.email ?
+            truncateString(headerService.user.email) :
+            headerService.user.phone
+          }}
+        </p>
+        <!--<div
           class="shopping-cart-container"
           *ngIf="headerService.order?.products?.length"
           (click)="goToCart()"
         >
           <mat-icon>shopping_cart</mat-icon>
           {{ headerService.order?.products?.length }}
-        </div>
+        </div>-->
       </div>
     </div>
     <!-- <div class="top-bar" *ngIf="tags.length">
@@ -93,7 +118,7 @@
         </a>
       </div>
     </div> -->
-    <div
+    <!--<div
       class="input-container"
       #elemt
       (mousedown)="startDragging($event, elemt)"
@@ -109,21 +134,51 @@
         <div class="icon-button" (click)="openEstimatedDeliveryDialog()">⏰</div>
         <div class="icon-button" (click)="openPriceRangeDialog()">💰</div>
         <div class="icon-button" (click)="openTagsDialog()" *ngIf="tags.length">🖇️️</div>
-        <!-- <div class="icon-button">🏷️</div> -->
+        <div class="icon-button">🏷️</div>
       </div>
-      <!-- <div class="input-item-text">
+      <div class="input-item-text">
         ⏰  Artículos que se entregan en menos de 2 horas en Santo Domingo
       </div>
       <div class="input-item-text">
         💰 Artículos que cuestan entre $id - $id
-      </div> -->
-      <!-- <div class="input-item-text">
+      </div>
+      <div class="input-item-text">
         🏷️  Artículos con tagid, tagid
-      </div> -->
-      <!-- <div class="input-item-text">
+      </div>
+      <div class="input-item-text">
         🖇️ Artículos en categoriaID, categoryID
-      </div> -->
+      </div> 
 
+    </div>-->
+    <div class="buttons-bar">
+      <div 
+        class="sub-button"
+        [ngClass]="{'logged-in' : headerService.user}"
+        >
+        Suscriptions
+      </div>
+
+      <svg (click)="openPriceRangeDialog()" width="29" height="28" viewBox="0 0 29 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14.1215 18.2016C11.5455 18.2016 11.3215 16.9976 11.3215 16.8016H8.52148C8.52148 18.0896 9.44548 20.3716 12.7215 20.8896V22.4016H15.5215V20.8896C18.3215 20.4136 19.7215 18.6076 19.7215 16.8016C19.7215 15.2336 18.9935 12.6016 14.1215 12.6016C11.3215 12.6016 11.3215 11.7196 11.3215 11.2016C11.3215 10.6836 12.3015 9.80156 14.1215 9.80156C15.9415 9.80156 16.0675 10.6976 16.0815 11.2016H18.8815C18.8626 10.2478 18.5195 9.32893 17.9088 8.5961C17.2981 7.86327 16.4562 7.36016 15.5215 7.16956V5.60156H12.7215V7.12756C9.92148 7.58956 8.52148 9.39556 8.52148 11.2016C8.52148 12.7696 9.24948 15.4016 14.1215 15.4016C16.9215 15.4016 16.9215 16.3536 16.9215 16.8016C16.9215 17.2496 16.0535 18.2016 14.1215 18.2016Z" fill="#435A4A"/>
+        <path d="M4.32305 0H0.123047V2.8H2.92305V26.6C2.92305 26.9713 3.07055 27.3274 3.3331 27.59C3.59565 27.8525 3.95174 28 4.32305 28H23.923C24.2943 28 24.6504 27.8525 24.913 27.59C25.1755 27.3274 25.323 26.9713 25.323 26.6V2.8H28.123V0H4.32305ZM22.523 25.2H5.72305V2.8H22.523V25.2Z" fill="#435A4A"/>
+      </svg>
+
+      <svg (click)="openEstimatedDeliveryDialog()" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M27.3801 14.703L21.3971 11.9492V4.05804C21.3944 3.89248 21.3441 3.7312 21.2523 3.59343C21.1604 3.45566 21.0309 3.34722 20.8791 3.28103L14.4041 0.302516C14.2904 0.249907 14.1667 0.222656 14.0415 0.222656C13.9163 0.222656 13.7925 0.249907 13.6789 0.302516L7.20385 3.28103C7.05404 3.35038 6.92727 3.46123 6.83856 3.60044C6.74985 3.73965 6.70291 3.90138 6.70333 4.06646V11.9576L0.746289 14.703C0.596266 14.7723 0.469292 14.8832 0.380452 15.0226C0.291612 15.1619 0.244641 15.3238 0.245121 15.4891V23.9325C0.244708 24.0976 0.291641 24.2593 0.380354 24.3985C0.469068 24.5378 0.59584 24.6486 0.745641 24.7179L7.22068 27.6965C7.33432 27.7491 7.45805 27.7763 7.58328 27.7763C7.70851 27.7763 7.83224 27.7491 7.94589 27.6965L14.0583 24.8818L20.1708 27.6965C20.2844 27.7491 20.4081 27.7763 20.5334 27.7763C20.6586 27.7763 20.7823 27.7491 20.896 27.6965L27.371 24.7179C27.5208 24.6486 27.6476 24.5378 27.7363 24.3985C27.825 24.2593 27.8719 24.0976 27.8715 23.9325V15.4891C27.8727 15.3249 27.827 15.1638 27.7398 15.0247C27.6527 14.8856 27.5277 14.7742 27.3794 14.7037L27.3801 14.703ZM24.9539 15.4891L20.5424 17.5009L16.131 15.4891L20.5424 13.4604L24.9539 15.4891ZM14.0583 2.02941L18.4698 4.05804L14.0583 6.08667L9.6553 4.05804L14.0583 2.02941ZM7.58328 13.4514L11.9947 15.48L7.58328 17.5002L3.17184 15.4891L7.58328 13.4514ZM13.1952 23.3711L7.58328 25.9612L1.97137 23.3711V16.8359L7.22068 19.2271C7.33195 19.2771 7.45255 19.303 7.57454 19.303C7.69653 19.303 7.81714 19.2771 7.9284 19.2271L13.1777 16.81L13.1952 23.3711ZM8.44705 11.9492V5.41391L13.6957 7.83104C13.8094 7.88365 13.9331 7.9109 14.0583 7.9109C14.1836 7.9109 14.3073 7.88365 14.4209 7.83104L19.6702 5.41391V11.9576L14.0583 14.5476L8.44705 11.9492ZM26.1537 23.3796L20.5418 25.9696L14.9214 23.3796V16.8268L20.1798 19.2271C20.2899 19.2759 20.409 19.3011 20.5295 19.3011C20.6499 19.3011 20.769 19.2759 20.8791 19.2271L26.1284 16.81L26.1537 23.3796Z" fill="#435A4A"/>
+      </svg>
+
+      <svg (click)="searchBar = !searchBar" width="29" height="30" viewBox="0 0 29 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M21.2803 19.2471C23.0356 16.8519 23.8217 13.8824 23.4815 10.9325C23.1413 7.98269 21.6998 5.27006 19.4455 3.33736C17.1911 1.40465 14.2902 0.394413 11.323 0.508745C8.35574 0.623076 5.54111 1.85355 3.44217 3.95399C1.34323 6.05444 0.114772 8.86994 0.00256334 11.8372C-0.109645 14.8045 0.902672 17.7048 2.83699 19.9577C4.7713 22.2107 7.48496 23.6502 10.4351 23.9883C13.3852 24.3264 16.3541 23.5381 18.748 21.7812C18.8027 21.8545 18.862 21.9241 18.9257 21.9897L25.9045 28.9685C26.2444 29.3086 26.7055 29.4998 27.1863 29.5C27.6672 29.5002 28.1284 29.3093 28.4686 28.9694C28.8087 28.6295 28.9999 28.1684 29 27.6876C29.0002 27.2067 28.8094 26.7455 28.4695 26.4054L21.4906 19.4265C21.4258 19.3609 21.3561 19.3003 21.2822 19.2453L21.2803 19.2471ZM21.748 12.2791C21.748 14.2509 21.1633 16.1785 20.0678 17.818C18.9723 19.4575 17.4152 20.7354 15.5935 21.49C13.7718 22.2446 11.7672 22.442 9.83323 22.0573C7.89928 21.6726 6.12283 20.7231 4.72854 19.3288C3.33424 17.9345 2.38471 16.1581 2.00002 14.2241C1.61534 12.2902 1.81277 10.2856 2.56736 8.46384C3.32195 6.6421 4.5998 5.08503 6.23932 3.98954C7.87884 2.89405 9.8064 2.30933 11.7782 2.30933C14.4224 2.30933 16.9582 3.35971 18.8279 5.22941C20.6976 7.0991 21.748 9.63496 21.748 12.2791Z" fill="#3B654A"/>
+      </svg>
+    </div>
+    <div class="bio" *ngIf="headerService.saleflow.merchant.bio">
+      {{ headerService.saleflow.merchant.bio }}
+    </div>
+    <div *ngIf="searchBar === true" class="input-container">
+      <input 
+        placeholder="Buscar.."
+        (keyup)="onKeywordSearch($event)"
+      />
     </div>
   </div>
   <router-outlet></router-outlet>
@@ -234,8 +289,8 @@
   <div style="cursor: pointer; display: flex; justify-content: center; align-items: center;">
     <ng-container>
       <!-- <img [src]="env + '/star-highlight.png'" alt="" style="width: 40px" /> -->
-      <p class="highlighted-text">Guarda y Monetiza</p>
-      <p style="font-size: 16px;">💚</p>
+      <!--<p class="highlighted-text">Guarda y Monetiza</p>
+      <p style="font-size: 16px;">💚</p>-->
     </ng-container>
     <!-- <div
       class="cart-container"
