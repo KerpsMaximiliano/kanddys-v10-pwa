@@ -92,14 +92,9 @@ header {
 
   .header-title {
     color: var(--Fondo-de-Pantallas, #f6f6f6);
-    font-family: InterLight;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-family: FiraSansRegular;
+    font-size: 13px;
+    letter-spacing: 0.715px;
   }
 
   .highlight {
@@ -123,53 +118,84 @@ header {
 }
 
 .input-area {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: auto;
-  max-width: 500px;
-  background-color: #403d3d;
-  padding: 16px 18px;
-  padding-right: 21px;
+  position: sticky;
   display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+  max-width: 500px;
+  padding: 20px 18px;
+  bottom: 0;
+  background: #232921; 
 
+  .chat-type {
+    font-family: FiraSansRegular;
+    font-size: 13px;
+    color: var(--Fondo-de-Pantallas, #f6f6f6);
+    letter-spacing: 0.715px;
+    margin-top: 0;
+  }
+
+  .text-area-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .input-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 4px;
+    background: var(--El-verdecito, #87CD9B); 
+    width: 100%;
+    padding-right: 14px;
+
+    p {
+      color: var(--El-mas-oscuro, #181D17);
+      font-family: InterRegular;
+      font-size: 16.107px;
+      margin: 0;
+      padding: 16px 14px;
+      width: 100%;
+      height: 51px;
+    }
+
+    .audio-freq {
+      width: 26px;
+      height: 24px;
+    }    
+
+  }
   textarea {
-    width: 344px;
-    height: 63px;
-    flex-shrink: 0;
-    border-radius: 300px;
-    border: 1px solid #7b7b7b;
-    background: #d9d9d9;
-    padding: 13px 26px;
+    padding: 11px 18px 6px;
+    width: 100%;
+    border-radius: 4px;
+    color: var(--El-mas-oscuro, #181D17);
     font-family: InterRegular;
     font-size: 16.107px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-    width: 89.37%;
+    background: var(--Fondo-de-Pantallas, #F6F6F6); 
+    border: none;
+    height: 39px;
     resize: none;
   }
 
-  button {
+  textarea::placeholder {
+    opacity: 1;
+    color: var(--El-mas-oscuro, #181D17);
+    font-family: InterRegular;
+    font-size: 16.107px;
+  }
+
+  .arrow-div {
+    border-radius: 100%;
+    background-color: var(--El-verdecito, #87CD9B);
+    width: 39px;
+    height: 39px;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: transparent;
-    border: none;
-    margin-left: 6px;
-
-    .notAllowed {
-      filter: brightness(0.7);
-
-      &:hover {
-        cursor: not-allowed;
-      }
-    }
-
-    &:hover {
-      cursor: pointer;
-    }
+    flex-shrink: 0;
   }
 }
 
