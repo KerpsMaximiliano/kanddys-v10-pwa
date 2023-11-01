@@ -251,6 +251,7 @@ import { LoginFlowComponent } from './components/login-flow/login-flow.component
 import { SignupChatComponent } from './dialogs/signup-chat/signup-chat.component';
 import { LoginFormComponent } from './dialogs/login-form/login-form.component';
 import { ContactUsDialogComponent } from './dialogs/contact-us-dialog/contact-us-dialog.component';
+import { OrderStatusBadgeComponent } from './components/order-status-badge/order-status-badge.component';
 
 const imports = [
   CommonModule,
@@ -512,7 +513,8 @@ const declarations = [
   LoginFlowComponent,
   SignupChatComponent,
   LoginFormComponent,
-  ContactUsDialogComponent
+  ContactUsDialogComponent,
+  OrderStatusBadgeComponent
 ];
 
 @NgModule({

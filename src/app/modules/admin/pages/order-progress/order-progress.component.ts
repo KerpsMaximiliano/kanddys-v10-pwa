@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { OrderService } from 'src/app/core/services/order.service';
@@ -13,6 +13,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import * as moment from 'moment'
 import { ItemsService } from 'src/app/core/services/items.service';
 import { MatDatepicker } from '@angular/material/datepicker';
+import { SwiperOptions } from 'swiper';
 @Component({
   selector: 'app-order-progress',
   templateUrl: './order-progress.component.html',
@@ -41,7 +42,7 @@ export class OrderProgressComponent implements OnInit {
   selectedZones = [];
   searchOpened: boolean = false;
   itemSearchbar: FormControl = new FormControl('');
-  placeholder: string = "Todas las facturas";
+  placeholder: string = "Filtros según estados o mas";
   deliveryTimePlaceholder: string = "⏰ Todos Tiempo de Entrega";
   progressPlaceHolder: string = "📦 Todos los Progreso";
   deliveryZonePlaceholder: string = "📍 Todas las Zonas de Entrega";
@@ -75,6 +76,13 @@ export class OrderProgressComponent implements OnInit {
     };
   reachedTheEndOfPagination = false;
 
+  swiperConfig: SwiperOptions = {
+    slidesPerView: 2.5,
+    freeMode: true,
+    spaceBetween: 0.5,
+  };
+  @ViewChild('progressStatus') progressStatus: ElementRef;
+  assetsFolder: string = environment.assetsUrl;
 
   constructor(
     private merchantsService: MerchantsService,
@@ -82,7 +90,8 @@ export class OrderProgressComponent implements OnInit {
     private deliveryZonesService: DeliveryZonesService,
     private router: Router,
     private dialog: MatDialog,
-    private itemsService: ItemsService
+    private itemsService: ItemsService,
+    private renderer: Renderer2
   ) { }
 
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
@@ -92,7 +101,7 @@ export class OrderProgressComponent implements OnInit {
 
   env: string = environment.assetsUrl
 
-  tutorialEnabled: boolean = true;
+  tutorialEnabled: boolean = false;
 
   pickUp: any = { amount: 0, selected: false };
   delivery: any = { amount: 0, selected: false };
@@ -124,7 +133,6 @@ export class OrderProgressComponent implements OnInit {
   }
 
   async ngOnInit() {
-    //await this.generate()
     await this.fetchPaginationData(false, true)
     this.toggleTutorial();
     await this.getDeliveryTime();
@@ -486,23 +494,6 @@ export class OrderProgressComponent implements OnInit {
         .querySelector('#search-from-results-view') as HTMLInputElement)
         ?.focus();
     }, 100);
-    // this.itemsService
-    //   .itemsQuantityOfFilters(this.merchantsService.merchantData._id, 'supplier')
-    //   .then(data => {
-    //     if (this.isSupplier) {
-    //       this.buttonFiltering[2].total = data.hidden
-    //     } else {
-    //       // btn para todos los items
-    //       this.buttonFilteringNoSupplier[0].total = data.all
-    //       // btn para items ocultos
-    //       this.buttonFilteringNoSupplier[1].total = data.hidden
-    //       // btn para items con comisiones
-    //       this.buttonFilteringNoSupplier[2].total = data.commissionable
-    //       // btn para menos de 10 items para vender
-    //       this.buttonFilteringNoSupplier[3].total = data.lowStock
-    //     }
-    //   })
-
   }
 
   async getDeliveryTime() {
@@ -618,7 +609,7 @@ export class OrderProgressComponent implements OnInit {
     );
     this.ordersTotal = ordersTotal
     this.benefit = ordersTotal.total;
-    this.placeholder = `Todas las facturas (${ordersTotal.lenght})...`
+    // this.placeholder = `Todas las facturas (${ordersTotal.lenght})...``
 
   }
 
@@ -705,19 +696,6 @@ export class OrderProgressComponent implements OnInit {
       ) {
         await this.fetchPaginationData(false, true)
       }
-      
-    //   if (!this.executed) {
-    //     this.isMethodRunning = true;
-        
-    //     setTimeout(async ()=>{
-    //       await this.paginateItems();
-    //       this.executed = true; // Marcar como ejecutado para que no se ejecute de nuevo
-    //     },800)
-    //     console.log("Entro por aca");
-    //   }
-    // } else {
-    //   this.executed = false; // Restablecer la variable si el usuario desplaza hacia arriba
-    // }
     }
   }
 
@@ -893,6 +871,19 @@ export class OrderProgressComponent implements OnInit {
       })    
     
       this.paginationState.status = 'complete';
+  }
+
+  getItemsName(items: any){
+    let names = "";
+    items.forEach(item =>{
+      if(item.item.name !== null){
+        names !== "" ? names += ", "+ truncateString(item.item.name, 7) : names += truncateString(item.item.name, 7);
+      }else{
+        names !== "" ? names += ", Sin nombre" : names += "Sin nombre";
+      }
+    })
+    return names
+    
   }
 
 }
