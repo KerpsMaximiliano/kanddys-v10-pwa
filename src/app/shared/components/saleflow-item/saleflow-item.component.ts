@@ -181,4 +181,32 @@ export class SaleflowItemComponent implements OnInit {
   onIconClick() {
     // DoSomething
   }
+
+  getWhole(number) {
+    number = String(number)
+    let arr = []
+    for(let i = 0; i < number.length; i++) {
+      if(number[i] === '.') {
+        break;
+      } else {
+        arr.push(number[i])
+      }
+    }
+    return arr.join('')
+  }
+
+  getDecimals(number) {
+    number = String(number)
+    let arr = []
+    let decimals = false
+    for(let i = 0; i < number.length; i++) {
+      if(decimals) {
+        arr.push(number[i])
+      }
+      if(number[i] === '.') {
+        decimals = true
+      }
+    }
+    return arr.join('')
+  }
 }

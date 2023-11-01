@@ -22,6 +22,7 @@ import {
   simplifySignup,
   updateme,
   userData,
+  signinSecondary,
 } from '../graphql/auth.gql';
 import { GraphQLWrapper } from '../graphql/graphql-wrapper.service';
 import { Session } from '../models/session';
@@ -85,6 +86,40 @@ export class AuthService {
     this.app.events.emit({ type: 'auth', data: this.session });
     const merchant: string = await this.getMerchantDefault();
     if (localStorage.getItem("affiliateCode")) {
+      if (merchant) {
+        const input: AffiliateInput = {
+          reference: merchant
+        }
+        try {
+          this.affiliateService.createAffiliate(localStorage.getItem("affiliateCode"), input);
+          localStorage.removeItem("affiliateCode");
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+    return this.session;
+  }
+
+  public async signinSecondary(userId: string): Promise<Session> {
+    try {
+      const variables = { userId };
+      const promise = this.graphql.mutate({
+        mutation: signinSecondary,
+        variables,
+      });
+
+      this.ready = from(promise);
+
+      const result = await promise;
+      this.session = new Session(result?.session, true);
+    } catch (e) {
+      this.session?.revoke();
+      this.session = undefined;
+    }
+    this.app.events.emit({ type: 'auth', data: this.session });
+    if (localStorage.getItem("affiliateCode")) {
+      const merchant: string = await this.getMerchantDefault();
       if (merchant) {
         const input: AffiliateInput = {
           reference: merchant

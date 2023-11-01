@@ -3,9 +3,7 @@ a {
 }
 .store-page {
   height: 100vh;
-  padding-top: 99px;
   padding-bottom: 100px;
-  overflow-y: scroll;
   flex-grow: 1;
 
   // &.tagsPresent {
@@ -21,12 +19,12 @@ a {
 }
 .saleflows-item-grid {
   width: auto;
-  padding: 12px 24px 32px;
+  padding: 12px 24px 50px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   -moz-column-gap: 14px;
   column-gap: 13px;
-  // row-gap: 22px;
+  row-gap: 21px;
   overflow-x: hidden;
   justify-items: center;
   .capsize {
