@@ -35,6 +35,7 @@ export class LoginFlowComponent implements OnInit {
   @Input() loginEmail: string | null = null;
   @Input() magicLink: boolean = false;
   openNavigation: boolean = false;
+  @Input() signinSecondary: boolean = false;
 
   @Output() dialogIsOpen: EventEmitter<boolean> = new EventEmitter();
 
@@ -289,7 +290,16 @@ export class LoginFlowComponent implements OnInit {
   }
 
   private async nonExistingUserLoginFlow(credentials: string, isFormValid: boolean) {
-    this.openTemplateCommerce(credentials)
+    if(!this.signinSecondary) {
+      this.openTemplateCommerce(credentials)
+    } else {
+      let userId;
+      await this.authService.signup({email: credentials}, 'none').then((res)=> {
+        userId = res._id;
+      })
+      await this.authService.signinSecondary(userId)
+      this.dialogIsOpen.emit(false);
+    }
   }
 
   async openTemplateUser(credentials: string) {

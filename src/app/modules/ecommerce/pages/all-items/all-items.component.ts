@@ -152,6 +152,7 @@ export class AllItemsComponent implements OnInit {
 
     this.status = 'complete';
     this.paginationState.status = 'complete';
+    console.log(this.items)
   }
 
   async infinitePagination() {

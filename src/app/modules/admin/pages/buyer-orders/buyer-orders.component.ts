@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { ItemOrder } from 'src/app/core/models/order';
 import { User } from 'src/app/core/models/user';
@@ -52,6 +52,7 @@ export class BuyerOrdersComponent implements OnInit {
     private dialog: MatDialog,
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute
   ) { }
 
   async ngOnInit() {
@@ -248,4 +249,11 @@ export class BuyerOrdersComponent implements OnInit {
     );
   }
 
+  goBack() {
+    let redirectTo = this.route.snapshot.queryParams.redirectTo;
+    if(redirectTo === 'store') {
+      let slug = this.route.snapshot.queryParams.merchant;
+      this.router.navigate([`/ecommerce/${slug}/store`]);
+    }
+  }
 }

@@ -1,36 +1,67 @@
 {
-    "button":"Botón",
-    "link":"Enlace",
-    "link-button":"Botón de enlace",
-    "paste-url":"Pega el url",
-    "cancel":"Cancelar",
-    "save-changes":"Salvar cambios",
-    "type-of-content": "TIPO DE CONTENIDO",
-    "new-symbol.button-name-placeholder":"Escribe el nombre..",
-    "new-symbol.save": "Guardar",
-    "new-symbol.access-key": "Llave de acceso",
-    "new-symbol.access-key-placeholder": "Escribe el WhatsApp o correo electrónico que tendrá acceso al contenido..",
-    "new-symbol.traditional-message-title" :"Mensaje que escribiremos",
-    "new-symbol.title" :"Mensaje virtual",
-    "new-symbol.text-title":"Texto principal y centralizado",
-    "new-symbol.longer-text":"Texto más largo",
-    "new-symbol.text-placeholder":"Escribe el mensaje de dedicatoria..",
-    "new-symbol.chulerias":"CHULERIAS OPCIONALES",
-    "new-symbol.slides":"Slides con fotos y videos",
-    "new-symbol.visual-slides":"Slides visuales",
-    "new-symbol.default-slides-layout":"Layout de los slides predeterminado",
-    "new-symbol.short-text": "Texto corto y céntrico",
-    "new-symbol.long-text": "Texto más largo",
-    "new-symbol.long-link-button":"Botón de enlace",
-    "new-symbol.see-demo":"Mira un Demo",
-    "new-symbol-preview":"Preview de la versión virtual",
-    "new-item.see-demo":"Mira un demo",
-    "create-button-link.button":"Botón",
-    "create-button-link.link":"Enlace",
-    "create-button-link.cancel":"Cancelar",
-    "create-button-link.save":"Salvar cambios",
-    "create-button-link.write-name":"Escribe el nombre...",
-    "create-button-link.paste-link":"Pega el url..."
-
-
+  "button": "Botón",
+  "link": "Enlace",
+  "link-button": "Botón de enlace",
+  "paste-url": "Pega el url",
+  "cancel": "Cancelar",
+  "save-changes": "Salvar cambios",
+  "type-of-content": "TIPO DE CONTENIDO",
+  "new-symbol.button-name-placeholder": "Escribe el nombre..",
+  "new-symbol.save": "Guardar",
+  "new-symbol.access-key": "Llave de acceso",
+  "new-symbol.access-key-placeholder": "Escribe el WhatsApp o correo electrónico que tendrá acceso al contenido..",
+  "new-symbol.traditional-message-title": "Mensaje que escribiremos",
+  "new-symbol.title": "Mensaje virtual",
+  "new-symbol.text-title": "Texto principal y centralizado",
+  "new-symbol.longer-text": "Texto más largo",
+  "new-symbol.text-placeholder": "Escribe el mensaje de dedicatoria..",
+  "new-symbol.chulerias": "CHULERIAS OPCIONALES",
+  "new-symbol.slides": "Slides con fotos y videos",
+  "new-symbol.visual-slides": "Slides visuales",
+  "new-symbol.default-slides-layout": "Layout de los slides predeterminado",
+  "new-symbol.short-text": "Texto corto y céntrico",
+  "new-symbol.long-text": "Texto más largo",
+  "new-symbol.long-link-button": "Botón de enlace",
+  "new-symbol.see-demo": "Mira un Demo",
+  "new-symbol-preview": "Preview de la versión virtual",
+  "new-item.see-demo": "Mira un demo",
+  "create-button-link.button": "Botón",
+  "create-button-link.link": "Enlace",
+  "create-button-link.cancel": "Cancelar",
+  "create-button-link.save": "Salvar cambios",
+  "create-button-link.write-name": "Escribe el nombre...",
+  "create-button-link.paste-link": "Pega el url...",
+  "general": {
+    "register": "Registro",
+    "win": "Gana",
+    "websites": "Sitios Web",
+    "link": "Enlace"
+  },
+  "title": {
+    "laia-introduction": "LAIACHAT ES TU ASISTENTE VIRTUAL",
+    "laia-memory": "MEMORIA DE LAIA",
+    "laia-integrations": "INTEGRACIONES DE LAIA"
+  },
+  "subtitle": {
+    "spent-less-time": "Ahorra Tiempo Brindando Respuestas Precisas al Instante"
+  },
+  "text": {
+    "write-laia-description": "Escribe en su memoria y Laia con IA formulará preguntas y verás sus respuestas",
+    "question-about-laia": "Qué necesitas saber de Laia?.."
+  },
+  "placeholder": {
+    "try-it": "Escribe algo para probarla.."
+  },
+  "modal": {
+    "profile-of": "Perfil de",
+    "create-new-ecommerce": "Crear un nuevo comercio",
+    "welcome-go-back": "'Bienvenido de vueta, prefieres acceder:'",
+    "provisional-key": "Con mi clave provisional que es \"123\"",
+    "access-email": "Desde mi correo electronico, recibirás el acceso en",
+    "add": "Agrega",
+    "functions-ecommerce": "Funcionalidades del Ecommerce"
+  },
+  "toast": {
+    "completed-training-ia": "Se ha entrenado al mago exitosamente con la data proporcionada"
+  }
 }
