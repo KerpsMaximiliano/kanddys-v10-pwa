@@ -1,466 +1,159 @@
 <!-- <app-navigation [opened]="openNavigation" (closed)="openNavigation = false"> -->
-  <div class="container">
-    <div class="header-wrapper">
-      <div class="left-part">
-        <div class="title" *ngIf="showGanas === false">
-          <ng-container *ngIf="!headerService.user">
-            <p (click)="loginflow = true" class="sign-in">
-              Sign in
-            </p>
-            <img alt="user" (click)="loginflow = true" src="{{assetsFolder}}/user-placeholder.png">
-          </ng-container>
-          <ng-container *ngIf="headerService.user">
-            <p (click)="openMsgDialog()">La<span style="color: #87CD9B;">ia</span>Chat</p>
-            <span (click)="showRoleDialog()" style="color: #87CD9B;">
-              {{
-                headerService.user.name ?
-                'con ' + headerService.user.name :
-                headerService.user.email ?
-                'con ' + truncateString(headerService.user.email) :
-                'con ' + headerService.user.phone
-              }}
-            </span>
-          </ng-container>
-        </div>
+<div class="container">
+  <header class="header-wrapper">
+    <p class="title">FUNCIONALIDADES SEGUN PERFILES</p>
+    <button type="button" class="btn-close" (click)="showGanas = !showGanas">
+      <div class="close">X</div>
+    </button>
+  </header>
+  <main>
+    <div class="tab-header" *ngIf="showGanas === true">
+      <div
+        class="referrals-button"
+        *ngIf="isUserLogged"
+        (click)="goToReferrals()"
+      >
+        {{
+          !headerService.user
+            ? "Mira tus invitados"
+            : referralsCount
+            ? referralsCount + " invitados"
+            : "0 invitados"
+        }}
       </div>
-  
-      <div class="right-part">
-        <div class="close" *ngIf="showGanas === true" (click)="showGanas = false">
-          X
+      <div class="info-container">
+        <p class="info-container-title">Gana Dinero</p>
+        <div class="flex-space-between">
+          <p class="info-container-icon">🤑</p>
+          <div>
+            <p class="info-container-desc">
+              Crecemos con el boca a boca. Prepárate a ganar $ ayudándonos a
+              crecer.
+            </p>
+          </div>
         </div>
-        <div *ngIf="showGanas === false" class="icon" (click)="showGanas = true">
-            <p>Gana$</p>
-            <mat-icon>ios_share</mat-icon>
-        </div>
+        <p class="info-container-desc-justify">
+          Ganas por tus invitados directos y por todos los que ellos inviten
+          para cubrir toda una cadena de suministro (limitado a 4 niveles, 15%,
+          10%, 5% y 2.5%).
+        </p>
       </div>
     </div>
-    <input id="imgInput" accept="image/*" type="file" (change)="getImg($event)" hidden #uploader>
-    <main>
-      <div class="tab-header" *ngIf="showGanas===true">
-        <div class="referrals-button" (click)="goToReferrals()">
-          {{
-            !headerService.user
-              ? "Mira tus invitados"
-              : referralsCount
-              ? referralsCount + " invitados"
-              : "0 invitados"
-          }}
-        </div>
-        <div class="info-container">
-          <p class="info-container-title">Gana Dinero</p>
-          <div class="flex-space-between">
-            <p class="info-container-icon">🤑</p>
-            <div>
-              <p class="info-container-desc">
-                Por cada factura que generen tus invitados comerciales ganas
-                dinero. Es un ingreso recurrente y sin límites.
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="info-container">
-          <p class="info-container-title">Ahorra Tiempo</p>
-          <div class="flex-space-between">
-            <img
-              width="70px"
-              height="70px"
-              src="../../../../../assets/images/sand-clock.png"
-              alt=""
-            />
-            <div>
-              <p class="info-container-desc">
-                Ahorra el tiempo de cotizaciones y facturas cuando tus clientes y
-                proveedores utilizan a LaiaChat.
-              </p>
-            </div>
-          </div>
-        </div>
-        <p class="ganas-desc center">
-          Del dinero recolectado cada mes para Laia, TU como Embajador
-          ganas el 15% de cada Finca que invites directamente y el 10% de todos los
-          indirectos
+
+    <!--Slide tabs-->
+    <ng-container *ngIf="showGanas === false">
+      <div class="tab-index">
+        <p (click)="tabIndex = 1" [class]="{ active: tabIndex === 1 }">
+          Admin de Ecommerce
         </p>
-        <p class="ganas-desc center">
-          (comercios que invitaron las Fincas que invitaste)
+        <p (click)="tabIndex = 2" [class]="{ active: tabIndex === 2 }">
+          Admin de Comunidad
+        </p>
+        <p (click)="tabIndex = 3" [class]="{ active: tabIndex === 3 }">
+          Miembro
         </p>
       </div>
-      <div class="top-item" *ngIf="!headerService.user && showGanas === false">
-          <div class="image">
-            <img src="../../../../../assets/images/laia.png" alt="" />
-            <p>Laia</p>
-          </div>
-          <div class="info">
-            <h1>Laia te Ahorra Tiempo o Dinero</h1>
-            <p>Se convierte en tu asistente virtual con Inteligencia Artificial</p>
-          </div>
-      </div>
-      <div class="tab-index" *ngIf="showGanas === false">
-        <p 
-          (click)="tabIndex = 1"
-          [class]="{'active': tabIndex === 1}"
-        >
-          AHORRA TIEMPO
-        </p>
-        <p 
-          (click)="tabIndex = 2"
-          [class]="{'active': tabIndex === 2}"
-        >
-          ESTRATEGIAS DE GAMIFICACION
-        </p>
-      </div>
-      <div class="tabs" *ngIf="tabIndex === 1 && showGanas === false">
-        <div (click)="headerService.user ? goToDashboard() : uploader.click()" class="card">
-          <img 
-            alt="img"
-            src="{{assetsFolder}}/landing-image-1.png"
-          >
+
+      <!-- Tab Ahorra tiempo -->
+      <div class="tabs" *ngIf="tabIndex === 1">
+        <div (click)="goToDashboard()" class="card">
+          <img alt="img" src="{{ assetsFolder }}/landing-image-1.png" />
           <h2>Vende fácilmente a través de enlaces</h2>
           <mat-icon>chevron_right</mat-icon>
         </div>
         <hr />
-        <div (click)="headerService.user ? goToChatsManagement() : goToLaiaTraining()" class="card">
-          <img 
-            alt="img"
-            src="{{assetsFolder}}/landing-image-2.png"
-          >
-          <h2>Brinda respuestas precisas al instante</h2>
-          <mat-icon>chevron_right</mat-icon>
-        </div>
-        <hr />
-        <div class="card" (click)="contactUsDialog('Selecciona Compras')">
-          <img 
-            alt="img"
-            src="{{assetsFolder}}/landing-image-3.png"
-          >
-          <h2>Selecciona lo que necesitas comprar</h2>
-          <mat-icon>chevron_right</mat-icon>
-        </div>
-        <hr />
-        <div (click)="headerService.user && saleflow?.items?.length > 0 ? goToItemsOffers() : contactUsDialog('Ofertas Flash')" class="card">
-          <img 
-            alt="img"
-            src="{{assetsFolder}}/landing-image-4.png"
-          >
-          <h2>Vende con ofertas de 24 horas</h2>
-          <mat-icon>chevron_right</mat-icon>
-        </div>
-      </div>
-      <div class="tabs" *ngIf="tabIndex === 2 && showGanas === false">
-        <div (click)="contactUsDialog('Premia Referencias')" class="card">
-          <img 
-            alt="img"
-            src="{{assetsFolder}}/landing-image-5.png"
-          >
-          <h2>Premia a quienes refirieren a compradores</h2>
-          <mat-icon>chevron_right</mat-icon>
-        </div>
-        <hr />
-        <div (click)="contactUsDialog('Premia Porque Si')" class="card">
-          <img 
-            alt="img"
-            src="{{assetsFolder}}/landing-image-6.png"
-          >
-          <h2>Premia porque si!</h2>
-          <mat-icon>chevron_right</mat-icon>
-        </div>
-        <hr />
-        <div (click)="contactUsDialog('Premia Menciones')" class="card">
-          <img 
-            alt="img"
-            src="{{assetsFolder}}/landing-image-7.png"
-          >
-          <h2>Premia a quienes te @mencionan</h2>
-          <mat-icon>chevron_right</mat-icon>
-        </div>
-        <hr />
-        <div (click)="contactUsDialog('Premia Compradores')" class="card">
-          <img 
-            alt="img"
-            src="{{assetsFolder}}/landing-image-8.png"
-          >
-          <h2>Premia a tus compradores</h2>
-          <mat-icon>chevron_right</mat-icon>
-        </div>
-      </div>
-      <!--<div class="tab-header" *ngIf="showGanas === false">
-        <div class="info-container">
-          <div class="info-container-title-container">
-            <p class="info-container-title">Vende fácilmente </p>
-            <div *ngIf="headerService.user">
-              <mat-slide-toggle
-                [checked]="statusSwitch"
-                (click)="toggleStoreVisibility()"
-              ></mat-slide-toggle>
-              <p (click)="uploader.click()">+</p>
-              <mat-icon (click)="shareDialog(true)">ios_share</mat-icon>
-            </div>
-          </div>
-          <p class="info-container-desc info-container-desc-mt">
-            Laia creará una vitrina online para vender tus artículos a través de enlaces.
-          </p>
-          <ng-container *ngIf="!headerService?.user">
-            <p class="info-container-invited-link info-container-invited-link-mr" (click)="uploader.click()">
-              Agrega tu primer artículo
-            </p>
-          </ng-container>
-          <div class="link-container" *ngIf="headerService?.user">
-            <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToDashboard()">
-              {{ saleflow ? saleflow?.items?.length : '0' }} artículos
-            </p>
-            <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToOrders()">
-              {{ sales ? sales : '0' }} ventas
-            </p>
-            <p class="info-container-invited-link info-container-invited-link-mr">
-              Facturar
-            </p>
-          </div>
-        </div>
-        <ng-container *ngIf="headerService.user">
-          <div class="flex-space-between align-center">
-            <p *ngIf="paymentSwitch" class="ganas-desc ">
-              El comprador paga US$0.30 a La<span>ia</span>.
-            </p>
-            <p *ngIf="!paymentSwitch" class="ganas-desc ">
-              Pagarás a La<span>ia</span> US$0.30 por cada venta.
-            </p>
-            <mat-slide-toggle
-              class="toggle"
-              [checked]="paymentSwitch"
-              (change)="paymentSwitch = !paymentSwitch"
-            ></mat-slide-toggle>
-          </div>
-          <p class="ganas-desc left">
-            Tus articulos se exhibirán 
-            <span (click)="openExhibitDialog()">
-              {{this.merchantRole?.code === 'PRODUCTOR' ?
-                'a fincas' :
-                this.merchantRole?.code === 'PROVIDER' ?
-                'a floristerías' :
-                this.merchantRole?.code === 'SUPPLIER' ?
-                'a wholesalers' : 'al consumidor final'
-              }}.
-            </span>
-          </p>
-          <hr />
-        </ng-container>
-        <div class="info-container">
-          <p class="info-container-title">Ahorra tiempo en Responder</p>
-          <p class="info-container-desc info-container-desc-mt">
-            Laia utiliza la IA para formular respuestas según el contenido que
-            adiciones a sus memorias.
-          </p>
-          <div class="flex">
-            <p
-              class="info-container-invited-link info-container-invited-link-mr"
-              (click)="goToLaiaTraining()"
-              *ngIf="!headerService?.user"
-            >
-              Escribe en la Memoria
-            </p>
-            <div *ngIf="headerService.user" class="memory-options">
-              <p 
-                class="info-container-invited-link info-container-invited-link-mr"
-                (click)="goToAIMemoriesManagement()"
-              >
-                {{ vectorsCount }} memorias
-              </p>
-              <p 
-                class="info-container-invited-link info-container-invited-link-mr"
-                (click)="goToChatsManagement()"
-              >
-                {{ chatsCount }} chats
-              </p>
-            </div>
-          </div>
-        </div>
-        <p 
-          class="ganas-desc center" 
-          style="cursor: pointer" 
-          (click)="goToWizard()"
-          *ngIf="headerService?.user"
+        <div
+          class="card"
+          (click)="contactUsDialog('Venden más a través de las Comunidades')"
         >
-          Responde desde tu propio <span>WhatsApp</span>.
-        </p>
+          <img alt="img" src="{{ assetsFolder }}/landing-image-1.png" />
+          <h2>Venden más a través de las Comunidades</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
         <hr />
-        <div class="info-container">
-          <p class="info-container-title">Compras ágiles</p>
-          <p class="info-container-desc info-container-desc-mt">
-            Crea y comparte carritos (ordenes de compras) para ahorrarte tiempo.
-          </p>
-          <div class="flex">
-            <p class="info-container-invited-link info-container-invited-link-mr" (click)="buttonHandler()">
-              Selecciona los artículos que necesitas
-            </p>
-          </div>
+        <div
+          class="card"
+          (click)="contactUsDialog('Crean Ofertas de 24 Horas para Vender')"
+        >
+          <img alt="img" src="{{ assetsFolder }}/landing-image-1.png" />
+          <h2>Crean Ofertas de 24 Horas para Vender</h2>
+          <mat-icon>chevron_right</mat-icon>
         </div>
-        <ng-container *ngIf="headerService.user">
-          <p class="ganas-desc left">
-            Laia te presenta articulos y ofertas de 
-            <span>
-              las fincas.
-            </span>
-          </p>
-          <hr />
-        </ng-container>
-        <ng-container *ngIf="!headerService?.user">
-        <div class="info-container">
-          <p class="info-container-title">Premia las Referencias</p>
-          <div class="container-flex">
-            <img src="../../../../../assets/images/gift.png" alt="">
-            <p class="info-container-desc info-container-desc-mt">
-              Alcanza múltiples comunidades. Incentiva a tus Embajadores a que promocionen y vendan tus artículos.
-            </p>
-          </div>
-          <div class="flex-space-between">
-            <ng-container *ngIf="!headerService?.user">
-              <p class="info-container-invited-link info-container-invited-link-mr" (click)="openMemoriesLoginDialog()">
-                Adiciona tu primer articulo
-              </p>
-            </ng-container>
-            <ng-container *ngIf="headerService?.user">
-              <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToDashboard()">
-                {{ saleflow ? saleflow?.items?.length : '0' }} artículos activados
-              </p>
-            </ng-container>
-          </div>
-        </div>
-        
-        <div class="info-container">
-          <p class="info-container-title">Incrementa la Urgencia</p>
-          <div class="container-flex">
-            <img src="../../../../../assets/images/alert.png" alt="">
-            <p class="info-container-desc info-container-desc-mt">
-              Crea ofertas. Motiva las compras con precios exclusivos que duran solo 24 horas.
-            </p>
-          </div>
-          <div class="flex-space-between">
-            <ng-container *ngIf="!headerService?.user">
-              <p class="info-container-invited-link info-container-invited-link-mr" (click)="openMemoriesLoginDialog()">
-                Adiciona tu primer articulo
-              </p>
-            </ng-container>
-            <ng-container *ngIf="headerService?.user">
-              <p class="info-container-invited-link info-container-invited-link-mr" (click)="goToDashboard()">
-                {{ saleflow ? saleflow?.items?.length : '0' }} artículos activados
-              </p>
-            </ng-container>
-          </div>
-        </div>
-        <div class="info-container">
-          <p class="info-container-title">Premia Porque Si!</p>
-          <div class="container-flex">
-            <img src="../../../../../assets/images/star.png" alt="">
-            <p class="info-container-desc info-container-desc-mt">
-              A quién no le gusta los premios? Premia a quienes quieras hacer sentir bien para atraerlo a tu comercio.
-            </p>
-          </div>
-          <div class="flex-space-between">
-            <p class="info-container-invited-link "
-              (click)="buttonHandler()"
-            >
-              Sin Memorias
-            </p>
-          </div>
-        </div>
-        <div class="info-container">
-          <p class="info-container-title">Premia las Menciones</p>
-          <div class="container-flex">
-            <img src="../../../../../assets/images/megaphone.png" alt="">
-            <p class="info-container-desc info-container-desc-mt">
-              Pública tu marca en múltiples comunidades. Incentiva a tus Embajadores a que te mencionen en sus propias redes sociales.
-            </p>
-          </div>
-          <div class="flex-space-between">
-            <p class="info-container-invited-link "
-              (click)="buttonHandler()"
-            >
-              Sin memorias
-            </p>
-          </div>
-        </div>
-        <p class="ganas-desc center">
-          Participantes pueden subir <img alt="foto" src="{{assetsFolder}}/grey-camera.png"> de la mención para los casos de cuentas privadas.
-        </p>
         <hr />
-        <div class="info-container">
-          <p class="info-container-title">Recompensa las Compras</p>
-          <div class="container-flex">
-            <img src="../../../../../assets/images/heart.png" alt="">
-            <p class="info-container-desc info-container-desc-mt">
-              Fideliza a tus compradores. Convierte a tus compradores regulares en compradores recurrentes.
-            </p>
-          </div>
-          <div class="flex-space-between">
-            <p class="info-container-invited-link info-container-invited-link-mr" (click)="openMemoriesLoginDialog()">
-              Adiciona tu primer recompensa
-            </p>
-          </div>
+        <div class="card" (click)="contactUsDialog('Premian a Compradores')">
+          <img alt="img" src="{{ assetsFolder }}/landing-image-1.png" />
+          <h2>Premian a Compradores</h2>
+          <mat-icon>chevron_right</mat-icon>
         </div>
-        <p  class="ganas-desc center">
-          Compradores puede subir <img alt="foto" src="{{assetsFolder}}/grey-camera.png"> de su factura para empezar el programa.
-        </p>
-        </ng-container>
-      </div>-->
-    </main>
-    <div 
-      class="message"
-      *ngIf="showGanas === false"
-    >
-      <p class="plus-sign" (click)="openOptionsMenu()">
-        +
-      </p>
-      <div 
-        [ngClass]="{ 'loggedout': !headerService.user }"
-        class="input" 
-        (click)="contactUsDialog('Laia Chat')"
-      >
-        {{'Soy Laia, que necesitas saber?'}}
-        <div>
-          <img
-            alt="camera"
-            class="darker"
-            src="{{assetsFolder}}/grey-camera.png"
-          >
-          <img
-            class="audio-freq"
-            src="{{assetsFolder}}/audio-freq.png"
-            alt="img"
-          >
+        <hr />
+        <div
+          class="card"
+          (click)="contactUsDialog('Premian a Quienes lo @Mencionaron')"
+        >
+          <img alt="img" src="{{ assetsFolder }}/landing-image-1.png" />
+          <h2>Premian a Quienes lo @Mencionaron</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+        <hr />
+        <div class="card" (click)="contactUsDialog('Crean Ordenes de Compras')">
+          <img alt="img" src="{{ assetsFolder }}/landing-image-1.png" />
+          <h2>Crean Ordenes de Compras</h2>
+          <mat-icon>chevron_right</mat-icon>
         </div>
       </div>
-        <!--<img
-          alt="arrow"
-          class="arrow"
-          src="{{assetsFolder}}/transparent-arrow-up.png"
-        >-->
-    </div>
-    <!-- <footer
-      *ngIf="!tabarIndex"
-      (click)="share()"
-      class="footer no-green"
-      [ngClass]="{ 'no-green': headerService.user }"
-    >
-      {{
-        headerService.user
-          ? "💚 Trae invitados y gana $ cada mes"
-          : "Inscríbete e Invita, juntos es mejor!!"
-      }}
-    </footer> -->
-    <app-login-flow
-      *ngIf="loginflow"
-      [loginEmail]="loginEmail"
-      [magicLink]="magicLink"
-      [redirectionRoute]="redirectionRoute"
-      [redirectionRouteId]="redirectionRouteId"
-      [entity]="entity"
-      [jsondata]="jsondata"
-      (dialogIsOpen)="resetLoginDialog($event)"
-    ></app-login-flow>
+
+      <!-- Tab Ahorra tiempo -->
+      <div class="tabs" *ngIf="tabIndex === 2">
+        <div (click)="contactUsDialog('Premia Referencias')" class="card">
+          <img alt="img" src="{{ assetsFolder }}/landing-image-5.png" />
+          <h2>Recauda Fondos</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+        <hr />
+        <div (click)="contactUsDialog('Premia Referencias')" class="card">
+          <img alt="img" src="{{ assetsFolder }}/landing-image-5.png" />
+          <h2>Premia a tus Miembros que Compran</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+      </div>
+
+      <!-- Tab Ahorra tiempo -->
+      <div class="tabs" *ngIf="tabIndex === 3">
+        <div (click)="contactUsDialog('Premia Referencias')" class="card">
+          <img alt="img" src="{{ assetsFolder }}/landing-image-5.png" />
+          <h2>Premios & Compras</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+        <hr />
+        <div (click)="contactUsDialog('Premia Referencias')" class="card">
+          <img alt="img" src="{{ assetsFolder }}/landing-image-5.png" />
+          <h2>Comunidad ID #1</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+        <div (click)="contactUsDialog('Premia Referencias')" class="card">
+          <img alt="img" src="{{ assetsFolder }}/landing-image-5.png" />
+          <h2>Comunidad ID #2</h2>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+      </div>
+    </ng-container>
+  </main>
+
+  <app-login-flow
+    *ngIf="loginflow"
+    [loginEmail]="loginEmail"
+    [magicLink]="magicLink"
+    [redirectionRoute]="redirectionRoute"
+    [redirectionRouteId]="redirectionRouteId"
+    [entity]="entity"
+    [jsondata]="jsondata"
+    (dialogIsOpen)="resetLoginDialog($event)"
+  ></app-login-flow>
   <footer class="footer-ganas" *ngIf="showGanas === true" (click)="invite()">
     Invita a comerciantes con tu enlace
     <mat-icon>ios_share</mat-icon>
   </footer>
-<qrcode
+  <qrcode
     style="display: none"
     #qrcode
     [qrdata]="qrdata"
@@ -470,4 +163,4 @@
     [allowEmptyString]="true"
     colorDark="#000"
   ></qrcode>
-  <!-- </app-navigation> -->
+</div>

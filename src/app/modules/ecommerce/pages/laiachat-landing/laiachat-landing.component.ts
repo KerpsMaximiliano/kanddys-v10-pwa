@@ -2,6 +2,8 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
+
 import { ToastrService } from 'ngx-toastr';
 import { truncateString } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -46,14 +48,17 @@ export class LaiachatLandingComponent implements OnInit {
     private toastrService: ToastrService,
     private whatsappService: WhatsappService,
     private dialog: MatDialog,
-    private merchantsService: MerchantsService
-  ) { }
+    private merchantsService: MerchantsService,
+    private translate: TranslateService,
+  ) {
+    translate.setDefaultLang('en');
+    translate.use('en');
+  }
 
   async ngOnInit() {
     await this.getMerchantDefault();
-    if(this.headerService.user) {
+    if (this.headerService.user) {
       this.clientConnectionStatus = await this.whatsappService.clientConnectionStatus();
-      console.log(this.clientConnectionStatus);
     }
   }
 
@@ -65,51 +70,52 @@ export class LaiachatLandingComponent implements OnInit {
         // this.setRole(parseInt(role))
         return;
       }
-      console.log(role);
     });
   }
 
   showRoleDialog() {
-    let options : [
+    let options: [
       {
-        value:string, 
+        value: string,
         callback: () => void,
-         active?: boolean, 
-         noSettings?: boolean
+        active?: boolean,
+        noSettings?: boolean
       }
     ] = [
-      {
-        value: `${this.merchantName? this.merchantName : this.merchantSlug? this.merchantSlug : this.headerService.user.name}`,
-        callback: () => {},
-        active: true,
-      },
-    ];
-    if(this.headerService.user.roles.length > 0) {
+        {
+          value: `${this.merchantName ? this.merchantName : this.merchantSlug ? this.merchantSlug : this.headerService.user.name}`,
+          callback: () => { },
+          active: true,
+        },
+      ];
+    if (this.headerService.user.roles.length > 0) {
       this.headerService.user.roles.forEach((role) => {
-        if(role.code === 'ADMIN') {
+        if (role.code === 'ADMIN') {
           options.push({
             value: 'De Super Admin',
-            callback: ()=> {}
+            callback: () => { }
           })
         }
       })
     }
-    options.push({
-      value: 'Crear un nuevo comercio',
-      callback: () => {
-        this.loginEmail = null;
-        this.dialog.closeAll();
-        console.log(this.loginflow)
-        setTimeout(() => {
-          this.loginflow = true;
-        }, 1000)
-      },
-      noSettings: true,
-    })
-    let logins : any[] = JSON.parse(window.localStorage.getItem('logins'));
-    if(logins) {
+    this.translate.get("modal.create-new-ecommerce")
+      .subscribe(translate => {
+        options.push({
+          value: translate,
+          callback: () => {
+            this.loginEmail = null;
+            this.dialog.closeAll();
+            setTimeout(() => {
+              this.loginflow = true;
+            }, 1000)
+          },
+          noSettings: true,
+        })
+      })
+    let logins: any[] = JSON.parse(window.localStorage.getItem('logins'));
+    if (logins) {
       logins.forEach((login) => {
-        if(login.email !== this.headerService.user.email) {
+        if (login.email !== this.headerService.user.email) {
           options.push({
             value: `${login.name}`,
             callback: () => {
@@ -119,57 +125,62 @@ export class LaiachatLandingComponent implements OnInit {
         }
       })
     }
-
-    const dialogRef = this.dialog.open(SelectRoleDialogComponent, {
-      data: {
-        title: "Perfil de:",
-        options,
-        bottomLeft: {
-          text: '',
-          callback: () => {
+    this.translate.get("modal.profile-of").subscribe(translate => {
+      const dialogRef = this.dialog.open(SelectRoleDialogComponent, {
+        data: {
+          title: translate,
+          options,
+          bottomLeft: {
+            text: '',
+            callback: () => { }
           }
         }
-      }
-    });
-    dialogRef.afterClosed().subscribe((role) => {
-      
-    });
+      });
+      dialogRef.afterClosed().subscribe();
+    })
+
   }
 
   userSwitchDialog(email: string) {
-    this.bottomSheet.open(OptionsMenuComponent, {
-      data: {
-        title: 'Bienvenido de vuelta, prefieres acceder:',
-        options: [
-          {
-            value: 'Con mi clave provisional que es "123"',
-            callback: () => {
-              this.loginEmail = email;
-              this.loginflow = true;
-            }
-          },
-          {
-            value: `Desde mi correo electronico (recibirás el acceso en ${email})`,
-            callback: () => {
-              this.loginEmail = email;
-              this.magicLink = true;
-              this.loginflow = true;
-            }
+    this.translate.get([
+      "modal.welcome-go-back",
+      "modal.provisional-key",
+      "modal.access-email"
+    ])
+      .subscribe(translations => {
+        this.bottomSheet.open(OptionsMenuComponent, {
+          data: {
+            title: `${translations["modal.welcome-go-back"]}:`,
+            options: [
+              {
+                value: translations["modal.provisional-key"],
+                callback: () => {
+                  this.loginEmail = email;
+                  this.loginflow = true;
+                }
+              },
+              {
+                value: `${translations["modal.access-email"]} ${email})`,
+                callback: () => {
+                  this.loginEmail = email;
+                  this.magicLink = true;
+                  this.loginflow = true;
+                }
+              }
+            ]
           }
-        ]
-      }
-    })
+        })
+      })
   }
 
   async getMerchantDefault() {
     try {
       const merchantDefault: Merchant = await this.merchantsService.merchantDefault();
-      console.log(merchantDefault)
       this.merchantSlug = merchantDefault.slug;
       this.merchantName = merchantDefault.name;
       this.merchantEmail = merchantDefault.email;
     } catch (error) {
-      console.log('error');
+      console.error('error');
     }
   }
 
@@ -196,71 +207,73 @@ export class LaiachatLandingComponent implements OnInit {
   goLaiaTraining() {
     this.router.navigate(['/ecommerce/laia-training']);
   }
-   
+
   goClubLanding() {
     this.router.navigate(['/ecommerce/club-landing']);
   }
 
   openUploadFile() {
-    let data = {
-      data: {
-        description: 'Agrega:',
-        options: [
-          {
-            value: 'URL',
-            callback: () => {
-              
-            },
-          },
-          {
-            value: 'PDF',
-            callback: () => {
-              const fileInput = document.getElementById('file') as HTMLInputElement;
-              fileInput.accept = '.pdf';
-              fileInput.click();
-            },
-          },
-          {
-            value: 'CSV',
-            callback: () => {
-              
-            },
-          },
-          {
-            value: 'XLS',
-            callback: () => {
-              const fileInput = document.getElementById('file') as HTMLInputElement;
-              fileInput.accept = '.xls';
-              fileInput.click();
-            },
-          },
-          {
-            value: 'TXT',
-            callback: () => {
-              const fileInput = document.getElementById('file') as HTMLInputElement;
-              fileInput.accept = '.txt';
-              fileInput.click();
-            },
-          },
-        ],
-      },
-    };
+    this.translate
+      .get(["modal.add", "modal.functions-ecommerce"])
+      .subscribe(translations => {
+        let data = {
+          data: {
+            description: `${translations["modal.add"]}:`,
+            options: [
+              {
+                value: 'URL',
+                callback: () => {
 
-    if(window.location.hostname === 'laiachat.com') {
-      data.data.options.push(
-        {
-          value: 'Funcionalidades del Ecommerce',
-          callback: () => {
-            this.router.navigate(['/ecommerce/club-landing']);
-          },
-        },
-      );
-    }
+                },
+              },
+              {
+                value: 'PDF',
+                callback: () => {
+                  const fileInput = document.getElementById('file') as HTMLInputElement;
+                  fileInput.accept = '.pdf';
+                  fileInput.click();
+                },
+              },
+              {
+                value: 'CSV',
+                callback: () => {
 
-    const dialog = this.bottomSheet.open(
-      OptionsMenuComponent,
-      data
-    )
+                },
+              },
+              {
+                value: 'XLS',
+                callback: () => {
+                  const fileInput = document.getElementById('file') as HTMLInputElement;
+                  fileInput.accept = '.xls';
+                  fileInput.click();
+                },
+              },
+              {
+                value: 'TXT',
+                callback: () => {
+                  const fileInput = document.getElementById('file') as HTMLInputElement;
+                  fileInput.accept = '.txt';
+                  fileInput.click();
+                },
+              },
+            ],
+          },
+        };
+
+        if (window.location.hostname === 'laiachat.com') {
+          data.data.options.push(
+            {
+              value: translations["modal.functions-ecommerce"],
+              callback: () => {
+                this.router.navigate(['/ecommerce/club-landing']);
+              },
+            },
+          );
+        }
+
+        this.bottomSheet.open(OptionsMenuComponent, data)
+      })
+
   }
 
   async loadFile(event: Event) {
@@ -278,9 +291,9 @@ export class LaiachatLandingComponent implements OnInit {
 
       unlockUI();
 
-      this.toastrService.success(
-        'Se ha entrenado al mago exitosamente con la data proporcionada'
-      );
+      this.translate
+        .get("toast.completed-training-ia")
+        .subscribe(translate => this.toastrService.success(translate))
     } catch (error) {
       unlockUI();
 
