@@ -33,6 +33,8 @@ export class LaiaMemoriesManagementComponent implements OnInit {
   assetsFolder: string = environment.assetsUrl;
   message: FormControl = new FormControl(null);
 
+  inputOpen: boolean = false;
+
   constructor(
     private gptService: Gpt3Service,
     private headerService: HeaderService,
@@ -114,5 +116,19 @@ export class LaiaMemoriesManagementComponent implements OnInit {
         tabarIndex: 2,
       },
     });
+  }
+
+  resizeTextarea(textarea) {
+    if(textarea.scrollHeight > 253) {
+      textarea.style.height = 253 + "px";
+      textarea.style.overflowY = "scroll";
+      return;
+    }
+    if(textarea.scrollHeight > textarea.clientHeight) {
+      textarea.style.height = textarea.scrollHeight > 39 ? textarea.scrollHeight + "px" : 39 + "px";
+    } else {
+      textarea.style.height = 0 + "px";
+      textarea.style.height = textarea.scrollHeight + "px";
+    }
   }
 }
