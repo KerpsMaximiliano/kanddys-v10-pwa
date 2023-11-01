@@ -265,6 +265,9 @@
         alt="featured item"
         class="featured-item-indicator"
       />
+      <div class="heart-div">
+        <img alt="heart" src="{{env}}/green-heart.png">
+      </div>
     </div>
 
     <div
@@ -298,12 +301,19 @@
     >
       <div class="flex-row-2">
         <span
-          class="price2"
+          class="name"
+          *ngIf="name"
+        >
+          {{name}}
+        </span>
+        <span
+          class="price"
           *ngIf="
             price >= 0 && showPrice && (itemParams?.length === 0 || !itemParams)
           "
-          >${{ price | number }}</span
-        >
+          >${{getWhole(price)}}
+          <span class="small">{{getDecimals(price)}}</span>
+        </span>
 
         <div
           class="dynamic-choices"
