@@ -135,16 +135,15 @@ export class LoginFlowComponent implements OnInit {
       console.log(merchant)
       console.log(userData)
       if (!merchant) {
-        await this.newMerchantCreation(userData)
+        await this.newMerchantCreation(userData.user._id)
       }
     })
     this.dialogIsOpen.emit(false);
   }
 
-  async newMerchantCreation(userData) {
-    console.log(userData)
+  async newMerchantCreation(userId) {
     let newMerchant;
-    await this.merchantsService.createMerchant({ owner: userData.user._id }).then((res) => {
+    await this.merchantsService.createMerchant({ owner: userId }).then((res) => {
       console.log(res)
       newMerchant = res.createMerchant._id;
     })
@@ -298,6 +297,31 @@ export class LoginFlowComponent implements OnInit {
         userId = res._id;
       })
       await this.authService.signinSecondary(userId)
+      await this.newMerchantCreation(userId)
+      this.authService.generateMagicLink(
+        credentials,
+        this.redirectionRoute,
+        this.redirectionRouteId,
+        this.entity,
+        {
+          jsondata: this.jsondata,
+        },
+        []
+      );
+      this.dialogService.open(
+        GeneralFormSubmissionDialogComponent,
+        {
+          type: 'centralized-fullscreen',
+          props: {
+            icon: 'check-circle.svg',
+            showCloseButton: false,
+            message:
+              'Se ha enviado un link mágico a tu correo electrónico',
+          },
+          customClass: 'app-dialog',
+          flags: ['no-header'],
+        }
+      );
       this.dialogIsOpen.emit(false);
     }
   }
