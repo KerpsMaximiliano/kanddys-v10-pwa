@@ -282,5 +282,5 @@
   [redirectionRouteId]="uploadFile || sendUrl ? loginDataUpload.redirectionRouteId : loginData.redirectionRouteId"
   [entity]="uploadFile || sendUrl ? loginDataUpload.entity : loginData.entity"
   [jsondata]="uploadFile || sendUrl ? loginDataUpload.jsondata : loginData.jsondata"
-  (dialogIsOpen)="uploadFile || sendUrl ? loadFile() : this.sendUrl ? saveUrl() : saveMemoryInKnowledgeBase()"
+  (dialogIsOpen)="uploadFile ? loadFile() : sendUrl ? saveUrl() : saveMemoryInKnowledgeBase()"
 ></app-login-flow>
