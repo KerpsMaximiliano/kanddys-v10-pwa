@@ -54,6 +54,7 @@ export class AudioRecorderComponent implements OnInit {
       this.isAudioRecording = false;
       this.RecordRTCService.stopAudioRecording();
     }
+    setTimeout(() => this.save(), 500);
   }
   
   clearAudioRecordedData() {

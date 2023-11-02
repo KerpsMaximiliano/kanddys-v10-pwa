@@ -31,37 +31,23 @@
   "create-button-link.save": "Save changes",
   "create-button-link.write-name": "Write the name...",
   "create-button-link.paste-link": "Paste the link...",
-  "general": {
-    "register": "Register",
-    "win": "win",
-    "websites": "Websites",
-    "link": "Link"
-  },
-  "title": {
-    "laia-introduction": "LAIACHAT IS YOUR VIRTUAL ASSISTANT",
-    "laia-memory": "LAIA'S MEMORY",
-    "laia-integrations": "LAIA INTEGRATIONS"
-  },
-  "subtitle": {
-    "spent-less-time": "Saves Time By Providing Accurate Answers Instantly"
-  },
-  "text": {
-    "write-laia-description": "Type in your memory and Laia with AI will ask questions and you will see your answers.",
-    "question-about-laia": "What do you need to know about Laia?..."
-  },
-  "placeholder": {
-    "try-it": "Write something to test her..."
-  },
-  "modal": {
-    "profile-of": "Profile-of",
-    "create-new-ecommerce": "create-new-ecommerce",
-    "welcome-go-back": "'Welcome back, prefer to login'",
-    "provisional-key": "With my provisional key which is '123'",
-    "access-email": "From my email, you will receive access at",
-    "add": "Add",
-    "functions-ecommerce": "Ecommerce functionalities"
-  },
-  "toast": {
-    "completed-training-ia": "The wizard has been successfully trained with the data provided."
-  }
+  "general.register": "Register",
+  "general.win": "win",
+  "general.websites": "Websites",
+  "general.link": "Link",
+  "title.laia-introduction": "LAIA IS YOUR VIRTUAL ASSISTANT",
+  "title.laia-memory": "LAIA'S MEMORY",
+  "title.laia-integrations": "LAIA INTEGRATIONS",
+  "subtitle.spent-less-time": "Saves Time By Providing Accurate Answers Instantly",
+  "text.write-laia-description": "Type in your memory and Laia with AI will ask questions and you will see your answers.",
+  "text.question-about-laia": "What do you need to know about Laia?...",
+  "placeholder.try-it": "Write something to test her...",
+  "modal.profile-of": "Profile-of",
+  "modal.create-new-ecommerce": "create-new-ecommerce",
+  "modal.welcome-go-back": "'Welcome back, prefer to login'",
+  "modal.provisional-key": "With my provisional key which is '123'",
+  "modal.access-email": "From my email, you will receive access at",
+  "modal.add": "Add",
+  "modal.functions-ecommerce": "Ecommerce functionalities",
+  "toast.completed-training-ia": "The wizard has been successfully trained with the data provided."
 }

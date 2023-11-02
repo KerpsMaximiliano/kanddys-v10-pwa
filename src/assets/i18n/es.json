@@ -31,37 +31,23 @@
   "create-button-link.save": "Salvar cambios",
   "create-button-link.write-name": "Escribe el nombre...",
   "create-button-link.paste-link": "Pega el url...",
-  "general": {
-    "register": "Registro",
-    "win": "Gana",
-    "websites": "Sitios Web",
-    "link": "Enlace"
-  },
-  "title": {
-    "laia-introduction": "LAIACHAT ES TU ASISTENTE VIRTUAL",
-    "laia-memory": "MEMORIA DE LAIA",
-    "laia-integrations": "INTEGRACIONES DE LAIA"
-  },
-  "subtitle": {
-    "spent-less-time": "Ahorra Tiempo Brindando Respuestas Precisas al Instante"
-  },
-  "text": {
-    "write-laia-description": "Escribe en su memoria y Laia con IA formulará preguntas y verás sus respuestas",
-    "question-about-laia": "Qué necesitas saber de Laia?.."
-  },
-  "placeholder": {
-    "try-it": "Escribe algo para probarla.."
-  },
-  "modal": {
-    "profile-of": "Perfil de",
-    "create-new-ecommerce": "Crear un nuevo comercio",
-    "welcome-go-back": "'Bienvenido de vueta, prefieres acceder:'",
-    "provisional-key": "Con mi clave provisional que es \"123\"",
-    "access-email": "Desde mi correo electronico, recibirás el acceso en",
-    "add": "Agrega",
-    "functions-ecommerce": "Funcionalidades del Ecommerce"
-  },
-  "toast": {
-    "completed-training-ia": "Se ha entrenado al mago exitosamente con la data proporcionada"
-  }
+  "general.register": "Registro",
+  "general.win": "Gana",
+  "general.websites": "Sitios Web",
+  "general.link": "Enlace",
+  "title.laia-introduction": "LAIACHAT ES TU ASISTENTE VIRTUAL",
+  "title.laia-memory": "MEMORIA DE LAIA",
+  "title.laia-integrations": "INTEGRACIONES DE LAIA",
+  "subtitle.spent-less-time": "Ahorra Tiempo Brindando Respuestas Precisas al Instante",
+  "text.write-laia-description": "Escribe en su memoria y Laia con IA formulará preguntas y verás sus respuestas",
+  "text.question-about-laia": "Qué necesitas saber de Laia?..",
+  "placeholder.try-it": "Escribe algo para probarla..",
+  "modal.profile-of": "Perfil de",
+  "modal.create-new-ecommerce": "Crear un nuevo comercio",
+  "modal.welcome-go-back": "'Bienvenido de vueta, prefieres acceder:'",
+  "modal.provisional-key": "Con mi clave provisional que es \"123\"",
+  "modal.access-email": "Desde mi correo electronico, recibirás el acceso en",
+  "modal.add": "Agrega",
+  "modal.functions-ecommerce": "Funcionalidades del Ecommerce",
+  "toast.completed-training-ia": "Se ha entrenado al mago exitosamente con la data proporcionada"
 }
