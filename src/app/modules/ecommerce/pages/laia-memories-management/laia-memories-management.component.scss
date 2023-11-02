@@ -71,6 +71,10 @@
 
   main {
     padding: 0 23px;
+    min-height: 65.5vh;
+    @media(max-width:500px) {
+      min-height: 100vh;
+    }
 
     .memory {
       padding: 17px 22px 29px;
@@ -113,12 +117,14 @@
     }
 
     .test-text {
-      margin: 90px auto 14px;
+      position: sticky;
+      top: 83%;
+      margin: 90px auto 5px;
       width: 297px;
       color: var(--Fondo-de-Pantallas, #F6F6F6);
       text-align: center;
       font-family: InterRegular;
-      font-size: 16px; 
+      font-size: 16px;
     }
   }
 
@@ -128,9 +134,12 @@
     gap: 5px;
     width: 100%;
     max-width: 500px;
+    height: 90px;
     padding: 20px 18px;
     bottom: 0;
     background: #232921; 
+    align-items: center;
+
     .input-button {
       display: flex;
       align-items: center;
@@ -184,5 +193,18 @@
       align-items: center;
       flex-shrink: 0;
     }
+  }
+}
+
+.small {
+  display: none;
+}
+
+@media(max-width:400px) {
+  .small {
+    display: block;
+  }
+  .large {
+    display: none;
   }
 }

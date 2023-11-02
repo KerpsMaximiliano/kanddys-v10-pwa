@@ -118,7 +118,7 @@ header {
 }
 
 .input-area {
-  position: sticky;
+  position: fixed;
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -267,10 +267,24 @@ main {
     border-radius: 20px;
     opacity: 0.8;
     background-color: #403d3d;
+    width: -moz-fit-content;
     width: fit-content;
     flex-shrink: 0;
     padding: 8px 19px;
     color: var(--Fondo-de-Pantallas, #f6f6f6);
     font-family: InterRegular;
+  }
+}
+
+.small {
+  display: none;
+}
+
+@media(max-width:400px) {
+  .small {
+    display: block;
+  }
+  .large {
+    display: none;
   }
 }
