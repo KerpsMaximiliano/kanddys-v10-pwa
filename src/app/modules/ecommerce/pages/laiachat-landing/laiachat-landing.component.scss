@@ -173,6 +173,8 @@
   background-color: #87CD9B;
   border-radius: 11px;
   margin-bottom: 39px;
+  display: flex;
+  flex-direction: column;
 
   .text {
     color: #181D17;
