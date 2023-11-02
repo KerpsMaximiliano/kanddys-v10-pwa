@@ -7,8 +7,10 @@ export interface DialogTemplate {
   options: Array<{
     value: string;
     callback: () => void;
+    complete?: boolean;
     settings?: {
-      value: boolean,
+      value: string;
+      color?: string;
       callback: () => void;
     }
   }>;
