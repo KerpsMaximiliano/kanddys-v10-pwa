@@ -90,53 +90,70 @@
       <div class="base-text-wrapper">
         <!-- <label for="base-text">Ahorra Tiempo Brindando Respuestas Precisas al Instante.</label> -->
 
-        <div class="textarea-wrapper" [formGroup]="form">
-          <textarea
-            name="base-text"
-            formControlName="memory"
-            id="base-text"
-            [placeholder]="'Escribe o pega un texto..'"
-            class="base-text"
-            [style.backgroundColor]="form.get('memory').value ? '#181d17' : '#F6F6F6'"
-            (keyup)="onKeyUp()"
-          ></textarea>
-
-          <img *ngIf="form.get('memory').value" src="../../../../../assets/icons/shortcut.svg" alt="" class="shortcut" (click)="form.get('memory').setValue(null)"/>
-
-          <!-- *ngIf="
-            !showTextError &&
-            !form.get('memory').value &&
-            !(generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response) && 
-            !showExtendButton
-          " -->
-          <!-- <p 
-            class="settings-text"
-            (click)="openIntegrationsDialog()"
-          >
-            Integraciones
-          </p> -->
-
-          <div *ngIf="!form.get('memory').value" class="container-icon" (click)="openUploadFile()">
-            <i class="fa fa-plus"></i>
-            <h3 class="text">Adiciona el contenido desde..</h3>
+        <ng-container *ngIf="typeFile; else textWrapper">
+          <div class="container-file">
+            <span class="title">
+              Archivo Cargado
+            </span>
+            <i 
+              class="fal"
+              [ngClass]="{
+                'fa-file-pdf': typeFile === 'pdf',
+                'fa-file-excel': typeFile === 'xls'
+              }"
+            >
+            </i>
           </div>
-
-          <input
-            type="file"
-            id="file"
-            [style.display]="'none'"
-            (change)="loadFile($event)"
-            multiple
-          />
-
-          <!-- <button
-            class="see-more"
-            (click)="showMoreText()"
-            *ngIf="showExtendButton && form.get('memory').value"
-          >
-            VER TODO
-          </button> -->
-        </div>
+        </ng-container>
+        <ng-template #textWrapper>
+          <div class="textarea-wrapper" [formGroup]="form">
+            <textarea
+              name="base-text"
+              formControlName="memory"
+              id="base-text"
+              [placeholder]="'Escribe o pega un texto..'"
+              class="base-text"
+              [style.backgroundColor]="form.get('memory').value ? '#181d17' : '#F6F6F6'"
+              (keyup)="onKeyUp()"
+            ></textarea>
+  
+            <img *ngIf="form.get('memory').value" src="../../../../../assets/icons/shortcut.svg" alt="" class="shortcut" (click)="form.get('memory').setValue(null)"/>
+  
+            <!-- *ngIf="
+              !showTextError &&
+              !form.get('memory').value &&
+              !(generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response) && 
+              !showExtendButton
+            " -->
+            <!-- <p 
+              class="settings-text"
+              (click)="openIntegrationsDialog()"
+            >
+              Integraciones
+            </p> -->
+  
+            <div *ngIf="!form.get('memory').value" class="container-icon" (click)="openUploadFile()">
+              <i class="fa fa-plus"></i>
+              <h3 class="text">Adiciona el contenido desde..</h3>
+            </div>
+  
+            <input
+              type="file"
+              id="file"
+              [style.display]="'none'"
+              (change)="loadFile($event)"
+              multiple
+            />
+  
+            <!-- <button
+              class="see-more"
+              (click)="showMoreText()"
+              *ngIf="showExtendButton && form.get('memory').value"
+            >
+              VER TODO
+            </button> -->
+          </div>
+        </ng-template>
 
         <p *ngIf="showTextError" class="show-text-error">
           Según lo escrito no se pueden generar preguntas todavía
@@ -196,15 +213,28 @@
           </div>
         </ng-container>
 
-        <div class="request-response-box" *ngIf="form.get('memory').value && showDots">
-          <div class="question-box-wrapper">
-            <div class="content" [formGroup]="questionForm">
-              <div class="question-box">
-                <div class="dots">...</div>
+        <ng-container *ngIf="typeFile; else elseDots">
+          <div class="request-response-box" *ngIf="showDots">
+            <div class="question-box-wrapper">
+              <div class="content" [formGroup]="questionForm">
+                <div class="question-box">
+                  <div class="dots">...</div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </ng-container>
+        <ng-template #elseDots>
+          <div class="request-response-box" *ngIf="form.get('memory').value && showDots">
+            <div class="question-box-wrapper">
+              <div class="content" [formGroup]="questionForm">
+                <div class="question-box">
+                  <div class="dots">...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
 
         <div id="question-response-bottom"></div>
       </div>
@@ -231,7 +261,7 @@
         ></textarea>
         <img *ngIf="!audioText.value" (click)="openRecorder()" class="audio-freq" src="{{assetsFolder}}/audio-freq.png" alt="img">
         <ng-container *ngIf="audioText.value">
-          <div class="container-send" (click)="testMemory(true)">
+          <div class="container-send" (click)="typeFile ? openAiRequestResponseFromFile() : testMemory(true)">
             <img 
               class="icon"
               src="{{assetsFolder}}/chat-send-button.png"

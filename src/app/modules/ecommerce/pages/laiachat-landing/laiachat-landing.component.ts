@@ -21,6 +21,14 @@ import { MessageDialogComponent } from 'src/app/shared/dialogs/message-dialog/me
 import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
 import { SelectRoleDialogComponent } from 'src/app/shared/dialogs/select-role-dialog/select-role-dialog.component';
 import { environment } from 'src/environments/environment';
+import { AudioRecorderComponent } from 'src/app/shared/components/audio-recorder/audio-recorder.component';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { filter } from 'rxjs/operators';
+import { RecordRTCService } from 'src/app/core/services/recordrtc.service';
+import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
+import { StatusAudioRecorderComponent } from 'src/app/shared/dialogs/status-audio-recorder/status-audio-recorder.component';
+import { FilesService } from 'src/app/core/services/files.service';
+import { fileToBase64 } from 'src/app/core/helpers/files.helpers';
 
 interface ExtendedChat extends Chat {
   receiver?: User;
@@ -77,6 +85,11 @@ export class LaiachatLandingComponent implements OnInit {
     11: 'Noviembre',
     12: 'Diciembre',
   };
+  audio: {
+    blob: Blob;
+    title: string;
+  };
+  typeFile: string;
 
   constructor(
     public headerService: HeaderService,
@@ -87,10 +100,13 @@ export class LaiachatLandingComponent implements OnInit {
     private toastrService: ToastrService,
     private whatsappService: WhatsappService,
     private dialog: MatDialog,
+    private dialogService: DialogService,
     private merchantsService: MerchantsService,
     private chatsService: ChatService,
     private usersService: UsersService,
     private translate: TranslateService,
+    private recordRTCService: RecordRTCService,
+    private filesService: FilesService,
   ) { }
 
   async ngOnInit() {
@@ -442,6 +458,161 @@ export class LaiachatLandingComponent implements OnInit {
         .subscribe(translate => this.toastrService.success(translate))
     } catch (error) {
       unlockUI();
+
+      console.error(error);
+      this.headerService.showErrorToast();
+    }
+  }
+
+  async loadFileOption(event: Event) {
+    const fileList = (event.target as HTMLInputElement).files;
+
+    try {
+      if (!fileList.length) return;
+      for (let i = 0; i < fileList.length; i++) {
+        const file = fileList.item(i);
+      
+        const base64 = await fileToBase64(file);
+
+        this.filesService.setFile(base64);
+        this.router.navigate(['/ecommerce/laia-training'], {
+          queryParams: {
+            typeFile: this.typeFile,
+          },
+        });
+      }
+    } catch (error) {
+      unlockUI();
+
+      console.error(error);
+      this.headerService.showErrorToast();
+    }
+  }
+
+  openDialogOptions() {
+    let data = {
+      data: {
+        description: 'Selecciona como adicionar el contenido:',
+        options: [
+          {
+            value: 'Escribe o pega un texto',
+            complete: true,
+            callback: () => {
+              this.router.navigate(['/ecommerce/laia-training']);
+            },
+            settings: {
+              value: 'fal fa-keyboard',
+              color: '#87CD9B',
+              callback: () => {
+              },
+            }
+          },
+          {
+            value: 'Adiciona un website',
+            complete: true,
+            callback: () => {
+              
+            },
+            settings: {
+              value: 'fal fa-keyboard',
+              color: '#87CD9B',
+              callback: () => {
+              },
+            }
+          },
+          {
+            value: 'Texto desde tu micrófono',
+            complete: true,
+            callback: () => {
+              const dialogref = this.dialogService.open(AudioRecorderComponent,{
+                type: 'flat-action-sheet',
+                props: { canRecord: true, isDialog: true },
+                customClass: 'app-dialog',
+                flags: ['no-header'],
+              });
+              const dialogSub = dialogref.events
+                .pipe(filter((e) => e.type === 'result'))
+                .subscribe((e) => {
+                  if(e.data) {
+                    this.audio = e.data;
+                    this.saveAudio();
+                  }
+                  this.audio = null;
+                  this.recordRTCService.abortRecording();
+                  dialogSub.unsubscribe();
+                });
+            },
+            settings: {
+              value: 'fal fa-waveform-path',
+              color: '#87CD9B',
+              callback: () => {
+              },
+            }
+          },
+          {
+            value: 'Carga un PDF',
+            complete: true,
+            callback: () => {
+              const fileInput = document.getElementById('file') as HTMLInputElement;
+              fileInput.accept = '.pdf';
+              fileInput.click();
+              this.typeFile = 'pdf';
+            },
+            settings: {
+              value: 'fal fa-file-pdf',
+              color: '#87CD9B',
+              callback: () => {
+              },
+            }
+          },
+          {
+            value: 'Carga un archivo de Excel',
+            complete: true,
+            callback: () => {
+              const fileInput = document.getElementById('file') as HTMLInputElement;
+              fileInput.accept = '.xls';
+              fileInput.click();
+              this.typeFile = 'xls';
+            },
+            settings: {
+              value: 'fal fa-file-excel',
+              color: '#87CD9B',
+              callback: () => {
+              },
+            }
+          },
+        ],
+      },
+    };
+
+    this.bottomSheet.open(OptionsMenuComponent, data)
+  }
+
+  async saveAudio() {
+    let dialogRef;
+    try {
+      dialogRef = this.dialogService.open(StatusAudioRecorderComponent, {
+        type: 'flat-action-sheet',
+        props: {
+          message: 'Conviertiéndo el audio a texto..',
+          backgroundColor: '#181D17',
+        },
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+      });
+
+      if (!this.audio) return;
+      const result = await this.gptService.openAiWhisper((this.audio && new File([this.audio.blob], this.audio.title || 'audio.mp3', {type: (<Blob>this.audio.blob)?.type})),);
+
+      this.router.navigate(['/ecommerce/laia-training'], {
+        queryParams: {
+          audioResult: result,
+        },
+      });
+
+      dialogRef.close();
+    } catch (error) {
+      dialogRef.close();
 
       console.error(error);
       this.headerService.showErrorToast();

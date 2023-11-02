@@ -12,6 +12,7 @@ import {
   getMerchantEmbeddingsMetadata,
   getVectorByIdInKnowledgeBase,
   imageObjectRecognition,
+  openAiRequestResponseFromFile,
   openAiWhisper,
   requestQAResponse,
   requestResponseFromKnowledgeBase,
@@ -59,6 +60,16 @@ export class Gpt3Service {
     });
 
     return result?.feedFileToKnowledgeBase;
+  }
+
+  async openAiRequestResponseFromFile(uploadedFile: File, prompt: string): Promise<any> {
+    const result = await this.graphql.query({
+      query: openAiRequestResponseFromFile,
+      variables: { uploadedFile, prompt },
+      context: { useMultipart: true },
+    });
+
+    return result?.openAiRequestResponseFromFile;
   }
 
   async feedKnowledgeBaseWithTextData(

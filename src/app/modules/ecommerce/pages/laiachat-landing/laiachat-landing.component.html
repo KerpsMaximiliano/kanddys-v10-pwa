@@ -132,7 +132,7 @@
         <p class="subtitle">{{ "subtitle.spent-less-time" | translate }}</p>
       </div>
 
-      <div class="container-title">
+      <!-- <div class="container-title">
         <p class="title" [style.marginBottom.px]="23">{{ "title.laia-memory" | translate }}</p>
           
           <div class="textarea-wrapper">
@@ -158,7 +158,23 @@
           </div>
 
           <p class="text" [style.marginTop.px]="12">{{ "text.write-laia-description" | translate }}</p>
+      </div> -->
+
+      <div class="container-content">
+        <p class="text">
+          Introduce contenido en la Memoria de Laia para empezar a brindar respuestas en cualquier idioma con Inteligencia Artificial
+        </p>
+
+        <button type="button" class="button" (click)="openDialogOptions()">Tap aquí para introducir contenido</button>
       </div>
+
+      <input
+        type="file"
+        id="file"
+        [style.display]="'none'"
+        (change)="loadFileOption($event)"
+        multiple
+      />
       
       <div class="social-media">
         <p class="title">{{ "title.laia-integrations" | translate }}</p>

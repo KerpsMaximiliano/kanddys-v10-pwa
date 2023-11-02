@@ -6,8 +6,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { base64ToFile } from 'src/app/core/helpers/files.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
+import { FilesService } from 'src/app/core/services/files.service';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { HeaderService } from 'src/app/core/services/header.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
@@ -94,6 +96,8 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     title: string;
   }
   audioText = new FormControl({ value: null, disabled: false }, Validators.required);
+  file: File;
+  typeFile: string;
 
   constructor(
     private gptService: Gpt3Service,
@@ -107,6 +111,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     private whatsappService: WhatsappService,
     private toastrService: ToastrService,
     private recordRTCService: RecordRTCService,
+    private filesService: FilesService,
   ) {}
 
   async ngOnInit() {
@@ -118,7 +123,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
         this.vectorId = vectorId ? vectorId : null;
 
         this.queryParamsSubscription = this.route.queryParams.subscribe(
-          async ({ jsondata, message }) => {
+          async ({ jsondata, message, audioResult, typeFile }) => {
             if (message) {
               if(this.headerService.user) {
                 this.requestResponse = true;
@@ -126,6 +131,17 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
                 return;
               } else this.router.navigate(['/ecommerce/laia-memories-management']);
             };
+
+            if (audioResult) {
+              this.form.get('memory').setValue(audioResult);
+              this.testMemory();
+            }
+
+            if (typeFile) {
+              const base64 = this.filesService.getFile();
+              this.file = await base64ToFile(base64);
+              this.typeFile = typeFile;
+            }
 
             this.memoryTextareaValueChangeSubscription = this.form
               .get('memory')
@@ -365,6 +381,35 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
       };
     } catch (error) {
       if(audioQuestion) unlockUI();
+      this.showDots = false;
+      this.headerService.showErrorToast();
+      console.error(error);
+    }
+  }
+
+  async openAiRequestResponseFromFile() {
+    try {
+      let response = await this.gptService.openAiRequestResponseFromFile(
+        this.file,
+        this.audioText.value,
+      );
+
+      if (response) {
+        if (this.generatedQA) {
+          this.generatedQA.push({
+            question: this.audioText.value,
+            response: response?.response,
+          });
+        } else {
+          this.generatedQA = [{
+            question: this.audioText.value,
+            response: response?.response,
+          }];
+        }
+      }
+      this.showDots = false;
+      this.audioText.setValue(null);
+    } catch (error) {
       this.showDots = false;
       this.headerService.showErrorToast();
       console.error(error);
@@ -987,13 +1032,16 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
       const result = await this.gptService.openAiWhisper((this.audio && new File([this.audio.blob], this.audio.title || 'audio.mp3', {type: (<Blob>this.audio.blob)?.type})),);
 
       this.audioText.setValue(result);
-      const textarea = document.getElementById('autoExpandTextarea');
-      const inputEvent = new Event('input', { bubbles: true });
-      textarea.dispatchEvent(inputEvent);
+      if(this.typeFile) this.showDots = true;
+      if(!this.typeFile) {
+        const textarea = document.getElementById('autoExpandTextarea');
+        const inputEvent = new Event('input', { bubbles: true });
+        textarea.dispatchEvent(inputEvent);
+      }
       unlockUI();
     } catch (error) {
       unlockUI();
-
+      if(this.typeFile) this.showDots = true;
       console.error(error);
       this.headerService.showErrorToast();
     }

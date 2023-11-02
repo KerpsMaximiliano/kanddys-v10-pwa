@@ -243,6 +243,32 @@
       letter-spacing: 1.265px;
     }
 
+    .container-file {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 25px 17.5px 25px 26px;
+      border-radius: 11px;
+      border: 1px solid #7B7B7B;
+    
+      .title {
+        color: #181D17;
+        font-family: InterBold;
+        font-size: 16px;
+        font-style: normal;
+        line-height: normal;
+
+        color: #F6F6F6;
+        font-family: InterRegular;
+        font-size: 16px;
+      }
+    
+      i {
+        font-size: 20px;
+        color: #87CD9B;
+      }
+    }
+
     .textarea-wrapper {
       position: relative;
       padding-top: 5px;
