@@ -1,11 +1,14 @@
 .container {
   min-height: 100%;
   background-color: #181d17;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   header {
     position: sticky;
     max-width: 500px;
-    margin: auto;
+    width: 100%;
     left: 0;
     right: 0;
     top: 0;
@@ -71,10 +74,6 @@
 
   main {
     padding: 0 23px;
-    min-height: 65.5vh;
-    @media(max-width:500px) {
-      min-height: 100vh;
-    }
 
     .memory {
       padding: 17px 22px 29px;
@@ -116,20 +115,21 @@
       }
     }
 
-    .test-text {
-      position: sticky;
-      top: 83%;
-      margin: 90px auto 5px;
-      width: 297px;
-      color: var(--Fondo-de-Pantallas, #F6F6F6);
-      text-align: center;
-      font-family: InterRegular;
-      font-size: 16px;
-    }
+  }
+
+  .test-text {
+    position:absolute;
+    bottom: 0;
+    margin: 95px 0;
+    width: 297px;
+    color: var(--Fondo-de-Pantallas, #F6F6F6);
+    text-align: center;
+    font-family: InterRegular;
+    font-size: 16px;
   }
 
   .message {
-    position: sticky;
+    position: fixed;
     display: flex;
     gap: 5px;
     width: 100%;

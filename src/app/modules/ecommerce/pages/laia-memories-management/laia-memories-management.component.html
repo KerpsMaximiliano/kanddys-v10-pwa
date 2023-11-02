@@ -20,11 +20,14 @@
       <div class="content">{{ vector.text }}</div>
     </div>
 
-    <p class="test-text">
-      Prueba las respuestas que formulará Laia, haz una pregunta de ejemplo 👇
-    </p>
+    
   </main>
-
+  <p 
+    [ngStyle]="{ 'position': vectorsFromVectorDatabase.length > 3 ? 'unset' : 'absolute' }" 
+    class="test-text"
+  >
+    Prueba las respuestas que formulará Laia, haz una pregunta de ejemplo 👇
+  </p>
   <div 
     class="message"
   >
