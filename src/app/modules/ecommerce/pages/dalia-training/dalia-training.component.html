@@ -7,17 +7,22 @@
       </span>
     </div> -->
     <ng-container *ngIf="requestResponse; else elseTemplate">
-      <h2>Memorias utilizadas en la respuesta</h2>
+      <h2>
+        RESPUESTAS FORMULADAS 
+        <span (click)="showMemories = !showMemories" [style.color]="'#7AA787'">DESDE {{ memories && memories?.length > 0 ? memories.length : 0 }} 
+        <span [style.color]="'#87CD9B'">MEMORIAS</span> DE LAIA
+        </span>
+      </h2>
     </ng-container>
     <ng-template #elseTemplate>
-      <h2>MEMORIA DE LAIA</h2>
+      <h2>{{ showTextareaMemory ? 'RESPUESTAS FORMULADAS DESDE LA MEMORIA DE LAIA' : 'MEMORIA DE LAIA' }}</h2>
     </ng-template>
     <div class="close-button" (click)="goBack()">X</div>
   </header>
 
   <ng-container *ngIf="requestResponse; else default">
     <main>
-      <div class="container-memories">
+      <div *ngIf="showMemories" class="container-memories">
         <div
           *ngFor="let memorie of memories; index as i"
           class="memory"
@@ -28,7 +33,7 @@
         </div>
       </div>
 
-      <div *ngIf="generatedQAQueryParam" class="request-response-box" [style.marginTop.px]="28">
+      <div *ngIf="generatedQAQueryParam" class="request-response-box" [style.marginTop.px]="showMemories ? 28 : 70">
         <div class="question-box-wrapper">
           <div class="content" [formGroup]="questionForm">
             <div class="question-box" *ngIf="!editingQuestion">
@@ -106,18 +111,30 @@
           </div>
         </ng-container>
         <ng-template #textWrapper>
-          <div class="textarea-wrapper" [formGroup]="form">
+          <div *ngIf="!showTextareaMemory" class="textarea-wrapper" [formGroup]="form">
             <textarea
               name="base-text"
               formControlName="memory"
               id="base-text"
               [placeholder]="'Escribe o pega un texto..'"
               class="base-text"
-              [style.backgroundColor]="form.get('memory').value ? '#181d17' : '#F6F6F6'"
-              (keyup)="onKeyUp()"
+              [ngStyle]="{ 
+                'background-color': clicked ? '#F6F6F6' : '#181d17',
+                'color': clicked ? '#7B7B7B' : '#C4C5C3'
+              }"
+              (click)="clicked = true"
             ></textarea>
   
-            <img *ngIf="form.get('memory').value" src="../../../../../assets/icons/shortcut.svg" alt="" class="shortcut" (click)="form.get('memory').setValue(null)"/>
+            <img *ngIf="form.get('memory').value && !clicked" src="../../../../../assets/icons/shortcut.svg" alt="" class="shortcut" (click)="form.get('memory').setValue(null)"/>
+            
+            <div *ngIf="clicked" class="container-send" (click)="clicked = false">
+              <img 
+                class="icon"
+                src="{{assetsFolder}}/chat-send-button.png"
+                alt="img"
+                [style.marginRight.px]="0"
+              >
+            </div>
   
             <!-- *ngIf="
               !showTextError &&
@@ -132,10 +149,10 @@
               Integraciones
             </p> -->
   
-            <div *ngIf="!form.get('memory').value" class="container-icon" (click)="openUploadFile()">
+            <!-- <div *ngIf="!form.get('memory').value" class="container-icon" (click)="openUploadFile()">
               <i class="fa fa-plus"></i>
               <h3 class="text">Adiciona el contenido desde..</h3>
-            </div>
+            </div> -->
   
             <input
               type="file"
@@ -157,6 +174,13 @@
 
         <p *ngIf="showTextError" class="show-text-error">
           Según lo escrito no se pueden generar preguntas todavía
+        </p>
+
+        <p 
+          *ngIf="!showTextareaMemory && vectorText && form.get('memory').value && vectorText != form.get('memory').value" class="show-save-memory-vector"
+          (click)="saveMemoryInKnowledgeBase()"  
+        >
+          SALVAR CAMBIOS DE LA MEMORIA
         </p>
 
         <ng-container *ngIf="generatedQA">
@@ -225,7 +249,7 @@
           </div>
         </ng-container>
         <ng-template #elseDots>
-          <div class="request-response-box" *ngIf="form.get('memory').value && showDots">
+          <!-- <div class="request-response-box" *ngIf="form.get('memory').value && showDots">
             <div class="question-box-wrapper">
               <div class="content" [formGroup]="questionForm">
                 <div class="question-box">
@@ -233,23 +257,36 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div> -->
         </ng-template>
+
+        <div
+          *ngIf="(showTextareaMemory && form.get('memory').value && (generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response)) || (showTextareaMemory && form.get('memory').value === null && (generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response))"
+          class="container-save-memory"
+          [style.marginTop.px]="generatedQA && generatedQA?.length > 2 ? 0 : 120"
+          (click)="saveMemoryInKnowledgeBase()"
+        >
+          <span class="title-save-memory">Guarda la memoria para compartir tu enlace de chat</span>
+        </div>
 
         <div id="question-response-bottom"></div>
       </div>
     </main>
 
     <div 
+      [style.display]="!clicked ? 'block' : 'none'"
       class="message"
     >
-      <p class="title">
-        PRUEBA LAS RESPUESTAS DE LAIA
-      </p>
+      <div *ngIf="!audioText.value" class="formulate-more">        
+        <p class="title">
+          Prueba las respuestas que formulará Laia, haz una pregunta de ejemplo 👇
+        </p>
+      </div>
       <div 
         class="custom-input"
         [style.backgroundColor]="audioText.value ? 'transparent' : '#87CD9B'"
         [style.alignItems]="audioText.value ? 'end' : 'center'"
+        (click)="showTextareaMemory ? showTextareaMemory = false : null"
       >
         <textarea 
           id="autoExpandTextarea"
@@ -258,6 +295,7 @@
           placeholder="Haz una pregunta de ejemplo.."
           [style.backgroundColor]="audioText.value ? '#F6F6F6' : 'transparent'"
           [style.padding]="audioText.value ? '12px 14px 10px' : '14px 14px 10px'"
+          [ngClass]="{ textareaHeight: !audioText.value }"
         ></textarea>
         <img *ngIf="!audioText.value" (click)="openRecorder()" class="audio-freq" src="{{assetsFolder}}/audio-freq.png" alt="img">
         <ng-container *ngIf="audioText.value">

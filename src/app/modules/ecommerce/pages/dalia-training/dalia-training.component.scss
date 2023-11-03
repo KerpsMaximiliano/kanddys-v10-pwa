@@ -70,20 +70,22 @@
     max-width: 500px;
     margin: 0px auto;
     bottom: 0;
-    padding: 16px;
+    // padding: 16px;
     // display: flex;
     // justify-content: center;
     // align-items: flex-end;
     background-color: #232921;
     
-    .title {
-      margin-top: 5px;
-      color: #F6F6F6;
-      font-family: FiraSansRegular;
-      font-size: 13px;
-      font-style: normal;
-      line-height: normal;
-      letter-spacing: 0.715px;
+    .formulate-more {
+      background-color: #181d17;
+      padding: 1px 50px 1px;
+
+      .title {
+        color: #C4C5C3;
+        text-align: center;
+        font-family: InterRegular;
+        font-size: 16px;
+      }
     }
 
     .custom-input {
@@ -91,7 +93,8 @@
       align-items: center;
       background-color: #87CD9B;
       border-radius: 4px;
-      width: 100%;
+      // width: 100%;
+      margin: 21px 16px 19px;
       // height: 51px;
 
       .audio-freq {
@@ -117,6 +120,10 @@
       resize: none;
       height: 51px;
       border-radius: 4px;
+    }
+
+    .textareaHeight {
+      height: 51px !important;
     }
     
     .custom-input img {
@@ -172,6 +179,7 @@
     background-color: #181d17;
     min-height: 100%;
     padding: 0px 24px;
+    padding-top: 1px;
     padding-bottom: 145px;
 
     &.inputPending {
@@ -277,11 +285,12 @@
         border-radius: 11px;
         border: 1px solid var(--Plomo, #7b7b7b);
         width: 100%;
-        height: 467px;
-        resize: none;
+        min-height: 314px;
+        max-height: 467px;
+        // resize: none;
         flex-shrink: 0;
         // background-color: #181d17;
-        color: #C4C5C3;
+        // color: #C4C5C3;
         font-family: FiraSansMedium;
         font-size: 17px;
         font-style: normal;
@@ -289,8 +298,8 @@
         letter-spacing: 0.935px;
 
         resize: none; /* Disable manual resizing */
-        overflow-y: hidden; /* Hide vertical scrollbar initially */
-        min-height: 50px; /* Set a minimum height */
+        // overflow-y: hidden; /* Hide vertical scrollbar initially */
+        // min-height: 50px; /* Set a minimum height */
         width: 100%; /* Optionally set a width */
         padding: 30px 20px 10px; /* Add padding for better appearance */
         box-sizing: border-box; /* Include padding and border in height calculation */
@@ -331,6 +340,26 @@
         bottom: 20px;
         right: 15px;
         cursor: pointer;
+      }
+
+      .container-send {
+        background-color: #87CD9B;
+        border-radius: 50%;
+        margin-left: 8px;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        cursor: pointer;
+  
+        .icon {
+          width: 24px;
+          height: 24px;
+        }
       }
 
       .settings-text {
@@ -396,6 +425,13 @@
       font-weight: 400;
       line-height: normal;
       margin-bottom: 0;
+    }
+
+    .show-save-memory-vector {
+      color: #6FCF97;
+      text-align: center;
+      font-family: InterBold;
+      font-size: 16px;
     }
   }
 
@@ -466,6 +502,20 @@
       min-width: 70%;
       max-width: 100%;
       box-sizing: border-box;
+    }
+  }
+
+  .container-save-memory {
+    padding: 0 100px 10px;
+    margin-bottom: 100px;
+    display: flex;
+
+    .title-save-memory {
+      text-align: center;
+      color: #87CD9B;
+      font-family: InterRegular;
+      font-size: 16px;
+      font-weight: 400;
     }
   }
 
