@@ -29,6 +29,7 @@ import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/gen
 import { StatusAudioRecorderComponent } from 'src/app/shared/dialogs/status-audio-recorder/status-audio-recorder.component';
 import { FilesService } from 'src/app/core/services/files.service';
 import { fileToBase64 } from 'src/app/core/helpers/files.helpers';
+import { ShareLinkInfoComponent } from 'src/app/shared/dialogs/share-link-info/share-link-info.component';
 
 interface ExtendedChat extends Chat {
   receiver?: User;
@@ -487,6 +488,17 @@ export class LaiachatLandingComponent implements OnInit {
       console.error(error);
       this.headerService.showErrorToast();
     }
+  }
+
+  shareLink() {
+    this.dialogService.open(ShareLinkInfoComponent, {
+      type: 'flat-action-sheet',
+      props: {
+        link: 'www.laichat.com/userID',
+      },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
   }
 
   openDialogOptions() {

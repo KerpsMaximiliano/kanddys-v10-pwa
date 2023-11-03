@@ -24,6 +24,7 @@ import {
 } from 'src/app/shared/dialogs/form/form.component';
 import { GeneralFormSubmissionDialogComponent } from 'src/app/shared/dialogs/general-form-submission-dialog/general-form-submission-dialog.component';
 import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
+import { StatusAudioRecorderComponent } from 'src/app/shared/dialogs/status-audio-recorder/status-audio-recorder.component';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -45,10 +46,10 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   inputQuestionForm: FormGroup = new FormGroup({
     question: new FormControl(''),
   });
-  generatedQAQueryParam: {
+  generatedQAQueryParam: Array<{
     question: string;
     response: string;
-  } = null;
+  }> = null;
   generatedQA: Array<{
     question: string;
     response: string;
@@ -98,6 +99,10 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   audioText = new FormControl({ value: null, disabled: false }, Validators.required);
   file: File;
   typeFile: string;
+  clicked: boolean = true;
+  showTextareaMemory: boolean = false;
+  vectorText: string = null;
+  showMemories: boolean = false;
 
   constructor(
     private gptService: Gpt3Service,
@@ -135,12 +140,14 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
             if (audioResult) {
               this.form.get('memory').setValue(audioResult);
               this.testMemory();
+              this.clicked = false;
             }
 
             if (typeFile) {
               const base64 = this.filesService.getFile();
               this.file = await base64ToFile(base64);
               this.typeFile = typeFile;
+              this.clicked = false;
             }
 
             this.memoryTextareaValueChangeSubscription = this.form
@@ -195,7 +202,12 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
               this.style.height = (this.scrollHeight) + 'px';
             });
 
-            // const textarea: HTMLElement = document.querySelector('.base-text');
+            const textareaMemory: HTMLElement = document.querySelector('.base-text');
+
+            textareaMemory.addEventListener('input', function () {
+              this.style.height = 'auto';
+              this.style.height = (this.scrollHeight) + 'px';
+            });
 
             // textarea?.addEventListener('input', () => {
             //   console.log('textarea scrollHeight', textarea.scrollHeight);
@@ -304,16 +316,19 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
 
       if (vectorData?.length) {
         this.showDots = true;
+        this.vectorText = vectorData[0].text;
         this.form.get('memory').setValue(vectorData[0].text);
         this.memoryName = vectorData[0].name ? vectorData[0].name : null;
-        this.testMemory();
+        this.clicked = false;
 
-        setTimeout(() => {
-          const textarea: HTMLElement = document.querySelector('.base-text');
-          const event = new Event('input');
+        // this.testMemory();
 
-          textarea.dispatchEvent(event);
-        }, 300);
+        // setTimeout(() => {
+        //   const textarea: HTMLElement = document.querySelector('.base-text');
+        //   const event = new Event('input');
+
+        //   textarea.dispatchEvent(event);
+        // }, 300);
       }
 
       unlockUI();
@@ -372,6 +387,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
       }
 
       this.showDots = false;
+      this.showTextareaMemory = true;
 
       if(audioQuestion) {
         unlockUI();
@@ -475,24 +491,48 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
 
       if (response) {
         this.memories = response?.metadatas;
-        this.generatedQAQueryParam = {
-          question: message,
-          response: response?.message,
-        };
+        if (this.generatedQAQueryParam) {
+          this.generatedQAQueryParam.push({
+            question: message,
+            response: response?.message,
+          });
+        } else {
+          this.generatedQAQueryParam = [{
+            question: message,
+            response: response?.message,
+          }];
+        }
       }
 
+      if(this.audioText.value) {
+        this.audioText.setValue(null);
+        const textarea = document.getElementById('autoExpandTextarea');
+        textarea.style.height = '51px';
+      }
       unlockUI();
     } catch (error) {
       unlockUI();
-      this.generatedQAQueryParam = {
-        question: message,
-        response: 'No tenemos respuesta a eso en este momento',
-      };
+      if (this.generatedQAQueryParam) {
+        this.generatedQAQueryParam.push({
+          question: message,
+          response: 'No tenemos respuesta a eso en este momento',
+        });
+      } else {
+        this.generatedQAQueryParam = [{
+          question: message,
+          response: 'No tenemos respuesta a eso en este momento',
+        }];
+      }
+      if(this.audioText.value) {
+        this.audioText.setValue(null);
+        const textarea = document.getElementById('autoExpandTextarea');
+        textarea.style.height = '51px';
+      }
       console.error(error);
     }
   }
 
-  async editQAQueryParam() {
+  async editQAQueryParam(index?: number) {
     try {
       lockUI();
 
@@ -509,14 +549,16 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
 
       if (response) {
         this.memories = response?.metadatas;
-        this.generatedQAQueryParam = {
+        this.generatedQAQueryParam.splice(index, 1, {
           question: this.questionForm.get('question').value,
           response: response?.message,
-        };
+        });
       }
 
+      this.editingIndex = -1;
       unlockUI();
     } catch (error) {
+      this.editingIndex = -1;
       unlockUI();
       this.headerService.showErrorToast();
       console.error(error);
@@ -531,7 +573,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
         (index || index === 0) ? `#question-box-input${index}` : '#question-box-input'
       ).textContent;
       this.questionForm.get('question').setValue(inputDivContent)
-      this.requestResponse ? await this.editQAQueryParam() : await this.editQA(index);
+      this.requestResponse ? await this.editQAQueryParam(index) : await this.editQA(index);
     }
 
     this.editingQuestion = !this.editingQuestion;
@@ -622,12 +664,12 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
-    if (
-      (this.form.get('memory').value && (this.generatedQA && this.generatedQA?.length > 0 && this.generatedQA[0]?.response)) 
-      || (this.form.get('memory').value === null && (this.generatedQA && this.generatedQA?.length > 0 && this.generatedQA[0]?.response))
-    ) {
-      this.saveMemoryInKnowledgeBase();
-    }
+    // if (
+    //   (this.form.get('memory').value && (this.generatedQA && this.generatedQA?.length > 0 && this.generatedQA[0]?.response)) 
+    //   || (this.form.get('memory').value === null && (this.generatedQA && this.generatedQA?.length > 0 && this.generatedQA[0]?.response))
+    // ) {
+    //   this.saveMemoryInKnowledgeBase();
+    // }
 
     if (this.vectorId || this.requestResponse) {
       return this.router.navigate(['/ecommerce/laia-memories-management']);
@@ -1025,8 +1067,17 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   }
 
   async saveAudio() {
+    let dialogRef;
     try {
-      lockUI();
+      dialogRef = this.dialog.open(StatusAudioRecorderComponent, {
+        type: 'flat-action-sheet',
+        props: {
+          message: 'Conviertiéndo el audio a texto..',
+          backgroundColor: '#181D17',
+        },
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+      });
 
       if (!this.audio) return;
       const result = await this.gptService.openAiWhisper((this.audio && new File([this.audio.blob], this.audio.title || 'audio.mp3', {type: (<Blob>this.audio.blob)?.type})),);
@@ -1038,9 +1089,9 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
         const inputEvent = new Event('input', { bubbles: true });
         textarea.dispatchEvent(inputEvent);
       }
-      unlockUI();
+      dialogRef.close();
     } catch (error) {
-      unlockUI();
+      dialogRef.close();
       if(this.typeFile) this.showDots = true;
       console.error(error);
       this.headerService.showErrorToast();
