@@ -231,6 +231,14 @@
   </ng-template>
 </div>
 
+<div *ngIf="headerService.user" class="footer-fixed">
+  <div class="container-permissions" (click)="shareLink()">
+      <span class="title">
+          Permisos & Enlace directo de Laia
+      </span>
+      <i class="fas fa-chevron-right icon"></i>
+  </div>
+</div>
 
 <div
   *ngIf="!headerService.user"

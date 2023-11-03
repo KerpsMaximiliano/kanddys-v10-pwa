@@ -22,6 +22,15 @@
 
     
   </main>
+
+  <input
+    type="file"
+    id="file"
+    [style.display]="'none'"
+    (change)="loadFileOption($event)"
+    multiple
+  />
+
   <p 
     [ngStyle]="{ 'position': vectorsFromVectorDatabase.length > 3 ? 'unset' : 'absolute' }" 
     class="test-text"
