@@ -46,10 +46,10 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   inputQuestionForm: FormGroup = new FormGroup({
     question: new FormControl(''),
   });
-  generatedQAQueryParam: {
+  generatedQAQueryParam: Array<{
     question: string;
     response: string;
-  } = null;
+  }> = null;
   generatedQA: Array<{
     question: string;
     response: string;
@@ -140,6 +140,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
             if (audioResult) {
               this.form.get('memory').setValue(audioResult);
               this.testMemory();
+              this.clicked = false;
             }
 
             if (typeFile) {
@@ -490,24 +491,48 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
 
       if (response) {
         this.memories = response?.metadatas;
-        this.generatedQAQueryParam = {
-          question: message,
-          response: response?.message,
-        };
+        if (this.generatedQAQueryParam) {
+          this.generatedQAQueryParam.push({
+            question: message,
+            response: response?.message,
+          });
+        } else {
+          this.generatedQAQueryParam = [{
+            question: message,
+            response: response?.message,
+          }];
+        }
       }
 
+      if(this.audioText.value) {
+        this.audioText.setValue(null);
+        const textarea = document.getElementById('autoExpandTextarea');
+        textarea.style.height = '51px';
+      }
       unlockUI();
     } catch (error) {
       unlockUI();
-      this.generatedQAQueryParam = {
-        question: message,
-        response: 'No tenemos respuesta a eso en este momento',
-      };
+      if (this.generatedQAQueryParam) {
+        this.generatedQAQueryParam.push({
+          question: message,
+          response: 'No tenemos respuesta a eso en este momento',
+        });
+      } else {
+        this.generatedQAQueryParam = [{
+          question: message,
+          response: 'No tenemos respuesta a eso en este momento',
+        }];
+      }
+      if(this.audioText.value) {
+        this.audioText.setValue(null);
+        const textarea = document.getElementById('autoExpandTextarea');
+        textarea.style.height = '51px';
+      }
       console.error(error);
     }
   }
 
-  async editQAQueryParam() {
+  async editQAQueryParam(index?: number) {
     try {
       lockUI();
 
@@ -524,14 +549,16 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
 
       if (response) {
         this.memories = response?.metadatas;
-        this.generatedQAQueryParam = {
+        this.generatedQAQueryParam.splice(index, 1, {
           question: this.questionForm.get('question').value,
           response: response?.message,
-        };
+        });
       }
 
+      this.editingIndex = -1;
       unlockUI();
     } catch (error) {
+      this.editingIndex = -1;
       unlockUI();
       this.headerService.showErrorToast();
       console.error(error);
@@ -546,7 +573,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
         (index || index === 0) ? `#question-box-input${index}` : '#question-box-input'
       ).textContent;
       this.questionForm.get('question').setValue(inputDivContent)
-      this.requestResponse ? await this.editQAQueryParam() : await this.editQA(index);
+      this.requestResponse ? await this.editQAQueryParam(index) : await this.editQA(index);
     }
 
     this.editingQuestion = !this.editingQuestion;

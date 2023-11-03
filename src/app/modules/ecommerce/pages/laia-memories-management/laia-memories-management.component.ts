@@ -11,6 +11,14 @@ import { AppService } from 'src/app/app.service';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { AudioRecorderComponent } from 'src/app/shared/components/audio-recorder/audio-recorder.component';
+import { RecordRTCService } from 'src/app/core/services/recordrtc.service';
+import { FilesService } from 'src/app/core/services/files.service';
+import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
+import { StatusAudioRecorderComponent } from 'src/app/shared/dialogs/status-audio-recorder/status-audio-recorder.component';
+import { fileToBase64 } from 'src/app/core/helpers/files.helpers';
 
 @Component({
   selector: 'app-laia-memories-management',
@@ -34,6 +42,11 @@ export class LaiaMemoriesManagementComponent implements OnInit {
   message: FormControl = new FormControl(null);
 
   inputOpen: boolean = false;
+  audio: {
+    blob: Blob;
+    title: string;
+  };
+  typeFile: string;
 
   constructor(
     private gptService: Gpt3Service,
@@ -41,7 +54,11 @@ export class LaiaMemoriesManagementComponent implements OnInit {
     private saleflowsService: SaleFlowService,
     private merchantsService: MerchantsService,
     private appService: AppService,
-    private router: Router
+    private router: Router,
+    private bottomSheet: MatBottomSheet,
+    private dialogService: DialogService,
+    private recordRTCService: RecordRTCService,
+    private filesService: FilesService,
   ) {}
 
   async ngOnInit() {
@@ -99,7 +116,158 @@ export class LaiaMemoriesManagementComponent implements OnInit {
   }
 
   addMemory() {
-    this.router.navigate(['/ecommerce/laia-training']);
+    let data = {
+      data: {
+        description: 'Selecciona como adicionar el contenido:',
+        options: [
+          {
+            value: 'Escribe o pega un texto',
+            complete: true,
+            callback: () => {
+              this.router.navigate(['/ecommerce/laia-training']);
+            },
+            settings: {
+              value: 'fal fa-keyboard',
+              color: '#87CD9B',
+              callback: () => {
+              },
+            }
+          },
+          {
+            value: 'Adiciona un website',
+            complete: true,
+            callback: () => {
+              
+            },
+            settings: {
+              value: 'fal fa-keyboard',
+              color: '#87CD9B',
+              callback: () => {
+              },
+            }
+          },
+          {
+            value: 'Texto desde tu micrófono',
+            complete: true,
+            callback: () => {
+              const dialogref = this.dialogService.open(AudioRecorderComponent,{
+                type: 'flat-action-sheet',
+                props: { canRecord: true, isDialog: true },
+                customClass: 'app-dialog',
+                flags: ['no-header'],
+              });
+              const dialogSub = dialogref.events
+                .pipe(filter((e) => e.type === 'result'))
+                .subscribe((e) => {
+                  if(e.data) {
+                    this.audio = e.data;
+                    this.saveAudio();
+                  }
+                  this.audio = null;
+                  this.recordRTCService.abortRecording();
+                  dialogSub.unsubscribe();
+                });
+            },
+            settings: {
+              value: 'fal fa-waveform-path',
+              color: '#87CD9B',
+              callback: () => {
+              },
+            }
+          },
+          {
+            value: 'Carga un PDF',
+            complete: true,
+            callback: () => {
+              const fileInput = document.getElementById('file') as HTMLInputElement;
+              fileInput.accept = '.pdf';
+              fileInput.click();
+              this.typeFile = 'pdf';
+            },
+            settings: {
+              value: 'fal fa-file-pdf',
+              color: '#87CD9B',
+              callback: () => {
+              },
+            }
+          },
+          {
+            value: 'Carga un archivo de Excel',
+            complete: true,
+            callback: () => {
+              const fileInput = document.getElementById('file') as HTMLInputElement;
+              fileInput.accept = '.xls';
+              fileInput.click();
+              this.typeFile = 'xls';
+            },
+            settings: {
+              value: 'fal fa-file-excel',
+              color: '#87CD9B',
+              callback: () => {
+              },
+            }
+          },
+        ],
+      },
+    };
+
+    this.bottomSheet.open(OptionsMenuComponent, data);
+  }
+
+  async saveAudio() {
+    let dialogRef;
+    try {
+      dialogRef = this.dialogService.open(StatusAudioRecorderComponent, {
+        type: 'flat-action-sheet',
+        props: {
+          message: 'Conviertiéndo el audio a texto..',
+          backgroundColor: '#181D17',
+        },
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+      });
+
+      if (!this.audio) return;
+      const result = await this.gptService.openAiWhisper((this.audio && new File([this.audio.blob], this.audio.title || 'audio.mp3', {type: (<Blob>this.audio.blob)?.type})),);
+
+      this.router.navigate(['/ecommerce/laia-training'], {
+        queryParams: {
+          audioResult: result,
+        },
+      });
+
+      dialogRef.close();
+    } catch (error) {
+      dialogRef.close();
+
+      console.error(error);
+      this.headerService.showErrorToast();
+    }
+  }
+
+  async loadFileOption(event: Event) {
+    const fileList = (event.target as HTMLInputElement).files;
+
+    try {
+      if (!fileList.length) return;
+      for (let i = 0; i < fileList.length; i++) {
+        const file = fileList.item(i);
+      
+        const base64 = await fileToBase64(file);
+
+        this.filesService.setFile(base64);
+        this.router.navigate(['/ecommerce/laia-training'], {
+          queryParams: {
+            typeFile: this.typeFile,
+          },
+        });
+      }
+    } catch (error) {
+      unlockUI();
+
+      console.error(error);
+      this.headerService.showErrorToast();
+    }
   }
 
   goLaiaTraining() {

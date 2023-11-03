@@ -252,6 +252,7 @@ import { SignupChatComponent } from './dialogs/signup-chat/signup-chat.component
 import { LoginFormComponent } from './dialogs/login-form/login-form.component';
 import { ContactUsDialogComponent } from './dialogs/contact-us-dialog/contact-us-dialog.component';
 import { StatusAudioRecorderComponent } from './dialogs/status-audio-recorder/status-audio-recorder.component';
+import { ShareLinkInfoComponent } from './dialogs/share-link-info/share-link-info.component';
 
 const imports = [
   CommonModule,
@@ -515,6 +516,7 @@ const declarations = [
   LoginFormComponent,
   ContactUsDialogComponent,
   StatusAudioRecorderComponent,
+  ShareLinkInfoComponent,
 ];
 
 @NgModule({
