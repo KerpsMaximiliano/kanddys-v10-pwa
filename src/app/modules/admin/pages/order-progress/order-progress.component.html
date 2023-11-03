@@ -1,4 +1,9 @@
-<div class=" dashboard-page container" (scroll)="infinitePagination()">
+<div class=" dashboard-page container" 
+      (scroll)="infinitePagination()"
+      [ngClass]="{
+        'stop-scroll' : tutorialEnabled
+      }">
+  <div *ngIf="tutorialEnabled" class="tutorial"></div>
   <div *ngIf="tutorialEnabled" class="blur"></div>
   <div *ngIf="tutorialEnabled" class="dialog">
     <p class="tutorial-title">Creas facturas, llevas el control y si quieres compártela con el comprador.</p>
@@ -33,11 +38,6 @@
       <p>ORDENES & PEDIDOS</p>
     </div>
   </div>
-  <!-- <header *ngIf="searchOpened">
-    <button class="btn btn-close" (click)="onCloseSearchbar()">
-      <img src="../../../../../assets/icons/close-button.svg" alt="" />
-    </button>
-  </header> -->
   <div>
     <swiper
       #ordersSwiper
@@ -308,7 +308,7 @@
           <img
                 *ngIf="order.orderType === 'external'"
                 alt="camara"
-                class="camera-icon grey"
+                class="camera-card-icon grey"
                 src="{{ env }}/grey-camera.png"
                 (click)="emitFileInputClick()"
               />

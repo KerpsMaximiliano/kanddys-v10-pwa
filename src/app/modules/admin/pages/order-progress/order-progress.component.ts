@@ -323,13 +323,17 @@ export class OrderProgressComponent implements OnInit {
       },
       options: orderQuantityDeliveryOptions
     }).then((res) => {
-      this.pickUp = {
-        amount: res.pickup,
-        selected: false,
-      }
-      this.delivery = {
-        amount: res.delivery,
-        selected: false,
+      if(res){
+        this.pickUp = {
+          amount: res.pickup,
+          selected: false,
+        }
+        this.delivery = {
+          amount: res.delivery,
+          selected: false,
+        }
+      }else{
+        unlockUI()
       }
     })
     unlockUI()
@@ -860,13 +864,17 @@ export class OrderProgressComponent implements OnInit {
         },
         options: orderQuantityDeliveryOptions
       }).then((res) => {
-        this.pickUp = {
-          amount: res.pickup,
-          selected: false,
-        }
-        this.delivery = {
-          amount: res.delivery,
-          selected: false,
+        if(res){
+          this.pickUp = {
+            amount: res.pickup,
+            selected: false,
+          }
+          this.delivery = {
+            amount: res.delivery,
+            selected: false,
+          }
+        }else{
+          unlockUI()
         }
       })    
     
