@@ -20,6 +20,16 @@
 
     background-color: #181d17;
 
+    .header-show-memories {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .icon-brain {
+        width: 22px;
+      }
+    }
+
     .knowledge-slot-header {
       color: var(--Fondo-de-Pantallas, #f6f6f6);
       font-family: InterLight;
@@ -343,7 +353,6 @@
       }
 
       .container-send {
-        background-color: #87CD9B;
         border-radius: 50%;
         margin-left: 8px;
         width: 50px;
