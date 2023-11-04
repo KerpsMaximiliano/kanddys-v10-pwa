@@ -1,17 +1,15 @@
 <app-navigation [opened]="drawerOpened" (closed)="drawerOpened = false">
   <div class="dashboard-page container" (scroll)="infinitePagination()">
-    <header class="header" *ngIf="!searchOpened">
+    <header class="header" *ngIf="!searchOpened && !filteringOpened">
       <div class="btn-container principal">
-        <button type="button" mat-icon-button (click)="back()">
-          <mat-icon>keyboard_arrow_left</mat-icon>
-        </button>
         <button class="title" (click)="drawerOpened = true">
-          Vende fácilmente
+          <mat-icon>house</mat-icon>
+          ARTÍCULOS EN VENTA
         </button>
       </div>
 
       <div class="btn-container">
-        <button mat-icon-button (click)="toggleStoreVisibility()">
+        <!-- <button mat-icon-button (click)="toggleStoreVisibility()">
           <img
             [src]="
               isSwitchActive
@@ -22,55 +20,44 @@
             alt="open internal information"
             style="filter: none"
           />
+        </button> -->
+        <button type="button" mat-icon-button (click)="searchOpened = true">
+          <mat-icon>search</mat-icon>
         </button>
 
         <button mat-icon-button (click)="sendWhatsappToAppOwner()">
           <mat-icon [ngStyle]="{ color: 'white' }">add</mat-icon>
         </button>
+        <button type="button" mat-icon-button (click)="back()">
+          <mat-icon>close</mat-icon>
+        </button>
       </div>
     </header>
 
-    <section class="info" *ngIf="!searchOpened">
+    <!--Filtros antes del dashboard-->
+    <section class="info" *ngIf="!searchOpened && !filteringOpened">
       <div class="container">
-        <div class="info-detail">
-          <p>Comprador paga 0.30 a Laila</p>
-          <button mat-icon-button (click)="onSelectPlataformFee()">
-            <img
-              [src]="
-                plataformFeeTypeActual === 'platform_fee_user'
-                  ? '../../../../../assets/icons/switch-green.svg'
-                  : '../../../../../assets/icons/switch-red.svg'
-              "
-              class="info-button"
-              alt="open internal information"
-              style="filter: none"
-            />
+        <button class="btn-secondary">Subscriptions Items</button>
+        <div class="container-btn">
+          <button (click)="goToOrder()">
+            <mat-icon>shop</mat-icon>
+          </button>
+          <button (click)="filteringOpened = true">
+            <mat-icon>circle</mat-icon>
           </button>
         </div>
-        <p class="info-detail-text">
-          Le vendes
-          <span (click)="openExhibitDialog()">
-            {{
-              this.merchantRole?.code === "PRODUCTOR"
-                ? "a fincas"
-                : this.merchantRole?.code === "PROVIDER"
-                ? "a floristerías"
-                : this.merchantRole?.code === "SUPPLIER"
-                ? "a wholesalers"
-                : "al consumidor final"
-            }}.
-          </span>
-        </p>
       </div>
     </section>
 
-    <div class="search-opened" *ngIf="searchOpened">
+    <!--Filtos al abrir la barra de busqueda-->
+    <div class="search-opened" *ngIf="searchOpened || filteringOpened">
       <header>
         <button class="btn btn-close" (click)="onCloseSearchbar()">
           <img src="../../../../../assets/icons/close-button.svg" alt="" />
         </button>
       </header>
-      <form class="search-bar-wrapper">
+      <!--searchbar-->
+      <form class="search-bar-wrapper" *ngIf="searchOpened">
         <mat-icon>search</mat-icon>
         <input
           type="text"
@@ -83,55 +70,58 @@
         />
       </form>
 
-      <div class="filtering-options card">
-        <button
-          [ngClass]="{ active: btnConsumerState.supplier }"
-          (click)="onChangeConsumerState('supplier')"
-        >
-          Articulos para floristerias ({{ totalByType.default }})
-        </button>
-        <button
-          [ngClass]="{ active: btnConsumerState.default }"
-          (click)="onChangeConsumerState('default')"
-        >
-          Consumidores finales ({{ totalByType.supplier }})
-        </button>
-      </div>
+      <!--Filtering Cards-->
+      <ng-container *ngIf="filteringOpened">
+        <div class="filtering-options card">
+          <button
+            [ngClass]="{ active: btnConsumerState.supplier }"
+            (click)="onChangeConsumerState('supplier')"
+          >
+            Articulos para floristerias ({{ totalByType.default }})
+          </button>
+          <button
+            [ngClass]="{ active: btnConsumerState.default }"
+            (click)="onChangeConsumerState('default')"
+          >
+            Consumidores finales ({{ totalByType.supplier }})
+          </button>
+        </div>
+        <div class="filtering-options card card-store">
+          <button
+            type="button"
+            [ngClass]="{ active: btnFilterState.exhibits }"
+            (click)="onChangeBtnFiltering('exhibits')"
+          >
+            Todos los exhibidos ({{ totalByItems.allItems }})
+          </button>
+          <button
+            type="button"
+            [ngClass]="{ active: btnFilterState.hidden }"
+            (click)="onChangeBtnFiltering('hidden')"
+          >
+            Los ocultos ({{ totalByItems.hidden }})
+          </button>
 
-      <div class="filtering-options card card-store">
-        <button
-          type="button"
-          [ngClass]="{ active: btnFilterState.exhibits }"
-          (click)="onChangeBtnFiltering('exhibits')"
-        >
-          Todos los exhibidos ({{ totalByItems.allItems }})
-        </button>
-        <button
-          type="button"
-          [ngClass]="{ active: btnFilterState.hidden }"
-          (click)="onChangeBtnFiltering('hidden')"
-        >
-          Los ocultos ({{ totalByItems.hidden }})
-        </button>
-
-        <button
-          type="button"
-          [ngClass]="{ active: btnFilterState.byCommission }"
-          (click)="onChangeBtnFiltering('byCommission')"
-        >
-          Los que pagan comisión ({{ totalByItems.byCommission }})
-        </button>
-        <button
-          type="button"
-          [ngClass]="{ active: btnFilterState.lowStock }"
-          (click)="onChangeBtnFiltering('lowStock')"
-        >
-          Menos de 10 disponibles para vender ({{ totalByItems.byLowStock }})
-        </button>
-      </div>
+          <button
+            type="button"
+            [ngClass]="{ active: btnFilterState.byCommission }"
+            (click)="onChangeBtnFiltering('byCommission')"
+          >
+            Los que pagan comisión ({{ totalByItems.byCommission }})
+          </button>
+          <button
+            type="button"
+            [ngClass]="{ active: btnFilterState.lowStock }"
+            (click)="onChangeBtnFiltering('lowStock')"
+          >
+            Menos de 10 disponibles para vender ({{ totalByItems.byLowStock }})
+          </button>
+        </div>
+      </ng-container>
     </div>
 
     <main>
+      <!--Tutorial -->
       <ng-container
         *ngTemplateOutlet="
           presentation;
@@ -139,136 +129,105 @@
         "
       ></ng-container>
 
+      <!--Tutorial2 -->
       <ng-container
         *ngTemplateOutlet="
           searchTutorial;
-          context: {
-            tutorialOpened: searchTutorialsOpened
-          }
+          context: { tutorialOpened: searchTutorialsOpened }
         "
       ></ng-container>
-
-      <h6 class="intro-text" *ngIf="!searchOpened">
-        Esta plataforma te pone al frente de quienes necesitan exactamente lo
-        que ofreces.
-      </h6>
-
-      <form
-        class="search-bar-wrapper"
-        style="margin-bottom: 21px"
-        *ngIf="!searchOpened"
-      >
-        <input
-          type="text"
-          (click)="showSearch()"
-          name="item-search"
-          class="input search-bar"
-          placeholder="Articulos exhibidos..."
-        />
-
-        <div class="filters">
-          <div class="option" [routerLink]="'/admin/order-progress'">📦</div>
-          <div class="option" [routerLink]="'/admin/order-filtering'">⏰</div>
-          <div class="option" [routerLink]="'/admin/benefits-control'">💰</div>
-        </div>
-      </form>
 
       <ng-container *ngTemplateOutlet="itemsTutorialOverlay"></ng-container>
 
       <!-- Articulos exhibidos -->
-      <section *ngIf="itemsISell?.length > 0 && !hiddenDashboard">
-        <h3>ARTICULOS QUE ESTOY EXHIBIENDO A LOS MIEMBROS</h3>
-
-        <div class="list-of-items">
-          <div
-            class="item-wrapper"
-            *ngFor="let item of itemsISell; let itemIndex = index"
-          >
-            <ng-container
-              *ngTemplateOutlet="
-                itemCard;
-                context: {
-                  item: item,
-                  itemIndex: itemIndex,
-                  providedByMe: false,
-                  firstItem: itemIndex === 0 && itemsISell.length > 0
-                }
-              "
-            ></ng-container>
-          </div>
+      <section
+        class="list-of-items"
+        *ngIf="itemsISell?.length > 0 && !hiddenDashboard"
+      >
+        <div
+          class="item-wrapper"
+          *ngFor="let item of itemsISell; let itemIndex = index"
+        >
+          <ng-container
+            *ngTemplateOutlet="
+              itemCard;
+              context: {
+                item: item,
+                itemIndex: itemIndex,
+                providedByMe: false,
+                firstItem: itemIndex === 0 && itemsISell.length > 0
+              }
+            "
+          ></ng-container>
         </div>
       </section>
 
       <!-- Articulos no exhibidos -->
       <section
+        class="list-of-items"
         *ngIf="itemsIDontSell?.length > 0 && !hiddenDashboard && !isUserLogged"
       >
-        <h3>ARTICULOS QUE NECESITAN LAS FLORISTERIAS MIEMBROS</h3>
-
-        <div class="list-of-items">
-          <div
-            class="item-wrapper"
-            *ngFor="let item of itemsIDontSell; let itemIndex = index"
-          >
-            <ng-container
-              *ngTemplateOutlet="
-                itemCard;
-                context: {
-                  item: item,
-                  itemIndex: itemIndex,
-                  providedByMe: false,
-                  firstItem:
-                    itemIndex === 0 &&
-                    itemsISell.length === 0 &&
-                    itemsIDontSell.length > 0
-                }
-              "
-            ></ng-container>
-          </div>
+        <div
+          class="item-wrapper"
+          *ngFor="let item of itemsIDontSell; let itemIndex = index"
+        >
+          <ng-container
+            *ngTemplateOutlet="
+              itemCard;
+              context: {
+                item: item,
+                itemIndex: itemIndex,
+                providedByMe: false,
+                firstItem:
+                  itemIndex === 0 &&
+                  itemsISell.length === 0 &&
+                  itemsIDontSell.length > 0
+              }
+            "
+          ></ng-container>
         </div>
       </section>
 
       <!-- Articulos filtrados -->
-      <section *ngIf="searchOpened">
-        <div class="list-of-items">
-          <div
-            class="item-wrapper"
-            *ngFor="let item of itemsFiltering; let itemIndex = index"
-          >
-            <ng-container
-              *ngTemplateOutlet="
-                itemCard;
-                context: {
-                  item: item,
-                  itemIndex: itemIndex,
-                  providedByMe: false,
-                  firstItem:
-                    itemIndex === 0 &&
-                    itemsISell.length === 0 &&
-                    itemsIDontSell.length > 0
-                }
-              "
-            ></ng-container>
-          </div>
+      <section class="list-of-items" *ngIf="searchOpened">
+        <div
+          class="item-wrapper"
+          *ngFor="let item of itemsFiltering; let itemIndex = index"
+        >
+          <ng-container
+            *ngTemplateOutlet="
+              itemCard;
+              context: {
+                item: item,
+                itemIndex: itemIndex,
+                providedByMe: false,
+                firstItem:
+                  itemIndex === 0 &&
+                  itemsISell.length === 0 &&
+                  itemsIDontSell.length > 0
+              }
+            "
+          ></ng-container>
         </div>
       </section>
     </main>
 
-    <footer
-      *ngIf="!searchOpened && itemsIDontSell?.length > 0 && !isUserLogged"
-    >
-      <p>Preview</p>
-      <p>Comparte</p>
+    <footer *ngIf="!searchOpened">
+      <button class="left" (click)="goToStore()">Preview</button>
+      <button (click)="goToStore()">Opciones</button>
+      <button class="right" (click)="shareStore()">Comparte</button>
     </footer>
 
-    <footer
-      *ngIf="!searchOpened && isUserLogged"
-      [ngClass]="{ off: !isSwitchActive }"
-    >
-      <p>Preview</p>
-      <p *ngIf="isSwitchActive">Comparte</p>
-      <p *ngIf="!isSwitchActive">Tu vitrina está apagada</p>
-    </footer>
+    <qrcode
+      style="display: none"
+      #storeQrCode
+      [qrdata]="getDataQR()"
+      [elementType]="'img'"
+      [width]="40"
+      [errorCorrectionLevel]="'M'"
+      [allowEmptyString]="true"
+      colorDark="#000"
+    ></qrcode>
   </div>
 </app-navigation>
 
@@ -285,7 +244,13 @@
       'tutorial-highlighted': firstItem && itemsTutorialOpened
     }"
   >
-    <div class="left-column" (click)="goToArticleDetail(item._id)">
+    <div class="left-column">
+      <input
+        class="product-select"
+        type="checkbox"
+        name="select-item"
+        [id]="'select-' + item._id"
+      />
       <div
         class="product-image"
         [ngStyle]="{
@@ -299,6 +264,7 @@
           backgroundSize: 'cover',
           backgroundRepeat: 'no-repeat'
         }"
+        (click)="goToArticleDetail(item._id)"
       ></div>
     </div>
 

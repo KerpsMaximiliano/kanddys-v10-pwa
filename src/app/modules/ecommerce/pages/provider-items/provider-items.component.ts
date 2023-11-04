@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, NavigationExtras, Route, Router } from '@angular/router';
+import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { AppService } from 'src/app/app.service';
-import { urltoFile } from 'src/app/core/helpers/files.helpers';
+import { base64ToBlob, urltoFile } from 'src/app/core/helpers/files.helpers';
 import { completeImageURL, isVideo } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item, ItemImageInput, ItemInput } from 'src/app/core/models/item';
@@ -23,7 +23,12 @@ import { QuotationItem } from 'src/app/core/services/quotations.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { FormComponent, FormData } from 'src/app/shared/dialogs/form/form.component';
 import { OptionsDialogComponent, OptionsDialogTemplate } from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
+import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
 import { environment } from 'src/environments/environment';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { NgNavigatorShareService } from 'ng-navigator-share';
+
 
 
 type btnFilterName = 'exhibits' | 'noExhibits' | 'hidden' | 'byCommission' | 'lowStock'
@@ -35,6 +40,12 @@ type consumerType = 'supplier' | 'default'
   styleUrls: ['./provider-items.component.scss'],
 })
 export class ProviderItemsComponent implements OnInit {
+  @ViewChild('storeQrCode', { read: ElementRef }) storeQrCode: ElementRef;
+
+  mode: 'STANDARD' | 'SUPPLIER' = 'STANDARD';
+  view: 'LIST' | 'SEARCH' = 'LIST';
+  URI: string = environment.uri;
+
   drawerOpened: boolean = false;
   assetsFolder: string = environment.assetsUrl;
   presentationOpened: boolean = false;
@@ -62,6 +73,7 @@ export class ProviderItemsComponent implements OnInit {
   itemsFiltering = []
 
   /**Button for filtering */
+  filteringOpened = false
   btnConsumerState = {
     supplier: false,
     default: false
@@ -166,7 +178,11 @@ export class ProviderItemsComponent implements OnInit {
     private route: ActivatedRoute,
     private authService: AuthService,
     private snackbar: MatSnackBar,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private bottomSheet: MatBottomSheet,
+    private clipboard: Clipboard,
+    private snackBar: MatSnackBar,
+    private ngNavigatorShareService: NgNavigatorShareService,
   ) { }
 
   async ngOnInit() {
@@ -1663,6 +1679,7 @@ export class ProviderItemsComponent implements OnInit {
 
   onCloseSearchbar() {
     this.searchOpened = false
+    this.filteringOpened = false
     this.hiddenDashboard = false
     this.resetBtn(this.btnFilterState)
     this.resetBtn(this.btnConsumerState)
@@ -1770,6 +1787,96 @@ export class ProviderItemsComponent implements OnInit {
         ]
       }
     })
+  }
+
+  shareStore() {
+    this.bottomSheet.open(OptionsMenuComponent, {
+      data: {
+        title: `Comparte el Enlace de Compradores:`,
+        options: [
+          {
+            value: `Copia el link`,
+            callback: async () => {
+              this.clipboard.copy(
+                `${this.URI}/ecommerce/${this.merchantsService.merchantData.slug}/store?mode=${this.mode === 'SUPPLIER' ? 'supplier' : 'standard'}`
+              );
+              this.snackBar.open('Enlace copiado en el portapapeles', '', {
+                duration: 2000,
+              });
+            },
+          },
+          {
+            value: `Descarga el QR`,
+            callback: async () => {
+              // TODO ????
+              this.downloadQr();
+            },
+          },
+          {
+            value: `Compártela`,
+            callback: async () => {
+              this.ngNavigatorShareService.share({
+                title: '',
+                url: `${this.URI}/ecommerce/${this.merchantsService.merchantData.slug}/store?mode=${this.mode === 'SUPPLIER' ? 'supplier' : 'standard'}`,
+              });
+            },
+          },
+          {
+            value: `Mira cómo se ve`,
+            callback: async () => {
+              this.goToStore();
+            },
+          },
+        ],
+        description: "Enlace www.flores.club/merchantid",
+        styles: {
+          fullScreen: true,
+        },
+      },
+    });
+  }
+
+  goToStore() {
+    this.router.navigate([
+      `/ecommerce/${this.merchantsService.merchantData.slug}/store`,
+    ], {
+      queryParams: {
+        adminView: true,
+        mode: this.mode === 'SUPPLIER' ? 'supplier' : 'standard'
+      }
+    });
+  }
+
+  goToOrder() {
+    this.router.navigate['/admin/order-progress']
+  }
+
+  downloadQr() {
+    const parentElement =
+      this.storeQrCode.nativeElement.querySelector('img').src;
+    let blobData = base64ToBlob(parentElement);
+    if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
+      //IE
+      (window.navigator as any).msSaveOrOpenBlob(
+        blobData,
+        'Enlace a vista de compradores de mi KiosKo'
+      );
+    } else {
+      // chrome
+      const blob = new Blob([blobData], { type: 'image/png' });
+      const url = window.URL.createObjectURL(blob);
+      // window.open(url);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'Enlace a vista de compradores de mi KiosKo';
+      link.click();
+    }
+  }
+
+  getDataQR() {
+    const slug = this.saleflowService.saleflowData?.merchant?.slug
+    const mode = this.mode === 'SUPPLIER' ? 'supplier' : 'standard'
+    return `${this.URI}/ecommerce/${slug}/store?mode=${mode}`
   }
 
   /**

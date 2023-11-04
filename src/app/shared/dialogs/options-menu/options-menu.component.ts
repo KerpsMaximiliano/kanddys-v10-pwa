@@ -33,7 +33,6 @@ export class OptionsMenuComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log(this.data)
     if(this.data && this.data.styles) {
       if(this.data.styles['fullScreen']) {
         const element: HTMLElement = document.querySelector('.mat-bottom-sheet-container');
