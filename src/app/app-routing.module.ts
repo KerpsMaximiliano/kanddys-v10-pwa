@@ -2,10 +2,10 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ErrorScreenComponent } from './modules/others/pages/error-screen/error-screen.component';
 
-const redirectTo = 'ecommerce/club-landing';
+const redirectTo = 'ecommerce/laiachat-landing';
 const routes: Routes = [
   { path: '', redirectTo, pathMatch: 'full' },
-  { path: 'ecommerce/club-landing', redirectTo, pathMatch: 'full' },
+  { path: 'ecommerce/laiachat-landing', redirectTo, pathMatch: 'full' },
   // { path: 'invitation/community/:identifier', component: InvitationComponent },
   // {
   //   path: 'partner/receipts/:id',

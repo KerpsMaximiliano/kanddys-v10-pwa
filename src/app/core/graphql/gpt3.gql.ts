@@ -84,6 +84,12 @@ export const feedFileToKnowledgeBase = gql`
   }
 `;
 
+export const openAiRequestResponseFromFile = gql`
+  query openAiRequestResponseFromFile($prompt: String!, $uploadedFile: Upload!) {
+    openAiRequestResponseFromFile(prompt: $prompt, uploadedFile: $uploadedFile)
+  }
+`;
+
 export const feedKnowledgeBaseWithTextData = gql`
   mutation feedKnowledgeBaseWithTextData($text: String!, $memoryName: String) {
     feedKnowledgeBaseWithTextData(text: $text, memoryName: $memoryName)
@@ -118,6 +124,21 @@ export const generateCompletionForMerchant = gql`
     $prompt: String!
   ) {
     generateCompletionForMerchant(merchantID: $merchantID, prompt: $prompt)
+  }
+`;
+
+export const scraperMerchant = gql`
+  mutation scraperMerchant(
+    $urls: [String!]!
+    $merchantId: ObjectID!
+  ) {
+    scraperMerchant(urls: $urls, merchantId: $merchantId)
+  }
+`;
+
+export const openAiWhisper = gql`
+  mutation openAiWhisper($input: Upload!) {
+    openAiWhisper(input: $input)
   }
 `;
 

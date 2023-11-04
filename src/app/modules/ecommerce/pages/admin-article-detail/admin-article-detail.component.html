@@ -1,5 +1,5 @@
 <div class="main-container">
-  <nav>
+  <nav *ngIf="itemId">
     <div class="subnav">
       <a class="exit"> X </a>
     </div>
@@ -11,12 +11,60 @@
       </mat-slide-toggle>
     </div>
   </nav>
-  <div class="article-info">
+  <nav *ngIf="!itemId">
+    <div class="subnav">
+      <a class="exit"> X </a>
+    </div>
+    <div class="new-item">
+      <p>Articulo nuevo</p>
+    </div>
+  </nav>
+  <div class="items-container">
+    <div class="article-content flex">
+      <div
+        *ngIf="itemImage"
+        class="image"
+        [ngStyle]="{
+          backgroundImage: itemImage ? 'url(' + itemImage + ')'
+          : 'url(/assets/images/noimage.png)'
+        }"
+        (click)="uploader.click()"
+      >
+      <input id="imgInput" accept="image/*" type="file" hidden #uploader (change)="getImg($event)">
+    </div>
+    <div
+        *ngIf="!itemImage"
+        class="iconImage"
+        (click)="uploader.click()"
+      >
+      <p class="addIcon">+</p>
+      <input id="imgInput" accept="image/*" type="file" hidden #uploader (change)="getImg($event)">
+    </div>
+      <div class="article">
+        <div class="input-container">
+          <input 
+            type="text" 
+            class="article-id"
+            [formControl]="articleName"
+            placeholder="Sin nombre">
+        </div>
+        <div class="input-container">
+          <textarea 
+            rows="3" 
+            cols="33"
+            class="context"
+            [formControl]="articleDescription"
+            placeholder="Opcional, adiciona una descripción"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <div class="article-info">
     <img alt="" class="article-img" [src]="item?.images[0].value" />
     <p class="article-name">{{item?.name}}</p>
     <p class="article-description">{{item?.description}}</p>
-  </div>
-  <div class="tab-bar">
+  </div> -->
+  <div class="tab-bar" *ngIf="itemId">
     <p 
       (click)="tabIndex = 1"
       [class]="{'active': tabIndex === 1}"
@@ -33,12 +81,36 @@
   <main *ngIf="tabIndex === 2">
     <div class="category">
       <h2>Precios</h2>
-      <div class="info-card">
+      <div class="info-card" *ngIf="itemId">
         <div class="title">
           <h3>Precio normal</h3>
           <mat-icon>chevron_right</mat-icon>
         </div>
         <p>{{item?.pricing | currency}}</p>
+      </div>
+      <div class="info-card" *ngIf="!itemId">
+        <div class="title">
+          <h3>Precio normal</h3>
+          <mat-icon>chevron_right</mat-icon>
+        </div>
+        <app-currency-input
+            [innerLabelStyles]="{
+              fontFamily: 'InterLight',
+              fontStyle: 'italic',
+              fontSize: '13px'
+            }"
+            [fieldStyles]="{
+              boxShadow: 'none',
+              backgroundColor: 'white',
+              borderRadius: '6px',
+              padding: '8px 0px',
+              height: '50%'
+            }"
+            [initialValue]="0"
+            (onInputEvent)="handleCurrencyInput($event)"
+            placeholderColor="#7B7B7B"
+            currencyLabel=""
+          ></app-currency-input>
       </div>
       <!--<div class="add-card">
         <p class="plus">+</p>
@@ -257,6 +329,7 @@
   <div
     class="bottom-bar"
     [ngStyle]="{'background-color': active ? 'var(--El-verdecito, #87CD9B)' : 'var(--MoKito, #936105)'}"
+    *ngIf="itemId"
   >
     <p 
       class="preview"
@@ -273,4 +346,25 @@
       {{active ? 'Comparte con Compradores' : 'Oculto en todas las Vitrinas'}}
     </p>
   </div>
+  <div
+    class="bottom-bar-save"
+    [ngStyle]="{'background-color':  'var(--El-verdecito, #87CD9B)'}"
+    *ngIf="!itemId && pricing"
+  >
+    <p 
+      class="center"
+      [ngStyle]="{'color':'#181D17'}"
+      (click)="toDoTask()"
+    >
+      Salvar cambios
+    </p>
+  </div>
+  <app-login-flow
+          *ngIf="loginflow"
+          [redirectionRoute]="redirectionRoute"
+          [redirectionRouteId]="redirectionRouteId"
+          [entity]="entity"
+          [jsondata]="jsondata"
+          (dialogIsOpen)="resetLoginDialog($event)"
+        ></app-login-flow>
 </div>
