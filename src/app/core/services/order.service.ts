@@ -581,11 +581,11 @@ export class OrderService {
   orderDeliveryStatus(status: OrderStatusDeliveryType) {
     return (
       {
-        'in progress': 'En preparación',
-        pending: 'Listo para enviarse',
-        pickup: 'Listo para pick-up',
-        shipped: 'De camino a ser entregado',
-        delivered: 'Entregado',
+        'in progress': 'Processing',
+        pending: 'Preparing',
+        pickup: 'Pick up',
+        shipped: 'Shipped',
+        delivered: 'Delivered',
       }[status] || 'Desconocido'
     );
   }
