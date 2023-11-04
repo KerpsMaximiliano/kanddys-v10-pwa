@@ -6,7 +6,8 @@
     <div 
       *ngFor="let option of data.options; let i = index"
       class="button-flex"
-      [style.justifyContent]="option?.settings ? 'space-between' : 'flex-start'">
+      [style.justifyContent]="option?.settings ? 'space-between' : 'flex-start'"
+      (click)="option?.complete ? onClick(i) : null">
       <ng-container *ngIf="option?.settings; else elseTemplate">
         <div class="container">
           <div class="left-border"></div>
@@ -14,7 +15,7 @@
             mat-button
             class="option-button"
             [ngClass]="{ active: selectedIndex === i }"
-            (click)="onClick(i)"
+            (click)="option?.complete ? null : onClick(i)"
           >
             {{ option.value }}
           </button>
@@ -32,7 +33,7 @@
         </button>
       </ng-template>
       <div *ngIf="option?.settings" class="config" (click)="onClickSettings(i)">
-        <i [class]="option?.settings?.value"></i>
+        <i [class]="option?.settings?.value" [style.color]="option?.settings?.color ? option?.settings?.color : '#A1A1A1'"></i>
       </div>
     </div>
   </div>

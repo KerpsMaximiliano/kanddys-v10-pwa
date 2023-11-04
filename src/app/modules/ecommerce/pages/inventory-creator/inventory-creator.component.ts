@@ -736,7 +736,7 @@ export class InventoryCreatorComponent implements OnInit, OnDestroy {
           const createdItem = (await this.itemsService.createItem(itemInput))
             ?.createItem;
 
-          if (!this.headerService.user.hasRoles('ADMIN')) {
+          if (!this.headerService?.user?.hasRoles('ADMIN')) {
             itemInput.parentItem = createdItem._id;
 
             const createdItem2 = (await this.itemsService.createItem(itemInput))

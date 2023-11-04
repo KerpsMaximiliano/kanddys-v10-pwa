@@ -82,6 +82,9 @@ import { DaliaTrainingComponent } from './pages/dalia-training/dalia-training.co
 import { LaiaMemoriesManagementComponent } from './pages/laia-memories-management/laia-memories-management.component';
 import { LaiaAssistantComponent } from './pages/laia-assistant/laia-assistant.component';
 import { MerchantProfileComponent } from './pages/merchant-profile/merchant-profile.component';
+import { RedirectGuard } from 'src/app/core/guards/redirect-guard.guard';
+import { LaiachatLandingComponent } from './pages/laiachat-landing/laiachat-landing.component';
+import { InvisibleMarketingLandingComponent } from './pages/invisible-marketing-landing/invisible-marketing-landing.component';
 
 const routes: Routes = [
   {
@@ -295,6 +298,7 @@ const routes: Routes = [
   {
     path: 'club-landing',
     component: ClubLandingComponent,
+    canActivate: [RedirectGuard],
   },
   {
     path: 'proflora-campaign',
@@ -307,6 +311,10 @@ const routes: Routes = [
   {
     path: 'laia-assistant',
     component: LaiaAssistantComponent,
+  },
+  {
+    path: 'laiachat-landing',
+    component: LaiachatLandingComponent,
   },
   {
     path: 'laia-training',
@@ -331,6 +339,10 @@ const routes: Routes = [
   {
     path: 'merchant-profile/:merchantId',
     component: MerchantProfileComponent,
+  },
+  {
+    path: 'invisible-marketing',
+    component: InvisibleMarketingLandingComponent,
   },
   {
     path: ':merchantSlug',
@@ -544,7 +556,9 @@ const routes: Routes = [
     DaliaTrainingComponent,
     LaiaMemoriesManagementComponent,
     LaiaAssistantComponent,
-    MerchantProfileComponent
+    MerchantProfileComponent,
+    LaiachatLandingComponent,
+    InvisibleMarketingLandingComponent,
   ],
   imports: [
     CommonModule,

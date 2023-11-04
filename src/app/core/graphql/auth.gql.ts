@@ -228,3 +228,9 @@ export const generatePowerMagicLink = gql`
     generatePowerMagicLink(hostPhoneNumber: $hostPhoneNumber)
   }
 `;
+
+export const signinSecondary = gql`
+  mutation signinSecondary($userId: ObjectID!) {
+    session: signinSecondary(userId: $userId) { ${sessionBody} }
+  }
+`;
