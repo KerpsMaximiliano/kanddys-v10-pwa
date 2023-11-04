@@ -1,7 +1,7 @@
 <div class="container">
     <div class="header">
       <div class="flex">
-        <mat-icon>chevron_left</mat-icon>
+        <mat-icon (click)="goBack()">chevron_left</mat-icon>
         <p>🧾Facturas de lo que he comprado</p>
       </div>
       <svg [style.cursor]="'pointer'" (click)="emitFileInputClick()" width="28" height="21" viewBox="0 0 28 21" fill="none" xmlns="http://www.w3.org/2000/svg">

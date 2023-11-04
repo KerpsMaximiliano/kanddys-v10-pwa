@@ -1,18 +1,43 @@
 <div class="container">
-  <header [style.justifyContent]="requestResponse ? 'space-between': 'flex-end'">
+  <header>
     <!-- <div class="knowledge-slot-header" (click)="editMemoryName()">
       Memoria
       <span class="knowledge-slot-name">
         {{ memoryName ? memoryName : "Sin nombre" }}
       </span>
     </div> -->
-    <h2 *ngIf="requestResponse">Memorias utilizadas en la respuesta</h2>
+    <ng-container *ngIf="requestResponse; else elseTemplate">
+      <ng-container *ngIf="showMemories; else elseLabelMemories">
+        <div class="header-show-memories">
+          <img
+            class="icon-brain"
+            [src]="
+              assetsFolder + '/brain.png'
+            "
+            alt="brain"
+          />
+          <h2 (click)="showMemories = false">MEMORIAS DE LAIA</h2>
+        </div>
+      </ng-container>
+      <ng-template #elseLabelMemories>
+        <h2>
+          RESPUESTAS FORMULADAS 
+          <span (click)="showMemories = true" [style.color]="'#7AA787'">DESDE {{ memories && memories?.length > 0 ? memories.length : 0 }} 
+          <span [style.color]="'#87CD9B'">MEMORIAS</span> DE LAIA
+          </span>
+        </h2>
+      </ng-template>
+      
+    </ng-container>
+    <ng-template #elseTemplate>
+      <h2>{{ showTextareaMemory ? 'RESPUESTAS FORMULADAS DESDE LA MEMORIA DE LAIA' : 'MEMORIA DE LAIA' }}</h2>
+    </ng-template>
     <div class="close-button" (click)="goBack()">X</div>
   </header>
 
   <ng-container *ngIf="requestResponse; else default">
     <main>
-      <div class="container-memories">
+      <div *ngIf="showMemories" class="container-memories">
         <div
           *ngFor="let memorie of memories; index as i"
           class="memory"
@@ -23,58 +48,125 @@
         </div>
       </div>
 
-      <div *ngIf="generatedQAQueryParam" class="request-response-box" [style.marginTop.px]="28">
-        <div class="question-box-wrapper">
-          <div class="content" [formGroup]="questionForm">
-            <div class="question-box" *ngIf="!editingQuestion">
-              {{ generatedQAQueryParam.question }}
+      <div *ngIf="generatedQAQueryParam && !showMemories" [style.marginTop.px]="showMemories ? 28 : 70">
+        <div *ngFor="let generated of generatedQAQueryParam; let i=index" class="request-response-box">
+          <div class="question-box-wrapper">
+            <div class="content" [formGroup]="questionForm">
+              <!-- <div class="question-box" *ngIf="!editingQuestion">
+                {{ generated.question }}
+              </div> -->
+
+              <div class="question-box" *ngIf="!editingQuestion || (editingQuestion && (i !== editingIndex))">
+                {{ generated.question }}
+              </div>
+  
+              <!-- <div
+                *ngIf="editingQuestion"
+                id="question-box-input"
+                class="question-box-input"
+                contenteditable="true"
+              ></div> -->
+
+              <div
+                *ngIf="editingQuestion && (i === editingIndex)"
+                [id]="'question-box-input' + i"
+                class="question-box-input"
+                contenteditable="true"
+              ></div>
+  
+              <!-- <img
+                class="edit-or-confirm"
+                (click)="
+                  !(editingQuestion && !questionForm.get('question').value) || (editingQuestion && !questionForm.get('question').value)
+                    ? editOrApplyQuestionChange()
+                    : null
+                "
+                [ngClass]="{
+                  editing: true
+                }"
+                [src]="
+                  assetsFolder +
+                  (editingQuestion ? '/check-black.svg' : '/edit-comment.svg')
+                "
+                alt="edit question"
+              /> -->
+
+              <img
+                class="edit-or-confirm"
+                (click)="
+                  !(editingQuestion && !questionForm.get('question').value) || (editingQuestion && !questionForm.get('question').value)
+                    ? editOrApplyQuestionChange(i)
+                    : null
+                "
+                [ngClass]="{
+                  editing: true
+                }"
+                [src]="
+                  assetsFolder +
+                  (editingQuestion && (i === editingIndex) ? '/check-black.svg' : '/edit-comment.svg')
+                "
+                alt="edit question"
+              />
             </div>
-
-            <div
-              *ngIf="editingQuestion"
-              id="question-box-input"
-              class="question-box-input"
-              contenteditable="true"
-            ></div>
-
-            <img
-              class="edit-or-confirm"
-              (click)="
-                !(editingQuestion && !questionForm.get('question').value) || (editingQuestion && !questionForm.get('question').value)
-                  ? editOrApplyQuestionChange()
-                  : null
-              "
-              [ngClass]="{
-                editing: true
-              }"
-              [src]="
-                assetsFolder +
-                (editingQuestion ? '/check-black.svg' : '/edit-comment.svg')
-              "
-              alt="edit question"
-            />
+  
+            <div class="sender" *ngIf="headerService.user">
+              {{
+                headerService.user.name ||
+                  headerService.user.email ||
+                  headerService.user.phone
+              }}
+            </div>
+  
+            <div class="sender" *ngIf="!headerService.user">DESCONOCIDO</div>
           </div>
-
-          <div class="sender" *ngIf="headerService.user">
-            {{
-              headerService.user.name ||
-                headerService.user.email ||
-                headerService.user.phone
-            }}
-          </div>
-
-          <div class="sender" *ngIf="!headerService.user">DESCONOCIDO</div>
-        </div>
-
-        <div class="response-box-wrapper">
-          <div class="content">
-            <div class="response-box">{{ generatedQAQueryParam.response }}</div>
-
-            <div class="sender">LAIA</div>
+  
+          <div class="response-box-wrapper">
+            <div class="content">
+              <div class="response-box">{{ generated.response }}</div>
+  
+              <div class="sender">LAIA</div>
+            </div>
           </div>
         </div>
       </div>
     </main>
+
+    <div
+      class="message"
+    >
+      <div *ngIf="!audioText.value" class="formulate-more">        
+        <p class="title">
+          Prueba las respuestas que formulará Laia, haz una pregunta de ejemplo 👇
+        </p>
+      </div>
+      <div 
+        class="custom-input"
+        [style.backgroundColor]="audioText.value ? 'transparent' : '#87CD9B'"
+        [style.alignItems]="audioText.value ? 'end' : 'center'"
+        (click)="showTextareaMemory ? showTextareaMemory = false : null"
+      >
+        <textarea 
+          id="autoExpandTextarea"
+          type="text"
+          [formControl]="audioText"
+          placeholder="Haz una pregunta de ejemplo.."
+          [style.backgroundColor]="audioText.value ? '#F6F6F6' : 'transparent'"
+          [style.padding]="audioText.value ? '12px 14px 10px' : '14px 14px 10px'"
+          [ngClass]="{ textareaHeight: !audioText.value }"
+        ></textarea>
+        <img *ngIf="!audioText.value" (click)="openRecorder()" class="audio-freq" src="{{assetsFolder}}/audio-freq.png" alt="img">
+        <ng-container *ngIf="audioText.value">
+          <div class="container-send" (click)="testMemoryQueryParam(audioText.value)">
+            <img 
+              class="icon"
+              src="{{assetsFolder}}/chat-send-button.png"
+              alt="img"
+              [style.marginRight.px]="0"
+            >
+          </div>
+        </ng-container>
+      </div>
+    </div>
   </ng-container>
   <ng-template #default>
     <main
@@ -83,56 +175,99 @@
       }"
     >
       <div class="base-text-wrapper">
-        <label for="base-text">Ahorra Tiempo Brindando Respuestas Precisas al Instante.</label>
+        <!-- <label for="base-text">Ahorra Tiempo Brindando Respuestas Precisas al Instante.</label> -->
 
-        <div class="textarea-wrapper" [formGroup]="form">
-          <textarea
-            name="base-text"
-            formControlName="memory"
-            id="base-text"
-            [placeholder]="laiaPlaceholder"
-            class="base-text"
-            (keyup)="onKeyUp()"
-          ></textarea>
-
-          <img *ngIf="form.get('memory').value" src="../../../../../assets/icons/shortcut.svg" alt="" class="shortcut" (click)="form.get('memory').setValue(null)"/>
-
-          <!-- *ngIf="
-            !showTextError &&
-            !form.get('memory').value &&
-            !(generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response) && 
-            !showExtendButton
-          " -->
-          <p 
-            class="settings-text"
-            (click)="openIntegrationsDialog()"
-          >
-            Integraciones
-          </p>
-
-          <div class="container-icon" (click)="openUploadFile()">
-            <i class="fa fa-plus"></i>
+        <ng-container *ngIf="typeFile; else textWrapper">
+          <div class="container-file">
+            <span class="title">
+              Archivo Cargado
+            </span>
+            <i 
+              class="fal"
+              [ngClass]="{
+                'fa-file-pdf': typeFile === 'pdf',
+                'fa-file-excel': typeFile === 'xls'
+              }"
+            >
+            </i>
           </div>
-
-          <input
-            type="file"
-            id="file"
-            [style.display]="'none'"
-            (change)="loadFile($event)"
-            multiple
-          />
-
-          <button
-            class="see-more"
-            (click)="showMoreText()"
-            *ngIf="showExtendButton && form.get('memory').value"
-          >
-            VER TODO
-          </button>
-        </div>
+        </ng-container>
+        <ng-template #textWrapper>
+          <div *ngIf="!showTextareaMemory" class="textarea-wrapper" [formGroup]="form">
+            <textarea
+              name="base-text"
+              formControlName="memory"
+              id="base-text"
+              [placeholder]="'Escribe o pega un texto..'"
+              class="base-text"
+              [ngStyle]="{ 
+                'background-color': clicked ? '#F6F6F6' : '#181d17',
+                'color': clicked ? '#7B7B7B' : '#C4C5C3'
+              }"
+              (click)="clicked = true"
+            ></textarea>
+  
+            <img *ngIf="form.get('memory').value && !clicked" src="../../../../../assets/icons/shortcut.svg" alt="" class="shortcut" (click)="form.get('memory').setValue(null)"/>
+            
+            <div 
+              *ngIf="clicked"
+              class="container-send"
+              [style.backgroundColor]="form.get('memory').value ? '#87CD9B' : '#C4C5C3'"
+              (click)="form.get('memory').value ? clicked = false : null"
+            >
+              <img 
+                class="icon"
+                src="{{assetsFolder}}/chat-send-button.png"
+                alt="img"
+                [style.marginRight.px]="0"
+              >
+            </div>
+  
+            <!-- *ngIf="
+              !showTextError &&
+              !form.get('memory').value &&
+              !(generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response) && 
+              !showExtendButton
+            " -->
+            <!-- <p 
+              class="settings-text"
+              (click)="openIntegrationsDialog()"
+            >
+              Integraciones
+            </p> -->
+  
+            <!-- <div *ngIf="!form.get('memory').value" class="container-icon" (click)="openUploadFile()">
+              <i class="fa fa-plus"></i>
+              <h3 class="text">Adiciona el contenido desde..</h3>
+            </div> -->
+  
+            <input
+              type="file"
+              id="file"
+              [style.display]="'none'"
+              (change)="loadFile($event)"
+              multiple
+            />
+  
+            <!-- <button
+              class="see-more"
+              (click)="showMoreText()"
+              *ngIf="showExtendButton && form.get('memory').value"
+            >
+              VER TODO
+            </button> -->
+          </div>
+        </ng-template>
 
         <p *ngIf="showTextError" class="show-text-error">
           Según lo escrito no se pueden generar preguntas todavía
+        </p>
+
+        <p 
+          *ngIf="!showTextareaMemory && vectorText && form.get('memory').value && vectorText != form.get('memory').value" class="show-save-memory-vector"
+          (click)="saveMemoryInKnowledgeBase()"  
+        >
+          SALVAR CAMBIOS DE LA MEMORIA
         </p>
 
         <ng-container *ngIf="generatedQA">
@@ -189,28 +324,100 @@
           </div>
         </ng-container>
 
-        <div class="request-response-box" *ngIf="form.get('memory').value && showDots">
-          <div class="question-box-wrapper">
-            <div class="content" [formGroup]="questionForm">
-              <div class="question-box">
-                <div class="dots">...</div>
+        <ng-container *ngIf="typeFile; else elseDots">
+          <div class="request-response-box" *ngIf="showDots">
+            <div class="question-box-wrapper">
+              <div class="content" [formGroup]="questionForm">
+                <div class="question-box">
+                  <div class="dots">...</div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </ng-container>
+        <ng-template #elseDots>
+          <!-- <div class="request-response-box" *ngIf="form.get('memory').value && showDots">
+            <div class="question-box-wrapper">
+              <div class="content" [formGroup]="questionForm">
+                <div class="question-box">
+                  <div class="dots">...</div>
+                </div>
+              </div>
+            </div>
+          </div> -->
+        </ng-template>
+
+        <!-- <div
+          *ngIf="(showTextareaMemory && form.get('memory').value && (generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response)) || (showTextareaMemory && form.get('memory').value === null && (generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response))"
+          class="container-save-memory"
+          [style.marginTop.px]="generatedQA && generatedQA?.length > 2 ? 0 : 120"
+          (click)="saveMemoryInKnowledgeBase()"
+        >
+          <span class="title-save-memory">Guarda la memoria para compartir tu enlace de chat</span>
+        </div> -->
+
+        <div 
+          *ngIf="(showTextareaMemory && form.get('memory').value && (generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response)) || (showTextareaMemory && form.get('memory').value === null && (generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response))"
+          class="container-content"
+          [style.marginTop.px]="generatedQA && generatedQA?.length > 2 ? 0 : 120"
+        >
+          <p class="text">
+            Guarda el contenido de la Memoria de Laia para empezar a brindar respuestas en cualquier idioma con Inteligencia Artificial
+          </p>
+  
+          <button type="button" class="button" (click)="saveMemoryInKnowledgeBase()">Tap para guardar</button>
+      </div>
 
         <div id="question-response-bottom"></div>
       </div>
     </main>
 
-    <footer *ngIf="!(generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response)">Escribe más para que se generen preguntas</footer>
+    <div 
+      [style.display]="!clicked ? 'block' : 'none'"
+      class="message"
+    >
+      <div *ngIf="!audioText.value" class="formulate-more">        
+        <p class="title">
+          Prueba las respuestas que formulará Laia, haz una pregunta de ejemplo 👇
+        </p>
+      </div>
+      <div 
+        class="custom-input"
+        [style.backgroundColor]="audioText.value ? 'transparent' : '#87CD9B'"
+        [style.alignItems]="audioText.value ? 'end' : 'center'"
+        (click)="showTextareaMemory ? showTextareaMemory = false : null"
+      >
+        <textarea 
+          id="autoExpandTextarea"
+          type="text"
+          [formControl]="audioText"
+          placeholder="Haz una pregunta de ejemplo.."
+          [style.backgroundColor]="audioText.value ? '#F6F6F6' : 'transparent'"
+          [style.padding]="audioText.value ? '12px 14px 10px' : '14px 14px 10px'"
+          [ngClass]="{ textareaHeight: !audioText.value }"
+        ></textarea>
+        <img *ngIf="!audioText.value" (click)="openRecorder()" class="audio-freq" src="{{assetsFolder}}/audio-freq.png" alt="img">
+        <ng-container *ngIf="audioText.value">
+          <div class="container-send" (click)="typeFile ? openAiRequestResponseFromFile() : testMemory(true)">
+            <img 
+              class="icon"
+              src="{{assetsFolder}}/chat-send-button.png"
+              alt="img"
+              [style.marginRight.px]="0"
+            >
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- <footer *ngIf="!(generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response)">Escribe más para que se generen preguntas</footer>
     <footer
       class="save"
       *ngIf="(form.get('memory').value && (generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response)) || (form.get('memory').value === null && (generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response))"
       (click)="saveMemoryInKnowledgeBase()"
     >
       {{ vectorId ? "Actualiza la memoria" : "Salva la Memoria y crea más" }}
-    </footer>
+    </footer> -->
   </ng-template>
 
   <!-- <section
@@ -238,9 +445,9 @@
 
 <app-login-flow
   *ngIf="showLogin"
-  [redirectionRoute]="loginData.redirectionRoute"
-  [redirectionRouteId]="loginData.redirectionRouteId"
-  [entity]="loginData.entity"
-  [jsondata]="loginData.jsondata"
-  (dialogIsOpen)="saveMemoryInKnowledgeBase()"
+  [redirectionRoute]="uploadFile || sendUrl ? loginDataUpload.redirectionRoute : loginData.redirectionRoute"
+  [redirectionRouteId]="uploadFile || sendUrl ? loginDataUpload.redirectionRouteId : loginData.redirectionRouteId"
+  [entity]="uploadFile || sendUrl ? loginDataUpload.entity : loginData.entity"
+  [jsondata]="uploadFile || sendUrl ? loginDataUpload.jsondata : loginData.jsondata"
+  (dialogIsOpen)="uploadFile ? loadFile() : sendUrl ? saveUrl() : saveMemoryInKnowledgeBase()"
 ></app-login-flow>

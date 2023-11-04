@@ -9,10 +9,10 @@ export class RedirectGuard implements CanActivate {
 
   canActivate(): boolean {
     const domain = window.location.hostname;
-    const redirectTo = domain === 'laiachat.com' ? 'ecommerce/laia-training' : 'ecommerce/club-landing';
+    const redirectTo = domain === 'laiachat.com' ? 'ecommerce/laiachat-landing' : 'ecommerce/club-landing';
     const previousUrl = this.router.url;
 
-    if (domain === 'localhost' && previousUrl === '/ecommerce/laia-training') return true;
+    if (domain === 'localhost' && previousUrl === '/ecommerce/laiachat-landing') return true;
     if (redirectTo !== 'ecommerce/club-landing') this.router.navigate([redirectTo]);
     return true;
   }

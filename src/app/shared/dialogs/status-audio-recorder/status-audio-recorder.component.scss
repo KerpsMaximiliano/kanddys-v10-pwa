@@ -1,0 +1,17 @@
+.container {
+    height: 20vh;
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .title {
+        color: #C4C5C3;
+        text-align: center;
+        font-family: FiraSansBold;
+        font-size: 16px;
+        font-style: normal;
+        line-height: normal;
+        letter-spacing: 0.88px;
+    }
+}
