@@ -27,6 +27,7 @@ import { CommunityCategory } from 'src/app/core/models/community-categories';
 import { FilesService } from 'src/app/core/services/files.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { Merchant } from 'src/app/core/models/merchant';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-admin-article-detail',
@@ -102,6 +103,7 @@ export class AdminArticleDetailComponent implements OnInit {
     private headerService: HeaderService,
     private fileService: FilesService,
     private saleflowService: SaleFlowService,
+    private location: Location
   ) { }
 
   async ngOnInit() {
@@ -117,11 +119,11 @@ export class AdminArticleDetailComponent implements OnInit {
   async validateLoginFromLink() {
     let parsedData;
     this.route.queryParams.subscribe(async ({ jsondata }) => {
-      if(jsondata){
+      if (jsondata) {
         parsedData = JSON.parse(decodeURIComponent(jsondata));
       }
     });
-    if(parsedData){
+    if (parsedData) {
       this.preItemId = parsedData.itemId;
       await this.addItemToSaleFlow();
     }
@@ -134,7 +136,7 @@ export class AdminArticleDetailComponent implements OnInit {
       );
       this.saleFlowId = saleflowDefault._id;
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
@@ -154,7 +156,6 @@ export class AdminArticleDetailComponent implements OnInit {
       this.articleName.setValue(this.item.name ? this.item.name : "");
       this.itemImage = this.item?.images[0].value;
     });
-    console.log(this.item)
     await this.getSalesData();
     await this.getHashtags(this.itemId);
     if (this.item.expenditures) {
@@ -187,7 +188,6 @@ export class AdminArticleDetailComponent implements OnInit {
 
   getwebForm() {
     this.webformsService.webform(this.webForm.reference).then((res) => {
-      console.log(res)
       res.questions.forEach((question) => {
         if (question.required) {
           this.numberOfRequiredQuestions += 1;
@@ -275,7 +275,6 @@ export class AdminArticleDetailComponent implements OnInit {
           this.deliveryTimeStart = Number(res.value['deliveryTimeStart']);
         }
         if (res.value['deliveryTimeEnd']) {
-          console.log(res.value['deliveryTimeEnd'])
           this.deliveryTimeEnd = Number(res.value['deliveryTimeEnd']);
         }
         this.updateItem('deliverytime');
@@ -454,7 +453,6 @@ export class AdminArticleDetailComponent implements OnInit {
         url: image.value,
       };
     })
-    console.log(images)
     const itemInput: ExtendedItemInput = {
       name: this.item.name,
       description: this.item.description,
@@ -469,9 +467,7 @@ export class AdminArticleDetailComponent implements OnInit {
       layout: 'EXPANDED-SLIDE',
       slides,
     };
-    console.log(itemInput)
     this.itemsService.temporalItemInput = itemInput;
-    console.log(this.itemsService.temporalItemInput)
     /*
     this.itemsService.tagDataForTheItemEdition = {
       allTags: this.allTags,
@@ -481,7 +477,7 @@ export class AdminArticleDetailComponent implements OnInit {
       tagsString: this.tagsString,
       tagsToCreate: this.tagsToCreate,
     };
-  
+
     this.itemsService.categoriesDataForTheItemEdition = {
       allCategories: this.allCategories,
       categoriesInItem: this.categoriesInItem,
@@ -694,7 +690,7 @@ export class AdminArticleDetailComponent implements OnInit {
     this.price.setValue(value);
     this.pricing = this.price.value
   }
-  
+
   async resetLoginDialog(event) {
     this.loginflow = false;
     await this.addItemToSaleFlow();
@@ -707,7 +703,7 @@ export class AdminArticleDetailComponent implements OnInit {
       });
       return saleflow.createSaleflow._id;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       unlockUI();
     }
   }
@@ -717,7 +713,7 @@ export class AdminArticleDetailComponent implements OnInit {
       const saleFlowDefault = await this.saleflowService.setDefaultSaleflow(this.merchantId, saleFlowId);
       return saleFlowDefault.saleflowSetDefault._id;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       unlockUI();
     }
   }
@@ -737,7 +733,7 @@ export class AdminArticleDetailComponent implements OnInit {
       const { me: { _id } } = await this.merchantsService.getMe();
       return _id;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return error;
     }
   }
@@ -747,7 +743,7 @@ export class AdminArticleDetailComponent implements OnInit {
       const merchantDefault: Merchant = await this.merchantsService.merchantDefault();
       this.merchantId = merchantDefault._id;
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
@@ -762,7 +758,7 @@ export class AdminArticleDetailComponent implements OnInit {
           );
           this.saleFlowDefault = saleflowDefault._id;
         } catch (error) {
-          console.log(error);
+          console.error(error);
           unlockUI();
         }
 
@@ -776,7 +772,7 @@ export class AdminArticleDetailComponent implements OnInit {
               this.saleFlowDefault
             );
           } catch (error) {
-            console.log(error);
+            console.error(error);
             unlockUI();
           }
           unlockUI();
@@ -792,7 +788,7 @@ export class AdminArticleDetailComponent implements OnInit {
               this.saleFlowId
             );
           } catch (error) {
-            console.log(error);
+            console.error(error);
             unlockUI();
           }
           unlockUI();
@@ -821,7 +817,7 @@ export class AdminArticleDetailComponent implements OnInit {
             saleFlowDefault
           );
         } catch (error) {
-          console.log(error);
+          console.error(error);
           unlockUI();
         }
         unlockUI();
@@ -843,13 +839,13 @@ export class AdminArticleDetailComponent implements OnInit {
         this.preItemId
       );
     } catch (error) {
-      console.log(error);
+      console.error(error);
       unlockUI();
     }
   }
 
-  async toDoTask(){
-    if(!this.itemId){
+  async toDoTask() {
+    if (!this.itemId) {
       await this.createItem();
     }
   }
@@ -857,24 +853,23 @@ export class AdminArticleDetailComponent implements OnInit {
   async createItem() {
     lockUI();
     let itemDataInput: ItemInput;
-    
-      itemDataInput = {
-        merchant: this.merchantId,
-        pricing: parseInt(this.pricing),
-        name: this.articleName.value,
-        description: this.articleDescription.value
-      }
-    
 
-    if(this.itemImage){
+    itemDataInput = {
+      merchant: this.merchantId,
+      pricing: parseInt(this.pricing),
+      name: this.articleName.value,
+      description: this.articleDescription.value
+    }
+
+
+    if (this.itemImage) {
       const type = this.itemImage.split(';')[0].split(':')[1];
       const imageBlob = this.fileService.dataURItoBlob(this.itemImage);
       const imageFile = new File([imageBlob], this.articleName?.value ? this.articleName?.value : 'image', { type: type });
-      console.log(imageFile);
       itemDataInput.images = [{
-        file:imageFile
+        file: imageFile
       }]
-    } 
+    }
 
     if (this.merchantId) {
       const { createItem } = await this.itemsService.createItem(
@@ -920,7 +915,11 @@ export class AdminArticleDetailComponent implements OnInit {
       const preItem = await this.itemsService.createPreItem(itemDataInput);
       return preItem;
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
+  }
+
+  goBack() {
+    this.location.back()
   }
 }

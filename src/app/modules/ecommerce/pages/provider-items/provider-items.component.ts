@@ -1789,6 +1789,31 @@ export class ProviderItemsComponent implements OnInit {
     })
   }
 
+  selectOptions() {
+    this.bottomSheet.open(OptionsMenuComponent, {
+      data: {
+        title: `Selecciona entre las opciones:`,
+        options: [
+          {
+            value: `Comparte este grupo con compradores`,
+            callback: async () => { },
+          },
+          {
+            value: `Adiciona colaboracion a Comunidades`,
+            callback: async () => { },
+          },
+          {
+            value: `Factúralo a un Cliente`,
+            callback: async () => { },
+          },
+        ],
+        styles: {
+          fullScreen: true,
+        },
+      },
+    });
+  }
+
   shareStore() {
     this.bottomSheet.open(OptionsMenuComponent, {
       data: {
@@ -1821,14 +1846,8 @@ export class ProviderItemsComponent implements OnInit {
               });
             },
           },
-          {
-            value: `Mira cómo se ve`,
-            callback: async () => {
-              this.goToStore();
-            },
-          },
         ],
-        description: "Enlace www.flores.club/merchantid",
+        bottonLabel: "Enlace www.flores.club/merchantid",
         styles: {
           fullScreen: true,
         },
@@ -1837,9 +1856,8 @@ export class ProviderItemsComponent implements OnInit {
   }
 
   goToStore() {
-    this.router.navigate([
-      `/ecommerce/${this.merchantsService.merchantData.slug}/store`,
-    ], {
+    const url = `/ecommerce/${this.merchantData.slug}/store`
+    this.router.navigate([url], {
       queryParams: {
         adminView: true,
         mode: this.mode === 'SUPPLIER' ? 'supplier' : 'standard'
@@ -1847,8 +1865,8 @@ export class ProviderItemsComponent implements OnInit {
     });
   }
 
-  goToOrder() {
-    this.router.navigate['/admin/order-progress']
+  goTo(url: string) {
+    this.router.navigate[url]
   }
 
   downloadQr() {

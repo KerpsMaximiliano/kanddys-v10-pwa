@@ -25,7 +25,10 @@
           <mat-icon>search</mat-icon>
         </button>
 
-        <button mat-icon-button (click)="sendWhatsappToAppOwner()">
+        <button
+          mat-icon-button
+          (click)="goTo('/ecommerce/admin-article-detail')"
+        >
           <mat-icon [ngStyle]="{ color: 'white' }">add</mat-icon>
         </button>
         <button type="button" mat-icon-button (click)="back()">
@@ -39,7 +42,7 @@
       <div class="container">
         <button class="btn-secondary">Subscriptions Items</button>
         <div class="container-btn">
-          <button (click)="goToOrder()">
+          <button (click)="goTo('/admin/order-progress')">
             <mat-icon>shop</mat-icon>
           </button>
           <button (click)="filteringOpened = true">
@@ -214,8 +217,10 @@
 
     <footer *ngIf="!searchOpened">
       <button class="left" (click)="goToStore()">Preview</button>
-      <button (click)="goToStore()">Opciones</button>
-      <button class="right" (click)="shareStore()">Comparte</button>
+      <button *ngIf="false" (click)="selectOptions()">Opciones</button>
+      <button class="right" (click)="shareStore()">
+        Comparte Tienda del Comprador
+      </button>
     </footer>
 
     <qrcode
@@ -250,6 +255,7 @@
         type="checkbox"
         name="select-item"
         [id]="'select-' + item._id"
+        *ngIf="!searchOpened && !filteringOpened"
       />
       <div
         class="product-image"
