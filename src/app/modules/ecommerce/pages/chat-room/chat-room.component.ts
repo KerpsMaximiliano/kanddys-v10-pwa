@@ -47,6 +47,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   } = null;
   online: boolean = true;
   socketConnected: boolean = true;
+  inputOpen : boolean = false;
 
   constructor(
     public headerService: HeaderService,
@@ -288,6 +289,20 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     transformedValue = transformedValue.replace(/\n/g, '<br />');
 
     return this.sanitizer.bypassSecurityTrustHtml(transformedValue);
+  }
+
+  resizeTextarea(textarea) {
+    if(textarea.scrollHeight > 253) {
+      textarea.style.height = 253 + "px";
+      textarea.style.overflowY = "scroll";
+      return;
+    }
+    if(textarea.scrollHeight > textarea.clientHeight) {
+      textarea.style.height = textarea.scrollHeight > 39 ? textarea.scrollHeight + "px" : 39 + "px";
+    } else {
+      textarea.style.height = 0 + "px";
+      textarea.style.height = textarea.scrollHeight + "px";
+    }
   }
 
   ngOnDestroy(): void {
