@@ -237,12 +237,13 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       this.chatFormGroup.get('input').setValue('');
     }, 200);
 
-    await this.gpt3Service.requestResponseFromKnowledgeBase(
-      this.chatFormGroup.get('input').value,
-      this.chatUsers['RECEIVER']._id,
-      this.chat._id,
-      this.socket.id
-    );
+    await this.gpt3Service.requestResponseFromKnowledgeBase({
+        prompt: this.chatFormGroup.get('input').value,
+        merchantId : this.chatUsers['RECEIVER']._id,
+        chatRoomId : this.chat._id,
+        socketId: this.socket.id,
+        isAuthorization: false
+      });
   }
 
   scrollToBottom() {
