@@ -95,6 +95,9 @@ header {
     font-family: FiraSansRegular;
     font-size: 13px;
     letter-spacing: 0.715px;
+    span {
+      color: var(--El-verdecito, #87cd9b);
+    }
   }
 
   .highlight {

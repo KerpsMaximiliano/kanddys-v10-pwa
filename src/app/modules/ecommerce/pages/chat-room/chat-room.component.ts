@@ -49,6 +49,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   socketConnected: boolean = true;
   inputOpen : boolean = false;
 
+  ipAddress: number;
+
   constructor(
     public headerService: HeaderService,
     private route: ActivatedRoute,
@@ -64,8 +66,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
         async ({ fromStore }) => {
           this.fromStore = fromStore ? JSON.parse(fromStore) : false;
 
-          if (
-            this.headerService.saleflow.merchant.owner._id ===
+          if (!this.headerService.user) {
+            this.typeOfReceiver = 'MERCHANT';
+          } else if (
+            this.headerService.saleflow.merchant.owner?._id ===
             this.headerService.user?._id
           ) {
             this.isTheUserTheMerchant = true;
@@ -83,20 +87,52 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
         }
       );
     });
+    if(!this.headerService.user) {
+      this.getIp()
+    }
+  }
+
+  async getIp() {
+    let ip = await fetch('http://api.ipify.org/?format=json')
+      .then((res) => {
+        return res.json()
+      })
+    this.ipAddress = ip.ip;
   }
 
   async initSocketClientEventListeners(chatId: string) {
-    this.socket = io(SERVER_URL, {
-      extraHeaders: {
-        token: localStorage.getItem('session-token'),
-      },
-    });
+    if(!this.headerService.user) {
+      console.log('no user socket')
+      this.socket = io(SERVER_URL, {
+        extraHeaders: {
+          "App-key": "k2ejNpopkk9Txga6kmQZwAQXUCLNZxs9BI8dDfVgmdMXvjcVcI"
+        },
+      });
+      console.log(this.socket)
+    } else {
+      this.socket = io(SERVER_URL, {
+        extraHeaders: {
+          // token: localStorage.getItem('session-token'),
+          "App-key": "k2ejNpopkk9Txga6kmQZwAQXUCLNZxs9BI8dDfVgmdMXvjcVcI"
+        },
+      });
+      console.log(this.socket)
+    }
 
     // client-side
     this.socket.on('connect', () => {
+      console.log(this.headerService.user)
       this.socketConnected = true;
       // Send a message to the server
-      if (!chatId) {
+      if(!this.headerService.user) {
+        console.log('no user connect')
+        console.log(this.headerService.saleflow.merchant)
+        this.socket.emit('GET_OR_CREATE_CHAT', {
+          owners: [this.socket.id],
+          userId: this.headerService.saleflow.merchant.owner._id,
+        })
+        console.log(this.socket)
+      } else if (!chatId) {
         this.socket.emit('GET_OR_CREATE_CHAT', {
           owners: [this.socket.id],
           userId: this.headerService.saleflow.merchant.owner._id,
@@ -108,6 +144,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
         });
       }
       this.socket.on('GET_OR_CREATE_CHAT', (chat) => {
+        console.log(chat)
         this.chat = chat;
 
         this.chat.messages.forEach(
@@ -181,7 +218,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       this.socket.on(
         'DRAFT',
         (draftReceived: { content: string; userId: string }) => {
-          if (draftReceived.userId === this.headerService.user._id) {
+          if (draftReceived.userId === this.headerService.user?._id) {
             this.chatFormGroup.get('input').setValue(draftReceived.content);
           }
         }
@@ -190,7 +227,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       this.socket.on(
         'TYPING',
         (typingData: { chatId: string; sender: string }) => {
-          if (typingData.sender !== this.headerService.user._id) {
+          if (typingData.sender !== this.headerService.user?._id) {
             this.typing = {
               sender: typingData.sender,
             };
@@ -201,7 +238,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       this.socket.on(
         'STOPPED_TYPING',
         (typingData: { chatId: string; sender: string }) => {
-          if (typingData.sender !== this.headerService.user._id)
+          if (typingData.sender !== this.headerService.user?._id)
             this.typing = null;
         }
       );
@@ -211,7 +248,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       });
     });
 
-    this.socket.on('disconnect', () => {
+    this.socket.on('disconnect', (reason, description) => {
+      console.log(reason, description)
       this.socketConnected = false;
     });
   }
@@ -239,7 +277,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
 
     await this.gpt3Service.requestResponseFromKnowledgeBase({
         prompt: this.chatFormGroup.get('input').value,
-        merchantId : this.chatUsers['RECEIVER']._id,
+        merchantId : this.chatUsers['RECEIVER']?._id,
         chatRoomId : this.chat._id,
         socketId: this.socket.id,
         isAuthorization: false
