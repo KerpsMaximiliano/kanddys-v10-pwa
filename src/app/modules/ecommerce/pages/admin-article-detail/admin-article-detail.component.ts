@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ItemsService, ExtendedItemInput } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { CodesService } from 'src/app/core/services/codes.service';
@@ -11,10 +11,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { FormComponent, FormData } from 'src/app/shared/dialogs/form/form.component';
 import { Validators, FormControl, FormGroup } from '@angular/forms';
-import { Code, CodeInput } from 'src/app/core/models/codes';
+import { Code } from 'src/app/core/models/codes';
 import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
 import { NgNavigatorShareService } from 'ng-navigator-share';
-import { SlideInput } from 'src/app/core/models/post';
 import {
   Item,
   ItemCategory,
@@ -27,6 +26,8 @@ import { CommunityCategory } from 'src/app/core/models/community-categories';
 import { FilesService } from 'src/app/core/services/files.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { Merchant } from 'src/app/core/models/merchant';
+import { filter } from 'rxjs/internal/operators/filter';
+import { pairwise } from 'rxjs/internal/operators/pairwise';
 import { Location } from '@angular/common';
 
 @Component({
@@ -88,7 +89,6 @@ export class AdminArticleDetailComponent implements OnInit {
   loginflow: boolean = false;
   saleFlowId;
   saleFlowDefault: string;
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -105,6 +105,7 @@ export class AdminArticleDetailComponent implements OnInit {
     private saleflowService: SaleFlowService,
     private location: Location
   ) { }
+
 
   async ngOnInit() {
     this.itemId = this.route.snapshot.paramMap.get('itemId');

@@ -1,10 +1,8 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { DomSanitizer } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
-import { log } from 'console';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
-import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { Tag } from 'src/app/core/models/tags';
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -17,6 +15,9 @@ import { TagFilteringComponent } from 'src/app/shared/dialogs/tag-filtering/tag-
 import { environment } from 'src/environments/environment';
 import SwiperCore, { Virtual } from 'swiper/core';
 import { truncateString } from 'src/app/core/helpers/strings.helpers';
+import { Location } from '@angular/common';
+import { filter } from 'rxjs/internal/operators/filter';
+import { pairwise } from 'rxjs/internal/operators/pairwise';
 
 SwiperCore.use([Virtual]);
 
@@ -35,13 +36,13 @@ export class StoreComponent implements OnInit {
     page: number;
     status: 'loading' | 'complete';
   } = {
-    page: 1,
-    pageSize: 15,
-    status: 'loading',
-  };
+      page: 1,
+      pageSize: 15,
+      status: 'loading',
+    };
   // hasCollections: boolean = false;
 
-  searchBar : boolean = false;
+  searchBar: boolean = false;
 
   azulPaymentsSupported: boolean = false;
 
@@ -83,8 +84,9 @@ export class StoreComponent implements OnInit {
     public _DomSanitizer: DomSanitizer,
     private ngNavigatorShareService: NgNavigatorShareService,
     private _bottomSheet: MatBottomSheet,
-    private changeDetectorRef: ChangeDetectorRef
-  ) {}
+    private changeDetectorRef: ChangeDetectorRef,
+    private location: Location
+  ) { }
 
   async ngOnInit(): Promise<void> {
     setTimeout(() => {
@@ -196,9 +198,9 @@ export class StoreComponent implements OnInit {
 
     this.router.navigate([
       '/ecommerce/' +
-        this.headerService.saleflow.merchant.slug +
-        '/terms-of-use/' +
-        term._id,
+      this.headerService.saleflow.merchant.slug +
+      '/terms-of-use/' +
+      term._id,
     ]);
   }
 
@@ -456,7 +458,7 @@ export class StoreComponent implements OnInit {
   }
 
   goToAdmin() {
-    this.router.navigate(['/admin/dashboard']);
+    this.location.back()
   }
 
   goToBuyerOrders() {

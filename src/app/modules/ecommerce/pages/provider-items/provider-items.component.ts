@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -70,6 +70,7 @@ export class ProviderItemsComponent implements OnInit {
 
   isSupplier = true;
   hiddenDashboard = false;
+  hasItemSelected = false
   itemsFiltering = []
 
   /**Button for filtering */
@@ -162,6 +163,8 @@ export class ProviderItemsComponent implements OnInit {
   merchantRole: Roles | null = null;
   roles: Roles[] = [];
 
+  wasPageLoaded = false
+
   private keyPresentationState = 'providersPresentationClosed'
   private keyTutorialState = 'tutorialClosed'
   private merchantData: Merchant | null = null;
@@ -199,7 +202,6 @@ export class ProviderItemsComponent implements OnInit {
     if (!existToken) {
       await this.executeInitProcesses();
       await this.fetchItemsForNotSell(true);
-
     }
 
     this.initInputValueChanges()
@@ -1789,6 +1791,11 @@ export class ProviderItemsComponent implements OnInit {
     })
   }
 
+  onSelectItem(index: number) {
+    this.itemsISell[index].hasSelection = !this.itemsISell[index].hasSelection
+    this.hasItemSelected = this.itemsISell.some(item => item.hasSelection)
+  }
+
   selectOptions() {
     this.bottomSheet.open(OptionsMenuComponent, {
       data: {
@@ -1815,6 +1822,7 @@ export class ProviderItemsComponent implements OnInit {
   }
 
   shareStore() {
+    const id = this.merchantData?._id || ''
     this.bottomSheet.open(OptionsMenuComponent, {
       data: {
         title: `Comparte el Enlace de Compradores:`,
@@ -1847,16 +1855,16 @@ export class ProviderItemsComponent implements OnInit {
             },
           },
         ],
-        bottonLabel: "Enlace www.flores.club/merchantid",
         styles: {
           fullScreen: true,
         },
+        bottomLabel: `Enlace www.flores.club/${id}`,
       },
     });
   }
 
   goToStore() {
-    const url = `/ecommerce/${this.merchantData.slug}/store`
+    const url = `/ecommerce/${this.merchantData?.slug}/store` || ''
     this.router.navigate([url], {
       queryParams: {
         adminView: true,

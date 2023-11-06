@@ -3,7 +3,12 @@
     <header class="header" *ngIf="!searchOpened && !filteringOpened">
       <div class="btn-container principal">
         <button class="title" (click)="drawerOpened = true">
-          <mat-icon>house</mat-icon>
+          <img
+            [src]="assetsFolder + '/store-icon.png'"
+            alt=""
+            width="20px"
+            height="20px"
+          />
           ARTÍCULOS EN VENTA
         </button>
       </div>
@@ -24,10 +29,9 @@
         <button type="button" mat-icon-button (click)="searchOpened = true">
           <mat-icon>search</mat-icon>
         </button>
-
         <button
           mat-icon-button
-          (click)="goTo('/ecommerce/admin-article-detail')"
+          (click)="goTo('ecommerce/admin-article-detail')"
         >
           <mat-icon [ngStyle]="{ color: 'white' }">add</mat-icon>
         </button>
@@ -43,10 +47,20 @@
         <button class="btn-secondary">Subscriptions Items</button>
         <div class="container-btn">
           <button (click)="goTo('/admin/order-progress')">
-            <mat-icon>shop</mat-icon>
+            <img
+              [src]="assetsFolder + '/money-bag-green.png'"
+              alt=""
+              width="30px"
+              height="30px"
+            />
           </button>
           <button (click)="filteringOpened = true">
-            <mat-icon>circle</mat-icon>
+            <img
+              [src]="assetsFolder + '/boxes-green.png'"
+              alt=""
+              width="30px"
+              height="30px"
+            />
           </button>
         </div>
       </div>
@@ -215,10 +229,17 @@
       </section>
     </main>
 
-    <footer *ngIf="!searchOpened">
-      <button class="left" (click)="goToStore()">Preview</button>
-      <button *ngIf="false" (click)="selectOptions()">Opciones</button>
-      <button class="right" (click)="shareStore()">
+    <footer
+      *ngIf="!searchOpened"
+      [ngClass]="{ 'center-items': hasItemSelected }"
+    >
+      <button *ngIf="!hasItemSelected" class="left" (click)="goToStore()">
+        Preview
+      </button>
+      <button *ngIf="hasItemSelected" (click)="selectOptions()">
+        Opciones
+      </button>
+      <button *ngIf="!hasItemSelected" class="right" (click)="shareStore()">
         Comparte Tienda del Comprador
       </button>
     </footer>
@@ -228,7 +249,7 @@
       #storeQrCode
       [qrdata]="getDataQR()"
       [elementType]="'img'"
-      [width]="40"
+      [width]="280"
       [errorCorrectionLevel]="'M'"
       [allowEmptyString]="true"
       colorDark="#000"
@@ -256,6 +277,7 @@
         name="select-item"
         [id]="'select-' + item._id"
         *ngIf="!searchOpened && !filteringOpened"
+        (click)="onSelectItem(itemIndex)"
       />
       <div
         class="product-image"
