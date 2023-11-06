@@ -217,9 +217,13 @@ export class LaiachatLandingComponent implements OnInit {
   }
 
   async goToChatDetail(chat: ExtendedChat) {
+    let slug;
+    await this.merchantsService.merchantDefault(chat.receiver._id).then((res)=> {
+      slug = res.slug;
+    })
     this.router.navigate([
       'ecommerce/' +
-        this.merchantsService.merchantData?.slug +
+        slug +
         '/chat-merchant/' +
         chat._id,
     ]);
