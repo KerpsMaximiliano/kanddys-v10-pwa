@@ -5,7 +5,8 @@
         <ng-container *ngIf="!headerService.user">
           <img alt="user" (click)="loginflow = true" src="{{assetsFolder}}/user-placeholder.png">
           <p (click)="loginflow = true" class="sign-in">
-            {{ "general.register" | translate }}
+            <!-- {{ "general.register" | translate }} -->
+            Registro
           </p>
         </ng-container>
         <ng-container *ngIf="headerService.user">
@@ -96,7 +97,7 @@
           class="chat-grouped"
           *ngFor="let chatsByPeriod of chatsByMonthCopy"
         >
-          <h3>{{ chatsByPeriod.month.label }}</h3>
+          <!-- <h3>{{ chatsByPeriod.month.label }}</h3> -->
   
           <div
             class="chat-card"
@@ -129,8 +130,10 @@
   </ng-container>
   <ng-template #elseTemplate>
       <div class="container-title">
-        <p class="title">{{ "title.laia-introduction" | translate }}</p>
-        <p class="subtitle">{{ "subtitle.spent-less-time" | translate }}</p>
+        <!-- <p class="title">{{ "title.laia-introduction" | translate }}</p> -->
+        <p class="title">LAIACHAT</p>
+        <!-- <p class="subtitle">{{ "subtitle.spent-less-time" | translate }}</p> -->
+        <p class="subtitle">Ahorra Tiempo Brindando Respuestas Precisas al Instante</p>
       </div>
 
       <!-- <div class="container-title">
@@ -178,7 +181,8 @@
       />
       
       <div class="social-media">
-        <p class="title">{{ "title.laia-integrations" | translate }}</p>
+        <!-- <p class="title">{{ "title.laia-integrations" | translate }}</p> -->
+        <p class="title">INTEGRACIONES DE CHATS</p>
 
         <div class="filters">
           <div class="filter">
@@ -205,13 +209,15 @@
 
         <div class="socials" [style.marginTop.px]="15">
             <div class="media">
-              {{ "general.websites" | translate }}
+              <!-- {{ "general.websites" | translate }} -->
+              Websites
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19" fill="none">
                     <ellipse cx="10" cy="9.5" rx="10" ry="9.5" fill="#7B7B7B"/>
                 </svg>
             </div>
             <div class="media">
-              {{ "general.link" | translate }}
+              <!-- {{ "general.link" | translate }} -->
+              Enlace
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19" fill="none">
                     <ellipse cx="10" cy="9.5" rx="10" ry="9.5" fill="#7B7B7B"/>
                 </svg>
@@ -287,7 +293,8 @@
       [ngClass]="{ 'loggedout': !headerService.user }"
       class="input"
   >
-    {{ "text.question-about-laia" | translate }}
+    <!-- {{ "text.question-about-laia" | translate }} -->
+    Qué necesitas saber de Laia?..
       <div>
           <img
               class="audio-freq"

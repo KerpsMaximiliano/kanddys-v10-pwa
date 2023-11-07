@@ -295,7 +295,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       this.router.navigate([
         'ecommerce/' + this.headerService.saleflow.merchant?.slug + '/store',
       ]);
-    else this.router.navigate(['admin/laia-chats']);
+    else this.router.navigate(['ecommerce/laiachat-landing']);
   }
 
   async changeAssistantResponseMode() {
