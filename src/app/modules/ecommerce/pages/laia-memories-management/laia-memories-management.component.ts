@@ -279,11 +279,7 @@ export class LaiaMemoriesManagementComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/ecommerce/club-landing'], {
-      queryParams: {
-        tabarIndex: 2,
-      },
-    });
+    return this.router.navigate(['/ecommerce/laiachat-landing']);
   }
 
   resizeTextarea(textarea) {
