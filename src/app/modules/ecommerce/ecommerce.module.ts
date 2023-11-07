@@ -343,6 +343,10 @@ const routes: Routes = [
     component: AdminArticleDetailComponent,
   },
   {
+    path: 'admin-article-detail',
+    component: AdminArticleDetailComponent,
+  },
+  {
     path: 'merchant-profile/:merchantId',
     component: MerchantProfileComponent,
   },
