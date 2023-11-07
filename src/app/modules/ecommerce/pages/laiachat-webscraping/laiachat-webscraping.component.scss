@@ -1,0 +1,172 @@
+.container {
+    height: 100%;
+    scroll-behavior: smooth;
+  
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding-bottom: 13px;
+      padding-top: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-left: 20px;
+      padding-right: 23px;
+      margin: auto;
+      max-width: 500px;
+      z-index: 999;
+  
+      background-color: #181d17;
+  
+      h2 {
+        color: var(--Fondo-de-Pantallas, #f6f6f6);
+        font-family: FiraSansRegular;
+        font-size: 13px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+        margin: 0px;
+        padding: 0px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        letter-spacing: 0.715px;
+      }
+  
+      .close-button {
+        cursor: pointer;
+        color: #fff;
+        font-family: FiraSansMedium;
+        font-size: 19.005px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+      }
+    }
+
+    main {
+        background-color: #181d17;
+        min-height: 100%;
+        padding: 0px 24px;
+        padding-top: 1px;
+        padding-bottom: 145px;
+
+        .base-text-wrapper {
+            display: flex;
+            flex-direction: column;
+            margin-top: 50px;
+          
+            .textarea-wrapper {
+                position: relative;
+                padding-top: 5px;
+          
+                .base-text {
+                  border-radius: 11px;
+                  border: 1px solid var(--Plomo, #7b7b7b);
+                  width: 100%;
+                  min-height: 314px;
+                  max-height: 467px;
+                  // resize: none;
+                  flex-shrink: 0;
+                  // background-color: #181d17;
+                  // color: #C4C5C3;
+                  font-family: FiraSansMedium;
+                  font-size: 17px;
+                  font-style: normal;
+                  line-height: normal;
+                  letter-spacing: 0.935px;
+          
+                  resize: none; /* Disable manual resizing */
+                  // overflow-y: hidden; /* Hide vertical scrollbar initially */
+                  // min-height: 50px; /* Set a minimum height */
+                  width: 100%; /* Optionally set a width */
+                  padding: 30px 20px 10px; /* Add padding for better appearance */
+                  box-sizing: border-box; /* Include padding and border in height calculation */
+          
+                  transition: 1s ease-in-out linear;
+                  ::placeholder {
+                    opacity: 0.5;
+                  }
+                }
+          
+                textarea::placeholder {
+                  color: #7B7B7B;
+                }
+                
+                .shortcut {
+                  position: absolute;
+                  bottom: 20px;
+                  right: 15px;
+                  cursor: pointer;
+                }
+          
+                .container-send {
+                  border-radius: 50%;
+                  margin-left: 8px;
+                  width: 50px;
+                  height: 50px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  position: absolute;
+                  bottom: 15px;
+                  right: 15px;
+                  cursor: pointer;
+            
+                  .icon {
+                    width: 24px;
+                    height: 24px;
+                  }
+                }
+            }
+        }
+    }
+
+    
+  .message {
+    position: fixed;
+    width: 100%;
+    max-width: 500px;
+    margin: 0px auto;
+    bottom: 0;
+    
+    .container-content {
+        padding: 31px 33px 30px;
+        background-color: #87CD9B;
+        border-radius: 11px;
+        display: flex;
+        flex-direction: column;
+        margin: 20px;
+      
+        .text {
+          color: #181D17;
+          text-align: center;
+          font-family: FiraSansMedium;
+          font-size: 17px;
+          font-style: normal;
+          font-weight: 500;
+          line-height: normal;
+          letter-spacing: 0.935px;
+          margin: 0;
+          margin-bottom: 30px;
+        }
+      
+        .button {
+          background-color: #435A4A;
+          padding: 10px 30px;
+          color: #C4C5C3;
+          text-align: center;
+          font-family: FiraSansBold;
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: normal;
+          letter-spacing: 0.88px;
+          border: none;
+          border-radius: 14px;
+        }
+    }
+  }
+}
