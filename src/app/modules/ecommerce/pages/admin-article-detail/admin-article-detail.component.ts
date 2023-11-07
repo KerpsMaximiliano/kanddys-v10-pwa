@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ItemsService, ExtendedItemInput } from 'src/app/core/services/items.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { CodesService } from 'src/app/core/services/codes.service';
@@ -14,21 +14,13 @@ import { Validators, FormControl, FormGroup } from '@angular/forms';
 import { Code } from 'src/app/core/models/codes';
 import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
 import { NgNavigatorShareService } from 'ng-navigator-share';
-import {
-  Item,
-  ItemCategory,
-  ItemImageInput,
-  ItemInput,
-} from 'src/app/core/models/item';
+import {  Item,  ItemCategory,  ItemImageInput,  ItemInput,} from 'src/app/core/models/item';
 import { TagFilteringComponent } from 'src/app/shared/dialogs/tag-filtering/tag-filtering.component';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { CommunityCategory } from 'src/app/core/models/community-categories';
 import { FilesService } from 'src/app/core/services/files.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { Merchant } from 'src/app/core/models/merchant';
-import { filter } from 'rxjs/internal/operators/filter';
-import { pairwise } from 'rxjs/internal/operators/pairwise';
-import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-admin-article-detail',
@@ -36,6 +28,9 @@ import { Location } from '@angular/common';
   styleUrls: ['./admin-article-detail.component.scss']
 })
 export class AdminArticleDetailComponent implements OnInit {
+  redirectTo = null
+  from = null
+
   item: any = {};
   buyers: number;
   merchantId: string;
@@ -103,9 +98,7 @@ export class AdminArticleDetailComponent implements OnInit {
     private headerService: HeaderService,
     private fileService: FilesService,
     private saleflowService: SaleFlowService,
-    private location: Location
   ) { }
-
 
   async ngOnInit() {
     this.itemId = this.route.snapshot.paramMap.get('itemId');
@@ -119,7 +112,15 @@ export class AdminArticleDetailComponent implements OnInit {
 
   async validateLoginFromLink() {
     let parsedData;
-    this.route.queryParams.subscribe(async ({ jsondata }) => {
+    this.route.queryParams.subscribe(async (queryParams) => {
+      const { redirectTo, from, jsondata } = queryParams;
+      this.redirectTo = redirectTo;
+      this.from = from;
+
+      if (typeof redirectTo === 'undefined') {
+        this.redirectTo = null;
+      }
+
       if (jsondata) {
         parsedData = JSON.parse(decodeURIComponent(jsondata));
       }
@@ -921,6 +922,55 @@ export class AdminArticleDetailComponent implements OnInit {
   }
 
   goBack() {
-    this.location.back()
+    if (!this.redirectTo && !this.from) {
+      this.router.navigate(['/admin/order-progress']);
+    }
+    if (!this.redirectTo && this.from) return this.redirectFromQueryParams();
+    let queryParams = {};
+    if (this.redirectTo.includes('?')) {
+      const url = this.redirectTo.split('?');
+      this.redirectTo = url[0];
+      const queryParamList = url[1].split('&');
+      for (const param in queryParamList) {
+        const keyValue = queryParamList[param].split('=');
+        queryParams[keyValue[0]] = keyValue[1].replace('%20', ' ');
+      }
+    }
+    this.router.navigate([this.redirectTo], {
+      queryParams,
+    });
+  }
+
+  redirectFromQueryParams() {
+    if (this.from.includes('?')) {
+      const redirectURL: { url: string; queryParams: Record<string, string> } =
+        { url: null, queryParams: {} };
+      const routeParts = this.from.split('?');
+      const redirectionURL = routeParts[0];
+      const routeQueryStrings = routeParts[1].split('&').map((queryString) => {
+        const queryStringElements = queryString.split('=');
+
+        return {
+          [queryStringElements[0]]: queryStringElements[1].replace('%20', ' '),
+        };
+      });
+
+      redirectURL.url = redirectionURL;
+      redirectURL.queryParams = {};
+
+      routeQueryStrings.forEach((queryString) => {
+        const key = Object.keys(queryString)[0];
+        redirectURL.queryParams[key] = queryString[key];
+      });
+
+      this.router.navigate([redirectURL.url], {
+        queryParams: redirectURL.queryParams,
+        replaceUrl: true,
+      });
+    } else {
+      this.router.navigate([this.from], {
+        replaceUrl: true,
+      });
+    }
   }
 }

@@ -14,18 +14,6 @@
       </div>
 
       <div class="btn-container">
-        <!-- <button mat-icon-button (click)="toggleStoreVisibility()">
-          <img
-            [src]="
-              isSwitchActive
-                ? '../../../../../assets/icons/switch-green.svg'
-                : '../../../../../assets/icons/switch-red.svg'
-            "
-            class="info-button"
-            alt="open internal information"
-            style="filter: none"
-          />
-        </button> -->
         <button type="button" mat-icon-button (click)="searchOpened = true">
           <mat-icon>search</mat-icon>
         </button>
@@ -206,7 +194,7 @@
       </section>
 
       <!-- Articulos filtrados -->
-      <section class="list-of-items" *ngIf="searchOpened">
+      <section class="list-of-items" *ngIf="searchOpened || filteringOpened">
         <div
           class="item-wrapper"
           *ngFor="let item of itemsFiltering; let itemIndex = index"

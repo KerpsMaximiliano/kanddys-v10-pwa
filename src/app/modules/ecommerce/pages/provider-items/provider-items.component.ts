@@ -1,9 +1,8 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { AppService } from 'src/app/app.service';
 import { base64ToBlob, urltoFile } from 'src/app/core/helpers/files.helpers';
@@ -135,9 +134,6 @@ export class ProviderItemsComponent implements OnInit {
   //userSpecific variables
   isTheUserAMerchant: boolean = null;
 
-  //Subscriptions
-  queryParamsSubscription: Subscription;
-
   //magicLink-specific variables
   encodedJSONData: string;
   fetchedItemsFromMagicLink: Array<Item> = [];
@@ -195,6 +191,8 @@ export class ProviderItemsComponent implements OnInit {
         this.handleUserSubscription()
       } else {
         this.isUserLogged = true
+        const data = await this.authService.me()
+        this.loadUserData(data)
         await this.executeInitProcesses();
       }
     }
@@ -230,28 +228,32 @@ export class ProviderItemsComponent implements OnInit {
     const subscription = this.appService.events
       .pipe(filter((e) => e.type === 'auth'))
       .subscribe(async ({ data }) => {
-        this.getDefaultMerchantAndSaleflows(data.user)
-          .then(async ({ merchantDefault, saleflowDefault }) => {
-            this.merchantData = merchantDefault;
-            this.saleflowData = saleflowDefault
-            this.isUserLogged = true
-            this.isSupplier = this.verifyIfIsSupplier(this.merchantData);
-
-            if (this.merchantData?._id) {
-              await this.fetchItemsForSell()
-              await this.fetchQuantifyFilters();
-              await this.fetchQuantityFiltersByRole()
-            }
-
-            this.getStatusSwitch();
-            await this.executeInitProcesses();
-
-            const roles = await this.merchantsService.rolesPublic()
-            this.roles = roles;
-            this.merchantRole = this.merchantData.roles[0]
-          })
+        this.loadUserData(data.user);
         subscription.unsubscribe();
       });
+  }
+
+  loadUserData(user: User) {
+    this.getDefaultMerchantAndSaleflows(user)
+      .then(async ({ merchantDefault, saleflowDefault }) => {
+        this.merchantData = merchantDefault;
+        this.saleflowData = saleflowDefault
+        this.isUserLogged = true
+        this.isSupplier = this.verifyIfIsSupplier(this.merchantData);
+
+        if (this.merchantData?._id) {
+          await this.fetchItemsForSell()
+          await this.fetchQuantifyFilters();
+          await this.fetchQuantityFiltersByRole()
+        }
+
+        this.getStatusSwitch();
+        await this.executeInitProcesses();
+
+        const roles = await this.merchantsService.rolesPublic()
+        this.roles = roles;
+        this.merchantRole = this.merchantData.roles[0]
+      })
   }
 
   /**
@@ -260,8 +262,9 @@ export class ProviderItemsComponent implements OnInit {
    * tutorial
    */
   async executeInitProcesses() {
-    this.queryParamsSubscription = this.route.queryParams.subscribe(
-      async ({ jsondata }) => {
+    this.route.queryParams.subscribe(
+      async (queryParams) => {
+        const { jsondata } = queryParams
         this.encodedJSONData = jsondata;
         if (this.encodedJSONData) {
           this.parseMagicLinkData();
@@ -1665,7 +1668,7 @@ export class ProviderItemsComponent implements OnInit {
   async onChangeBtnFiltering(selected: btnFilterName) {
     this.btnFilterState[selected] = !this.btnFilterState[selected]
     this.hiddenDashboard = Object.values(this.btnFilterState).some(value => value)
-    await this.filteringItemsBySearchbar(true, this.itemSearchbar.value, true)
+    await this.filteringItemsBySearchbar(true, '', true)
   }
 
   /**
@@ -1676,15 +1679,17 @@ export class ProviderItemsComponent implements OnInit {
   async onChangeConsumerState(selected: consumerType) {
     this.btnConsumerState[selected] = !this.btnConsumerState[selected]
     this.hiddenDashboard = Object.values(this.btnConsumerState).some(value => value)
-    await this.filteringItemsBySearchbar(true, this.itemSearchbar.value, true)
+    await this.filteringItemsBySearchbar(true, '', true)
   }
 
   onCloseSearchbar() {
     this.searchOpened = false
     this.filteringOpened = false
     this.hiddenDashboard = false
+    this.itemSearchbar.setValue('')
     this.resetBtn(this.btnFilterState)
     this.resetBtn(this.btnConsumerState)
+    this.fetchItemsForSell(true)
   }
 
   /**
@@ -1716,7 +1721,14 @@ export class ProviderItemsComponent implements OnInit {
   }
 
   goToArticleDetail(id: string) {
-    this.router.navigate(['ecommerce/admin-article-detail/' + id]);
+    this.router.navigate(
+      ['ecommerce/admin-article-detail/' + id],
+      {
+        queryParams: {
+          redirectTo: this.router.url
+        }
+      }
+    );
   }
 
   updatePricing(id: string) {
@@ -1868,13 +1880,21 @@ export class ProviderItemsComponent implements OnInit {
     this.router.navigate([url], {
       queryParams: {
         adminView: true,
-        mode: this.mode === 'SUPPLIER' ? 'supplier' : 'standard'
+        mode: this.mode === 'SUPPLIER' ? 'supplier' : 'standard',
+        redirectTo: this.router.url
       }
     });
   }
 
   goTo(url: string) {
-    this.router.navigate[url]
+    this.router.navigate(
+      [url],
+      {
+        queryParams: {
+          redirectTo: this.router.url
+        }
+      }
+    );
   }
 
   downloadQr() {
