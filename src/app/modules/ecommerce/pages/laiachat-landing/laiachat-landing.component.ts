@@ -173,7 +173,7 @@ export class LaiachatLandingComponent implements OnInit {
     this.filter.valueChanges.subscribe(text => {
       this.chatsByMonthCopy = this.chatsByMonth.map(value => {
         const chatsFiltrados = value.chats.filter(chat => {
-          return chat?.receiver?.name?.toLocaleUpperCase()?.includes(text) || chat?.receiver?.email?.toLocaleUpperCase()?.includes(text) || chat?.receiver?.phone?.toLocaleUpperCase()?.includes(text);
+          return chat?.receiver?.name?.toLocaleLowerCase()?.includes(text?.toLocaleLowerCase()) || chat?.receiver?.email?.toLocaleLowerCase()?.includes(text?.toLocaleLowerCase()) || chat?.receiver?.phone?.toLocaleLowerCase()?.includes(text?.toLocaleLowerCase());
         });
 
         return {
