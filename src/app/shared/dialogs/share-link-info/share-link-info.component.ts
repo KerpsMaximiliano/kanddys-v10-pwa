@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
+import { DialogRef } from 'src/app/libs/dialog/types/dialog-ref';
 
 @Component({
   selector: 'app-share-link-info',
@@ -13,6 +15,8 @@ export class ShareLinkInfoComponent implements OnInit {
   constructor(
     private clipboard: Clipboard,
     private toastrService: ToastrService,
+    private router: Router,
+    private ref: DialogRef
   ) { }
 
   ngOnInit(): void {
@@ -23,6 +27,11 @@ export class ShareLinkInfoComponent implements OnInit {
     this.toastrService.success(
       'Enlace copiado satisfactoriamente'
     );
+  }
+
+  goIntegrationLink() {
+    this.router.navigate(['/ecommerce/laiachat-integrations']);
+    this.ref.close();
   }
 
 }

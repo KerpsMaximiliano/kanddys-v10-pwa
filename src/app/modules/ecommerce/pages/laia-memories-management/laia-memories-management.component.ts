@@ -134,10 +134,10 @@ export class LaiaMemoriesManagementComponent implements OnInit {
             }
           },
           {
-            value: 'Adiciona un website',
+            value: 'Adiciona una página web',
             complete: true,
             callback: () => {
-              
+              this.router.navigate(['/ecommerce/laiachat-webscraping']);
             },
             settings: {
               value: 'fal fa-keyboard',
@@ -279,11 +279,7 @@ export class LaiaMemoriesManagementComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/ecommerce/club-landing'], {
-      queryParams: {
-        tabarIndex: 2,
-      },
-    });
+    return this.router.navigate(['/ecommerce/laiachat-landing']);
   }
 
   resizeTextarea(textarea) {

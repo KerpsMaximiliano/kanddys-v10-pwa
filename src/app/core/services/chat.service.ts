@@ -14,6 +14,7 @@ export class ChatService {
       const response = await fetch(environment.chatAPI.url + '/chats', {
         headers: {
           token: localStorage.getItem('session-token'),
+          "App-key": "k2ejNpopkk9Txga6kmQZwAQXUCLNZxs9BI8dDfVgmdMXvjcVcI"
         },
       });
 

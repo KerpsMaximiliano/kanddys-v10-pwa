@@ -1,15 +1,27 @@
 <div class="container">
   <header>
     <div class="top">
-      <ng-container *ngIf="isTheUserTheMerchant">
+      <ng-container *ngIf="!this.headerService.user">
         <div class="header-title">
-          LAIACHAT CON IP
+          LAIACHAT CON IP {{ ipAddress }}
         </div>
         <div class="close-button" (click)="goBack()">X</div>
       </ng-container>
-      <ng-container *ngIf="!isTheUserTheMerchant">
+      <ng-container *ngIf="this.headerService.user && isTheUserTheMerchant">
         <div class="header-title">
-          LAIACHAT CON IP
+          LAIACHAT CON <span>{{
+            this.headerService.user.name || 
+            this.headerService.user.email
+          }}</span>
+        </div>
+        <div class="close-button" (click)="goBack()">X</div>
+      </ng-container>
+      <ng-container *ngIf="this.headerService.user && !isTheUserTheMerchant">
+        <div class="header-title">
+          LAIACHAT CON <span>{{
+            this.headerService.user.name || 
+            this.headerService.user.email
+          }}</span>
         </div>
         <div class="close-button" (click)="loggedAsAMerchant ? goBack() : null">
           X
@@ -62,7 +74,7 @@
       <ng-container *ngFor="let message of chat?.messages">
         <div
           class="question-box-wrapper"
-          *ngIf="message.sender === headerService.user._id"
+          *ngIf="message.sender === headerService.user?._id"
         >
           <div class="content">
             <div class="question-box" [innerHTML]="message.message"></div>
@@ -71,7 +83,7 @@
 
         <div
           class="response-box-wrapper"
-          *ngIf="message.sender !== headerService.user._id"
+          *ngIf="message.sender !== headerService.user?._id"
         >
           <div class="content">
             <div class="response-box" [innerHTML]="message.message"></div>
