@@ -134,10 +134,10 @@ export class LaiaMemoriesManagementComponent implements OnInit {
             }
           },
           {
-            value: 'Adiciona un website',
+            value: 'Adiciona una página web',
             complete: true,
             callback: () => {
-              
+              this.router.navigate(['/ecommerce/laiachat-webscraping']);
             },
             settings: {
               value: 'fal fa-keyboard',
