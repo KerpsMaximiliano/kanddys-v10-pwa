@@ -83,8 +83,6 @@ export class ProviderItemsEditorComponent implements OnInit {
         this.showCurrencyEditor = false;
         this.showStockEditor = true;
       }
-    }else{
-
     }
     await this.getMerchantDefault();
     await this.getSaleFlowDefault();
