@@ -219,6 +219,27 @@
         margin: 19px 0 10px 0;
     }
 
+    .filters {
+      display: flex;
+      justify-content: space-between; 
+      margin-top: 5px;
+      overflow-x: scroll;
+  
+      .filter {
+        cursor: pointer;
+        flex: 1;
+        padding: 12px 0;
+        color: #C4C5C3;
+        font-family: InterRegular;
+        font-weight: 6;
+        font-size: 15px;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+    }
+
     .socials {
         display: flex; 
         flex-wrap: wrap;
