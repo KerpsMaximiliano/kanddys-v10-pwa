@@ -1834,7 +1834,8 @@ export class ProviderItemsComponent implements OnInit {
   }
 
   shareStore() {
-    const id = this.merchantData?._id || ''
+    const slug = this.saleflowData?.merchant?.slug
+    const mode = this.mode === 'SUPPLIER' ? 'supplier' : 'standard'
     this.bottomSheet.open(OptionsMenuComponent, {
       data: {
         title: `Comparte el Enlace de Compradores:`,
@@ -1843,7 +1844,7 @@ export class ProviderItemsComponent implements OnInit {
             value: `Copia el link`,
             callback: async () => {
               this.clipboard.copy(
-                `${this.URI}/ecommerce/${this.merchantsService.merchantData.slug}/store?mode=${this.mode === 'SUPPLIER' ? 'supplier' : 'standard'}`
+                `${this.URI}/ecommerce/${slug}/store?mode=${mode}`
               );
               this.snackBar.open('Enlace copiado en el portapapeles', '', {
                 duration: 2000,
@@ -1853,7 +1854,6 @@ export class ProviderItemsComponent implements OnInit {
           {
             value: `Descarga el QR`,
             callback: async () => {
-              // TODO ????
               this.downloadQr();
             },
           },
@@ -1862,7 +1862,7 @@ export class ProviderItemsComponent implements OnInit {
             callback: async () => {
               this.ngNavigatorShareService.share({
                 title: '',
-                url: `${this.URI}/ecommerce/${this.merchantsService.merchantData.slug}/store?mode=${this.mode === 'SUPPLIER' ? 'supplier' : 'standard'}`,
+                url: `${this.URI}/ecommerce/${slug}/store?mode=${mode}`,
               });
             },
           },
@@ -1870,7 +1870,7 @@ export class ProviderItemsComponent implements OnInit {
         styles: {
           fullScreen: true,
         },
-        bottomLabel: `Enlace www.flores.club/${id}`,
+        bottomLabel: `${this.URI}/ecommerce/${slug}/store`,
       },
     });
   }
