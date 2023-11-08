@@ -112,7 +112,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     } else {
       this.socket = io(SERVER_URL, {
         extraHeaders: {
-          // token: localStorage.getItem('session-token'),
+          token: localStorage.getItem('session-token'),
           "App-key": "k2ejNpopkk9Txga6kmQZwAQXUCLNZxs9BI8dDfVgmdMXvjcVcI"
         },
       });
@@ -194,7 +194,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
               else this.chatUsers['RECEIVER'] = user;
             });
           });
-
+          
         this.inputValueChangesSubscription = this.chatFormGroup
           .get('input')
           .valueChanges.subscribe((change) => {
@@ -249,7 +249,6 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     });
 
     this.socket.on('disconnect', (reason, description) => {
-      console.log(reason, description)
       this.socketConnected = false;
     });
   }
@@ -270,18 +269,19 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       chatId: this.chat._id,
       message: this.chatFormGroup.get('input').value,
     });
-
+    console.log(this.socket)
     setTimeout(() => {
       this.chatFormGroup.get('input').setValue('');
     }, 200);
 
     await this.gpt3Service.requestResponseFromKnowledgeBase({
         prompt: this.chatFormGroup.get('input').value,
-        merchantId : this.chatUsers['RECEIVER']?._id,
+        merchantId : this.headerService.saleflow.merchant._id,
         chatRoomId : this.chat._id,
         socketId: this.socket.id,
         isAuthorization: false
       });
+    console.log(this.chat)
   }
 
   scrollToBottom() {
