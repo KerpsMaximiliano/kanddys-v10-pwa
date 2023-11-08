@@ -85,6 +85,8 @@ import { MerchantProfileComponent } from './pages/merchant-profile/merchant-prof
 import { RedirectGuard } from 'src/app/core/guards/redirect-guard.guard';
 import { LaiachatLandingComponent } from './pages/laiachat-landing/laiachat-landing.component';
 import { InvisibleMarketingLandingComponent } from './pages/invisible-marketing-landing/invisible-marketing-landing.component';
+import { LaiachatWebscrapingComponent } from './pages/laiachat-webscraping/laiachat-webscraping.component';
+import { LaiachatIntegrationsComponent } from './pages/laiachat-integrations/laiachat-integrations.component';
 
 const routes: Routes = [
   {
@@ -325,6 +327,14 @@ const routes: Routes = [
     component: DaliaTrainingComponent,
   },
   {
+    path: 'laiachat-webscraping',
+    component: LaiachatWebscrapingComponent,
+  },
+  {
+    path: 'laiachat-integrations',
+    component: LaiachatIntegrationsComponent,
+  },
+  {
     path: 'laia-memories-management',
     component: LaiaMemoriesManagementComponent,
   },
@@ -559,6 +569,8 @@ const routes: Routes = [
     MerchantProfileComponent,
     LaiachatLandingComponent,
     InvisibleMarketingLandingComponent,
+    LaiachatWebscrapingComponent,
+    LaiachatIntegrationsComponent,
   ],
   imports: [
     CommonModule,
