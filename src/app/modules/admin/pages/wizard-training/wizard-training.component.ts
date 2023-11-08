@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import {
   FormArray,
@@ -49,7 +50,8 @@ export class WizardTrainingComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private whatsappService: WhatsappService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private location: Location,
   ) {}
 
   async ngOnInit() {
@@ -322,7 +324,7 @@ export class WizardTrainingComponent implements OnInit, OnDestroy {
   };
 
   back() {
-    return this.router.navigate(['/ecommerce/laiachat-landing']);
+    this.location.back();
   }
 
   ngOnDestroy(): void {

@@ -58,7 +58,11 @@ export class LaiachatIntegrationsComponent implements OnInit {
         }
       );
     } else {
-      this.router.navigate(['/admin/wizard-training']);
+      this.router.navigate(['/admin/wizard-training'], {
+        queryParams: {
+          triggerWhatsappClient: true
+        }
+      });
     }
   }
 
