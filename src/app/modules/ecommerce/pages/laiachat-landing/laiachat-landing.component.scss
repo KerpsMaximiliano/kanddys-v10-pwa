@@ -313,54 +313,115 @@
   padding: 16px;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-end;
   background-color: #181d17;
-  .plus-sign {
-    color: var(--El-verdecito, #87CD9B);
-    font-family: InterBold;
-    font-size: 35.412px;
-    margin: 0;
-    margin-bottom: 5px;
-    cursor: pointer;
-  }
-  .input {
-    height: 39px;
-    color: #7B7B7B;
+  // .plus-sign {
+  //   color: var(--El-verdecito, #87CD9B);
+  //   font-family: InterBold;
+  //   font-size: 35.412px;
+  //   margin: 0;
+  //   margin-bottom: 5px;
+  //   cursor: pointer;
+  // }
+  // .input {
+  //   height: 39px;
+  //   color: #7B7B7B;
+  //   background-color: #d9d9d9;
+  //   font-family: InterRegular;
+  //   font-size: 16px;
+  //   font-style: normal;
+  //   font-weight: 400;
+  //   line-height: normal;
+  //   padding: 10px 19px;
+  //   margin-left: 18px;
+  //   border-radius: 300px;
+  //   border: 1px solid #7B7B7B; 
+  //   width: calc(100% - 28px);
+  //   height: 46px;
+  //   display: flex;
+  //   justify-content: space-between;
+  //   align-items: center;
+  //   div {
+  //     display: flex;
+  //     gap: 10px;
+  //     .audio-freq {
+  //       width: 27px;
+  //       height: 24px;
+  //     }    
+  //     .audio-freq.brighter {
+  //       filter: invert(90%) sepia() saturate(0);
+  //     }
+  //     .darker {
+  //       width: 32px;
+  //       height: 24px; 
+  //       filter: brightness(1%)
+  //     }
+  //   }
+  // }
+  // .input.loggedout {
+  //   color: #7B7B7B;
+  //   background-color: #d9d9d9;
+  // }
+
+  .custom-input {
+    display: flex;
+    align-items: center;
     background-color: #d9d9d9;
+    border-radius: 300px;
+    width: 100%;
+    margin-left: 16px;
+    // height: 51px;
+
+    .audio-freq {
+      width: 27px;
+      height: 24px;
+    }
+  }
+  
+  .custom-input textarea {
+    flex: 1;
+    height: 100%;
+    padding: 14px;
+    color: #181D17;
+    background-color: transparent;
     font-family: InterRegular;
     font-size: 16px;
     font-style: normal;
     font-weight: 400;
     line-height: normal;
-    padding: 10px 19px;
-    margin-left: 18px;
-    border-radius: 300px;
-    border: 1px solid #7B7B7B; 
-    width: calc(100% - 28px);
+    border: none;
+    outline: none;
+    overflow-y: hidden;
+    resize: none;
     height: 46px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    div {
-      display: flex;
-      gap: 10px;
-      .audio-freq {
-        width: 27px;
-        height: 24px;
-      }    
-      .audio-freq.brighter {
-        filter: invert(90%) sepia() saturate(0);
-      }
-      .darker {
-        width: 32px;
-        height: 24px; 
-        filter: brightness(1%)
-      }
-    }
   }
-  .input.loggedout {
+
+  .custom-input textarea::placeholder {
     color: #7B7B7B;
-    background-color: #d9d9d9;
+  }
+
+  .textareaHeight {
+    height: 46px !important;
+  }
+  
+  .custom-input img {
+    margin-right: 15px;
+  }
+
+  .container-send {
+    background-color: #87CD9B;
+    border-radius: 50%;
+    margin-left: 8px;
+    width: 47px;
+    height: 47px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .icon {
+      width: 23px;
+      height: 23px;
+    }
   }
   button {
     margin-left: 8px;

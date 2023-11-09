@@ -133,6 +133,7 @@
 
     <div
       class="message"
+      [style.maxWidth]="!isMobile ? '427px' : '500px'"
     >
       <div *ngIf="!audioText.value" class="formulate-more">        
         <p class="title">
@@ -153,6 +154,7 @@
           [style.backgroundColor]="audioText.value ? '#F6F6F6' : 'transparent'"
           [style.padding]="audioText.value ? '12px 14px 10px' : '14px 14px 10px'"
           [ngClass]="{ textareaHeight: !audioText.value }"
+          (keyup)="resizeTextarea($event.target)"
         ></textarea>
         <img *ngIf="!audioText.value" (click)="openRecorder()" class="audio-freq" src="{{assetsFolder}}/audio-freq.png" alt="img">
         <ng-container *ngIf="audioText.value">
@@ -375,6 +377,7 @@
     <div 
       [style.display]="!clicked ? 'block' : 'none'"
       class="message"
+      [style.maxWidth]="!isMobile ? '427px' : '500px'"
     >
       <div *ngIf="!audioText.value" class="formulate-more">        
         <p class="title">
@@ -395,6 +398,7 @@
           [style.backgroundColor]="audioText.value ? '#F6F6F6' : 'transparent'"
           [style.padding]="audioText.value ? '12px 14px 10px' : '14px 14px 10px'"
           [ngClass]="{ textareaHeight: !audioText.value }"
+          (keyup)="resizeTextarea($event.target)"
         ></textarea>
         <img *ngIf="!audioText.value" (click)="openRecorder()" class="audio-freq" src="{{assetsFolder}}/audio-freq.png" alt="img">
         <ng-container *ngIf="audioText.value">

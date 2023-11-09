@@ -273,8 +273,9 @@
 <div
   *ngIf="!headerService.user"
   class="message"
+  [style.maxWidth]="!isMobile ? '427px' : '500px'"
 >
-  <div class="info" (click)="goToWhatsapp()">
+  <div class="info" (click)="goToWhatsapp()" [style.marginBottom.px]="3">
       <svg xmlns="http://www.w3.org/2000/svg" width="8" height="28" viewBox="0 0 8 28" fill="none">
           <g clip-path="url(#clip0_2276_1338)">
               <path d="M7.28986 9.41244L0.419857 10.2734L0.173857 11.4134L1.52386 11.6624C2.40586 11.8724 2.57986 12.1904 2.38786 13.0694L0.173857 23.4694C-0.408143 26.1604 0.488857 27.4264 2.59786 27.4264C4.24256 27.4337 5.82306 26.7886 6.99286 25.6324L7.25686 24.3844C6.6737 24.8555 5.94845 25.1155 5.19886 25.1224C4.37386 25.1224 4.07386 24.5434 4.28686 23.5224L7.28986 9.41244ZM7.49986 3.14844C7.49986 3.74178 7.32391 4.3218 6.99427 4.81515C6.66462 5.3085 6.19609 5.69301 5.64791 5.92008C5.09973 6.14714 4.49653 6.20655 3.91459 6.09079C3.33264 5.97504 2.79809 5.68932 2.37854 5.26976C1.95898 4.8502 1.67326 4.31565 1.5575 3.73371C1.44175 3.15177 1.50116 2.54857 1.72822 2.00039C1.95528 1.45221 2.3398 0.983673 2.83315 0.654029C3.32649 0.324385 3.90651 0.148438 4.49986 0.148438C5.29551 0.148438 6.05857 0.464508 6.62118 1.02712C7.18379 1.58973 7.49986 2.35279 7.49986 3.14844Z" fill="#7B7B7B"/>
@@ -286,14 +287,11 @@
           </defs>
       </svg>
   </div>
-  <!-- <p class="plus-sign" (click)="goClubLanding()">
-  +
-  </p> -->
-  <div 
+
+  <!-- <div 
       [ngClass]="{ 'loggedout': !headerService.user }"
       class="input"
   >
-    <!-- {{ "text.question-about-laia" | translate }} -->
     Qué necesitas saber de Laia?..
       <div>
           <img
@@ -302,6 +300,34 @@
               alt="img"
           >
       </div>
+  </div> -->
+
+  <div 
+    class="custom-input"
+    [style.backgroundColor]="audioText.value ? 'transparent' : '#d9d9d9'"
+    [style.alignItems]="audioText.value ? 'end' : 'center'"
+  >
+    <textarea 
+      id="autoExpandTextarea"
+      type="text"
+      [formControl]="audioText"
+      placeholder="Qué necesitas saber de Laia?.."
+      [style.backgroundColor]="audioText.value ? '#d9d9d9' : 'transparent'"
+      [style.borderRadius.px]="audioText.value ? 20 : 300"
+      [ngClass]="{ textareaHeight: !audioText.value }"
+      (keyup)="resizeTextarea($event.target)"
+    ></textarea>
+    <img *ngIf="!audioText.value" (click)="openRecorder()" class="audio-freq" src="{{assetsFolder}}/audio-freq.png" alt="img">
+    <ng-container *ngIf="audioText.value">
+      <div class="container-send">
+        <img 
+          class="icon"
+          src="{{assetsFolder}}/chat-send-button.png"
+          alt="img"
+          [style.marginRight.px]="0"
+        >
+      </div>
+    </ng-container>
   </div>
 </div>
 

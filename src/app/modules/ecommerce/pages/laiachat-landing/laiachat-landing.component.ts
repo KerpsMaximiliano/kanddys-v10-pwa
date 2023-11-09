@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, Renderer2 } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -93,6 +93,8 @@ export class LaiachatLandingComponent implements OnInit {
   };
   typeFile: string;
   filter = new FormControl(null);
+  audioText = new FormControl(null);
+  isMobile: boolean = false;
 
   constructor(
     public headerService: HeaderService,
@@ -110,9 +112,12 @@ export class LaiachatLandingComponent implements OnInit {
     private translate: TranslateService,
     private recordRTCService: RecordRTCService,
     private filesService: FilesService,
+    private renderer: Renderer2,
   ) { }
 
   async ngOnInit() {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
     await this.getMerchantDefault();
     if (this.headerService.user) {
       this.clientConnectionStatus = await this.whatsappService.clientConnectionStatus();
@@ -622,7 +627,7 @@ export class LaiachatLandingComponent implements OnInit {
     this.bottomSheet.open(OptionsMenuComponent, data)
   }
 
-  async saveAudio() {
+  async saveAudio(goMerchant: boolean = false) {
     let dialogRef;
     try {
       dialogRef = this.dialogService.open(StatusAudioRecorderComponent, {
@@ -638,11 +643,15 @@ export class LaiachatLandingComponent implements OnInit {
       if (!this.audio) return;
       const result = await this.gptService.openAiWhisper((this.audio && new File([this.audio.blob], this.audio.title || 'audio.mp3', {type: (<Blob>this.audio.blob)?.type})),);
 
-      this.router.navigate(['/ecommerce/laia-training'], {
-        queryParams: {
-          audioResult: result,
-        },
-      });
+      if(goMerchant) {
+        
+      } else {
+        this.router.navigate(['/ecommerce/laia-training'], {
+          queryParams: {
+            audioResult: result,
+          },
+        });
+      }
 
       dialogRef.close();
     } catch (error) {
@@ -680,5 +689,52 @@ export class LaiachatLandingComponent implements OnInit {
         }
       });
     }
+  }
+
+  resizeTextarea(textarea) {
+    const alturaActual = textarea.scrollHeight;
+    const alturaMaxima = 146;
+    const relacionAltura = alturaActual / alturaMaxima;
+    const borderRadius = 146 - 146 * relacionAltura;
+    const borderRadiusPx = getComputedStyle(textarea).borderRadius;
+
+    if(borderRadiusPx === '22px') {
+      this.renderer.setStyle(textarea, 'border-radius', '22px');
+    } else {
+      this.renderer.setStyle(textarea, 'border-radius', `${borderRadius}px`);
+    };
+
+    if(textarea.scrollHeight > 146) {
+      textarea.style.height = 146 + "px";
+      textarea.style.overflowY = "scroll";
+      return;
+    }
+    console.log(textarea.scrollHeight > textarea.clientHeight)
+    if(textarea.scrollHeight > textarea.clientHeight) {
+      textarea.style.height = textarea.scrollHeight > 46 ? textarea.scrollHeight + "px" : 46 + "px";
+    } else {
+      textarea.style.height = 46 + "px";
+      textarea.style.height = textarea.scrollHeight + "px";
+    }
+  }
+
+  openRecorder() {
+    const dialogref = this.dialogService.open(AudioRecorderComponent,{
+      type: 'flat-action-sheet',
+      props: { canRecord: true, isDialog: true },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+    const dialogSub = dialogref.events
+      .pipe(filter((e) => e.type === 'result'))
+      .subscribe((e) => {
+        if(e.data) {
+          this.audio = e.data;
+          this.saveAudio(true);
+        }
+        this.audio = null;
+        this.recordRTCService.abortRecording();
+        dialogSub.unsubscribe();
+      });
   }
 }

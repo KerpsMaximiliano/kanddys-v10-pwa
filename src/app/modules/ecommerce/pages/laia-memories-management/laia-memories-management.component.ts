@@ -47,6 +47,7 @@ export class LaiaMemoriesManagementComponent implements OnInit {
     title: string;
   };
   typeFile: string;
+  isMobile: boolean = false;
 
   constructor(
     private gptService: Gpt3Service,
@@ -77,6 +78,8 @@ export class LaiaMemoriesManagementComponent implements OnInit {
     } else {
       this.router.navigate(['/ecommerce/club-landing']);
     }
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
   }
 
   async executeInitProcesses() {
@@ -278,13 +281,9 @@ export class LaiaMemoriesManagementComponent implements OnInit {
     });
   }
 
-  goBack() {
-    return this.router.navigate(['/ecommerce/laiachat-landing']);
-  }
-
   resizeTextarea(textarea) {
-    if(textarea.scrollHeight > 253) {
-      textarea.style.height = 253 + "px";
+    if(textarea.scrollHeight > 146) {
+      textarea.style.height = 146 + "px";
       textarea.style.overflowY = "scroll";
       return;
     }
@@ -295,4 +294,29 @@ export class LaiaMemoriesManagementComponent implements OnInit {
       textarea.style.height = textarea.scrollHeight + "px";
     }
   }
+
+  openRecorder() {
+    const dialogref = this.dialogService.open(AudioRecorderComponent,{
+      type: 'flat-action-sheet',
+      props: { canRecord: true, isDialog: true },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+    const dialogSub = dialogref.events
+      .pipe(filter((e) => e.type === 'result'))
+      .subscribe((e) => {
+        if(e.data) {
+          this.audio = e.data;
+          this.saveAudio();
+        }
+        this.audio = null;
+        this.recordRTCService.abortRecording();
+        dialogSub.unsubscribe();
+      });
+  }
+
+  goBack() {
+    return this.router.navigate(['/ecommerce/laiachat-landing']);
+  }
+
 }

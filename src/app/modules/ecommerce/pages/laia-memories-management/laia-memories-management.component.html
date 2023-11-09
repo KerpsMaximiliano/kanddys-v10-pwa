@@ -31,7 +31,7 @@
     multiple
   />
 
-  <p 
+  <!-- <p 
     [ngStyle]="{ 'position': vectorsFromVectorDatabase.length > 3 ? 'unset' : 'absolute' }" 
     class="test-text"
   >
@@ -61,6 +61,43 @@
       <svg width="22" height="20" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M21.0336 8.6153L21.0263 8.61189L1.51958 0.521373C1.35562 0.45255 1.17715 0.425428 1.00014 0.442432C0.823129 0.459436 0.65309 0.520036 0.505223 0.618814C0.348931 0.721156 0.22056 0.860779 0.131681 1.0251C0.042801 1.18942 -0.00379435 1.37327 -0.00390607 1.56009V6.73469C-0.00385475 6.98988 0.0852276 7.23706 0.247984 7.43361C0.410741 7.63017 0.636972 7.76378 0.887678 7.81141L11.5268 9.77874C11.5686 9.78664 11.6064 9.8089 11.6335 9.84168C11.6607 9.87446 11.6756 9.9157 11.6756 9.95828C11.6756 10.0009 11.6607 10.0421 11.6335 10.0749C11.6064 10.1077 11.5686 10.1299 11.5268 10.1378L0.888165 12.1047C0.637534 12.1522 0.411316 12.2856 0.248482 12.4819C0.0856482 12.6783 -0.00360648 12.9253 -0.00390607 13.1804V18.356C-0.00400887 18.5342 0.0401398 18.7097 0.124579 18.8667C0.209018 19.0236 0.331106 19.1572 0.479888 19.2554C0.658787 19.3742 0.86874 19.4378 1.08353 19.4381C1.23282 19.4379 1.38058 19.4079 1.51812 19.3499L21.0248 11.3052L21.0336 11.3013C21.2962 11.1884 21.52 11.0011 21.6773 10.7624C21.8346 10.5237 21.9184 10.2441 21.9184 9.95828C21.9184 9.67243 21.8346 9.39286 21.6773 9.15416C21.52 8.91546 21.2962 8.72811 21.0336 8.6153Z" fill="#181D17"/>
       </svg> 
+    </div>
+  </div> -->
+  <div
+    class="message"
+    [style.maxWidth]="!isMobile ? '427px' : '500px'"
+  >
+    <div *ngIf="!message.value" class="formulate-more">        
+      <p class="title">
+        Prueba las respuestas que formulará Laia, haz una pregunta de ejemplo 👇
+      </p>
+    </div>
+    <div 
+      class="custom-input"
+      [style.backgroundColor]="message.value ? 'transparent' : '#87CD9B'"
+      [style.alignItems]="message.value ? 'end' : 'center'"
+    >
+      <textarea 
+        id="autoExpandTextarea"
+        type="text"
+        [formControl]="message"
+        placeholder="Haz una pregunta de ejemplo.."
+        [style.backgroundColor]="message.value ? '#F6F6F6' : 'transparent'"
+        [style.padding]="message.value ? '12px 14px 10px' : '14px 14px 10px'"
+        [ngClass]="{ textareaHeight: !message.value }"
+        (keyup)="resizeTextarea($event.target)"
+      ></textarea>
+      <img *ngIf="!message.value" (click)="openRecorder()" class="audio-freq" src="{{assetsFolder}}/audio-freq.png" alt="img">
+      <ng-container *ngIf="message.value">
+        <div class="container-send" (click)="goLaiaTraining()">
+          <img 
+            class="icon"
+            src="{{assetsFolder}}/chat-send-button.png"
+            alt="img"
+            [style.marginRight.px]="0"
+          >
+        </div>
+      </ng-container>
     </div>
   </div>
 </div>

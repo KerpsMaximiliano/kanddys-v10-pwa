@@ -103,6 +103,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   showTextareaMemory: boolean = false;
   vectorText: string = null;
   showMemories: boolean = false;
+  isMobile: boolean = false;
 
   constructor(
     private gptService: Gpt3Service,
@@ -120,6 +121,8 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
     this.clientConnectionStatus = await this.whatsappService.clientConnectionStatus();
     console.log(this.clientConnectionStatus);
 
@@ -195,12 +198,12 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
               await this.loadVectorData();
             }
 
-            const textarea = document.getElementById('autoExpandTextarea');
+            // const textarea = document.getElementById('autoExpandTextarea');
 
-            textarea.addEventListener('input', function () {
-              this.style.height = 'auto';
-              this.style.height = (this.scrollHeight) + 'px';
-            });
+            // textarea.addEventListener('input', function () {
+            //   this.style.height = 'auto';
+            //   this.style.height = (this.scrollHeight) + 'px';
+            // });
 
             const textareaMemory: HTMLElement = document.querySelector('.base-text');
 
@@ -378,12 +381,12 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
         }
 
         // Usage example:
-        if (this.isTextareaFullHeight('base-text')) {
-          setTimeout(() => {
-            // Call the function to scroll to the bottom smoothly
-            this.scrollToBottom();
-          }, 500);
-        }
+        // if (this.isTextareaFullHeight('base-text')) {
+        //   setTimeout(() => {
+        //     // Call the function to scroll to the bottom smoothly
+        //     this.scrollToBottom();
+        //   }, 500);
+        // }
       }
 
       this.showDots = false;
@@ -392,8 +395,8 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
       if(audioQuestion) {
         unlockUI();
         this.audioText.setValue(null);
-        const textarea = document.getElementById('autoExpandTextarea');
-        textarea.style.height = '51px';
+        // const textarea = document.getElementById('autoExpandTextarea');
+        // textarea.style.height = '51px';
       };
     } catch (error) {
       if(audioQuestion) unlockUI();
@@ -506,8 +509,8 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
 
       if(this.audioText.value) {
         this.audioText.setValue(null);
-        const textarea = document.getElementById('autoExpandTextarea');
-        textarea.style.height = '51px';
+        // const textarea = document.getElementById('autoExpandTextarea');
+        // textarea.style.height = '51px';
       }
       unlockUI();
     } catch (error) {
@@ -525,8 +528,8 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
       }
       if(this.audioText.value) {
         this.audioText.setValue(null);
-        const textarea = document.getElementById('autoExpandTextarea');
-        textarea.style.height = '51px';
+        // const textarea = document.getElementById('autoExpandTextarea');
+        // textarea.style.height = '51px';
       }
       console.error(error);
     }
@@ -654,13 +657,18 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     console.log('scrolleando');
   }
 
-  isTextareaFullHeight(textareaId: string) {
-    const textarea = document.getElementById(textareaId); // Replace 'yourTextareaId' with the actual ID of your textarea element
-
-    const textareaHeight = textarea.offsetHeight;
-    const windowHeight = window.innerHeight;
-
-    return textareaHeight >= windowHeight;
+  resizeTextarea(textarea) {
+    if(textarea.scrollHeight > 146) {
+      textarea.style.height = 146 + "px";
+      textarea.style.overflowY = "scroll";
+      return;
+    }
+    if(textarea.scrollHeight > textarea.clientHeight) {
+      textarea.style.height = textarea.scrollHeight > 39 ? textarea.scrollHeight + "px" : 39 + "px";
+    } else {
+      textarea.style.height = 0 + "px";
+      textarea.style.height = textarea.scrollHeight + "px";
+    }
   }
 
   goBack() {
@@ -1081,11 +1089,12 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
 
       if (!this.audio) return;
       const result = await this.gptService.openAiWhisper((this.audio && new File([this.audio.blob], this.audio.title || 'audio.mp3', {type: (<Blob>this.audio.blob)?.type})),);
+      const textarea = document.getElementById('autoExpandTextarea');
 
       this.audioText.setValue(result);
+      this.resizeTextarea(textarea);
       if(this.typeFile) this.showDots = true;
       if(!this.typeFile) {
-        const textarea = document.getElementById('autoExpandTextarea');
         const inputEvent = new Event('input', { bubbles: true });
         textarea.dispatchEvent(inputEvent);
       }
