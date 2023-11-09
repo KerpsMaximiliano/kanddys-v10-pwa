@@ -95,6 +95,9 @@ header {
     font-family: FiraSansRegular;
     font-size: 13px;
     letter-spacing: 0.715px;
+    span {
+      color: var(--El-verdecito, #87cd9b);
+    }
   }
 
   .highlight {
@@ -123,6 +126,7 @@ header {
   flex-direction: column;
   gap: 5px;
   width: 100%;
+  height: 128px;
   max-width: 500px;
   padding: 20px 18px;
   bottom: 0;
@@ -203,7 +207,7 @@ main {
   background-color: #181d17;
   min-height: 100%;
   padding: 0px 24px;
-  padding-bottom: 95px;
+  padding-bottom: 128px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;

@@ -21,18 +21,8 @@ export const requestResponseFromKnowledgeBaseJson = gql`
 `;
 
 export const requestResponseFromKnowledgeBase = gql`
-  query requestResponseFromKnowledgeBase(
-    $prompt: String!
-    $userId: ObjectID!
-    $chatRoomId: String
-    $socketId: String
-  ) {
-    requestResponseFromKnowledgeBase(
-      prompt: $prompt
-      userId: $userId
-      chatRoomId: $chatRoomId
-      socketId: $socketId
-    )
+  query requestResponseFromKnowledgeBase($input: GptRequestResponseInput!) {
+    requestResponseFromKnowledgeBase(input: $input)
   }
 `;
 

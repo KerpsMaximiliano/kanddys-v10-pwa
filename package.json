@@ -1,6 +1,6 @@
 {
   "name": "rewardcharly",
-  "version": "2.57.2",
+  "version": "2.57.5",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

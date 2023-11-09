@@ -30,6 +30,7 @@ import { StatusAudioRecorderComponent } from 'src/app/shared/dialogs/status-audi
 import { FilesService } from 'src/app/core/services/files.service';
 import { fileToBase64 } from 'src/app/core/helpers/files.helpers';
 import { ShareLinkInfoComponent } from 'src/app/shared/dialogs/share-link-info/share-link-info.component';
+import { FormControl } from '@angular/forms';
 
 interface ExtendedChat extends Chat {
   receiver?: User;
@@ -91,6 +92,7 @@ export class LaiachatLandingComponent implements OnInit {
     title: string;
   };
   typeFile: string;
+  filter = new FormControl(null);
 
   constructor(
     public headerService: HeaderService,
@@ -116,6 +118,7 @@ export class LaiachatLandingComponent implements OnInit {
       this.clientConnectionStatus = await this.whatsappService.clientConnectionStatus();
       console.log(this.clientConnectionStatus);
       this.getChats();
+      this.filterChats();
     }
   }
 
@@ -164,6 +167,21 @@ export class LaiachatLandingComponent implements OnInit {
         this.chatsByMonthCopy = JSON.parse(JSON.stringify(this.chatsByMonth));
       });
     }
+  }
+
+  filterChats() {
+    this.filter.valueChanges.subscribe(text => {
+      this.chatsByMonthCopy = this.chatsByMonth.map(value => {
+        const chatsFiltrados = value.chats.filter(chat => {
+          return chat?.receiver?.name?.toLocaleLowerCase()?.includes(text?.toLocaleLowerCase()) || chat?.receiver?.email?.toLocaleLowerCase()?.includes(text?.toLocaleLowerCase()) || chat?.receiver?.phone?.toLocaleLowerCase()?.includes(text?.toLocaleLowerCase());
+        });
+
+        return {
+          ...value,
+          chats: chatsFiltrados,
+        }
+      });
+    });
   }
 
   groupChatsByMonth(chat: Chat, object: Array<ChatsByMonth>) {
@@ -217,9 +235,13 @@ export class LaiachatLandingComponent implements OnInit {
   }
 
   async goToChatDetail(chat: ExtendedChat) {
+    let slug;
+    await this.merchantsService.merchantDefault(chat.receiver._id).then((res)=> {
+      slug = res.slug;
+    })
     this.router.navigate([
       'ecommerce/' +
-        this.merchantsService.merchantData?.slug +
+        slug +
         '/chat-merchant/' +
         chat._id,
     ]);
@@ -520,10 +542,10 @@ export class LaiachatLandingComponent implements OnInit {
             }
           },
           {
-            value: 'Adiciona un website',
+            value: 'Adiciona una página web',
             complete: true,
             callback: () => {
-              
+              this.router.navigate(['/ecommerce/laiachat-webscraping']);
             },
             settings: {
               value: 'fal fa-keyboard',

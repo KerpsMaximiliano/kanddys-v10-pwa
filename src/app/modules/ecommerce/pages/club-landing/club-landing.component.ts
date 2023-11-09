@@ -913,6 +913,10 @@ export class ClubLandingComponent implements OnInit, OnDestroy {
     else return false;
   }
 
+  goToLanding() {
+    this.router.navigate(['/ecommerce/laiachat-landing']);
+  }
+
   goToAIMemoriesManagement() {
     this.router.navigate(['/ecommerce/laia-memories-management']);
   }
