@@ -323,6 +323,26 @@
     margin-bottom: 5px;
     cursor: pointer;
   }
+  .audio-freq {
+    width: 27px;
+    height: 24px;
+    position: absolute;
+    right: 30px;
+  }
+  .audio-freq.brighter {
+    filter: invert(90%) sepia() saturate(0);
+  }
+  .arrow-div {
+    border-radius: 100%;
+    background-color: var(--El-verdecito, #87CD9B);
+    width: 39px;
+    height: 39px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    margin-left: 5px;
+  }
   .input {
     height: 39px;
     color: #7B7B7B;
@@ -341,16 +361,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    resize: none;
     div {
       display: flex;
       gap: 10px;
-      .audio-freq {
-        width: 27px;
-        height: 24px;
-      }    
-      .audio-freq.brighter {
-        filter: invert(90%) sepia() saturate(0);
-      }
       .darker {
         width: 32px;
         height: 24px; 
