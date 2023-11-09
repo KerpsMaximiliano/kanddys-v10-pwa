@@ -1920,7 +1920,7 @@ export class ProviderItemsComponent implements OnInit {
   }
 
   getDataQR() {
-    const slug = this.saleflowService.saleflowData?.merchant?.slug
+    const slug = this.saleflowData?.merchant?.slug
     const mode = this.mode === 'SUPPLIER' ? 'supplier' : 'standard'
     return `${this.URI}/ecommerce/${slug}/store?mode=${mode}`
   }
