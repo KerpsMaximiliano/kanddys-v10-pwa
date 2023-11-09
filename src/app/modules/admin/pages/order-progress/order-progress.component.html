@@ -81,24 +81,24 @@
       #ordersSwiper
       [config]="swiperConfig"
     >
-    <div class="swipe-item-selected">
+    <div class="swipe-item">
       <span>
-        Admin de ecommerce
+        Filtro 1(20)
       </span>
     </div>
     <div class="swipe-item">
       <span>
-        Admin de Comunidad
+        Filtro 1(30)
       </span>
     </div>
     <div class="swipe-item">
       <span>
-       Miembros
+        Filtro 1(40)
       </span>
     </div>
     </swiper>
   </div>
-  <div class="search-opened" *ngIf="filterOpened">
+  <div class="search-opened" *ngIf="filterModalOpened">
     <div class="dates-container">
       <p class="selection-text">{{progressPlaceHolder}}</p>
       <div class="progress-container-status">
@@ -142,7 +142,7 @@
           <div
             class="progress"
             [ngClass]="{ 'progress-selected': delivery.selected }"
-            (click)="(delivery.selected === !delivery.selected)"
+            (click)="selectDelivery()"
           >
             <span>Delivery </span>
             <span>({{ delivery.amount || 0 }})</span>
@@ -152,7 +152,7 @@
           <div
             class="progress"
             [ngClass]="{ 'progress-selected': pickUp.selected }"
-            (click)="(pickUp.selected)"
+            (click)="selectPickUp()"
           >
             <span>PickUp </span>
             <span>({{ pickUp.amount || 0 }})</span>
@@ -189,10 +189,6 @@
       </div>
     </div>
 
-<!--     
-    <div class="total-results">
-      <p>{{orders.length}} facturas filtradas</p>
-    </div> -->
   </div>
   
   <div class="content">
@@ -209,7 +205,7 @@
       >
       <div class="content-card">
         <div class="radio-content" *ngIf="!searchResultsObtained">
-          <input type="radio" [value]="order._id" (click)="selectedOrder($event)" />
+          <input type="checkbox"  [value]="order._id" (click)="selectedOrder($event)" />
         </div>
         <div class="display-flex" (click)="goToOrderDetail(order._id, i)">
           <div class="content-card-info">
@@ -268,13 +264,13 @@
     </mat-form-field>
     <p *ngIf="startDateLabel === ''">Filtro por fechas</p>
     <p *ngIf="startDateLabel !== ''">{{startDateLabel}} a {{endDateLabel}}</p>
-    <p class="benefits">({{ordersTotal.lenght}} facturas) ${{benefit | CurrencyPipe}}</p>
+    <p class="benefits">({{orders.length}} facturas) ${{benefit | CurrencyPipe}}</p>
   </footer>
   <footer class="bottom-footer" (click)="openSelectedOrdersOptionsMenu()" *ngIf="orderIds.length > 0 && !filterOpened">
-    <p class="center-text" >Opciones para los {{orderIds.length}} artículos seleccioandos</p>
+    <p class="center-text" >Opciones para los {{orderIds.length}} artículos seleccionados</p>
   </footer>
   <footer class="bottom-footer" (click)="applyFilters()" *ngIf="filterOpened">
     <p >Guardar filtro</p>
-    <p class="benefits">Ver {{ordersTotal.lenght}} facturas filtradas</p>
+    <p class="benefits">Ver {{orders.length}} facturas filtradas</p>
   </footer>
 </div>

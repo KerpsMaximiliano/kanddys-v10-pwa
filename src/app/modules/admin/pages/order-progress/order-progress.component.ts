@@ -90,6 +90,9 @@ export class OrderProgressComponent implements OnInit {
   filterApplied: boolean = false;
   searchResultsObtained:boolean = false;
   filterOpened: boolean = false;
+  filterModalOpened:boolean = false;
+  filterBreadcumbsShow:boolean = false;
+
 
 
   constructor(
@@ -492,6 +495,7 @@ export class OrderProgressComponent implements OnInit {
 
   async showFilter() {
     this.filterOpened = true;
+    this.filterModalOpened = true;
     setTimeout(() => {
       (document
         .querySelector('#search-from-results-view') as HTMLInputElement)
@@ -566,9 +570,20 @@ export class OrderProgressComponent implements OnInit {
     });
   }
 
-  onCloseSearchbar() {
+ async  onCloseSearchbar() {
+    this.selectedProgress = [];
+    this.selectedZones = [];
+    this.paymentStatusName = [];
+    this.hourRange = {}
+
+    await this.generate();
+
     this.filterOpened = false;
     this.searchOpened = false;
+    this.filterModalOpened = false;
+    this.filterApplied = false;
+    this.searchResultsObtained=false
+    this.resetAllFilter();
   }
 
   openDatePicker() {
@@ -793,7 +808,6 @@ export class OrderProgressComponent implements OnInit {
         });
       }
     });
-    console.log("🚀 ~ file: order-progress.component.ts:793 ~ OrderProgressComponent ~ paginateItems ~ this.ordersByMonth:", this.ordersByMonth)
     await this.getOrdersIds();
     await this.getOrdersTotal();
     let orderQuantityDeliveryOptions = {
@@ -895,6 +909,8 @@ export class OrderProgressComponent implements OnInit {
   }
 
   async applyFilters() {
+    this.deselectAll();
+    this.filterModalOpened = false;
     this.filterApplied = true;
     this.searchResultsObtained = true;
     await this.generate();
@@ -962,7 +978,7 @@ export class OrderProgressComponent implements OnInit {
   }
 
   deselectAll() {
-    const radioInputs = document.querySelectorAll('input[type="radio"]');
+    const radioInputs = document.querySelectorAll('input[type="checkbox"]');
     radioInputs.forEach((input: HTMLInputElement) => {
       input.checked = false;
     });
@@ -1018,6 +1034,39 @@ export class OrderProgressComponent implements OnInit {
     this.getOrdersIds();
     this.getOrdersTotal();
     
+  }
+
+  selectDelivery(){
+    if(this.delivery["selected"] === false){
+      this.delivery["selected"] = true;
+    }else{
+      this.delivery["selected"] = false;
+    }
+  }
+
+  selectPickUp(){
+    if(this.pickUp["selected"] === false){
+      this.pickUp["selected"] = true;
+    }else{
+      this.pickUp["selected"] = false;
+    }
+  }
+
+  resetAllFilter(){
+    this.delivery["selected"] = false;
+    this.pickUp["selected"] = false;
+    this.progress.forEach((e) => {
+        e.selected = false;
+    });
+    this.deliveryZones.forEach((e) => {
+      e.selected = false;
+    });
+    this.deliveryTime.forEach((e) => {
+      e.selected = false;
+    });
+    this.paymentStatus.forEach((e) => {
+      e.selected = false;
+    });
   }
 
 }

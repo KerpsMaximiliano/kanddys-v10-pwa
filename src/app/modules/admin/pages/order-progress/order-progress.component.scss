@@ -396,6 +396,9 @@ hr {
   border: 3px solid #702015;
 }
 .Processing-selected {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: #702015;
   width: 100%;
   height: 100%;
@@ -408,6 +411,9 @@ hr {
   border: 3px solid #ca8113;
 }
 .Preparing-selected {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: #ca8113;
   width: 100%;
   height: 100%;
@@ -420,6 +426,9 @@ hr {
   border: 3px solid #7b7b7b;
 }
 .Pick-up-selected {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: #7b7b7b;
   width: 100%;
   height: 100%;
@@ -432,6 +441,9 @@ hr {
   border: 3px solid #f7d455;
 }
 .Shipped-selected {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: #f7d455;
   width: 100%;
   height: 100%;
@@ -444,6 +456,9 @@ hr {
   border: 3px solid #39ba45;
 }
 .Delivered-selected {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: #39ba45;
   width: 100%;
   height: 100%;
@@ -477,6 +492,8 @@ hr {
   margin-right: 5px;
 }
 
+
+
 .location-container {
   display: flex;
   align-items: flex-end;
@@ -490,6 +507,10 @@ hr {
   margin-right: 10px;
   width: 16px;
   height: 21px;
+}
+
+[type="checkbox"], [type="radio"] {
+  clip-path: circle(46% at 50% 50%);
 }
 
 .expand-icon {
@@ -980,6 +1001,23 @@ hr {
 
   .dialog{
     margin-top: 16px;
+  }
+
+  .container {
+  footer{
+    padding:0;
+  }
+}
+
+}
+
+@media (max-width: 367px) {
+
+  
+  .container {
+    footer{
+      padding:0;
+    }
   }
 
 }
