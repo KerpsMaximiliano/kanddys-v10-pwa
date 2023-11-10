@@ -300,12 +300,13 @@ export class LaiaMemoriesManagementComponent implements OnInit {
   }
 
   async checkAutoResponse() {
+    let id = this.headerService.user._id;
     await this.gptService.doUsersHaveAssistantActivated(
         [
-          this.headerService.user._id,
+          id
         ]
       ).then((res) => {
-      console.log(res)
+        this.autoResponse = res.id;
     });
   }
 
