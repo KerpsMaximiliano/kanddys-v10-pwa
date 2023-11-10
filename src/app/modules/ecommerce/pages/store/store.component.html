@@ -16,7 +16,7 @@
         <div>
           <mat-icon
             class="go_back_arrow"
-            (click)="goToAdmin()"
+            (click)="goBack()"
             *ngIf="adminView"
             >keyboard_arrow_left</mat-icon
           >
@@ -126,7 +126,7 @@
       (mouseleave)="stopDragging()"
       (mousemove)="moveEvent($event, elemt)"
     >
-      <input 
+      <input
         placeholder="Buscar.."
         (keyup)="onKeywordSearch($event)"
       />
@@ -147,11 +147,11 @@
       </div>
       <div class="input-item-text">
         🖇️ Artículos en categoriaID, categoryID
-      </div> 
+      </div>
 
     </div>-->
     <div class="buttons-bar">
-      <div 
+      <div
         class="sub-button"
         [ngClass]="{'logged-in' : headerService.user}"
         >
@@ -175,7 +175,7 @@
       {{ headerService.saleflow.merchant.bio }}
     </div>
     <div *ngIf="searchBar === true" class="input-container">
-      <input 
+      <input
         placeholder="Buscar.."
         (keyup)="onKeywordSearch($event)"
       />
