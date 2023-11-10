@@ -74,7 +74,7 @@
     </div>
     <div 
       class="custom-input"
-      [style.backgroundColor]="message.value ? 'transparent' : '#87CD9B'"
+      [style.backgroundColor]="message.value ? 'transparent' : textareaAudio ? '#F6F6F6' : '#87CD9B'"
       [style.alignItems]="message.value ? 'end' : 'center'"
     >
       <textarea 
@@ -82,10 +82,12 @@
         type="text"
         [formControl]="message"
         placeholder="Haz una pregunta de ejemplo.."
-        [style.backgroundColor]="message.value ? '#F6F6F6' : 'transparent'"
+        [style.backgroundColor]="message.value || textareaAudio ? '#F6F6F6' : 'transparent'"
         [style.padding]="message.value ? '12px 14px 10px' : '14px 14px 10px'"
         [ngClass]="{ textareaHeight: !message.value }"
         (keyup)="resizeTextarea($event.target)"
+        (blur)="onTextareaBlur()"
+        (click)="onTextareaClick()"
       ></textarea>
       <img *ngIf="!message.value" (click)="openRecorder()" class="audio-freq" src="{{assetsFolder}}/audio-freq.png" alt="img">
       <ng-container *ngIf="message.value">

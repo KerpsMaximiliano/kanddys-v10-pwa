@@ -113,6 +113,29 @@ export class LaiachatWebscrapingComponent implements OnInit {
     }
   }
 
+  resizeTextarea(textarea) {
+    if(textarea.scrollHeight > 314) {
+      textarea.style.height = 314 + "px";
+      textarea.style.overflowY = "scroll";
+      return;
+    }
+    if(textarea.scrollHeight > textarea.clientHeight) {
+      textarea.style.height = textarea.scrollHeight > 118 ? textarea.scrollHeight + "px" : 118 + "px";
+    } else {
+      textarea.style.height = 0 + "px";
+      textarea.style.height = textarea.scrollHeight + "px";
+    }
+  }
+
+  async getClipboardText() {
+    try {
+      const text = await navigator.clipboard.readText();
+      this.textareaUrl.setValue(text ?? null);
+    } catch (err) {
+      this.headerService.showErrorToast();
+    }
+  }
+
   goBack() {
    this.location.back();
   }

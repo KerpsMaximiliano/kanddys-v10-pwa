@@ -81,6 +81,47 @@
     margin: 0px auto;
     bottom: 0;
     background-color: #232921;
+
+    .container-save {
+      padding: 0 21px 22px;
+      background-color: #181d17;
+
+      .content {
+        padding: 31px 33px 30px;
+        background-color: #87CD9B;
+        border-radius: 11px;
+        display: flex;
+        flex-direction: column;
+      
+        .text {
+          color: #181D17;
+          text-align: center;
+          font-family: FiraSansMedium;
+          font-size: 17px;
+          font-style: normal;
+          font-weight: 500;
+          line-height: normal;
+          letter-spacing: 0.935px;
+          margin: 0;
+          margin-bottom: 30px;
+        }
+      
+        .button {
+          background-color: #435A4A;
+          padding: 10px 30px;
+          color: #C4C5C3;
+          text-align: center;
+          font-family: FiraSansBold;
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: normal;
+          letter-spacing: 0.88px;
+          border: none;
+          border-radius: 14px;
+        }
+      }
+    }
     
     .formulate-more {
       background-color: #181d17;
@@ -292,8 +333,8 @@
         border-radius: 11px;
         border: 1px solid var(--Plomo, #7b7b7b);
         width: 100%;
-        min-height: 314px;
-        max-height: 467px;
+        min-height: 118px;
+        max-height: 314px;
         // resize: none;
         flex-shrink: 0;
         // background-color: #181d17;
@@ -308,7 +349,7 @@
         // overflow-y: hidden; /* Hide vertical scrollbar initially */
         // min-height: 50px; /* Set a minimum height */
         width: 100%; /* Optionally set a width */
-        padding: 30px 20px 10px; /* Add padding for better appearance */
+        padding: 24px 20px 20px; /* Add padding for better appearance */
         box-sizing: border-box; /* Include padding and border in height calculation */
 
         transition: 1s ease-in-out linear;
@@ -349,22 +390,42 @@
         cursor: pointer;
       }
 
+      .container-clean-textarea {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        position: absolute;
+        bottom: 19px;
+        left: 20px;
+
+        .text-clean-textarea {
+          color: #7B7B7B;
+          font-family: FiraSansRegular;
+          font-size: 15px;
+          letter-spacing: 0.825px;
+        }
+
+        svg {
+          cursor: pointer;
+        }
+      }
+
       .container-send {
         border-radius: 50%;
         margin-left: 8px;
-        width: 50px;
-        height: 50px;
+        width: 39px;
+        height: 39px;
         display: flex;
         align-items: center;
         justify-content: center;
         position: absolute;
-        bottom: 15px;
+        bottom: 16px;
         right: 15px;
         cursor: pointer;
   
         .icon {
-          width: 24px;
-          height: 24px;
+          width: 19px;
+          height: 19px;
         }
       }
 
@@ -442,7 +503,7 @@
   }
 
   .request-response-box {
-    margin-top: 24px;
+    margin-top: 13px;
   }
 
   .question-box-wrapper {
@@ -525,43 +586,6 @@
     }
   }
 
-  .container-content {
-    padding: 31px 33px 30px;
-    background-color: #87CD9B;
-    border-radius: 11px;
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 30px;
-  
-    .text {
-      color: #181D17;
-      text-align: center;
-      font-family: FiraSansMedium;
-      font-size: 17px;
-      font-style: normal;
-      font-weight: 500;
-      line-height: normal;
-      letter-spacing: 0.935px;
-      margin: 0;
-      margin-bottom: 30px;
-    }
-  
-    .button {
-      background-color: #435A4A;
-      padding: 10px 30px;
-      color: #C4C5C3;
-      text-align: center;
-      font-family: FiraSansBold;
-      font-size: 16px;
-      font-style: normal;
-      font-weight: 700;
-      line-height: normal;
-      letter-spacing: 0.88px;
-      border: none;
-      border-radius: 14px;
-    }
-  }
-
   .response-box-wrapper {
     display: flex;
     width: 100%;
@@ -580,7 +604,7 @@
       width: 100%;
       flex-shrink: 0;
       padding: 8px 19px;
-      margin-top: 10px;
+      margin-top: 11px;
       color: var(--Fondo-de-Pantallas, #f6f6f6);
       font-family: InterRegular;
     }

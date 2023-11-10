@@ -48,6 +48,7 @@ export class LaiaMemoriesManagementComponent implements OnInit {
   };
   typeFile: string;
   isMobile: boolean = false;
+  textareaAudio: boolean = false;
 
   constructor(
     private gptService: Gpt3Service,
@@ -292,6 +293,18 @@ export class LaiaMemoriesManagementComponent implements OnInit {
     } else {
       textarea.style.height = 0 + "px";
       textarea.style.height = textarea.scrollHeight + "px";
+    }
+  }
+
+  onTextareaClick() {
+    if(!this.message.value) {
+      this.textareaAudio = true;
+    }
+  }
+
+  onTextareaBlur() {
+    if(!this.message.value) {
+      this.textareaAudio = false;
     }
   }
 

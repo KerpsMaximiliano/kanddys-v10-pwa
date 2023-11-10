@@ -100,6 +100,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   file: File;
   typeFile: string;
   clicked: boolean = true;
+  textareaAudio: boolean = false;
   showTextareaMemory: boolean = false;
   vectorText: string = null;
   showMemories: boolean = false;
@@ -142,8 +143,8 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
 
             if (audioResult) {
               this.form.get('memory').setValue(audioResult);
-              this.testMemory();
-              this.clicked = false;
+              // this.testMemory();
+              // this.clicked = false;
             }
 
             if (typeFile) {
@@ -395,6 +396,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
       if(audioQuestion) {
         unlockUI();
         this.audioText.setValue(null);
+        this.textareaAudio = false;
         // const textarea = document.getElementById('autoExpandTextarea');
         // textarea.style.height = '51px';
       };
@@ -408,6 +410,8 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
 
   async openAiRequestResponseFromFile() {
     try {
+      lockUI();
+
       let response = await this.gptService.openAiRequestResponseFromFile(
         this.file,
         this.audioText.value,
@@ -428,7 +432,11 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
       }
       this.showDots = false;
       this.audioText.setValue(null);
+      this.textareaAudio = false;
+
+      unlockUI();
     } catch (error) {
+      unlockUI();
       this.showDots = false;
       this.headerService.showErrorToast();
       console.error(error);
@@ -668,6 +676,41 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     } else {
       textarea.style.height = 0 + "px";
       textarea.style.height = textarea.scrollHeight + "px";
+    }
+  }
+
+  resizeTextareaMemory(textarea) {
+    if(textarea.scrollHeight > 314) {
+      textarea.style.height = 314 + "px";
+      textarea.style.overflowY = "scroll";
+      return;
+    }
+    if(textarea.scrollHeight > textarea.clientHeight) {
+      textarea.style.height = textarea.scrollHeight > 118 ? textarea.scrollHeight + "px" : 118 + "px";
+    } else {
+      textarea.style.height = 0 + "px";
+      textarea.style.height = textarea.scrollHeight + "px";
+    }
+  }
+
+  onTextareaClick() {
+    if(!this.audioText.value) {
+      this.textareaAudio = true;
+    }
+  }
+
+  onTextareaBlur() {
+    if(!this.audioText.value) {
+      this.textareaAudio = false;
+    }
+  }
+
+  async getClipboardText() {
+    try {
+      const text = await navigator.clipboard.readText();
+      this.form.get('memory').setValue(text ?? null);
+    } catch (err) {
+      this.headerService.showErrorToast();
     }
   }
 
