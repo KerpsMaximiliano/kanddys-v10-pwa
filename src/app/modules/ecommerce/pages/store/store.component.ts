@@ -1,10 +1,8 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { DomSanitizer } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
-import { log } from 'console';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { NgNavigatorShareService } from 'ng-navigator-share';
-import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { Tag } from 'src/app/core/models/tags';
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -17,6 +15,9 @@ import { TagFilteringComponent } from 'src/app/shared/dialogs/tag-filtering/tag-
 import { environment } from 'src/environments/environment';
 import SwiperCore, { Virtual } from 'swiper/core';
 import { truncateString } from 'src/app/core/helpers/strings.helpers';
+import { Location } from '@angular/common';
+import { filter } from 'rxjs/internal/operators/filter';
+import { pairwise } from 'rxjs/internal/operators/pairwise';
 
 SwiperCore.use([Virtual]);
 
@@ -35,13 +36,15 @@ export class StoreComponent implements OnInit {
     page: number;
     status: 'loading' | 'complete';
   } = {
-    page: 1,
-    pageSize: 15,
-    status: 'loading',
-  };
+      page: 1,
+      pageSize: 15,
+      status: 'loading',
+    };
   // hasCollections: boolean = false;
+  redirectTo = null
+  from = null
 
-  searchBar : boolean = false;
+  searchBar: boolean = false;
 
   azulPaymentsSupported: boolean = false;
 
@@ -83,13 +86,21 @@ export class StoreComponent implements OnInit {
     public _DomSanitizer: DomSanitizer,
     private ngNavigatorShareService: NgNavigatorShareService,
     private _bottomSheet: MatBottomSheet,
-    private changeDetectorRef: ChangeDetectorRef
-  ) {}
+    private changeDetectorRef: ChangeDetectorRef,
+    private location: Location
+  ) { }
 
   async ngOnInit(): Promise<void> {
     setTimeout(() => {
       this.route.queryParams.subscribe(async (queryParams) => {
-        let { startOnSnapshot, adminView, mode } = queryParams;
+        let { startOnSnapshot, adminView, mode, redirectTo, from } = queryParams;
+        this.redirectTo = redirectTo;
+        this.from = from;
+
+        if (typeof redirectTo === 'undefined') {
+          this.redirectTo = null;
+        }
+
         startOnSnapshot = Boolean(startOnSnapshot);
         localStorage.removeItem('flowRoute');
         localStorage.removeItem('selectedTemporalQuotation');
@@ -196,9 +207,9 @@ export class StoreComponent implements OnInit {
 
     this.router.navigate([
       '/ecommerce/' +
-        this.headerService.saleflow.merchant.slug +
-        '/terms-of-use/' +
-        term._id,
+      this.headerService.saleflow.merchant.slug +
+      '/terms-of-use/' +
+      term._id,
     ]);
   }
 
@@ -455,8 +466,57 @@ export class StoreComponent implements OnInit {
     ]);
   }
 
-  goToAdmin() {
-    this.router.navigate(['/admin/dashboard']);
+  goBack() {
+    if (!this.redirectTo && !this.from) {
+      this.router.navigate(['/admin/dashboard']);
+    }
+    if (!this.redirectTo && this.from) return this.redirectFromQueryParams();
+    let queryParams = {};
+    if (this.redirectTo.includes('?')) {
+      const url = this.redirectTo.split('?');
+      this.redirectTo = url[0];
+      const queryParamList = url[1].split('&');
+      for (const param in queryParamList) {
+        const keyValue = queryParamList[param].split('=');
+        queryParams[keyValue[0]] = keyValue[1].replace('%20', ' ');
+      }
+    }
+    this.router.navigate([this.redirectTo], {
+      queryParams,
+    });
+  }
+
+  redirectFromQueryParams() {
+    if (this.from.includes('?')) {
+      const redirectURL: { url: string; queryParams: Record<string, string> } =
+        { url: null, queryParams: {} };
+      const routeParts = this.from.split('?');
+      const redirectionURL = routeParts[0];
+      const routeQueryStrings = routeParts[1].split('&').map((queryString) => {
+        const queryStringElements = queryString.split('=');
+
+        return {
+          [queryStringElements[0]]: queryStringElements[1].replace('%20', ' '),
+        };
+      });
+
+      redirectURL.url = redirectionURL;
+      redirectURL.queryParams = {};
+
+      routeQueryStrings.forEach((queryString) => {
+        const key = Object.keys(queryString)[0];
+        redirectURL.queryParams[key] = queryString[key];
+      });
+
+      this.router.navigate([redirectURL.url], {
+        queryParams: redirectURL.queryParams,
+        replaceUrl: true,
+      });
+    } else {
+      this.router.navigate([this.from], {
+        replaceUrl: true,
+      });
+    }
   }
 
   goToBuyerOrders() {
