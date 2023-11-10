@@ -1,0 +1,62 @@
+<div class="container">
+    <header>
+      <h2>MEMORIAS DE LAIA</h2>
+      <div class="close-button" (click)="goBack()">X</div>
+    </header>
+
+    <main>
+        <div class="base-text-wrapper">
+            <div class="textarea-wrapper">
+                <textarea
+                  name="base-text"
+                  [formControl]="textareaUrl"
+                  id="base-text"
+                  [placeholder]="'Escribe o pega un texto..'"
+                  class="base-text"
+                  [ngStyle]="{ 
+                    'background-color': clicked ? '#F6F6F6' : '#181d17',
+                    'color': clicked ? '#7B7B7B' : '#C4C5C3'
+                  }"
+                  (click)="clicked = true"
+                ></textarea>
+      
+                <img *ngIf="textareaUrl.value && !clicked" src="../../../../../assets/icons/shortcut.svg" alt="" class="shortcut" (click)="textareaUrl.setValue(null)"/>
+                
+                <div 
+                  *ngIf="clicked"
+                  class="container-send"
+                  [style.backgroundColor]="textareaUrl.valid ? '#87CD9B' : '#C4C5C3'"
+                  (click)="textareaUrl.valid ? clicked = false : null"
+                >
+                  <img 
+                    class="icon"
+                    src="{{assetsFolder}}/chat-send-button.png"
+                    alt="img"
+                    [style.marginRight.px]="0"
+                  >
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div *ngIf="!clicked && textareaUrl.valid" class="message">
+        <div 
+            class="container-content"
+        >
+            <p class="text">
+                Guarda el contenido de la Memoria de Laia para empezar a brindar respuestas en cualquier idioma con Inteligencia Artificial
+            </p>
+    
+            <button type="button" class="button" (click)="saveUrl()">Tap para guardar</button>
+        </div>
+    </div>
+</div>
+
+<app-login-flow
+  *ngIf="showLogin"
+  [redirectionRoute]="loginDataUpload.redirectionRoute"
+  [redirectionRouteId]="loginDataUpload.redirectionRouteId"
+  [entity]="loginDataUpload.entity"
+  [jsondata]="loginDataUpload.jsondata"
+  (dialogIsOpen)="saveUrl()"
+></app-login-flow>

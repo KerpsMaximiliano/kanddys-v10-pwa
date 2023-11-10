@@ -123,16 +123,11 @@ export class Gpt3Service {
     }
   }
 
-  async requestResponseFromKnowledgeBase(
-    prompt: string,
-    userId: string,
-    chatRoomId?: string,
-    socketId?: string,
-  ) {
+  async requestResponseFromKnowledgeBase(input: any) {
     try {
       const result = await this.graphql.query({
         query: requestResponseFromKnowledgeBase,
-        variables: { prompt, userId, chatRoomId, socketId},
+        variables: { input },
       });
       return result?.requestResponseFromKnowledgeBase;
     } catch (error) {

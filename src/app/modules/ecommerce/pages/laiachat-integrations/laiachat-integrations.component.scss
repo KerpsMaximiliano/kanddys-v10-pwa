@@ -1,0 +1,123 @@
+.container {
+    height: 100%;
+    scroll-behavior: smooth;
+  
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding-bottom: 13px;
+      padding-top: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-left: 20px;
+      padding-right: 23px;
+      margin: auto;
+      max-width: 500px;
+      z-index: 999;
+  
+      background-color: #181d17;
+  
+      h2 {
+        color: var(--Fondo-de-Pantallas, #f6f6f6);
+        font-family: FiraSansRegular;
+        font-size: 13px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+        margin: 0px;
+        padding: 0px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        letter-spacing: 0.715px;
+      }
+  
+      .close-button {
+        cursor: pointer;
+        color: #fff;
+        font-family: FiraSansMedium;
+        font-size: 19.005px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+      }
+    }
+
+    main {
+        background-color: #181d17;
+        min-height: 100%;
+        padding: 0px 24px;
+        padding-top: 40px;
+        padding-bottom: 145px;
+
+        .title {
+            color: #F6F6F6;
+            font-family: FiraSansMedium;
+            font-size: 19px;
+            padding: 0 30px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 128.023%;
+            margin-top: 20px;
+            margin-bottom: 18px;
+            text-align: center;
+            letter-spacing: 1.265px;
+            margin-bottom: 35px;
+        }
+
+        .integrations {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        
+            .media {
+              cursor: pointer;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              gap: 20px;
+              border-radius: 11px;
+              background: #272727;
+              padding: 23px 0;
+              width: calc(50% - 8px);
+
+              .title {
+                color: var(--Fondo-de-Pantallas, #F6F6F6);
+                text-align: center;
+                font-family: Inter;
+                font-size: 25.379px;
+                font-style: normal;
+                font-weight: 700;
+                line-height: normal;
+                margin: 0;
+              }
+
+              .subtitle {
+                color: var(--Fondo-de-Pantallas, #F6F6F6);
+                text-align: center;
+                font-family: InterLight;
+                font-size: 15px;
+                margin: 0;
+                padding: 0 20px;
+              }
+
+              .text-integration {
+                color: var(--El-verdecito, #87CD9B);
+                text-align: center;
+                font-family: Inter;
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: normal;
+                margin: 0;
+                margin-bottom: 15px;
+                padding: 0 20px;
+              }
+            }
+        }
+    }
+}
