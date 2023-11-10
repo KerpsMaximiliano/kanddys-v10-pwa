@@ -336,7 +336,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   async getAssistantActivationStatusForChatUsers() {
     const embeddingsMetadataByUser =
       await this.gpt3Service.doUsersHaveAssistantActivated(
-        this.chat.owners.map((owner) => owner.userId)
+        [this.headerService.saleflow.merchant.owner._id]
       );
 
     console.log('usersWithAssistantActivated', embeddingsMetadataByUser);
