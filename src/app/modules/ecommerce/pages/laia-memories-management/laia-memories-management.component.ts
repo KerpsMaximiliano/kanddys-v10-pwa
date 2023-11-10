@@ -41,7 +41,7 @@ export class LaiaMemoriesManagementComponent implements OnInit {
   assetsFolder: string = environment.assetsUrl;
   message: FormControl = new FormControl(null);
 
-  autoResponse: boolean = true;
+  autoResponse: boolean;
 
   inputOpen: boolean = false;
   audio: {
@@ -306,7 +306,9 @@ export class LaiaMemoriesManagementComponent implements OnInit {
           id
         ]
       ).then((res) => {
-        this.autoResponse = res.id;
+        console.log(res)
+        console.log(res[`${id}`])
+        this.autoResponse = res[`${id}`];
     });
   }
 

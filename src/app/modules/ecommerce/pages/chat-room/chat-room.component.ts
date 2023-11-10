@@ -156,7 +156,20 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       this.socket.on('GET_OR_CREATE_CHAT', (chat) => {
         console.log(chat)
         this.chat = chat;
-        this.receiverId = chat.owners[0]
+
+        chat.owners.forEach((owner) => {
+          console.log(owner)
+          if(!this.headerService.user) {
+            if(owner === chat.messages[0].sender) {
+              this.receiverId = owner
+            }
+          } else {
+            if(owner.userId === this.headerService.user._id) {
+              console.log(owner._id, 'receiver')
+              this.receiverId = owner._id
+            }
+          }
+        })
         this.chat.messages.forEach(
           (message) =>
             (message.message = this.transformChatResponse(
@@ -281,24 +294,28 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
         message: message
       });
       await this.gpt3Service.requestResponseFromKnowledgeBase({
-        prompt: message,
-        merchantId : this.aiId,
-        chatRoomId : this.chat._id,
-        socketId: this.socket.id,
-        isAuthorization: false,
-        isGeneral: true
-      });
+          prompt: message,
+          merchantId : this.aiId,
+          chatRoomId : this.chat._id,
+          socketId: this.socket.id,
+          isAuthorization: false,
+          isGeneral: true
+        });
       return;
     }
+
     this.socket.emit('MESSAGE_SEND', {
       chatId: this.chat._id,
       message: this.chatFormGroup.get('input').value,
     });
+
     console.log(this.socket)
+
     setTimeout(() => {
       this.chatFormGroup.get('input').setValue('');
     }, 200);
 
+    
     await this.gpt3Service.requestResponseFromKnowledgeBase({
         prompt: this.chatFormGroup.get('input').value,
         merchantId : this.headerService.saleflow.merchant._id,
