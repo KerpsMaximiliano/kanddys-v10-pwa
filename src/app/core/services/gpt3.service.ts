@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {
   changeAssistantResponseMode,
   createEmbeddingsForMyMerchantItems,
+  deleteMemoryById,
   deleteVectorInKnowledgeBase,
   doUsersHaveAssistantActivated,
   feedFileToKnowledgeBase,
@@ -103,6 +104,21 @@ export class Gpt3Service {
     return result?.updateVectorInKnowledgeBase;
   }
 
+  async deleteMemoryById(
+    id: string,
+    merchantId: string
+  ): Promise<{
+    namespace: string;
+    vector: any;
+  }> {
+    const result = await this.graphql.mutate({
+      mutation: deleteMemoryById,
+      variables: { id, merchantId },
+    });
+
+    return result?.deleteMemoryById;
+  }
+    
   async deleteVectorInKnowledgeBase(id: string): Promise<boolean> {
     const result = await this.graphql.mutate({
       mutation: deleteVectorInKnowledgeBase,

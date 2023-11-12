@@ -125,6 +125,20 @@ export class LaiaMemoriesManagementComponent implements OnInit {
         description: 'Selecciona como adicionar el contenido:',
         options: [
           {
+            value: `Manda un email a memorias@laichat.com ${this.headerService?.user?.email ? `desde ${this.headerService?.user?.email}` : ''}`,
+            complete: true,
+            callback: () => {
+              const enlaceMailto = `mailto:memorias@laichat.com}`;
+              window.location.href = enlaceMailto;
+            },
+            settings: {
+              value: 'fal fa-envelope',
+              color: '#87CD9B',
+              callback: () => {
+              },
+            }
+          },
+          {
             value: 'Escribe o pega un texto',
             complete: true,
             callback: () => {

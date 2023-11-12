@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
@@ -17,6 +17,7 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./laiachat-webscraping.component.scss']
 })
 export class LaiachatWebscrapingComponent implements OnInit {
+  @ViewChild('baseText') memoryTextarea: ElementRef;
   assetsFolder: string = environment.assetsUrl;
   clicked: boolean = true;
   urlPattern = /^(https?|ftp|file):\/\/[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]/;
@@ -29,6 +30,7 @@ export class LaiachatWebscrapingComponent implements OnInit {
     jsondata: '',
   };
   queryParamsSubscription: Subscription;
+  isMobile: boolean = false;
 
   constructor(
     private headerService: HeaderService,
@@ -41,6 +43,8 @@ export class LaiachatWebscrapingComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
     this.queryParamsSubscription = this.route.queryParams.subscribe(
       async ({ jsondata }) => {
         if (jsondata) {
@@ -70,6 +74,13 @@ export class LaiachatWebscrapingComponent implements OnInit {
         });
       }
     );
+
+    
+    if (this.isMobile) {
+      setTimeout(() => {
+        this.memoryTextarea.nativeElement.focus();
+      }, 500);
+    }
   }
 
   async saveUrl() {

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
@@ -33,6 +33,7 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./dalia-training.component.scss'],
 })
 export class DaliaTrainingComponent implements OnInit, OnDestroy {
+  @ViewChild('baseText') memoryTextarea: ElementRef;
   assetsFolder: string = environment.assetsUrl;
   showExtendButton: boolean = false;
   alreadyClickedShowButton: boolean = false;
@@ -292,6 +293,12 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
         );
       }
     );
+
+    if (this.isMobile) {
+      setTimeout(() => {
+        this.memoryTextarea.nativeElement.focus();
+      }, 500);
+    }
   }
 
   onKeyUp() {
@@ -616,7 +623,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
         if (!this.vectorId) {
           const dataFeeded =
             await this.gptService.feedKnowledgeBaseWithTextData(
-              this.form.get('memory').value,
+              this.typeFile ? (this.generatedQA[0]?.response || '') : this.form.get('memory').value,
               this.memoryName
             );
 
@@ -779,6 +786,23 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
         }
       });
   };
+
+  async deleteMemory(){
+    try {
+      lockUI();
+
+      const merchantId: string = await this.getMerchantDefault();
+
+      await this.gptService.deleteMemoryById(this.vectorId, merchantId);
+      
+      this.router.navigate(['/ecommerce/laia-memories-management']);
+
+      unlockUI();
+    } catch (err) {
+      this.router.navigate(['/ecommerce/laia-memories-management']);
+      unlockUI();
+    }
+  }
 
   openIntegrationsDialog() {
     let data: {

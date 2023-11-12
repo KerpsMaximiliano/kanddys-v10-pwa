@@ -10,7 +10,7 @@
     </div>
   </header>
 
-  <main>
+  <main [style.maxWidth]="!isMobile ? '427px' : '500px'">
     <div
       class="memory"
       (click)="editMemory(vector.id)"

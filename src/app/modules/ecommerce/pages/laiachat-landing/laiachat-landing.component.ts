@@ -31,6 +31,7 @@ import { FilesService } from 'src/app/core/services/files.service';
 import { fileToBase64 } from 'src/app/core/helpers/files.helpers';
 import { ShareLinkInfoComponent } from 'src/app/shared/dialogs/share-link-info/share-link-info.component';
 import { FormControl } from '@angular/forms';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 
 interface ExtendedChat extends Chat {
   receiver?: User;
@@ -95,6 +96,11 @@ export class LaiachatLandingComponent implements OnInit {
   filter = new FormControl(null);
   audioText = new FormControl(null);
   isMobile: boolean = false;
+  vectorsFromVectorDatabase: Array<{
+    id: string;
+    name?: string;
+    text: string;
+  }> = [];
 
   constructor(
     public headerService: HeaderService,
@@ -113,6 +119,7 @@ export class LaiachatLandingComponent implements OnInit {
     private recordRTCService: RecordRTCService,
     private filesService: FilesService,
     private renderer: Renderer2,
+    private saleflowsService: SaleFlowService,
   ) { }
 
   async ngOnInit() {
@@ -124,6 +131,34 @@ export class LaiachatLandingComponent implements OnInit {
       console.log(this.clientConnectionStatus);
       this.getChats();
       this.filterChats();
+      this.fetchAllMemories();
+    }
+  }
+
+  async fetchAllMemories() {
+    try {
+      lockUI();
+
+      await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+      const merchantSaleflow = await this.saleflowsService.saleflowDefault(
+        this.merchantsService.merchantData?._id
+      );
+
+      const embeddingQueryResponse =
+        await this.gptService.fetchAllDataInVectorDatabaseNamespace(
+          merchantSaleflow?._id
+        );
+
+      if (
+        embeddingQueryResponse?.data &&
+        embeddingQueryResponse?.data?.length
+      ) {
+        this.vectorsFromVectorDatabase = embeddingQueryResponse?.data;
+      }
+
+      unlockUI();
+    } catch (error) {
+      console.error(error);
     }
   }
 

@@ -1,5 +1,5 @@
 <div class="container">
-    <header>
+    <header [style.maxWidth]="!isMobile ? '427px' : '500px'">
       <h2>MEMORIA DE LAIA</h2>
       <div class="close-button" (click)="goBack()">X</div>
     </header>
@@ -11,6 +11,7 @@
                   name="base-text"
                   [formControl]="textareaUrl"
                   id="base-text"
+                  #baseText
                   [placeholder]="'Escribe o pega un texto..'"
                   class="base-text"
                   [ngStyle]="{ 

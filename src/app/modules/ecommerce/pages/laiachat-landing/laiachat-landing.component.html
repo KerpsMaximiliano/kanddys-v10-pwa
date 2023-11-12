@@ -261,7 +261,7 @@
   </ng-template>
 </div>
 
-<div *ngIf="headerService.user" class="footer-fixed">
+<div *ngIf="headerService.user && vectorsFromVectorDatabase && vectorsFromVectorDatabase?.length > 0" class="footer-fixed" [style.maxWidth]="!isMobile ? '427px' : '500px'">
   <div class="container-permissions" (click)="shareLink()">
       <span class="title">
           Permisos & Enlace directo de Laia
