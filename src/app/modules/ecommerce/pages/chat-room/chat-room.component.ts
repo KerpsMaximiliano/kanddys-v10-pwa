@@ -131,21 +131,22 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
 
     // client-side
     this.socket.on('connect', () => {
-      console.log(this.headerService.user)
+      this.socket.emit('ME', this.socket.id);
+      this.socket.on('ME', (me) => {
+        this.receiverId = me.socketUserId;
+      })
+
       this.socketConnected = true;
       // Send a message to the server
       if(!this.headerService.user) {
-        console.log('no user connect')
-        console.log(this.headerService.saleflow.merchant)
         this.socket.emit('GET_OR_CREATE_CHAT', {
           owners: [this.socket.id],
-          userId: this.headerService.saleflow.merchant.owner._id,
         })
         console.log(this.socket)
       } else if (!chatId) {
         this.socket.emit('GET_OR_CREATE_CHAT', {
           owners: [this.socket.id],
-          userId: this.headerService.saleflow.merchant.owner._id,
+          userId: this.headerService.user._id,
         });
       } else {
         this.socket.emit('GET_OR_CREATE_CHAT', {
@@ -157,7 +158,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
         console.log(chat)
         this.chat = chat;
 
-        chat.owners.forEach((owner) => {
+        /*chat.owners.forEach((owner) => {
           console.log(owner)
           if(!this.headerService.user) {
             if(owner === chat.messages[0].sender) {
@@ -169,7 +170,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
               this.receiverId = owner._id
             }
           }
-        })
+        })*/
         this.chat.messages.forEach(
           (message) =>
             (message.message = this.transformChatResponse(
