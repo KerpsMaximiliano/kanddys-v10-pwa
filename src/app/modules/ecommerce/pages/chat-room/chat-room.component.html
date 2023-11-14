@@ -74,7 +74,7 @@
       <ng-container *ngFor="let message of chat?.messages">
         <div
           class="question-box-wrapper"
-          *ngIf="message.sender === headerService.user?._id"
+          *ngIf="message.sender === receiverId"
         >
           <div class="content">
             <div class="question-box" [innerHTML]="message.message"></div>
@@ -83,7 +83,7 @@
 
         <div
           class="response-box-wrapper"
-          *ngIf="message.sender !== headerService.user?._id"
+          *ngIf="message.sender !== receiverId"
         >
           <div class="content">
             <div class="response-box" [innerHTML]="message.message"></div>

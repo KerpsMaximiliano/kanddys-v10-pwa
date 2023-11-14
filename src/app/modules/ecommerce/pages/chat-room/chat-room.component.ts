@@ -29,7 +29,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   isTheUserTheMerchant: boolean = false;
   loggedAsAMerchant: boolean = false;
   assetsFolder: string = environment.assetsUrl;
+  aiId: string = environment.ai.id;
+  aiSlug: string = environment.ai.slug;
   typeOfReceiver: 'MERCHANT' | 'REGULAR_USER' = 'MERCHANT';
+  receiverId: string;
   embeddingsMetadata: {
     vectorsCount: number;
     automaticModeActivated?: boolean;
@@ -48,7 +51,6 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   online: boolean = true;
   socketConnected: boolean = true;
   inputOpen : boolean = false;
-
   ipAddress: number;
 
   constructor(
@@ -61,6 +63,14 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
+    if(this.route.snapshot.params.merchantSlug === this.aiSlug ) {
+      let message = this.route.snapshot.queryParams['message']
+      if(message) { 
+        setTimeout(() => {
+          this.sendMessage(true, message)
+        }, 5000);
+      }
+    }
     this.routeParamsSubscription = this.route.params.subscribe(({ chatId }) => {
       this.queryParamsSubscription = this.route.queryParams.subscribe(
         async ({ fromStore }) => {
@@ -121,21 +131,22 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
 
     // client-side
     this.socket.on('connect', () => {
-      console.log(this.headerService.user)
+      this.socket.emit('ME', this.socket.id);
+      this.socket.on('ME', (me) => {
+        this.receiverId = me.socketUserId;
+      })
+
       this.socketConnected = true;
       // Send a message to the server
       if(!this.headerService.user) {
-        console.log('no user connect')
-        console.log(this.headerService.saleflow.merchant)
         this.socket.emit('GET_OR_CREATE_CHAT', {
           owners: [this.socket.id],
-          userId: this.headerService.saleflow.merchant.owner._id,
         })
         console.log(this.socket)
       } else if (!chatId) {
         this.socket.emit('GET_OR_CREATE_CHAT', {
           owners: [this.socket.id],
-          userId: this.headerService.saleflow.merchant.owner._id,
+          userId: this.headerService.user._id,
         });
       } else {
         this.socket.emit('GET_OR_CREATE_CHAT', {
@@ -147,6 +158,19 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
         console.log(chat)
         this.chat = chat;
 
+        /*chat.owners.forEach((owner) => {
+          console.log(owner)
+          if(!this.headerService.user) {
+            if(owner === chat.messages[0].sender) {
+              this.receiverId = owner
+            }
+          } else {
+            if(owner.userId === this.headerService.user._id) {
+              console.log(owner._id, 'receiver')
+              this.receiverId = owner._id
+            }
+          }
+        })*/
         this.chat.messages.forEach(
           (message) =>
             (message.message = this.transformChatResponse(
@@ -264,16 +288,35 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     });
   }
 
-  async sendMessage() {
+  async sendMessage(talkToAI: boolean = false, message? : string) {
+    if(talkToAI) {
+      this.socket.emit('MESSAGE_SEND', {
+        chatId: this.chat._id,
+        message: message
+      });
+      await this.gpt3Service.requestResponseFromKnowledgeBase({
+          prompt: message,
+          merchantId : this.aiId,
+          chatRoomId : this.chat._id,
+          socketId: this.socket.id,
+          isAuthorization: false,
+          isGeneral: true
+        });
+      return;
+    }
+
     this.socket.emit('MESSAGE_SEND', {
       chatId: this.chat._id,
       message: this.chatFormGroup.get('input').value,
     });
+
     console.log(this.socket)
+
     setTimeout(() => {
       this.chatFormGroup.get('input').setValue('');
     }, 200);
 
+    
     await this.gpt3Service.requestResponseFromKnowledgeBase({
         prompt: this.chatFormGroup.get('input').value,
         merchantId : this.headerService.saleflow.merchant._id,
@@ -311,7 +354,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   async getAssistantActivationStatusForChatUsers() {
     const embeddingsMetadataByUser =
       await this.gpt3Service.doUsersHaveAssistantActivated(
-        this.chat.owners.map((owner) => owner.userId)
+        [this.headerService.saleflow.merchant.owner._id]
       );
 
     console.log('usersWithAssistantActivated', embeddingsMetadataByUser);
