@@ -5,8 +5,8 @@
         <ng-container *ngIf="!headerService.user">
           <img alt="user" (click)="loginflow = true" src="{{assetsFolder}}/user-placeholder.png">
           <p (click)="loginflow = true" class="sign-in">
-            <!-- {{ "general.register" | translate }} -->
-            Registro
+            {{ "general.register" | translate }}
+            <!-- Registro -->
           </p>
         </ng-container>
         <ng-container *ngIf="headerService.user">
@@ -58,7 +58,8 @@
       <ng-container *ngIf="chatsByMonthCopy?.length > 0">
         <div class="container-toggle">
               <span class="title">
-                  Laia te preguntará antes de contestar
+                {{ "title.laia-question" | translate }}
+                <!-- Laia te preguntará antes de contestar -->
               </span>
               <img
                 class="toggle-icon"
@@ -82,7 +83,7 @@
                       name="item-search"
                       [formControl]="filter"
                       class="input search-bar"
-                      placeholder="Todos los IDs (3,589).."
+                      placeholder="{{ 'laia-landing.placeholderFilter' | translate }}"
                   />
               </form>
 
@@ -121,7 +122,7 @@
               {{
                 chat.lastMessageWritten
                   ? chat.lastMessageWritten
-                  : "Todavía no han escrito nada"
+                  : "laia-landing.noMessages"
               }}
             </p>
           </div>
@@ -130,10 +131,10 @@
   </ng-container>
   <ng-template #elseTemplate>
       <div class="container-title">
-        <!-- <p class="title">{{ "title.laia-introduction" | translate }}</p> -->
-        <p class="title">LAIACHAT</p>
-        <!-- <p class="subtitle">{{ "subtitle.spent-less-time" | translate }}</p> -->
-        <p class="subtitle">Ahorra Tiempo Brindando Respuestas Precisas al Instante</p>
+        <p class="title">{{ "title.laia-introduction" | translate }}</p>
+        <!-- <p class="title">LAIACHAT</p> -->
+        <p class="subtitle">{{ "subtitle.spent-less-time" | translate }}</p>
+        <!-- <p class="subtitle">Ahorra Tiempo Brindando Respuestas Precisas al Instante</p> -->
       </div>
 
       <!-- <div class="container-title">
@@ -166,10 +167,11 @@
 
       <div class="container-content">
         <p class="text">
-          Introduce contenido en la Memoria de Laia para empezar a brindar respuestas en cualquier idioma con Inteligencia Artificial
+          {{ "laia-landing.titleMemory" | translate }}
+          <!-- Introduce contenido en la Memoria de Laia para empezar a brindar respuestas en cualquier idioma con Inteligencia Artificial -->
         </p>
 
-        <button type="button" class="button" (click)="openDialogOptions()">Tap aquí para introducir contenido</button>
+        <button type="button" class="button" (click)="openDialogOptions()">{{ "laia-landing.subtitleMemory" | translate }}</button>
       </div>
 
       <input
@@ -181,12 +183,12 @@
       />
       
       <div class="social-media">
-        <!-- <p class="title">{{ "title.laia-integrations" | translate }}</p> -->
-        <p class="title">INTEGRACIONES DE CHATS</p>
+        <p class="title">{{ "title.laia-integrations" | translate }}</p>
+        <!-- <p class="title">INTEGRACIONES DE CHATS</p> -->
 
         <div class="filters">
           <div class="filter">
-            Completas
+            {{ "laia-landing.titleFilterOne" | translate }}
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="13" viewBox="0 0 20 19" fill="none">
               <ellipse cx="10" cy="9.5" rx="10" ry="9.5" fill="#7B7B7B"/>
             </svg>
@@ -196,11 +198,11 @@
             [style.margin]="'0 8px'"
             [style.justifyContent]="'center'"  
           >
-            En Desarrollo
+          {{ "laia-landing.titleFilterTwo" | translate }}
             <img width="12" alt="user" (click)="loginflow = true" src="{{assetsFolder}}/semi-circle.png">
           </div>
           <div class="filter" [style.justifyContent]="'flex-end'" >
-            Potenciales
+            {{ "laia-landing.titleFilterThree" | translate }}
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="13" viewBox="0 0 20 19" fill="none">
               <path d="M19.5 9.5C19.5 14.4467 15.2712 18.5 10 18.5C4.72882 18.5 0.5 14.4467 0.5 9.5C0.5 4.55329 4.72882 0.5 10 0.5C15.2712 0.5 19.5 4.55329 19.5 9.5Z" stroke="#7B7B7B"/>
             </svg>
@@ -209,15 +211,13 @@
 
         <div class="socials" [style.marginTop.px]="15">
             <div class="media">
-              <!-- {{ "general.websites" | translate }} -->
-              Websites
+              {{ "general.websites" | translate }}
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19" fill="none">
                     <ellipse cx="10" cy="9.5" rx="10" ry="9.5" fill="#7B7B7B"/>
                 </svg>
             </div>
             <div class="media">
-              <!-- {{ "general.link" | translate }} -->
-              Enlace
+              {{ "general.link" | translate }}
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19" fill="none">
                     <ellipse cx="10" cy="9.5" rx="10" ry="9.5" fill="#7B7B7B"/>
                 </svg>
@@ -264,7 +264,7 @@
 <div *ngIf="headerService.user && vectorsFromVectorDatabase && vectorsFromVectorDatabase?.length > 0" class="footer-fixed" [style.maxWidth]="!isMobile ? '427px' : '500px'">
   <div class="container-permissions" (click)="shareLink()">
       <span class="title">
-          Permisos & Enlace directo de Laia
+        {{ "laia-landing.titlePermissions" | translate }}
       </span>
       <i class="fas fa-chevron-right icon"></i>
   </div>
@@ -311,7 +311,7 @@
       id="autoExpandTextarea"
       type="text"
       [formControl]="audioText"
-      placeholder="Qué necesitas saber de Laia?.."
+      placeholder="{{ 'text.question-about-laia' | translate }}"
       [style.backgroundColor]="audioText.value ? '#d9d9d9' : 'transparent'"
       [style.borderRadius.px]="audioText.value ? 20 : 300"
       [ngClass]="{ textareaHeight: !audioText.value }"
@@ -335,7 +335,7 @@
   <div class="empty-chat">
     <img src="../../../../../assets/images/person-default.png">
     <p class="text">
-      Aquí estarán los Chats
+      {{ "laia-landing.titleEmptyChat" | translate }}
     </p>
   </div>
 </ng-template>

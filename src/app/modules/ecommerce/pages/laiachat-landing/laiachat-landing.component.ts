@@ -101,6 +101,7 @@ export class LaiachatLandingComponent implements OnInit {
     name?: string;
     text: string;
   }> = [];
+  convertAudioText: string = 'Conviertiéndo el audio a texto';
 
   constructor(
     public headerService: HeaderService,
@@ -120,7 +121,10 @@ export class LaiachatLandingComponent implements OnInit {
     private filesService: FilesService,
     private renderer: Renderer2,
     private saleflowsService: SaleFlowService,
-  ) { }
+  ) {
+    translate.setDefaultLang(navigator.language || 'es');
+    translate.use(navigator.language || 'es');
+  }
 
   async ngOnInit() {
     const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
@@ -133,6 +137,7 @@ export class LaiachatLandingComponent implements OnInit {
       this.filterChats();
       this.fetchAllMemories();
     }
+    this.translate.get("modal.convertAudioText").subscribe(translate => this.convertAudioText = translate);
   }
 
   async fetchAllMemories() {
@@ -564,102 +569,111 @@ export class LaiachatLandingComponent implements OnInit {
   }
 
   openDialogOptions() {
-    let data = {
-      data: {
-        description: 'Selecciona como adicionar el contenido:',
-        options: [
-          {
-            value: 'Escribe o pega un texto',
-            complete: true,
-            callback: () => {
-              this.router.navigate(['/ecommerce/laia-training']);
-            },
-            settings: {
-              value: 'fal fa-keyboard',
-              color: '#87CD9B',
+    this.translate.get([
+      "modal.options-menu-title",
+      "model.writeOrCopy",
+      "model.addWebUrl",
+      "model.audioText",
+      "model.uploadPdf",
+      "model.uploadExcel",
+    ]).subscribe(translations => {
+      let data = {
+        data: {
+          description: translations["modal.options-menu-title"],
+          options: [
+            {
+              value: translations["model.writeOrCopy"],
+              complete: true,
               callback: () => {
+                this.router.navigate(['/ecommerce/laia-training']);
               },
-            }
-          },
-          {
-            value: 'Adiciona una página web',
-            complete: true,
-            callback: () => {
-              this.router.navigate(['/ecommerce/laiachat-webscraping']);
+              settings: {
+                value: 'fal fa-keyboard',
+                color: '#87CD9B',
+                callback: () => {
+                },
+              }
             },
-            settings: {
-              value: 'fal fa-keyboard',
-              color: '#87CD9B',
+            {
+              value: translations["model.addWebUrl"],
+              complete: true,
               callback: () => {
+                this.router.navigate(['/ecommerce/laiachat-webscraping']);
               },
-            }
-          },
-          {
-            value: 'Texto desde tu micrófono',
-            complete: true,
-            callback: () => {
-              const dialogref = this.dialogService.open(AudioRecorderComponent,{
-                type: 'flat-action-sheet',
-                props: { canRecord: true, isDialog: true },
-                customClass: 'app-dialog',
-                flags: ['no-header'],
-              });
-              const dialogSub = dialogref.events
-                .pipe(filter((e) => e.type === 'result'))
-                .subscribe((e) => {
-                  if(e.data) {
-                    this.audio = e.data;
-                    this.saveAudio();
-                  }
-                  this.audio = null;
-                  this.recordRTCService.abortRecording();
-                  dialogSub.unsubscribe();
+              settings: {
+                value: 'fal fa-keyboard',
+                color: '#87CD9B',
+                callback: () => {
+                },
+              }
+            },
+            {
+              value: translations["model.audioText"],
+              complete: true,
+              callback: () => {
+                const dialogref = this.dialogService.open(AudioRecorderComponent,{
+                  type: 'flat-action-sheet',
+                  props: { canRecord: true, isDialog: true },
+                  customClass: 'app-dialog',
+                  flags: ['no-header'],
                 });
-            },
-            settings: {
-              value: 'fal fa-waveform-path',
-              color: '#87CD9B',
-              callback: () => {
+                const dialogSub = dialogref.events
+                  .pipe(filter((e) => e.type === 'result'))
+                  .subscribe((e) => {
+                    if(e.data) {
+                      this.audio = e.data;
+                      this.saveAudio();
+                    }
+                    this.audio = null;
+                    this.recordRTCService.abortRecording();
+                    dialogSub.unsubscribe();
+                  });
               },
-            }
-          },
-          {
-            value: 'Carga un PDF',
-            complete: true,
-            callback: () => {
-              const fileInput = document.getElementById('file') as HTMLInputElement;
-              fileInput.accept = '.pdf';
-              fileInput.click();
-              this.typeFile = 'pdf';
+              settings: {
+                value: 'fal fa-waveform-path',
+                color: '#87CD9B',
+                callback: () => {
+                },
+              }
             },
-            settings: {
-              value: 'fal fa-file-pdf',
-              color: '#87CD9B',
+            {
+              value: translations["model.uploadPdf"],
+              complete: true,
               callback: () => {
+                const fileInput = document.getElementById('file') as HTMLInputElement;
+                fileInput.accept = '.pdf';
+                fileInput.click();
+                this.typeFile = 'pdf';
               },
-            }
-          },
-          {
-            value: 'Carga un archivo de Excel',
-            complete: true,
-            callback: () => {
-              const fileInput = document.getElementById('file') as HTMLInputElement;
-              fileInput.accept = '.xls';
-              fileInput.click();
-              this.typeFile = 'xls';
+              settings: {
+                value: 'fal fa-file-pdf',
+                color: '#87CD9B',
+                callback: () => {
+                },
+              }
             },
-            settings: {
-              value: 'fal fa-file-excel',
-              color: '#87CD9B',
+            {
+              value: translations["model.uploadExcel"],
+              complete: true,
               callback: () => {
+                const fileInput = document.getElementById('file') as HTMLInputElement;
+                fileInput.accept = '.xls';
+                fileInput.click();
+                this.typeFile = 'xls';
               },
-            }
-          },
-        ],
-      },
-    };
-
-    this.bottomSheet.open(OptionsMenuComponent, data)
+              settings: {
+                value: 'fal fa-file-excel',
+                color: '#87CD9B',
+                callback: () => {
+                },
+              }
+            },
+          ],
+        },
+      };
+  
+      this.bottomSheet.open(OptionsMenuComponent, data);
+    });
   }
 
   async saveAudio(goMerchant: boolean = false) {
@@ -668,7 +682,7 @@ export class LaiachatLandingComponent implements OnInit {
       dialogRef = this.dialogService.open(StatusAudioRecorderComponent, {
         type: 'flat-action-sheet',
         props: {
-          message: 'Conviertiéndo el audio a texto..',
+          message: this.convertAudioText,
           backgroundColor: '#181D17',
         },
         customClass: 'app-dialog',

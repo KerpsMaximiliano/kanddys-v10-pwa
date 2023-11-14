@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -106,6 +107,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   vectorText: string = null;
   showMemories: boolean = false;
   isMobile: boolean = false;
+  convertAudioText: string = 'Conviertiéndo el audio a texto';
 
   constructor(
     private gptService: Gpt3Service,
@@ -120,7 +122,11 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     private toastrService: ToastrService,
     private recordRTCService: RecordRTCService,
     private filesService: FilesService,
-  ) {}
+    private translate: TranslateService,
+  ) {
+    translate.setDefaultLang(navigator.language || 'es');
+    translate.use(navigator.language || 'es');
+  }
 
   async ngOnInit() {
     const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
@@ -293,6 +299,8 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
         );
       }
     );
+
+    this.translate.get("modal.convertAudioText").subscribe(translate => this.convertAudioText = translate);
 
     if (this.isMobile) {
       setTimeout(() => {
@@ -741,50 +749,52 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   }
 
   editMemoryName = () => {
-    let fieldsToCreate: FormData = {
-      fields: [
-        {
-          label: 'Nombre de la memoria',
-          name: 'memoryName',
-          type: 'text',
-          validators: [Validators.pattern(/[\S]/), Validators.required],
-        },
-      ],
-      automaticallyFocusFirstField: true,
-    };
-
-    const dialogRef = this.matDialog.open(FormComponent, {
-      data: fieldsToCreate,
-    });
-
-    this.memoryNameDialogSubscription = dialogRef
-      .afterClosed()
-      .subscribe(async (result: FormGroup) => {
-        if (result?.value['memoryName']) {
-          this.memoryName = result?.value['memoryName'];
-
-          this.loginData.jsondata = JSON.stringify({
-            memoryToSave: this.form.get('memory').value,
-            memoryName: this.memoryName,
-          });
-
-          if (
-            this.vectorId &&
-            this.form.get('memory').value &&
-            this.memoryName
-          ) {
-            lockUI();
-
-            await this.gptService.updateVectorInKnowledgeBase(
-              this.vectorId,
-              this.form.get('memory').value,
-              this.memoryName
-            );
-
-            unlockUI();
-          }
-        }
+    this.translate.get("laia-training.nameMemoryText").subscribe(translate => {
+      let fieldsToCreate: FormData = {
+        fields: [
+          {
+            label: translate,
+            name: 'memoryName',
+            type: 'text',
+            validators: [Validators.pattern(/[\S]/), Validators.required],
+          },
+        ],
+        automaticallyFocusFirstField: true,
+      };
+  
+      const dialogRef = this.matDialog.open(FormComponent, {
+        data: fieldsToCreate,
       });
+  
+      this.memoryNameDialogSubscription = dialogRef
+        .afterClosed()
+        .subscribe(async (result: FormGroup) => {
+          if (result?.value['memoryName']) {
+            this.memoryName = result?.value['memoryName'];
+  
+            this.loginData.jsondata = JSON.stringify({
+              memoryToSave: this.form.get('memory').value,
+              memoryName: this.memoryName,
+            });
+  
+            if (
+              this.vectorId &&
+              this.form.get('memory').value &&
+              this.memoryName
+            ) {
+              lockUI();
+  
+              await this.gptService.updateVectorInKnowledgeBase(
+                this.vectorId,
+                this.form.get('memory').value,
+                this.memoryName
+              );
+  
+              unlockUI();
+            }
+          }
+        });
+    });
   };
 
   async deleteMemory(){
@@ -1147,7 +1157,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
       dialogRef = this.dialog.open(StatusAudioRecorderComponent, {
         type: 'flat-action-sheet',
         props: {
-          message: 'Conviertiéndo el audio a texto..',
+          message: this.convertAudioText,
           backgroundColor: '#181D17',
         },
         customClass: 'app-dialog',

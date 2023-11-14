@@ -2,6 +2,7 @@ import { Location } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -40,7 +41,11 @@ export class LaiachatWebscrapingComponent implements OnInit {
     private location: Location,
     private route: ActivatedRoute,
     private router: Router,
-  ) { }
+    private translate: TranslateService,
+  ) {
+    translate.setDefaultLang(navigator.language || 'es');
+    translate.use(navigator.language || 'es');
+  }
 
   ngOnInit(): void {
     const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;

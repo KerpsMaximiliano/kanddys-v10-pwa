@@ -2,7 +2,7 @@
   <header>
     <div class="left">
       <img alt="brain" src="{{env}}/brain.png">
-      <h1>MEMORIAS DE LAIA</h1>
+      <h1>{{ "title.laia-memories" | translate }}</h1>
     </div>
     <div class="right">
       <button class="add" (click)="addMemory()">+</button>
@@ -16,7 +16,7 @@
       (click)="editMemory(vector.id)"
       *ngFor="let vector of vectorsFromVectorDatabase"
     >
-      <div class="name">{{ vector.name ? vector.name : "Sin nombre" }}</div>
+      <div class="name">{{ vector.name ? vector.name : ("laia-memories.emptyName" | translate) }}</div>
       <div class="content">{{ vector.text }}</div>
     </div>
 
@@ -69,7 +69,7 @@
   >
     <div *ngIf="!message.value" class="formulate-more">        
       <p class="title">
-        Prueba las respuestas que formulará Laia, haz una pregunta de ejemplo 👇
+        {{ "laia-memories.testResponses" | translate }}
       </p>
     </div>
     <div 
@@ -81,7 +81,7 @@
         id="autoExpandTextarea"
         type="text"
         [formControl]="message"
-        placeholder="Haz una pregunta de ejemplo.."
+        placeholder="{{ 'laia-memories.responseExample'| translate }}"
         [style.backgroundColor]="message.value || textareaAudio ? '#F6F6F6' : 'transparent'"
         [style.padding]="message.value ? '12px 14px 10px' : '14px 14px 10px'"
         [ngClass]="{ textareaHeight: !message.value }"
