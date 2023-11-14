@@ -50,7 +50,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   } = null;
   online: boolean = true;
   socketConnected: boolean = true;
-  inputOpen : boolean = false;
+  inputOpen: boolean = false;
   ipAddress: number;
 
   constructor(
@@ -60,12 +60,12 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     private sanitizer: DomSanitizer,
     private usersService: UsersService,
     private router: Router
-  ) {}
+  ) { }
 
   async ngOnInit() {
-    if(this.route.snapshot.params.merchantSlug === this.aiSlug ) {
+    if (this.route.snapshot.params.merchantSlug === this.aiSlug) {
       let message = this.route.snapshot.queryParams['message']
-      if(message) { 
+      if (message) {
         setTimeout(() => {
           this.sendMessage(true, message)
         }, 5000);
@@ -97,7 +97,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
         }
       );
     });
-    if(!this.headerService.user) {
+    if (!this.headerService.user) {
       this.getIp()
     }
   }
@@ -111,7 +111,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   }
 
   async initSocketClientEventListeners(chatId: string) {
-    if(!this.headerService.user) {
+    if (!this.headerService.user) {
       console.log('no user socket')
       this.socket = io(SERVER_URL, {
         extraHeaders: {
@@ -138,20 +138,21 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
 
       this.socketConnected = true;
       // Send a message to the server
-      if(!this.headerService.user) {
+      if (!this.headerService.user) {
         this.socket.emit('GET_OR_CREATE_CHAT', {
           owners: [this.socket.id],
+          userId: this.headerService.saleflow.merchant.owner?._id
         })
         console.log(this.socket)
       } else if (!chatId) {
         this.socket.emit('GET_OR_CREATE_CHAT', {
           owners: [this.socket.id],
-          userId: this.headerService.user._id,
+          userId: this.headerService.saleflow.merchant.owner?._id
         });
       } else {
         this.socket.emit('GET_OR_CREATE_CHAT', {
           owners: [this.socket.id],
-          chatId: chatId,
+          userId: this.headerService.saleflow.merchant.owner?._id
         });
       }
       this.socket.on('GET_OR_CREATE_CHAT', (chat) => {
@@ -173,18 +174,18 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
         })*/
         this.chat.messages.forEach(
           (message) =>
-            (message.message = this.transformChatResponse(
-              message.message as any
-            ))
+          (message.message = this.transformChatResponse(
+            message.message as any
+          ))
         );
 
         if (!chatId)
           this.router.navigate(
             [
               'ecommerce/' +
-                this.headerService.saleflow.merchant.slug +
-                '/chat-merchant/' +
-                this.chat._id,
+              this.headerService.saleflow.merchant.slug +
+              '/chat-merchant/' +
+              this.chat._id,
             ],
             {
               queryParams: {
@@ -218,7 +219,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
               else this.chatUsers['RECEIVER'] = user;
             });
           });
-          
+
         this.inputValueChangesSubscription = this.chatFormGroup
           .get('input')
           .valueChanges.subscribe((change) => {
@@ -288,20 +289,20 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     });
   }
 
-  async sendMessage(talkToAI: boolean = false, message? : string) {
-    if(talkToAI) {
+  async sendMessage(talkToAI: boolean = false, message?: string) {
+    if (talkToAI) {
       this.socket.emit('MESSAGE_SEND', {
         chatId: this.chat._id,
         message: message
       });
       await this.gpt3Service.requestResponseFromKnowledgeBase({
-          prompt: message,
-          merchantId : this.aiId,
-          chatRoomId : this.chat._id,
-          socketId: this.socket.id,
-          isAuthorization: false,
-          isGeneral: true
-        });
+        prompt: message,
+        merchantId: this.aiId,
+        chatRoomId: this.chat._id,
+        socketId: this.socket.id,
+        isAuthorization: this.headerService.user ? true : false,
+        isGeneral: true
+      });
       return;
     }
 
@@ -315,15 +316,14 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.chatFormGroup.get('input').setValue('');
     }, 200);
-
-    
     await this.gpt3Service.requestResponseFromKnowledgeBase({
-        prompt: this.chatFormGroup.get('input').value,
-        merchantId : this.headerService.saleflow.merchant._id,
-        chatRoomId : this.chat._id,
-        socketId: this.socket.id,
-        isAuthorization: false
-      });
+      prompt: this.chatFormGroup.get('input').value,
+      merchantId: this.headerService.saleflow.merchant._id,
+      chatRoomId: this.chat._id,
+      socketId: this.socket.id,
+      userId: this.headerService.saleflow.merchant ? this.headerService.saleflow.merchant.owner?._id : null,
+      isAuthorization: this.headerService.user ? true : false
+    });
     console.log(this.chat)
   }
 
@@ -374,12 +374,12 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   }
 
   resizeTextarea(textarea) {
-    if(textarea.scrollHeight > 253) {
+    if (textarea.scrollHeight > 253) {
       textarea.style.height = 253 + "px";
       textarea.style.overflowY = "scroll";
       return;
     }
-    if(textarea.scrollHeight > textarea.clientHeight) {
+    if (textarea.scrollHeight > textarea.clientHeight) {
       textarea.style.height = textarea.scrollHeight > 39 ? textarea.scrollHeight + "px" : 39 + "px";
     } else {
       textarea.style.height = 0 + "px";
