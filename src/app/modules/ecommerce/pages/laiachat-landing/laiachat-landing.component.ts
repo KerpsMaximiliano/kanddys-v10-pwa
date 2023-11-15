@@ -4,7 +4,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import * as moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
-
 import { ToastrService } from 'ngx-toastr';
 import { truncateString } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -30,7 +29,7 @@ import { StatusAudioRecorderComponent } from 'src/app/shared/dialogs/status-audi
 import { FilesService } from 'src/app/core/services/files.service';
 import { fileToBase64 } from 'src/app/core/helpers/files.helpers';
 import { ShareLinkInfoComponent } from 'src/app/shared/dialogs/share-link-info/share-link-info.component';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 
 interface ExtendedChat extends Chat {
@@ -56,6 +55,8 @@ interface ChatsByMonth {
 export class LaiachatLandingComponent implements OnInit {
   loginflow: boolean = false;
   assetsFolder: string = environment.assetsUrl;
+  aiId: string = environment.ai.id;
+  aiSlug: string = environment.ai.slug;
 
   loginEmail: string = null;
   magicLink: boolean = false;
@@ -102,6 +103,12 @@ export class LaiachatLandingComponent implements OnInit {
     text: string;
   }> = [];
   convertAudioText: string = 'Conviertiéndo el audio a texto';
+
+  inputOpen : boolean = false;
+
+  inputFormGroup: FormGroup = new FormGroup({
+    input: new FormControl(),
+  });
 
   constructor(
     public headerService: HeaderService,
@@ -608,6 +615,13 @@ export class LaiachatLandingComponent implements OnInit {
               }
             },
             {
+              value: 'Texto desde tu micrófono',
+              complete: true,
+              callback: () => {
+                this.speechToText();
+              }
+            },
+            {
               value: translations["model.audioText"],
               complete: true,
               callback: () => {
@@ -676,7 +690,7 @@ export class LaiachatLandingComponent implements OnInit {
     });
   }
 
-  async saveAudio(goMerchant: boolean = false) {
+  async saveAudio(chatText : boolean = false) {
     let dialogRef;
     try {
       dialogRef = this.dialogService.open(StatusAudioRecorderComponent, {
@@ -690,10 +704,12 @@ export class LaiachatLandingComponent implements OnInit {
       });
 
       if (!this.audio) return;
+      console.log(this.audio)
       const result = await this.gptService.openAiWhisper((this.audio && new File([this.audio.blob], this.audio.title || 'audio.mp3', {type: (<Blob>this.audio.blob)?.type})),);
 
-      if(goMerchant) {
-        
+      if(chatText) {
+        this.inputFormGroup.get('input').setValue(result);
+        this.inputOpen = true;
       } else {
         this.router.navigate(['/ecommerce/laia-training'], {
           queryParams: {
@@ -785,5 +801,35 @@ export class LaiachatLandingComponent implements OnInit {
         this.recordRTCService.abortRecording();
         dialogSub.unsubscribe();
       });
+  }
+
+  speechToText(chatText : boolean = false) {
+    const dialogref = this.dialogService.open(AudioRecorderComponent,{
+      type: 'flat-action-sheet',
+      props: { canRecord: true, isDialog: true },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+    const dialogSub = dialogref.events
+      .pipe(filter((e) => e.type === 'result'))
+      .subscribe((e) => {
+        if(e.data) {
+          this.audio = e.data;
+          this.saveAudio(chatText);
+        }
+        this.audio = null;
+        this.recordRTCService.abortRecording();
+        dialogSub.unsubscribe();
+      });
+  }
+
+  sendLaiaMessage () {
+    let message = this.inputFormGroup.get('input').value;
+    console.log(message)
+    this.router.navigate([`/ecommerce/${this.aiSlug}/chat-merchant`], {
+      queryParams: {
+        message: message,
+      },
+    });
   }
 }

@@ -274,6 +274,7 @@
   *ngIf="!headerService.user"
   class="message"
   [style.maxWidth]="!isMobile ? '427px' : '500px'"
+  [formGroup]="inputFormGroup"
 >
   <div class="info" (click)="goToWhatsapp()" [style.marginBottom.px]="3">
       <svg xmlns="http://www.w3.org/2000/svg" width="8" height="28" viewBox="0 0 8 28" fill="none">
@@ -291,6 +292,14 @@
   <!-- <div 
       [ngClass]="{ 'loggedout': !headerService.user }"
       class="input"
+      formControlName="input" 
+  ></textarea>
+  <img
+    class="audio-freq"
+    src="{{assetsFolder}}/audio-freq.png"
+    alt="img"
+    (click)="speechToText(true)"
+    [ngStyle]="{'right': inputOpen ? '70px' : '30px'}"
   >
     Qué necesitas saber de Laia?..
       <div>

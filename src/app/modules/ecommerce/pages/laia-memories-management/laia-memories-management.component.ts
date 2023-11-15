@@ -42,6 +42,8 @@ export class LaiaMemoriesManagementComponent implements OnInit {
   assetsFolder: string = environment.assetsUrl;
   message: FormControl = new FormControl(null);
 
+  autoResponse: boolean;
+
   inputOpen: boolean = false;
   audio: {
     blob: Blob;
@@ -113,7 +115,8 @@ export class LaiaMemoriesManagementComponent implements OnInit {
       }
 
       this.loadingKnowledge = false;
-
+      
+      this.checkAutoResponse();
       unlockUI();
     } catch (error) {
       console.error(error);
@@ -364,4 +367,27 @@ export class LaiaMemoriesManagementComponent implements OnInit {
     return this.router.navigate(['/ecommerce/laiachat-landing']);
   }
 
+  async checkAutoResponse() {
+    let id = this.headerService.user._id;
+    await this.gptService.doUsersHaveAssistantActivated(
+        [
+          id
+        ]
+      ).then((res) => {
+        console.log(res)
+        console.log(res[`${id}`])
+        this.autoResponse = res[`${id}`];
+    });
+  }
+
+  async autoResponseSwitch() {
+    try {
+      await this.gptService.changeAssistantResponseMode().then((res)=> {
+        this.autoResponse = res.automaticModeActivated;
+      });
+    } catch (error) {
+      console.error(error);
+      this.headerService.showErrorToast();
+    }
+  }
 }
