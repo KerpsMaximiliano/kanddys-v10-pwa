@@ -313,22 +313,23 @@
 
   <div 
     class="custom-input"
-    [style.backgroundColor]="audioText.value ? 'transparent' : '#d9d9d9'"
-    [style.alignItems]="audioText.value ? 'end' : 'center'"
+    [style.backgroundColor]="inputFormGroup.get('input').value ? 'transparent' : '#d9d9d9'"
+    [style.alignItems]="inputFormGroup.get('input').value ? 'end' : 'center'"
+    [formGroup]="inputFormGroup"
   >
     <textarea 
       id="autoExpandTextarea"
       type="text"
-      [formControl]="audioText"
       placeholder="{{ 'text.question-about-laia' | translate }}"
-      [style.backgroundColor]="audioText.value ? '#d9d9d9' : 'transparent'"
-      [style.borderRadius.px]="audioText.value ? 20 : 300"
-      [ngClass]="{ textareaHeight: !audioText.value }"
+      [style.backgroundColor]="inputFormGroup.get('input').value ? '#d9d9d9' : 'transparent'"
+      [style.borderRadius.px]="inputFormGroup.get('input').value ? 20 : 300"
+      [ngClass]="{ textareaHeight: !inputFormGroup.get('input').value }"
       (keyup)="resizeTextarea($event.target)"
+      formControlName="input"
     ></textarea>
-    <img *ngIf="!audioText.value" (click)="openRecorder()" class="audio-freq" src="{{assetsFolder}}/audio-freq.png" alt="img">
-    <ng-container *ngIf="audioText.value">
-      <div class="container-send">
+    <img *ngIf="!inputFormGroup.get('input').value" (click)="speechToText(true)" class="audio-freq" src="{{assetsFolder}}/audio-freq.png" alt="img">
+    <ng-container *ngIf="inputFormGroup.get('input').value">
+      <div class="container-send" (click)="inputFormGroup.get('input').value ? sendLaiaMessage() : null" >
         <img 
           class="icon"
           src="{{assetsFolder}}/chat-send-button.png"

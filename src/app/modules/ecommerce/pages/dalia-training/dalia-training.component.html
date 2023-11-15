@@ -31,7 +31,7 @@
     </ng-container>
     <ng-template #elseTemplate>
         <h2>
-          {{ showTextareaMemory ? ('laia-training.normalHeader' | translate) : ('title.laia-memory' | translate) }}
+          {{ vectorId ? ('title.laia-memory' | translate) : showTextareaMemory ? ('laia-training.normalHeader' | translate) : ('title.laia-memory' | translate) }}
           <span *ngIf="vectorId" [style.color]="'#87cd9b'" (click)="editMemoryName()">
             {{ memoryName ? memoryName : (('laia-training.noName' | translate) + " #1") }}
           </span>

@@ -614,34 +614,18 @@ export class LaiachatLandingComponent implements OnInit {
                 },
               }
             },
-            {
-              value: 'Texto desde tu micrófono',
-              complete: true,
-              callback: () => {
-                this.speechToText();
-              }
-            },
+            // {
+            //   value: 'Texto desde tu micrófono',
+            //   complete: true,
+            //   callback: () => {
+            //     this.speechToText();
+            //   }
+            // },
             {
               value: translations["model.audioText"],
               complete: true,
               callback: () => {
-                const dialogref = this.dialogService.open(AudioRecorderComponent,{
-                  type: 'flat-action-sheet',
-                  props: { canRecord: true, isDialog: true },
-                  customClass: 'app-dialog',
-                  flags: ['no-header'],
-                });
-                const dialogSub = dialogref.events
-                  .pipe(filter((e) => e.type === 'result'))
-                  .subscribe((e) => {
-                    if(e.data) {
-                      this.audio = e.data;
-                      this.saveAudio();
-                    }
-                    this.audio = null;
-                    this.recordRTCService.abortRecording();
-                    dialogSub.unsubscribe();
-                  });
+                this.speechToText();
               },
               settings: {
                 value: 'fal fa-waveform-path',

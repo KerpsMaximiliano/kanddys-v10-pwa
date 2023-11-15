@@ -532,6 +532,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
 
       if(this.audioText.value) {
         this.audioText.setValue(null);
+        this.textareaAudio = false;
         // const textarea = document.getElementById('autoExpandTextarea');
         // textarea.style.height = '51px';
       }
