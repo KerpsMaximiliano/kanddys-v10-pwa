@@ -7,32 +7,30 @@
   <header>
     <img
       style="cursor: pointer"
-      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/back.svg"
-      alt="go back to previous slide"
-      [ngClass]="
-        !(genericModelTemplate?.slides?.length > 1 &&
-        currentMediaSlide > 0) ||
-        layout === 'ZOOMED-OUT-INFO' ? 'hidden' : ''
-      "
-    />
-
-    <img
-      style="cursor: pointer"
-      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/arrow-double-up-black.svg"
+      src="../../../../../assets/icons/close-button.svg"
       alt="go back to previous page"
       class="go-back-arrow"
       (click)="back()"
     />
 
+    <div class="bullets" style="display: flex; gap: 6px">
+      <span
+        style="
+          display: inline-block;
+          height: 8px;
+          width: 8px;
+          background: #fff;
+          border-radius: 50%;
+        "
+        *ngFor="let item of itemData.images"
+      ></span>
+    </div>
+
     <img
       style="cursor: pointer"
       src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/next.svg"
       alt="go to next slide"
-      [ngClass]="
-        !(genericModelTemplate?.slides?.length > 1 &&
-        currentMediaSlide !== genericModelTemplate?.slides?.length - 1) ||
-        layout === 'ZOOMED-OUT-INFO' ? 'hidden' : ''
-      "
+      (click)="shareStore()"
     />
   </header>
 
@@ -201,11 +199,11 @@
       <ng-container [ngSwitch]="entity">
         <div class="price" *ngSwitchCase="'item'">
           <ng-container *ngIf="entityPresentation !== 'DEMO'">
-            RD$ {{ itemData?.pricing | number : "1.2-2" }}
+            ${{ itemData?.pricing | number : "1.2-2" }}
           </ng-container>
 
           <ng-container *ngIf="entityPresentation === 'DEMO'">
-            RD$ 9.99
+            $9.99
           </ng-container>
         </div>
       </ng-container>
@@ -213,17 +211,25 @@
     <div class="right">
       <ng-container [ngSwitch]="entity">
         <div class="add-to-cart" *ngSwitchCase="'item'" (click)="saveProduct()">
-          <ng-container *ngIf="entityPresentation !== 'DEMO' && !supplierViewer">
+          <ng-container
+            *ngIf="entityPresentation !== 'DEMO' && !supplierViewer"
+          >
             <!-- <ng-container *ngIf="!supplierItem"> -->
             <ng-container>
               {{
                 !isItemInCart
-                  ? itemData?.ctaText || 'Agregar al carrito'
+                  ? itemData?.ctaText || "Agrégalo al carrito"
                   : defaultCtaRemoveText
               }}
             </ng-container>
 
-            <ng-container *ngIf="supplierItem && ((itemData?.stock > 0 && supplierItemInSaleflow) || supplierPreview)">
+            <ng-container
+              *ngIf="
+                supplierItem &&
+                ((itemData?.stock > 0 && supplierItemInSaleflow) ||
+                  supplierPreview)
+              "
+            >
               {{
                 !addedItemToQuotation
                   ? itemData?.ctaText || defaultCtaText
@@ -232,7 +238,7 @@
             </ng-container>
           </ng-container>
           <ng-container *ngIf="entityPresentation === 'DEMO'">
-            Agregar al carrito
+            Agrégalo al carrito
           </ng-container>
         </div>
 
