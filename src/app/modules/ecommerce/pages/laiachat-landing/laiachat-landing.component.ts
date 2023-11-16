@@ -129,8 +129,9 @@ export class LaiachatLandingComponent implements OnInit {
     private renderer: Renderer2,
     private saleflowsService: SaleFlowService,
   ) {
-    translate.setDefaultLang(navigator.language || 'es');
-    translate.use(navigator.language || 'es');
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+    translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+    translate.use(language?.length === 2 ? language  : 'es');
   }
 
   async ngOnInit() {

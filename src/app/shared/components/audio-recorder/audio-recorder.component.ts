@@ -35,6 +35,12 @@ export class AudioRecorderComponent implements OnInit {
   ngOnInit(): void {
     if(!this.audioBlob && !this.canRecord) throw new Error('Envia un archivo de audio, o envia el prop canRecord como true');
     if(this.audioBlob) this.prepareUrl(this.audioBlob);
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    const isMobile = regex.test(navigator.userAgent);
+    if(!isMobile) {
+      const element : HTMLElement = document.querySelector('.dialog-frame');
+      element?.style?.setProperty('max-width', '427px', 'important');
+    }
   }
 
   prepareUrl(audioBlob: Blob) {
