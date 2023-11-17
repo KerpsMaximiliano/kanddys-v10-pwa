@@ -203,6 +203,90 @@ header {
   }
 }
 
+.message {
+  position: fixed;
+  width: 100%;
+  max-width: 500px;
+  margin: 0px auto;
+  bottom: 0;
+  background-color: #232921;
+  
+  .formulate-more {
+    padding: 1px 16px;
+
+    .title {
+      font-family: FiraSansRegular;
+      font-size: 13px;
+      color: #f6f6f6;
+      letter-spacing: 0.715px;
+      margin: 0;
+      margin-top: 18px;
+    }
+  }
+
+  .custom-input {
+    display: flex;
+    align-items: center;
+    background-color: #87CD9B;
+    border-radius: 4px;
+    // width: 100%;
+    margin: 11px 16px 19px;
+    // height: 51px;
+
+    .audio-freq {
+      width: 27px;
+      height: 24px;
+    }
+  }
+  
+  .custom-input textarea {
+    flex: 1;
+    height: 100%;
+    padding: 14px 14px 10px;
+    color: #181D17;
+    background-color: transparent;
+    font-family: InterRegular;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    border: none;
+    outline: none;
+    overflow-y: hidden;
+    resize: none;
+    height: 51px;
+    border-radius: 4px;
+  }
+
+  .textareaHeight {
+    height: 51px !important;
+  }
+  
+  .custom-input img {
+    margin-right: 15px;
+  }
+
+  .container-send {
+    background-color: #87CD9B;
+    border-radius: 50%;
+    margin-left: 8px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .icon {
+      width: 22px;
+      height: 22px;
+    }
+  }
+
+  textarea::placeholder {
+    color: #181D17;
+  }
+}
+
 main {
   background-color: #181d17;
   min-height: 100%;
