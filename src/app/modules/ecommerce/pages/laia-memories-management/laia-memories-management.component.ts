@@ -53,6 +53,7 @@ export class LaiaMemoriesManagementComponent implements OnInit {
   isMobile: boolean = false;
   textareaAudio: boolean = false;
   convertAudioText: string = 'Conviertiéndo el audio a texto';
+  calculateMargin = '0px';
 
   constructor(
     private gptService: Gpt3Service,
@@ -90,6 +91,7 @@ export class LaiaMemoriesManagementComponent implements OnInit {
     }
     const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
     this.isMobile = regex.test(navigator.userAgent);
+    this.calculateMargin = `calc(${window.innerHeight}px - 745px)`;
     this.translate.get("modal.convertAudioText").subscribe(translate => this.convertAudioText = translate);
   }
 

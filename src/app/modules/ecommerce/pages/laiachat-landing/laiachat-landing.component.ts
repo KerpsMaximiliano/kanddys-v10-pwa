@@ -110,6 +110,8 @@ export class LaiachatLandingComponent implements OnInit {
     input: new FormControl(),
   });
 
+  calculateMargin = '0px';
+
   constructor(
     public headerService: HeaderService,
     private changeDetectorRef: ChangeDetectorRef,
@@ -137,6 +139,7 @@ export class LaiachatLandingComponent implements OnInit {
   async ngOnInit() {
     const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
     this.isMobile = regex.test(navigator.userAgent);
+    this.calculateMargin = `calc(${window.innerHeight}px - 745px)`;
     await this.getMerchantDefault();
     if (this.headerService.user) {
       this.clientConnectionStatus = await this.whatsappService.clientConnectionStatus();

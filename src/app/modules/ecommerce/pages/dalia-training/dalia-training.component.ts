@@ -108,6 +108,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   showMemories: boolean = false;
   isMobile: boolean = false;
   convertAudioText: string = 'Conviertiéndo el audio a texto';
+  calculateMargin = '0px';
 
   constructor(
     private gptService: Gpt3Service,
@@ -132,6 +133,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
     this.isMobile = regex.test(navigator.userAgent);
+    this.calculateMargin = `calc(${window.innerHeight}px - 745px)`;
     this.clientConnectionStatus = await this.whatsappService.clientConnectionStatus();
     console.log(this.clientConnectionStatus);
 

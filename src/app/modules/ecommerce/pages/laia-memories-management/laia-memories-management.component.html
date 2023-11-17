@@ -71,6 +71,7 @@
   <div
     class="message"
     [style.maxWidth]="!isMobile ? '427px' : '500px'"
+    [style.marginBottom]="!isMobile ? calculateMargin : '0px'"
   >
     <div *ngIf="!message.value" class="formulate-more">        
       <p class="title">

@@ -32,6 +32,7 @@ export class LaiachatWebscrapingComponent implements OnInit {
   };
   queryParamsSubscription: Subscription;
   isMobile: boolean = false;
+  calculateMargin = '0px';
 
   constructor(
     private headerService: HeaderService,
@@ -51,6 +52,7 @@ export class LaiachatWebscrapingComponent implements OnInit {
   ngOnInit(): void {
     const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
     this.isMobile = regex.test(navigator.userAgent);
+    this.calculateMargin = `calc(${window.innerHeight}px - 745px)`;
     this.queryParamsSubscription = this.route.queryParams.subscribe(
       async ({ jsondata }) => {
         if (jsondata) {

@@ -155,6 +155,7 @@
     <div
       class="message"
       [style.maxWidth]="!isMobile ? '427px' : '500px'"
+      [style.marginBottom]="!isMobile ? calculateMargin : '0px'"
     >
       <div *ngIf="!audioText.value" class="formulate-more">        
         <p class="title">
@@ -405,6 +406,7 @@
       [style.display]="!clicked ? 'block' : 'none'"
       class="message"
       [style.maxWidth]="!isMobile ? '427px' : '500px'"
+      [style.marginBottom]="!isMobile ? calculateMargin : '0px'"
     >
       <div
         *ngIf="((form.get('memory').value || typeFile) && (generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response)) || (showTextareaMemory && form.get('memory').value === null && (generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response))"

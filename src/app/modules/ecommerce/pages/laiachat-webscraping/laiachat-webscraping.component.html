@@ -54,7 +54,7 @@
         </div>
     </main>
 
-    <div *ngIf="!clicked && textareaUrl.valid" class="message">
+    <div *ngIf="!clicked && textareaUrl.valid" class="message" [style.maxWidth]="!isMobile ? '427px' : '500px'" [style.marginBottom]="!isMobile ? calculateMargin : '0px'">
         <div 
             class="container-content"
         >
