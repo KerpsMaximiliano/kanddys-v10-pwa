@@ -572,7 +572,7 @@ export class LaiachatLandingComponent implements OnInit {
     this.dialogService.open(ShareLinkInfoComponent, {
       type: 'flat-action-sheet',
       props: {
-        link: 'www.laichat.com/userID',
+        link: `${environment.uri}/ecommerce/${this.merchantSlug}/chat-merchant?fromStore=true`,
       },
       customClass: 'app-dialog',
       flags: ['no-header'],
