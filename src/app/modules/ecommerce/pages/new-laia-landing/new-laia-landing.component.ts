@@ -1,6 +1,7 @@
 import { Component, OnInit, Renderer2 } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { filter } from 'rxjs/operators';
 import { Gpt3Service } from 'src/app/core/services/gpt3.service';
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -21,13 +22,13 @@ export class NewLaiaLandingComponent implements OnInit {
   swiperConfig: SwiperOptions = {
     direction: 'vertical',
     slidesPerView: 1,
-    slidesPerColumn:1,
+    slidesPerColumn: 1,
     spaceBetween: 0.3,
     autoplay: {
       delay: 1000,
       disableOnInteraction: false
     },
-    loop:true
+    loop: true
   };
   assetsFolder: string = environment.assetsUrl;
   aiSlug: string = environment.ai.slug;
@@ -40,19 +41,25 @@ export class NewLaiaLandingComponent implements OnInit {
     blob: Blob;
     title: string;
   };
-  inputOpen : boolean = false;
+  inputOpen: boolean = false;
 
   constructor(private router: Router,
-              private dialogService: DialogService,
-              private recordRTCService: RecordRTCService,
-              private gptService: Gpt3Service,
-              public headerService: HeaderService,
-              private renderer: Renderer2) { }
-
-  ngOnInit(): void {
+    private dialogService: DialogService,
+    private recordRTCService: RecordRTCService,
+    private gptService: Gpt3Service,
+    public headerService: HeaderService,
+    private translate: TranslateService,
+    private renderer: Renderer2) {
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+    translate.setDefaultLang(language?.length === 2 ? language : 'es');
+    translate.use(language?.length === 2 ? language : 'es');
   }
 
-  sendLaiaMessage () {
+  ngOnInit(): void {
+    this.translate.get("modal.convertAudioText").subscribe(translate => this.convertAudioText = translate);
+  }
+
+  sendLaiaMessage() {
     let message = this.inputFormGroup.get('input').value;
     console.log(message)
     this.router.navigate([`/ecommerce/${this.aiSlug}/chat-merchant`], {
@@ -62,8 +69,8 @@ export class NewLaiaLandingComponent implements OnInit {
     });
   }
 
-  speechToText(chatText : boolean = false) {
-    const dialogref = this.dialogService.open(AudioRecorderComponent,{
+  speechToText(chatText: boolean = false) {
+    const dialogref = this.dialogService.open(AudioRecorderComponent, {
       type: 'flat-action-sheet',
       props: { canRecord: true, isDialog: true },
       customClass: 'app-dialog',
@@ -72,7 +79,7 @@ export class NewLaiaLandingComponent implements OnInit {
     const dialogSub = dialogref.events
       .pipe(filter((e) => e.type === 'result'))
       .subscribe((e) => {
-        if(e.data) {
+        if (e.data) {
           this.audio = e.data;
           this.saveAudio(chatText);
         }
@@ -82,7 +89,7 @@ export class NewLaiaLandingComponent implements OnInit {
       });
   }
 
-  async saveAudio(chatText : boolean = false) {
+  async saveAudio(chatText: boolean = false) {
     let dialogRef;
     try {
       dialogRef = this.dialogService.open(StatusAudioRecorderComponent, {
@@ -97,9 +104,9 @@ export class NewLaiaLandingComponent implements OnInit {
 
       if (!this.audio) return;
       console.log(this.audio)
-      const result = await this.gptService.openAiWhisper((this.audio && new File([this.audio.blob], this.audio.title || 'audio.mp3', {type: (<Blob>this.audio.blob)?.type})),);
+      const result = await this.gptService.openAiWhisper((this.audio && new File([this.audio.blob], this.audio.title || 'audio.mp3', { type: (<Blob>this.audio.blob)?.type })),);
 
-      if(chatText) {
+      if (chatText) {
         this.inputFormGroup.get('input').setValue(result);
         this.inputOpen = true;
       } else {
@@ -126,19 +133,19 @@ export class NewLaiaLandingComponent implements OnInit {
     const borderRadius = 146 - 146 * relacionAltura;
     const borderRadiusPx = getComputedStyle(textarea).borderRadius;
 
-    if(borderRadiusPx === '22px') {
+    if (borderRadiusPx === '22px') {
       this.renderer.setStyle(textarea, 'border-radius', '22px');
     } else {
       this.renderer.setStyle(textarea, 'border-radius', `${borderRadius}px`);
     };
 
-    if(textarea.scrollHeight > 146) {
+    if (textarea.scrollHeight > 146) {
       textarea.style.height = 146 + "px";
       textarea.style.overflowY = "scroll";
       return;
     }
     console.log(textarea.scrollHeight > textarea.clientHeight)
-    if(textarea.scrollHeight > textarea.clientHeight) {
+    if (textarea.scrollHeight > textarea.clientHeight) {
       textarea.style.height = textarea.scrollHeight > 46 ? textarea.scrollHeight + "px" : 46 + "px";
     } else {
       textarea.style.height = 46 + "px";
