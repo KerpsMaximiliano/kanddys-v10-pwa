@@ -19,18 +19,22 @@
           display: inline-block;
           height: 8px;
           width: 8px;
-          background: #fff;
           border-radius: 50%;
+          border: 1px solid #fff;
         "
-        *ngFor="let item of itemData.images"
+        [ngStyle]="{
+          backgroundColor: currentMediaSlide === index ? '#fff' : 'transparent'
+        }"
+        *ngFor="let item of itemData?.images; let index = index"
       ></span>
     </div>
 
     <img
       style="cursor: pointer"
-      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/next.svg"
+      src="../../../../../assets/icons/share.svg"
       alt="go to next slide"
-      (click)="shareStore()"
+      role="button"
+      (click)="user ? shareStore() : onGoBackToLogin()"
     />
   </header>
 
@@ -197,6 +201,15 @@
   <footer class="bottom-flex">
     <div class="left">
       <ng-container [ngSwitch]="entity">
+        <button (click)="user ? onAddToFavorites() : onGoBackToLogin()">
+          <img
+            src="../../../../../assets/icons/heart2.svg"
+            alt="add to favorites"
+            role="button"
+            width="25px"
+            height="25px"
+          />
+        </button>
         <div class="price" *ngSwitchCase="'item'">
           <ng-container *ngIf="entityPresentation !== 'DEMO'">
             ${{ itemData?.pricing | number : "1.2-2" }}
@@ -210,7 +223,11 @@
     </div>
     <div class="right">
       <ng-container [ngSwitch]="entity">
-        <div class="add-to-cart" *ngSwitchCase="'item'" (click)="saveProduct()">
+        <div
+          class="add-to-cart"
+          *ngSwitchCase="'item'"
+          (click)="saveProduct()"
+        >
           <ng-container
             *ngIf="entityPresentation !== 'DEMO' && !supplierViewer"
           >

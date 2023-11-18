@@ -1,11 +1,5 @@
 //Angular specific
-import {
-  Component,
-  OnInit,
-  ViewChild,
-  ElementRef,
-  AfterViewInit,
-} from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Location } from '@angular/common';
@@ -17,16 +11,8 @@ import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
 
 //Helper functions
-import {
-  isVideo,
-  truncateString,
-} from 'src/app/core/helpers/strings.helpers';
-import {
-  isVideoPlaying,
-  lockUI,
-  playVideoNoFullscreen,
-  unlockUI,
-} from 'src/app/core/helpers/ui.helpers';
+import { isVideo, truncateString } from 'src/app/core/helpers/strings.helpers';
+import { isVideoPlaying, lockUI, playVideoNoFullscreen, unlockUI, } from 'src/app/core/helpers/ui.helpers';
 
 //Imported models
 import { Item, ItemImage } from 'src/app/core/models/item';
@@ -994,5 +980,13 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
       share: "",
     }
     this.bottomSheet.open(OptionsMenuComponent, shareStore(data, labels));
+  }
+
+  onAddToFavorites() {
+
+  }
+
+  onGoBackToLogin() {
+    this.router.navigate(['/admin/dashboard']);
   }
 }
