@@ -524,6 +524,15 @@ button {
         }
     }
 }
+@media screen and  (max-height: 780px) {
+    .try-laia{
+        p{
+            font-size: 13px;
+            padding-top: 40px;
+            padding-bottom: 30px;
+        }
+    }
+}
 @media screen and  (max-width: 390px) {
     .biggest-circle {
         margin-left: -152px;
