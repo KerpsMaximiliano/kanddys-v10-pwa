@@ -1,8 +1,5 @@
 <div
   class="container"
-  [ngStyle]="{
-    minHeight: deviceViewportHeight + 'px'
-  }"
 >
   <header
     [style.justifyContent]="layout === 'ZOOMED-OUT-INFO' ? 'center' : 'space-between'"
@@ -54,13 +51,6 @@
       <div
         #swiperContainer
         class="the-swiper-container"
-        [ngStyle]="{
-          width: '100%',
-          height:
-            layout === 'EXPANDED-SLIDE'
-              ? imageCanvasHeight + 'px'
-              : imageCanvasHeightWhenZoomedOut + 'px'
-        }"
         *ngIf="genericModelTemplate?.slides?.length > 0"
       >
         <swiper
@@ -123,21 +113,9 @@
     </div>
 
     <ng-container *ngIf="layout === 'EXPANDED-SLIDE'">
-      <h1
-        class="title"
-        *ngIf="genericModelTemplate.title"
-        (click)="zoomOutOrZoomInDetails()"
-      >
-        {{ genericModelTemplate.title }}
-      </h1>
-
-      <h1
-        class="description center"
-        *ngIf="genericModelTemplate.description"
-        (click)="zoomOutOrZoomInDetails()"
-      >
-        {{ truncateString(genericModelTemplate?.description, 150, 2) }}
-      </h1>
+      <p (click)="zoomOutOrZoomInDetails()" class="description center">
+        <span *ngIf="genericModelTemplate.title" class="title">{{ genericModelTemplate.title }}.</span> {{ truncateString(genericModelTemplate?.description, 150, 2) }}
+      </p>
 
       <ng-container
         *ngIf="

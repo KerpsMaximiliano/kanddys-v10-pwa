@@ -1,10 +1,11 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { log } from 'console';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
+import { base64ToBlob } from 'src/app/core/helpers/files.helpers';
 import { PaginationInput } from 'src/app/core/models/saleflow';
 import { Tag } from 'src/app/core/models/tags';
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -15,8 +16,12 @@ import { ContactHeaderComponent } from 'src/app/shared/components/contact-header
 import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
 import { TagFilteringComponent } from 'src/app/shared/dialogs/tag-filtering/tag-filtering.component';
 import { environment } from 'src/environments/environment';
+import { SwiperOptions } from 'swiper';
 import SwiperCore, { Virtual } from 'swiper/core';
 import { truncateString } from 'src/app/core/helpers/strings.helpers';
+import { ItemsService } from 'src/app/core/services/items.service';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 SwiperCore.use([Virtual]);
 
@@ -41,7 +46,24 @@ export class StoreComponent implements OnInit {
   };
   // hasCollections: boolean = false;
 
+  swiperConfig: SwiperOptions = {
+    slidesPerView: 5,
+    spaceBetween: 12,
+    observer: true,
+    observeParents: true,
+  }
+
+  filterView : boolean = false;
   searchBar : boolean = false;
+
+  priceSlider : boolean = false;
+
+  minPricing: number = 0;
+  maxPricing: number = 0;
+  minSelected: number = 0;
+  maxSelected: number = 0;
+
+  selectedCategories: [{ _id: string, name: string}] | [] = [];
 
   azulPaymentsSupported: boolean = false;
 
@@ -60,6 +82,9 @@ export class StoreComponent implements OnInit {
   }> = [];
 
   mode: 'standard' | 'supplier' = 'standard';
+
+  qrdata: string = `${this.URI}${this.router.url}`;
+  @ViewChild('qrcode', { read: ElementRef }) qrcode: ElementRef;
 
   loginflow: boolean = false;
   redirectionRoute: string = `/ecommerce/${this.headerService.saleflow.merchant.slug}/store`;
@@ -83,7 +108,10 @@ export class StoreComponent implements OnInit {
     public _DomSanitizer: DomSanitizer,
     private ngNavigatorShareService: NgNavigatorShareService,
     private _bottomSheet: MatBottomSheet,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private itemsService: ItemsService,
+    private clipboard: Clipboard,
+    private snackbar: MatSnackBar
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -160,6 +188,66 @@ export class StoreComponent implements OnInit {
     }, 300);
   }
 
+  async getPriceRanges() {
+    if(this.selectedCategories.length) {
+      const categoryIds = this.selectedCategories.map((category) => category._id);
+      await this.itemsService.listItems({
+        findBy: {
+          tags: categoryIds,
+          merchant: this.headerService.saleflow.merchant._id,
+        },
+        options: {
+          limit: 1,
+          sortBy: "pricing:asc"
+        },
+      }).then((res) => {
+        this.minPricing = res.listItems[0].pricing;
+        this.minSelected = res.listItems[0].pricing;
+      })
+      await this.itemsService.listItems({
+        findBy: {
+          tags: categoryIds,
+          merchant: this.headerService.saleflow.merchant._id,
+        },
+        options: {
+          limit: 1,
+          sortBy: "pricing:desc"
+        },
+      }).then((res) => {
+        this.maxPricing = res.listItems[0].pricing;
+        this.maxSelected = res.listItems[0].pricing;
+      })
+      return;
+    } else {
+      await this.itemsService.listItems({
+        findBy: {
+          merchant: this.headerService.saleflow.merchant._id,
+        },
+        options: {
+          limit: 1,
+          sortBy: "pricing:asc"
+        },
+      }).then((res) => {
+        console.log(res, 'min price')
+        this.minPricing = res.listItems[0].pricing;
+        this.minSelected = res.listItems[0].pricing;
+      })
+      await this.itemsService.listItems({
+        findBy: {
+          merchant: this.headerService.saleflow.merchant._id,
+        },
+        options: {
+          limit: 1,
+          sortBy: "pricing:desc"
+        },
+      }).then((res) => {
+        console.log(res, 'max price')
+        this.maxPricing = res.listItems[0].pricing;
+        this.maxSelected = res.listItems[0].pricing;
+      })
+    }
+  }
+
   async getTags() {
     const { tags: tagsList } = await this.tagsService.tags({
       findBy: {
@@ -174,7 +262,7 @@ export class StoreComponent implements OnInit {
     if (tagsList) {
       this.tags = tagsList;
       this.headerService.tags = this.tags;
-
+      console.log(this.tags)
       this.filteredTags = this.tags.map((tag) => {
         return {
           _id: tag._id,
@@ -238,77 +326,16 @@ export class StoreComponent implements OnInit {
     });
   }
 
-  openPriceRangeDialog() {
-    this._bottomSheet.open(OptionsMenuComponent, {
+  changePriceFilters() {
+    this.saleflowService.notifyTrigger({
+      triggerID: 'pricing',
       data: {
-        title: `💰 Artículos según el precio`,
-        options: [
-          {
-            value: `$0.00 - $2,000`,
-            callback: () => {
-              this.saleflowService.notifyTrigger({
-                triggerID: 'pricing',
-                data: {
-                  minPricing: 0,
-                  maxPricing: 2000,
-                },
-              });
-            },
-          },
-          {
-            value: `$2,000 - $4,000`,
-            callback: () => {
-              this.saleflowService.notifyTrigger({
-                triggerID: 'pricing',
-                data: {
-                  minPricing: 2000,
-                  maxPricing: 4000,
-                },
-              });
-            },
-          },
-          {
-            value: `$4,000 - $6,000`,
-            callback: () => {
-              this.saleflowService.notifyTrigger({
-                triggerID: 'pricing',
-                data: {
-                  minPricing: 4000,
-                  maxPricing: 6000,
-                },
-              });
-            },
-          },
-          {
-            value: `$6,000 - $8,000`,
-            callback: () => {
-              this.saleflowService.notifyTrigger({
-                triggerID: 'pricing',
-                data: {
-                  minPricing: 6000,
-                  maxPricing: 8000,
-                },
-              });
-            },
-          },
-          {
-            value: `$8,000+`,
-            callback: () => {
-              this.saleflowService.notifyTrigger({
-                triggerID: 'pricing',
-                data: {
-                  minPricing: 8000,
-                },
-              });
-            },
-          },
-        ],
-        styles: {
-          fullScreen: true,
-        },
+        minPricing: this.minSelected,
+        maxPricing: this.maxSelected,
       },
-    });
+    })
   }
+
 
   openTagsDialog() {
     this._bottomSheet.open(TagFilteringComponent, {
@@ -331,7 +358,7 @@ export class StoreComponent implements OnInit {
     );
   }
 
-  openEstimatedDeliveryDialog() {
+  /*openEstimatedDeliveryDialog() {
     this._bottomSheet.open(OptionsMenuComponent, {
       data: {
         title: `⏰ Artículos según la hora de entrega en Santo Domingo`,
@@ -398,14 +425,23 @@ export class StoreComponent implements OnInit {
         },
       },
     });
-  }
+  }*/
 
-  onTagSelectionChange(selectedCategories: any[]) {
+  onTagSelectionChange(selectedCategories: [{ _id: string, name: string}] | []) {
     console.log(selectedCategories);
+    let categoryIds;
+    if(selectedCategories.length) {
+      this.filterView = true;
+      categoryIds = selectedCategories.map((category) => category._id);
+    } else {
+      categoryIds = [];
+    }
     this.saleflowService.notifyTrigger({
       triggerID: 'tags',
-      data: selectedCategories,
+      data: categoryIds,
     });
+    this.selectedCategories = selectedCategories;
+    this.getPriceRanges();
   }
 
   onKeywordSearch(event: any) {
@@ -473,7 +509,98 @@ export class StoreComponent implements OnInit {
     this.changeDetectorRef.detectChanges();
   }
 
-  truncateString(word) {
-    return truncateString(word, 12);
+  truncateString(word, length = 12) {
+    return truncateString(word, length);
+  }
+
+  backToMainView() {
+    this.searchBar = false;
+    this.priceSlider = false;
+    this.selectedCategories = null;
+    this.onTagSelectionChange([])
+    this.filterView = false;
+  }
+
+  showSearchBar() {
+    this.searchBar = true;
+    this.filterView = true
+  }
+
+  async showPriceSlider() {
+    await this.getPriceRanges();
+    this.priceSlider = true;
+    this.filterView = true;
+  }
+
+  moneyFormat(value : number) : string {
+    return `$${value}`
+  }
+
+  shareDialog() {
+    this._bottomSheet.open(OptionsMenuComponent, {
+      data: {
+        title: 'Comparte el Enlace de la Tienda:',
+        options: [
+          {
+            value: 'Copia',
+            callback: () => {
+              this.clipboard.copy(this.qrdata);
+              this.snackbar.open('Enlace copiado', 'Cerrar', {
+                duration: 3000,
+              });
+            },
+          },
+          {
+            value: 'Comparte',
+            callback: () => {
+              this.ngNavigatorShareService.share({
+                title: 'Compartir enlace de www.flores.club',
+                url: `${this.qrdata}`,
+              });
+            },
+          },
+          {
+            value: 'Descarga el QR',
+            callback: () => {
+              this.downloadQr();
+            },
+          },
+        ],
+      },
+    });
+  }
+
+  downloadQr() {
+      const parentElement = this.qrcode.nativeElement.querySelector('img').src;
+      let blobData = base64ToBlob(parentElement);
+      if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
+        //IE
+        (window.navigator as any).msSaveOrOpenBlob(blobData, 'Landing QR Code');
+      } else {
+        // chrome
+        const blob = new Blob([blobData], { type: 'image/png' });
+        const url = window.URL.createObjectURL(blob);
+        // window.open(url);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = "Landing QR Code";
+        link.click();
+      }
+  }
+
+  goToMerchantProfile() {
+    this.router.navigate([
+      '/ecommerce/merchant-profile/' + this.headerService.saleflow.merchant._id,
+    ]);
+  }
+
+  onMaxPricingChange(event) {
+    this.maxSelected = event.target.value;
+    this.changePriceFilters();
+  }
+
+  onMinPricingChange(event) {
+    this.minSelected = event.target.value;
+    this.changePriceFilters();
   }
 }

@@ -1,5 +1,5 @@
 .container {
-  min-height: 100vh;
+  height: 100%;
   background-color: #181d17;
   position: relative;
 }
@@ -58,7 +58,7 @@ header {
 }
 
 main {
-  padding: 0px 15px;
+  padding: 0px 15px 18px;
   display: flex;
   flex-direction: column;
 
@@ -71,6 +71,7 @@ main {
   .media-canvas {
     .the-swiper-container {
       transition: 0.1s ease-in height;
+      height: 100%;
     }
 
     img {
@@ -96,6 +97,7 @@ main {
 .media-canvas {
   border-radius: 18px;
   overflow: hidden;
+  height: 76vh;
 
   ::ng-deep .swiper-container {
     padding: 0px !important;
@@ -111,23 +113,15 @@ main {
   cursor: pointer;
   margin: 0px;
   padding: 0px;
-  margin-top: 20px;
-  margin-bottom: 14px;
   color: #fff;
-  text-align: center;
-  font-size: 23px;
+  font-size: 15px;
   font-family: InterBold;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
-  -webkit-box-orient: vertical;
-  word-break: break-word;
 
   &.expanded {
     margin: 0px;
     margin-bottom: 14px;
     font-size: 15px !important;
+    text-align: center;
   }
 
   &.small {
@@ -138,19 +132,16 @@ main {
 .description {
   color: #F6F6F6;
   font-size: 15px;
-  font-family: InterRegular;
+  font-family: InterLight;
   width: 100%;
-  margin-top: 38px;
-  word-break: break-word;
-  overflow-y: scroll;
 
   &.center {
     font-weight: 300;
     text-align: center;
     margin: 0px;
     padding: 0px;
-    margin-top: 20px;
-    margin-bottom: 14px;
+    margin-top: 24px;
+    margin-bottom: 9px;
   }
 }
 
@@ -159,8 +150,6 @@ main {
   justify-content: center;
   align-items: center;
   padding: 0 15px;
-  margin-top: 3px;
-  margin-bottom: 20px;
   cursor: pointer;
 
   ul {
