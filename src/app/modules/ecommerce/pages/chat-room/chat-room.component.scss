@@ -100,6 +100,12 @@ header {
     }
   }
 
+  .header-title-activated {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
   .highlight {
     color: var(--El-verdecito, #87cd9b);
     font-family: InterLight;

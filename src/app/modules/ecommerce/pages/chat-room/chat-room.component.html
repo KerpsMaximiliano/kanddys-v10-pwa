@@ -1,14 +1,36 @@
 <div class="container">
-  <header>
+  <header [style.maxWidth]="!isMobile ? '427px' : '500px'">
     <div class="top">
       <ng-container *ngIf="!this.headerService.user">
-        <div class="header-title">
+        <div class="header-title" [ngClass]="{ 'header-title-activated': adminChat }">
+          <img
+            *ngIf="adminChat"
+            (click)="activatedAssistant()"
+            class="toggle-icon"
+            [src]="
+              assetsFolder +
+              (activeAssistantStatus
+                ? '/toggle-on.svg'
+                : '/toggle-off.svg')
+            "
+          />
           LAIACHAT CON IP {{ ipAddress }}
         </div>
         <div class="close-button" (click)="goBack()">X</div>
       </ng-container>
       <ng-container *ngIf="this.headerService.user && isTheUserTheMerchant">
-        <div class="header-title">
+        <div class="header-title" [ngClass]="{ 'header-title-activated': adminChat }">
+          <img
+            *ngIf="adminChat"
+            (click)="activatedAssistant()"
+            class="toggle-icon"
+            [src]="
+              assetsFolder +
+              (activeAssistantStatus
+                ? '/toggle-on.svg'
+                : '/toggle-off.svg')
+            "
+          />
           LAIACHAT CON <span>{{
             this.headerService.user.name || 
             this.headerService.user.email
@@ -17,7 +39,18 @@
         <div class="close-button" (click)="goBack()">X</div>
       </ng-container>
       <ng-container *ngIf="this.headerService.user && !isTheUserTheMerchant">
-        <div class="header-title">
+        <div class="header-title" [ngClass]="{ 'header-title-activated': adminChat }">
+          <img
+            *ngIf="adminChat"
+            (click)="activatedAssistant()"
+            class="toggle-icon"
+            [src]="
+              assetsFolder +
+              (activeAssistantStatus
+                ? '/toggle-on.svg'
+                : '/toggle-off.svg')
+            "
+          />
           LAIACHAT CON <span>{{
             this.headerService.user.name || 
             this.headerService.user.email
@@ -43,7 +76,7 @@
       <mat-icon>error_outline</mat-icon>
     </div>
 
-    <div class="bottom" *ngIf="isTheUserTheMerchant">
+    <!-- <div class="bottom" *ngIf="isTheUserTheMerchant">
       <span>
         {{
           usersWithAssistantActivated[chatUsers["SENDER"]?._id]
@@ -60,7 +93,7 @@
             : '/toggle-off.svg')
         "
       />
-    </div>
+    </div> -->
   </header>
 
   <main>
