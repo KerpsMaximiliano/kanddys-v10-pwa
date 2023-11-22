@@ -1,7 +1,8 @@
 <div class="range_container">
   <div class="sliders_control">
       <input 
-        (change)="controlFromSlider" 
+        step="0.01"
+        (change)="controlFromSlider()" 
         [(ngModel)]="currentMin" 
         id="fromSlider" 
         type="range"
@@ -9,7 +10,8 @@
         max="{{max}}"
       />
       <input 
-        (change)="controlToSlider" 
+        step="0.01"
+        (change)="controlToSlider()"
         [(ngModel)]="currentMax" 
         id="toSlider" 
         type="range" 
@@ -18,7 +20,7 @@
       />
   </div>
   <div class="sliders_values">
-      <span>{{currentMin}}</span>
-      <span>{{currentMax}}</span>
+      <span [style.marginLeft]="minLabelPosition()">{{currentMin | currency}}</span>
+      <span [style.marginRight]="maxLabelPosition()">{{currentMax | currency}}</span>
   </div>
 </div>

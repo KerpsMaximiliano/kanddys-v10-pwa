@@ -14,13 +14,17 @@ export class SliderComponent implements OnInit {
   @Output() newMin : EventEmitter<number> = new EventEmitter<number>();
   @Output() newMax : EventEmitter<number> = new EventEmitter<number>();
 
-  toSlider = document.querySelector('#toSlider') as HTMLInputElement;
+  toSlider : HTMLInputElement;
 
   constructor() { }
 
   ngOnInit(): void {
     this.currentMin = this.min;
+    console.log(this.min)
     this.currentMax = this.max;
+    console.log(this.max)
+    this.toSlider = document.querySelector('#toSlider') as HTMLInputElement;
+    console.log(this.toSlider)
     this.fillSlider('#C6C6C6', '#25daa5');
     this.setToggleAccessible();
     this.controlFromSlider();
@@ -65,5 +69,17 @@ export class SliderComponent implements OnInit {
     } else {
       this.toSlider.style.zIndex = '0';
     }
+  }
+
+  minLabelPosition() {
+    const rangeDistance = this.max - this.min;
+    const fromPosition = this.currentMin - this.min;
+    return `calc(${(fromPosition)/(rangeDistance)*100}% - 40px)`;
+  }
+
+  maxLabelPosition() {
+    const rangeDistance = this.max - this.min;
+    const toPosition = this.max - this.currentMax;
+    return `calc(${(toPosition)/(rangeDistance)*100}% - 40px)`;
   }
 }
