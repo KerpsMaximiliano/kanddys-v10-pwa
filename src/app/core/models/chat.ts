@@ -20,6 +20,8 @@ export interface Chat extends Model<Chat> {
     content: string;
   }>;
   _id: string;
+  activeAssistant: boolean;
+  lastUserWritten?: string;
 }
 
 export interface Message {

@@ -35,6 +35,7 @@ import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 interface ExtendedChat extends Chat {
   receiver?: User;
   receiverId?: string;
+  pendingMessages?: boolean;
 }
 
 interface ChatsByMonth {
@@ -186,8 +187,8 @@ export class LaiachatLandingComponent implements OnInit {
       this.chats = chats;
 
       this.chats.sort((a, b) => {
-        const dateA = new Date(a.createdAt);
-        const dateB = new Date(b.createdAt);
+        const dateA = new Date(a.updatedAt);
+        const dateB = new Date(b.updatedAt);
         return dateB.getTime() - dateA.getTime();
       });
 
@@ -212,11 +213,13 @@ export class LaiachatLandingComponent implements OnInit {
       this.chats.forEach((chat, index) => {
         const userId = chat.owners.find(
           (owner) => owner.userId !== this.headerService.user._id
-        ).userId;
+        )?.userId;
 
         if (userId) {
           chat.receiver = this.usersById[userId];
         }
+
+        chat.pendingMessages = chat.lastUserWritten ? chat.lastUserWritten !== this.headerService.user._id : false;
 
         this.chatsByMonth = this.groupChatsByMonth(chat, this.chatsByMonth);
 

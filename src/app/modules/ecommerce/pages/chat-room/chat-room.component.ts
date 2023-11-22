@@ -330,10 +330,11 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   async filterMessagesAndGenerateResponse() {
     if(this.chat?.messages && this.chat?.messages?.length > 0) {
       const lastIndex = this.chat?.messages?.map(item => item.sender).lastIndexOf(this.receiverId);
-      this.chat.messages = lastIndex !== -1 ? this.chat?.messages.slice(lastIndex + 1) : this.chat?.messages;
+      const lastMessageSent = lastIndex === (this.chat?.messages?.length - 1);
+      this.chat.messages = lastMessageSent ? this.chat?.messages : this.chat?.messages.slice(lastIndex + 1);
       const merchant: Merchant = await this.getMerchantDefault();
 
-      if (this.chat?.messages?.length > 1) {
+      if (!lastMessageSent && this.chat?.messages?.length > 1) {
         const messageValues = this.chat?.messages?.map(item => item.message['changingThisBreaksApplicationSecurity'] ?? '');
 
         const result = await this.gpt3Service.requestResponseFromKnowledgeBase({
@@ -346,10 +347,14 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
           isAuthorization: this.headerService.user ? true : false
         });
 
+        const textarea = document.getElementById('autoExpandTextarea');
         this.chatFormGroup.get('input').setValue(result?.response ?? '');
+        this.resizeTextarea(textarea);
+        const inputEvent = new Event('input', { bubbles: true });
+        textarea.dispatchEvent(inputEvent);
       }
 
-      if (this.chat?.messages?.length === 1) {
+      if (!lastMessageSent && this.chat?.messages?.length === 1) {
         const messageValue = this.chat?.messages?.map(item => item.message['changingThisBreaksApplicationSecurity'] ?? '');
         const result = await this.gpt3Service.requestResponseFromKnowledgeBase({
           prompt: messageValue[0],
@@ -360,7 +365,11 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
           isAuthorization: this.headerService.user ? true : false
         });
 
+        const textarea = document.getElementById('autoExpandTextarea');
         this.chatFormGroup.get('input').setValue(result?.response ?? '');
+        this.resizeTextarea(textarea);
+        const inputEvent = new Event('input', { bubbles: true });
+        textarea.dispatchEvent(inputEvent);
       }
     }
   }
