@@ -75,7 +75,7 @@
     </div>
     <div *ngIf="priceSlider" class="slider-container">
       <p>
-        ${{minPricing}}
+        {{minPricing | currency}}
       </p>
       <app-slider
         [min]="minPricing"
@@ -86,7 +86,7 @@
 
       </app-slider>
       <p>
-        ${{maxPricing}}
+        {{maxPricing | currency}}
       </p>      
     </div>
   </header>
@@ -112,99 +112,13 @@
 </div> -->
 
 <div class="contact-bar">
-  <ul>
-    <li>
-      <a (click)="displayFooter()" style="cursor: pointer">
-        <div class="contact">
-          <div class="logo phone">
-            <img [src]="env + '/icon-i.svg'" alt="" style="
-                filter: invert(99%) sepia(99%) saturate(34%) hue-rotate(112deg)
-                  brightness(106%) contrast(100%);
-              " />
-          </div>
-        </div>
-      </a>
-    </li>
-    <!-- <li *ngIf="headerService.saleflow?.merchant.owner.phone">
-      <a
-        [href]="'tel:+' + headerService.saleflow?.merchant.owner.phone"
-        target="_blank"
-      >
-        <div class="contact">
-          <div class="logo phone" style="transform: rotate(90deg)">
-            <i class="fa fa-phone" aria-hidden="true"></i>
-          </div>
-        </div>
-      </a>
-    </li> 
-    <li *ngIf="headerService.saleflow?.merchant.owner.phone">
-      <a
-        [href]="
-          'https://wa.me/' +
-          headerService.saleflow?.merchant.owner.phone.replace('+', '')
-        "
-        target="_blank"
-      >
-        <div class="contact">
-          <div class="logo whatsapp">
-            <i class="fa fa-whatsapp" aria-hidden="true"></i>
-          </div>
-        </div>
-      </a>
-    </li>
-    <li *ngIf="headerService.saleflow?.merchant.owner.email">
-      <a
-        [href]="'mailto:' + headerService.saleflow?.merchant.owner.email"
-        target="_blank"
-      >
-        <div class="contact">
-          <div class="logo email">
-            <i class="fa fa-envelope" aria-hidden="true"></i>
-          </div>
-        </div>
-      </a>
-    </li>
-    <ng-container *ngIf="headerService.merchantContact">
-      <li
-        *ngFor="let link of headerService.merchantContact.link"
-        [ngStyle]="{ display: link.name !== 'Twitter' ? 'block' : 'none' }"
-      >
-        <a [href]="link.value" target="_blank" *ngIf="link.name !== 'Twitter'">
-          <div class="contact">
-            <div class="logo instagram" *ngIf="link.name == 'Instagram'">
-              <i class="fa fa-instagram" aria-hidden="true"></i>
-            </div>
-            <div class="logo facebook" *ngIf="link.name == 'Facebook'">
-              <i class="fa fa-facebook-square" aria-hidden="true"></i>
-            </div>
-            <div class="logo twitter" *ngIf="link.name == 'Twitter'">
-              <i class="fa fa-twitter-square" aria-hidden="true"></i>
-            </div> 
-          </div>
-        </a>
-      </li>
-    </ng-container>-->
-  </ul>
-  <div style="cursor: pointer; display: flex; justify-content: center; align-items: center;">
-    <ng-container>
-      <!-- <img [src]="env + '/star-highlight.png'" alt="" style="width: 40px" /> -->
-      <!--<p class="highlighted-text">Guarda y Monetiza</p>
-      <p style="font-size: 16px;">💚</p>-->
-    </ng-container>
-    <!-- <div
-      class="cart-container"
-      *ngIf="headerService.order?.products?.length"
-      (click)="goToCart()"
-    >
-      {{ headerService.order?.products?.length }}
-      <img
-        [src]="env + '/cart-green.png'"
-        alt=""
-        style="width: 15px; margin-bottom: 2px"
-      />
-    </div> -->
+  <img (click)="displayFooter()" [src]="env + '/icon-i.svg'" alt="" />
+  <div (click)="goToCart()" *ngIf="cart && cart.order && cart.order.products.length">
+    <span>{{cart.order.products.length}}</span>
+    <img [src]="env + '/cart-green.png'" alt="cart" />
   </div>
-  <qrcode
+</div>
+<qrcode
     style="display: none"
     #qrcode
     [qrdata]="qrdata"
@@ -215,4 +129,3 @@
     colorDark="#000"
     >
   </qrcode>
-</div>

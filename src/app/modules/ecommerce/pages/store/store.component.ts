@@ -98,6 +98,8 @@ export class StoreComponent implements OnInit {
 
   assetsFolder: string = environment.assetsUrl;
 
+  cart : any = null;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -186,10 +188,13 @@ export class StoreComponent implements OnInit {
         }
       });
     }, 300);
+    this.cart = JSON.parse(localStorage.getItem(this.headerService.saleflow._id))
+    console.log(this.cart)
   }
 
   async getPriceRanges() {
     if(this.selectedCategories.length) {
+      console.log('category price', this.selectedCategories)
       const categoryIds = this.selectedCategories.map((category) => category._id);
       await this.itemsService.listItems({
         findBy: {
@@ -201,8 +206,14 @@ export class StoreComponent implements OnInit {
           sortBy: "pricing:asc"
         },
       }).then((res) => {
-        this.minPricing = res.listItems[0].pricing;
-        this.minSelected = res.listItems[0].pricing;
+        console.log(res)
+        if(res.listItems.length > 0) {
+          this.minPricing = res.listItems[0].pricing;
+          this.minSelected = res.listItems[0].pricing;
+        } else {
+          this.minPricing = 0;
+          this.minSelected = 0;
+        }
       })
       await this.itemsService.listItems({
         findBy: {
@@ -214,9 +225,19 @@ export class StoreComponent implements OnInit {
           sortBy: "pricing:desc"
         },
       }).then((res) => {
-        this.maxPricing = res.listItems[0].pricing;
-        this.maxSelected = res.listItems[0].pricing;
+        console.log(res)
+        if(res.listItems.length > 0) {
+          this.maxPricing = res.listItems[0].pricing;
+          this.maxSelected = res.listItems[0].pricing;
+        } else {
+          this.maxPricing = 0;
+          this.maxSelected = 0;
+        }
       })
+      if(this.minPricing === this.maxPricing) {
+        this.maxPricing += 1;
+      }
+      this.priceSlider = true;
       return;
     } else {
       await this.itemsService.listItems({
@@ -595,12 +616,14 @@ export class StoreComponent implements OnInit {
   }
 
   onMaxPricingChange(event) {
-    this.maxSelected = event.target.value;
+    console.log(event)
+    this.maxSelected = event;
     this.changePriceFilters();
   }
 
   onMinPricingChange(event) {
-    this.minSelected = event.target.value;
+    console.log(event)
+    this.minSelected = event;
     this.changePriceFilters();
   }
 }

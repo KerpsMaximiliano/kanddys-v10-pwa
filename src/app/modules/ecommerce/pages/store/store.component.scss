@@ -46,6 +46,7 @@ header {
     .right-side {
       display: flex;
       gap: 14px;
+      align-items: center;
       mat-icon {
         color: #fff;
         cursor: pointer;
@@ -278,55 +279,37 @@ router-outlet {
   position: fixed;
   width: 100%;
   max-width: 500px;
+  height: 40px;
   z-index: 999;
   bottom: 0;
-  padding: 0 15px;
+  padding: 0 12px;
 
-  ul {
-    padding: 0;
-    margin: 0;
-    display: flex;
-    gap: 10px;
-
-    li {
-      list-style: none;
-
-      .logo {
-        border-radius: 26px;
-        padding: 6px 8px;
-
-        i {
-          color: #fff;
-          font-size: 30px;
-        }
-
-        img,
-        i {
-          margin-top: 3px;
-        }
-      }
-    }
+  img {
+    filter: invert(99%) sepia(99%) saturate(34%) hue-rotate(112deg)
+                  brightness(106%) contrast(100%);
   }
 
-  .highlighted-text {
-    text-align: right;
-    color: #87CD9B;
-    font-size: 16px;
-    font-family: 'InterBold';
-    padding-right: 7px;
-  }
-
-  .cart-container {
-    cursor: pointer;
-    background-color: #f7d455;
-    color: #181d17;
-    border-radius: 10px;
-    padding: 8px;
-    width: 50px;
+  div {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
     align-items: center;
-    font-size: 17px;
+    gap: 5px;
+    width: 79px;
+    height: 65px;
+    border-radius: 50%;
+    right: 0;
+    position: absolute;
+    background: #435A4A;
+
+    img {
+      margin-right: 10px;
+    }
+    
+    span {
+      color: var(--Fondo-de-Pantallas, #F6F6F6);
+      font-family: InterMedium;
+      font-size: 14px; 
+    }
   }
 }
 
@@ -419,8 +402,10 @@ router-outlet {
 .slider-container {
   display: flex;
   justify-content: space-around;
-  ngx-slider {
-    width: 60%;
+  p {
+    color: #C4C5C3;
+    font-family: InterRegular;
+    font-size: 16px;
   }
 }
 
