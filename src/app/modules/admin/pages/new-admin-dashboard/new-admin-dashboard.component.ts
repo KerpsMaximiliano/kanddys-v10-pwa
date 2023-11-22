@@ -11,6 +11,7 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { Subscription } from 'rxjs';
 import { base64ToBlob } from 'src/app/core/helpers/files.helpers';
@@ -117,6 +118,7 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
 
   //clipboard and share options
   @ViewChild('storeQrCode', { read: ElementRef }) storeQrCode: ElementRef;
+  isMobile:boolean = false;
 
   constructor(
     public merchantsService: MerchantsService,
@@ -135,10 +137,17 @@ export class NewAdminDashboardComponent implements OnInit, OnDestroy {
     private ngNavigatorShareService: NgNavigatorShareService,
     private queryParameterService: QueryparametersService,
     private clipboard: Clipboard,
-    private _bottomSheet: MatBottomSheet
-  ) {}
+    private _bottomSheet: MatBottomSheet,
+    private translate: TranslateService
+  ) {
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+      translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+      translate.use(language?.length === 2 ? language  : 'es');
+  }
 
   async ngOnInit() {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
     //TODO: Delete this
     // this.authService.signin('584242630354', '123', true);
 

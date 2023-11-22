@@ -178,7 +178,7 @@ main {
   }
 }
 
-footer {
+.footer {
   position: fixed;
   bottom: 0;
   max-width: 500px;
@@ -209,6 +209,9 @@ footer {
   .right {
     font-family: InterBold;
   }
+}
+.footer.mobile{
+  max-width: 427px;
 }
 
 .toggle-icon {
