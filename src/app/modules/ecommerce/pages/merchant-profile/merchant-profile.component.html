@@ -114,7 +114,9 @@
 
     <ng-container *ngIf="layout === 'EXPANDED-SLIDE'">
       <p (click)="zoomOutOrZoomInDetails()" class="description center">
-        <span *ngIf="genericModelTemplate.title" class="title">{{ genericModelTemplate.title }}.</span> {{ truncateString(genericModelTemplate?.description, 150, 2) }}
+        <span *ngIf="genericModelTemplate.title" class="title">{{ genericModelTemplate.title }}.</span> 
+        {{ genericModelTemplate.description ? 
+        truncateString(genericModelTemplate.description, 150, 2) : '' }}
       </p>
 
       <ng-container
