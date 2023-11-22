@@ -191,6 +191,9 @@ a {
     border-top-left-radius: 25px;
   }
 }
+.display-footer.mobile{
+  max-width: 427px;
+}
 
 .hide {
   display: none;
@@ -256,6 +259,7 @@ a {
       }
     }
   }
+  
 
   .highlighted-text {
     text-align: right;
@@ -276,6 +280,9 @@ a {
     align-items: center;
     font-size: 17px;
   }
+}
+.contact-bar.mobile{
+  max-width: 427px;
 }
 .chip-list {
   display: flex;

@@ -18,6 +18,7 @@ import { truncateString } from 'src/app/core/helpers/strings.helpers';
 import { Location } from '@angular/common';
 import { filter } from 'rxjs/internal/operators/filter';
 import { pairwise } from 'rxjs/internal/operators/pairwise';
+import { TranslateService } from '@ngx-translate/core';
 
 SwiperCore.use([Virtual]);
 
@@ -75,6 +76,7 @@ export class StoreComponent implements OnInit {
   magicLink: boolean = false;
 
   assetsFolder: string = environment.assetsUrl;
+  isMobile: boolean = false;
 
   constructor(
     private router: Router,
@@ -87,10 +89,17 @@ export class StoreComponent implements OnInit {
     private ngNavigatorShareService: NgNavigatorShareService,
     private _bottomSheet: MatBottomSheet,
     private changeDetectorRef: ChangeDetectorRef,
+    private translate: TranslateService,
     private location: Location
-  ) { }
+  ) {
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+      translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+      translate.use(language?.length === 2 ? language  : 'es');
+  }
 
   async ngOnInit(): Promise<void> {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
     setTimeout(() => {
       this.route.queryParams.subscribe(async (queryParams) => {
         let { startOnSnapshot, adminView, mode, redirectTo, from } = queryParams;

@@ -346,6 +346,14 @@ footer {
   }
 }
 
+.footer{
+  max-width: 500px;
+}
+
+.footer.mobile{
+  max-width: 427px !important;
+}
+
 .disabled-item-container {
   height: 53px;
   width: 100%;

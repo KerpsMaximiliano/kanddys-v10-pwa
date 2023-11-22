@@ -183,7 +183,7 @@
   </div>
   <router-outlet></router-outlet>
 </div>
-<div id="footer" class="display-footer hide">
+<div id="footer" class="display-footer hide" [ngClass]="{mobile: !isMobile}">
   <button class="close" (click)="closeFooter()">X</button>
   <div class="footer-content">
     <ul class="footer-links">
@@ -208,7 +208,7 @@
   <button mat-mini-fab class="info-button" (click)="displayFooter()">i</button>
 </div> -->
 
-<div class="contact-bar">
+<div class="contact-bar" [ngClass]="{mobile: !isMobile}">
   <ul>
     <li>
       <a (click)="displayFooter()" style="cursor: pointer">
