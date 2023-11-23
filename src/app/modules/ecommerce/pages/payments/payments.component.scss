@@ -41,9 +41,9 @@ button {
     }
 
     .method {
-      font-family: "SfProBold";
+      font-family: InterMedium;
       font-size: 1.313rem;
-      font-weight: 500;
+      // font-weight: 500;
       color: #ffffff;
       margin: 0px;
     }
@@ -313,7 +313,7 @@ a.disabled {
 .text-description {
   color: #FFF;
   font-size: 17px;
-  font-family: "InterLight";
+  font-family: InterLight;
 }
 
 .file-chooser {
@@ -329,7 +329,7 @@ a.disabled {
 
 .text-disclaimer {
   color: #FFFFFF;
-  font-family: "InterLight";
+  font-family: InterLight;
   font-size: 17px;
 }
 
@@ -340,15 +340,13 @@ a.disabled {
 }
 
 .delete-comprobant{
-  // font-weight: 600;
   // margin-left: 27vh;
   cursor:pointer;
   color: #936105;
   text-align: center;
-  font-family: Inter;
+  font-family: InterBold;
   font-size: 17px;
   font-style: normal;
-  font-weight: 700;
   line-height: normal;
 }
 
@@ -402,8 +400,7 @@ a.disabled {
 .articles-factured{
   color: #7B7B7B;
   font-size: 17px;
-  font-family: Inter;
-  font-weight: 500;
+  font-family: InterMedium;
   word-wrap: break-word;
   margin: 0px;
   padding: 0px;
@@ -413,8 +410,7 @@ a.disabled {
 .amount-total{
   color: #C4C5C3;
   font-size: 17px;
-  font-family: Inter;
-  font-weight: 700;
+  font-family: InterBold;
   word-wrap: break-word;
   margin: 0px;
   padding: 0px;
@@ -431,8 +427,7 @@ a.disabled {
   // border: 1px solid #7B7B7B;
   color: white;
   font-size: 17px;
-  font-family: Inter;
-  font-weight: 400;
+  font-family: InterRegular;
   word-wrap: break-word;
   width: -webkit-fill-available; 
 }
@@ -441,15 +436,13 @@ a.disabled {
 .fee-paypal{
   color: white;
   font-size: 17px;
-  font-family: Inter;
-  font-weight: 300;
+  font-family: InterLight;
   word-wrap: break-word
 }
 .p-text{
   color: #FFF;
-  font-family: Inter;
+  font-family: InterBold;
   font-size: 19px;
   font-style: normal;
-  font-weight: 700;
   line-height: normal;
 }
