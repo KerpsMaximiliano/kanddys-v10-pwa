@@ -190,7 +190,7 @@
         >
         </i>
       </a>
-      <span (click)="textCallback && textCallback()">{{ text }}</span>
+      <span [ngStyle]=" customTextStyles ? customTextStyles : null" (click)="textCallback && textCallback()">{{ text }}</span>
       <img *ngIf="icon" [src]="icon" [alt]="icon" />
       {{ auxText }}
     </button>
