@@ -60,6 +60,10 @@ type ValidEntities = 'item' | 'post' | 'collection';
 })
 export class SymbolDetailComponent implements OnInit, AfterViewInit {
   @ViewChild('storeQrCode', { read: ElementRef }) storeQrCode: ElementRef;
+  @ViewChild('swiperContainer', { read: ElementRef }) swiperContainer: ElementRef;
+  @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
+  @ViewChild('videoPlayer') private videoPlayer: ElementRef;
+
   routeParamsSubscription: Subscription = null;
   queryParamsSubscription: Subscription = null;
   mode: 'preview' | 'image-preview' | 'saleflow' | 'symbol-editor-preview';
@@ -163,9 +167,8 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
 
   modeUser: 'STANDARD' | 'SUPPLIER' = 'STANDARD';
 
-  @ViewChild('swiperContainer', { read: ElementRef })
-  swiperContainer: ElementRef;
-  @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
+  saleflowData = null
+
 
   constructor(
     private itemsService: ItemsService,
@@ -192,9 +195,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
           async (queryParams) => {
             this.routeParams = routeParams;
             this.queryParams = queryParams;
-
             await this.executeInitProcesses();
-
             this.applyConfigurationsForSlidesDimensions();
           }
         );
@@ -260,6 +261,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
         } else if (entity === 'collection') {
           await this.getCollection();
         }
+        this.saleflowData = await this.saleflowService.saleflowDefault(this.itemData.merchant._id)
       } else {
         let entityTemplate = await this.entityTemplateService.entityTemplate(
           entityId
@@ -345,9 +347,11 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
 
       if (this.headerService.saleflow?._id && this.entity === 'item')
         this.itemInCart();
+
     } else {
       this.router.navigate([`others/error-screen/`]);
     }
+
   }
 
   async verifyIfUserIsLogged() {
@@ -952,25 +956,12 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   }
 
   playCurrentSlideVideo(id: string) {
-    const elem: HTMLVideoElement = document.getElementById(
-      id
-    ) as HTMLVideoElement;
-
-    if (!isVideoPlaying(elem)) {
-      this.playVideo(id);
-    } else {
-      elem.pause();
-    }
-
-    /*
-    setTimeout(() => {
-      this.videosPlaying[id] = isVideoPlaying(elem);
-    }, 500);
-    */
+    const elem: HTMLVideoElement = document.getElementById(id) as HTMLVideoElement;
+    elem.pause();
   }
 
   shareStore() {
-    const slug = this.saleflowService.saleflowData?.merchant?.slug
+    const slug = this.saleflowData?.merchant?.slug
     const mode = this.modeUser === 'SUPPLIER' ? 'supplier' : 'standard'
     const data = { slug, mode, storeQrCode: this.storeQrCode }
     const labels = {
@@ -978,6 +969,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
       copyLink: "",
       qr: "",
       share: "",
+      bottomLabel: `ecommerce/${slug}/article-detail`
     }
     this.bottomSheet.open(OptionsMenuComponent, shareStore(data, labels));
   }

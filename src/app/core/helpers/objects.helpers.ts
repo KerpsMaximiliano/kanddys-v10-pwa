@@ -49,6 +49,7 @@ export const shareStore = (data: any, labels: any) => {
     copyLink,
     qr: qrLabel,
     share: shareLabel,
+    bottomLabel
   } = labels
 
   const clipboard = Inject(Clipboard)
@@ -85,7 +86,7 @@ export const shareStore = (data: any, labels: any) => {
       styles: {
         fullScreen: true,
       },
-      bottomLabel: `${URI}/ecommerce/${slug}/store`,
+      bottomLabel: bottomLabel ? `${URI}/${bottomLabel}` : `${URI}/ecommerce/${slug}/store`,
     },
   };
 }

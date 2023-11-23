@@ -104,7 +104,13 @@ main {
   -webkit-box-orient: vertical;
   word-break: break-word;
 
+  span {
+    font-weight: 700;
+  }
+
   &.expanded {
+    font-size: 15px !important;
+    font-weight: 700;
     margin: 0px;
     margin-bottom: 14px;
   }
@@ -174,7 +180,9 @@ main {
 .video-wrapper {
   position: relative;
   width: fit-content !important;
-  width: 100% !important;
+  &.expanded {
+    width: 100% !important;
+  }
 }
 
 video {

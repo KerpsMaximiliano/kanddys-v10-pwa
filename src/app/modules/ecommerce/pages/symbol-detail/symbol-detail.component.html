@@ -13,7 +13,11 @@
       (click)="back()"
     />
 
-    <div class="bullets" style="display: flex; gap: 6px">
+    <div
+      class="bullets"
+      style="display: flex; gap: 6px"
+      *ngIf="layout === 'EXPANDED-SLIDE'"
+    >
       <span
         style="
           display: inline-block;
@@ -47,9 +51,9 @@
     }"
   >
     <ng-container *ngIf="layout === 'ZOOMED-OUT-INFO'">
-      <h1 class="title expanded" (click)="zoomOutOrZoomInDetails()">
+      <h2 class="title expanded" (click)="zoomOutOrZoomInDetails()">
         {{ genericModelTemplate.title }}
-      </h1>
+      </h2>
     </ng-container>
 
     <div
@@ -99,7 +103,11 @@
               />
             </ng-container>
 
-            <div class="video-wrapper" *ngIf="slide.type === 'VIDEO'">
+            <div
+              class="video-wrapper"
+              [ngClass]="{ expanded: layout === 'EXPANDED-SLIDE' }"
+              *ngIf="slide.type === 'VIDEO'"
+            >
               <div
                 class="invisible-from-layer"
                 [ngClass]="{
@@ -107,28 +115,8 @@
                 }"
                 (click)="zoomOutOrZoomInDetails(i)"
               ></div>
-              <!--
-                  <img
-                      src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets/playIcon.svg"
-                      alt="play"
-                      class="playVideoIcon"
-                      style="
-                        padding: 7rem !important;
-                        z-index: 99;
-                        max-width: 300px;
-                        margin: auto;
-                        left: 0;
-                        right: 0;
-                        top: 0;
-                        bottom: 0;
-                        height: 50%;
-                      "
-                      *ngIf="!videosPlaying['media' + i]"
-                      (click)="playCurrentSlideVideo('media' + i)"
-                    />
-              -->
-
               <video
+                #videoPlayer
                 [id]="'media' + i"
                 (click)="playCurrentSlideVideo('media' + i)"
                 [ngStyle]="{
@@ -142,6 +130,7 @@
                 }"
                 [src]="slide.src"
                 [controls]="layout !== 'ZOOMED-OUT-INFO'"
+                [autoplay]="false"
               ></video>
             </div>
           </ng-container>
@@ -153,21 +142,19 @@
         TITLE OF THE SYMBOL WHEN THE SLIDE IS EXPANDED
     -->
     <ng-container *ngIf="layout === 'EXPANDED-SLIDE'">
-      <h1
-        class="title"
-        *ngIf="genericModelTemplate.title"
-        (click)="zoomOutOrZoomInDetails()"
-      >
-        {{ genericModelTemplate.title }}
-      </h1>
-
-      <h1
+      <h2
         class="title small"
         *ngIf="genericModelTemplate.description"
         (click)="zoomOutOrZoomInDetails()"
       >
+        <span
+          *ngIf="genericModelTemplate.title"
+          (click)="zoomOutOrZoomInDetails()"
+        >
+          {{ genericModelTemplate.title }}
+        </span>
         {{ truncateString(genericModelTemplate?.description, 150, 2) }}
-      </h1>
+      </h2>
 
       <ng-container
         *ngIf="
@@ -201,15 +188,6 @@
   <footer class="bottom-flex">
     <div class="left">
       <ng-container [ngSwitch]="entity">
-        <button (click)="user ? onAddToFavorites() : onGoBackToLogin()">
-          <img
-            src="../../../../../assets/icons/heart2.svg"
-            alt="add to favorites"
-            role="button"
-            width="25px"
-            height="25px"
-          />
-        </button>
         <div class="price" *ngSwitchCase="'item'">
           <ng-container *ngIf="entityPresentation !== 'DEMO'">
             ${{ itemData?.pricing | number : "1.2-2" }}
@@ -223,40 +201,8 @@
     </div>
     <div class="right">
       <ng-container [ngSwitch]="entity">
-        <div
-          class="add-to-cart"
-          *ngSwitchCase="'item'"
-          (click)="saveProduct()"
-        >
-          <ng-container
-            *ngIf="entityPresentation !== 'DEMO' && !supplierViewer"
-          >
-            <!-- <ng-container *ngIf="!supplierItem"> -->
-            <ng-container>
-              {{
-                !isItemInCart
-                  ? itemData?.ctaText || "Agrégalo al carrito"
-                  : defaultCtaRemoveText
-              }}
-            </ng-container>
-
-            <ng-container
-              *ngIf="
-                supplierItem &&
-                ((itemData?.stock > 0 && supplierItemInSaleflow) ||
-                  supplierPreview)
-              "
-            >
-              {{
-                !addedItemToQuotation
-                  ? itemData?.ctaText || defaultCtaText
-                  : defaultCtaRemoveText
-              }}
-            </ng-container>
-          </ng-container>
-          <ng-container *ngIf="entityPresentation === 'DEMO'">
-            Agrégalo al carrito
-          </ng-container>
+        <div class="add-to-cart" *ngSwitchCase="'item'" (click)="saveProduct()">
+          <ng-container> Agrégalo al carrito </ng-container>
         </div>
 
         <div class="add-to-cart" *ngSwitchCase="'post'">
