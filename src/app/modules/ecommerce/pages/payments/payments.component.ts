@@ -322,7 +322,7 @@ export class PaymentsComponent implements OnInit {
             this.orderCompleted();
             return;
           }
-          console.log("this.order", this.order)
+          // console.log("this.order", this.order)
           // Cálculo del subtotal (monto acumulado de todos los artículos involucrados en la orden)
           this.subtotal = this.order.subtotals.reduce(
             (a, b) => (b?.type === 'item' ? a + b.amount : a),
