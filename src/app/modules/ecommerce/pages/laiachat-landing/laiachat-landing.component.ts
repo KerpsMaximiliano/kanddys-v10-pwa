@@ -141,6 +141,12 @@ export class LaiachatLandingComponent implements OnInit {
     const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
     this.isMobile = regex.test(navigator.userAgent);
     this.calculateMargin = `calc(${window.innerHeight}px - 745px)`;
+    if(!this.isMobile) {
+      setTimeout(() => {
+        const element: HTMLElement = document.querySelector('.empty-chat');
+        element?.style?.setProperty('margin-top', '18vh');
+      }, 500);
+    }
     await this.getMerchantDefault();
     if (this.headerService.user) {
       this.clientConnectionStatus = await this.whatsappService.clientConnectionStatus();
@@ -180,6 +186,7 @@ export class LaiachatLandingComponent implements OnInit {
   }
 
   async getChats() {
+    const me = await this.chatsService.me();
     const chats = await this.chatsService.listMyChats();
     let usersToFetch = [];
 
@@ -219,7 +226,7 @@ export class LaiachatLandingComponent implements OnInit {
           chat.receiver = this.usersById[userId];
         }
 
-        chat.pendingMessages = chat.lastUserWritten ? chat.lastUserWritten !== this.headerService.user._id : false;
+        chat.pendingMessages = me.socketUserId && chat.lastUserWritten ? chat.lastUserWritten !== me.socketUserId : false;
 
         this.chatsByMonth = this.groupChatsByMonth(chat, this.chatsByMonth);
 

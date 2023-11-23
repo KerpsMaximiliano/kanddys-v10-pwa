@@ -14,7 +14,7 @@
                 : '/toggle-off.svg')
             "
           />
-          LAIACHAT CON IP {{ ipAddress }}
+          LAIA {{ activeAssistantStatus ? '' : 'NO' }} RESPONDE EN AUTO A IP {{ ipAddress }}
         </div>
         <div class="close-button" (click)="goBack()">X</div>
       </ng-container>
@@ -31,10 +31,12 @@
                 : '/toggle-off.svg')
             "
           />
-          LAIACHAT CON <span>{{
-            this.headerService.user.name || 
-            this.headerService.user.email
-          }}</span>
+          <div>
+            LAIA {{ activeAssistantStatus ? '' : 'NO' }} RESPONDE EN AUTO A <span>{{
+              this.headerService.user.name || 
+              this.headerService.user.email
+            }}</span>
+          </div>
         </div>
         <div class="close-button" (click)="goBack()">X</div>
       </ng-container>
@@ -51,10 +53,12 @@
                 : '/toggle-off.svg')
             "
           />
-          LAIACHAT CON <span>{{
-            this.headerService.user.name || 
-            this.headerService.user.email
-          }}</span>
+          <div>
+            LAIA {{ activeAssistantStatus ? '' : 'NO' }} RESPONDE EN AUTO A <span>{{
+              this.headerService.user.name || 
+              this.headerService.user.email
+            }}</span>
+          </div>
         </div>
         <div class="close-button" (click)="loggedAsAMerchant ? goBack() : null">
           X

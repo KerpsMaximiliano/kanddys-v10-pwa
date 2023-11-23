@@ -175,13 +175,15 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       if (!this.headerService.user) {
         this.socket.emit('GET_OR_CREATE_CHAT', {
           owners: [this.socket.id],
-          userId: this.headerService.saleflow.merchant.owner?._id
+          userId: this.headerService.saleflow.merchant.owner?._id,
+          type: 'not_logged',
         })
         console.log(this.socket)
       } else if (!chatId) {
         this.socket.emit('GET_OR_CREATE_CHAT', {
           owners: [this.socket.id],
-          userId: this.headerService.saleflow.merchant.owner?._id
+          userId: this.headerService.saleflow.merchant.owner?._id,
+          type: 'logged',
         });
       } else {
         this.socket.emit('GET_OR_CREATE_CHAT', {
@@ -435,7 +437,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
 
   scrollToBottom() {
     const scrollableDiv = document.getElementById('messages');
-    // Scroll to the bottom
+    // // Scroll to the bottom
     scrollableDiv.scrollTop = scrollableDiv.scrollHeight;
   }
 

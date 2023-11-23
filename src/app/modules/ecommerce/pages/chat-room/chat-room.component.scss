@@ -31,7 +31,7 @@ header {
     padding-top: 15px;
     display: flex;
     justify-content: space-between;
-    padding-left: 20px;
+    padding-left: 24px;
     padding-right: 23px;
   }
 
@@ -297,10 +297,11 @@ main {
   background-color: #181d17;
   min-height: 100%;
   padding: 0px 24px;
-  padding-bottom: 128px;
+  padding-bottom: 71px;
+  padding-top: 60px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  // justify-content: flex-end;
 }
 
 .messages {
