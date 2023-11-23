@@ -103,7 +103,7 @@ button {
     margin-bottom: 23px;
 
     .amount-flex-wrapper {
-      padding-top: 11px;
+      padding-top: 2px;
       // padding-bottom: 12px;
       width: 100%;
       // background-color: #ffffff;
@@ -340,10 +340,16 @@ a.disabled {
 }
 
 .delete-comprobant{
-  font-weight: 600;
-  margin-left: 27vh;
+  // font-weight: 600;
+  // margin-left: 27vh;
   cursor:pointer;
   color: #936105;
+  text-align: center;
+  font-family: Inter;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
 }
 
 .file-add{
@@ -385,10 +391,65 @@ a.disabled {
   cursor: pointer;
   border: 0px;
   padding: 50px;
-  width: 70vh;
-  height: 71vh;
-  margin: 17px;
+  width: 63vh;
+  height: 68vh;
+  margin: 18px;
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
+
+}
+.articles-factured{
+  color: #7B7B7B;
+  font-size: 17px;
+  font-family: Inter;
+  font-weight: 500;
+  word-wrap: break-word;
+  margin: 0px;
+  padding: 0px;
+}
+
+// Monto total
+.amount-total{
+  color: #C4C5C3;
+  font-size: 17px;
+  font-family: Inter;
+  font-weight: 700;
+  word-wrap: break-word;
+  margin: 0px;
+  padding: 0px;
+}
+
+// Transferencia Bancaria
+.btn-payments{
+  // display: flex;
+  // width: 399px;
+  // padding: 10px 28px 10px 31px;
+  // align-items: flex-start;
+  // gap: 10px;
+  // border-radius: 23px;
+  // border: 1px solid #7B7B7B;
+  color: white;
+  font-size: 17px;
+  font-family: Inter;
+  font-weight: 400;
+  word-wrap: break-word;
+  width: -webkit-fill-available; 
+}
+
+// PayPal te cobra un 7.5% adicional
+.fee-paypal{
+  color: white;
+  font-size: 17px;
+  font-family: Inter;
+  font-weight: 300;
+  word-wrap: break-word
+}
+.p-text{
+  color: #FFF;
+  font-family: Inter;
+  font-size: 19px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
 }
