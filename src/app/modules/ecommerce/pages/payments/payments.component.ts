@@ -302,9 +302,9 @@ export class PaymentsComponent implements OnInit {
           const { orderStatus } = await this.orderService.getOrderStatus(
             orderId
           );
-          const deliveryData = await this.orderService.order(orderId,true)
+
           // const deliveryData = await this.deliveryZonesService.deliveryZone(orderId)
-          console.log("deliveryData", deliveryData)
+
           if (orderStatus === 'draft')
             this.order = (await this.orderService.preOrder(orderId)).order;
           else if (orderStatus === 'in progress')
