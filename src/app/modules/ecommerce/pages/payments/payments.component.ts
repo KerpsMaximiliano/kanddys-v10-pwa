@@ -38,6 +38,7 @@ import {
 } from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { base64ToFile } from 'src/app/core/helpers/files.helpers';
+import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
 
 @Component({
   selector: 'app-payments',
@@ -264,6 +265,7 @@ export class PaymentsComponent implements OnInit {
   azulPaymentURL: string =
     'https://pruebas.azul.com.do/paymentpage/Default.aspx';
 
+  valComprobant: boolean = false;
   constructor(
     private walletService: WalletService,
     private orderService: OrderService,
@@ -279,7 +281,8 @@ export class PaymentsComponent implements OnInit {
     private entityTemplateService: EntityTemplateService,
     private authService: AuthService,
     private matDialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private deliveryZonesService: DeliveryZonesService
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -299,6 +302,9 @@ export class PaymentsComponent implements OnInit {
           const { orderStatus } = await this.orderService.getOrderStatus(
             orderId
           );
+          const deliveryData = await this.orderService.order(orderId,true)
+          // const deliveryData = await this.deliveryZonesService.deliveryZone(orderId)
+          console.log("deliveryData", deliveryData)
           if (orderStatus === 'draft')
             this.order = (await this.orderService.preOrder(orderId)).order;
           else if (orderStatus === 'in progress')
@@ -316,6 +322,7 @@ export class PaymentsComponent implements OnInit {
             this.orderCompleted();
             return;
           }
+          console.log("this.order", this.order)
           // Cálculo del subtotal (monto acumulado de todos los artículos involucrados en la orden)
           this.subtotal = this.order.subtotals.reduce(
             (a, b) => (b?.type === 'item' ? a + b.amount : a),
@@ -342,12 +349,14 @@ export class PaymentsComponent implements OnInit {
               await this.postsService.getPost(this.order.items[0].post._id)
             ).post;
           }
+          console.log("this.headerService", this.headerService)
         }
         const exchangeData = await this.walletService.exchangeData(
           this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
         );
 
         this.banks = exchangeData?.ExchangeData?.bank;
+        console.log("this.banks", this.banks)
         this.electronicPayments = exchangeData?.ExchangeData?.electronicPayment;
 
         const registeredUser = JSON.parse(
@@ -500,8 +509,10 @@ export class PaymentsComponent implements OnInit {
     reader.onload = (e) => {
       this.imageBase64 = e.target.result as string;
       this.image = base64ToFile(e.target.result as string);
+      this.valComprobant = true;
     };
-    reader.readAsDataURL(event.target.files[0] as File);
+    if(event?.target)
+      reader.readAsDataURL(event.target.files[0] as File);
   }
 
   onFileInput(file: File | { image: File; index: number }) {
@@ -865,16 +876,29 @@ export class PaymentsComponent implements OnInit {
   }
 
   selectPaymentMethod(method: 'bank-transfer' | 'paypal' | 'azul') {
-    if (!this.paymentMethod) this.paymentMethod = method;
-    else if (this.paymentMethod === method) {
+    if (!this.paymentMethod) {
+      this.paymentMethod = method;
+      this.imageBase64 = null;
+      this.image = null;
+    }else if (this.paymentMethod === method) {
       this.paymentMethod = null;
       this.image = null;
       this.imageBase64 = null;
     }
     else this.paymentMethod = method;
-
+    
     if (this.paymentMethod === 'azul') {
       this.selectOnlinePayment(0);
     }
+  }
+
+  cleanPhoto(){
+    this.imageBase64 = null;
+    this.image = null;
+    this.valComprobant = false;
+  }
+  
+  onBackClickComprobant(){
+    this.valComprobant = false;
   }
 }

@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" *ngIf="!valComprobant">
   <header class="header">
     <button (click)="onBackClick()" class="back-btn">
       <mat-icon class="go_back_arrow" style="font-size: 30px; margin-top: 0.7em;">keyboard_arrow_left</mat-icon>
@@ -23,10 +23,30 @@
     <div class="amount-list">
       <ng-container>
         <div class="amount-flex-wrapper">
+          <h3 class="label">{{ this.order.items?.length }} Artículos facturados</h3>
+          <h2 class="amount">$ {{ subtotal | number : "1.2-2" }}</h2>
+        </div>
+        <div class="amount-flex-wrapper">
+          <h3 class="label">Zona de Entrega</h3>
+          <h2 class="amount">{{ this.order.items[0]?.deliveryLocation?.nickName}}</h2>
+        </div>
+        <div class="amount-flex-wrapper" *ngIf="paymentMethod === 'paypal' && electronicPayments[0]?.feePercentage">
+          <h3 class="label">Fee de PayPal</h3>
+          <h2 class="amount">$ {{ (paymentAmount * electronicPayments[0]?.feePercentage) | number : "1.2-2" }}</h2>
+        </div>
+        <!-- <div class="amount-flex-wrapper" *ngIf="azulPaymentsSupported">
+          <h3 class="label">Descuento</h3>
+          <h2 class="amount">RD $ 0</h2>
+        </div>
+        <div class="amount-flex-wrapper" *ngIf="azulPaymentsSupported">
+          <h3 class="label">Impuestos</h3>
+          <h2 class="amount">RD $ 0</h2>
+        </div> -->
+        <!--<div class="amount-flex-wrapper">
           <h3 class="label">Subtotal a pagar</h3>
           <h2 class="amount">RD $ {{ subtotal | number : "1.2-2" }}</h2>
         </div>
-        <div class="amount-flex-wrapper">
+         <div class="amount-flex-wrapper">
           <h3 class="label">Costo de envio</h3>
           <h2 class="amount">RD $ {{ deliveryAmount | number : "1.2-2" }}</h2>
         </div>
@@ -41,17 +61,17 @@
         <div class="amount-flex-wrapper" *ngIf="paymentMethod === 'paypal' && electronicPayments[0]?.feePercentage">
           <h3 class="label">Fee de Paypal</h3>
           <h2 class="amount">RD $ {{ (paymentAmount * electronicPayments[0]?.feePercentage) | number : "1.2-2" }}</h2>
-        </div>
+        </div> -->
       </ng-container>
       <div class="amount-flex-wrapper">
-        <h3 class="label highlight">Total a pagar</h3>
-        <h2 class="amount highlight">RD $ {{ (paymentMethod === 'paypal' && electronicPayments[0]?.feePercentage ? (paymentAmount * electronicPayments[0]?.feePercentage) + paymentAmount : paymentAmount) | number : "1.2-2" }}</h2>
+        <h3 class="label highlight">Monto Total</h3>
+        <h2 class="amount highlight">$ {{ (paymentMethod === 'paypal' && electronicPayments[0]?.feePercentage ? (paymentAmount * electronicPayments[0]?.feePercentage) + paymentAmount : paymentAmount) | number : "1.2-2" }}</h2>
       </div>
 
       <br>
       <hr style="margin: 0;">
 
-      <div class="refunds-policies" *ngIf="viewMerchantForRefund">
+      <!-- <div class="refunds-policies" *ngIf="viewMerchantForRefund">
         <div class="labels">
           <div class="accept-terms">Acepto las políticas de reembolso</div>
           <div class="title" (click)="goToRefundPolicies()">
@@ -66,7 +86,7 @@
           }"
           (click)="markOrUnmarkCheckbox()"
         ></div>
-      </div>
+      </div> -->
     </div>
 
     <div class="amount-input" *ngIf="!order">
@@ -77,7 +97,7 @@
         ></app-currency-input>
       </div>
     </div>
-    <span class="payment-selection" *ngIf="!paymentMethod"> Como prefieres pagar?</span>
+    <span class="payment-selection" *ngIf="!paymentMethod"> Cómo prefieres pagar?</span>
 
     <div style="margin-top: 2em;">
       <button mat-button [ngClass]="{ active: paymentMethod === 'bank-transfer' }" class="option-cta" (click)="selectPaymentMethod('bank-transfer')" *ngIf="!paymentMethod && banks.length">
@@ -89,7 +109,11 @@
       </button>
 
       <button mat-button [ngClass]="{ active: paymentMethod === 'azul' }" class="option-cta" (click)="selectPaymentMethod('azul')" *ngIf="!paymentMethod && azulPaymentsSupported">
-        Tarjeta de crédito
+        Por tarjeta de créditos
+      </button>
+
+      <button mat-button [ngClass]="{ active: paymentMethod === 'azul' }" class="option-cta" (click)="selectPaymentMethod('azul')" *ngIf="!paymentMethod && azulPaymentsSupported">
+        Crédito de 30 días
       </button>
       
       <div
@@ -114,21 +138,25 @@
 
     <ng-container *ngIf="paymentMethod && paymentMethod !== 'azul'">
       <p class="text-description" *ngIf="paymentMethod === 'bank-transfer'">
-        Por favor transfiera en el <span *ngFor="let bank of banks; let i = index">{{ bank.bankName }}, cuenta {{ bank.account }} {{ (banks.length > 1 && i + 1 !== banks.length) ? 'o ' : '' }}</span> y suba aquí una foto de la pantalla 👇
+        <strong>Por favor transfiera en el Banco Popular, cuenta 4156 4521 451 y suba aquí una foto de la pantalla 👇</strong>
+        <!-- Por favor transfiera en el <span *ngFor="let bank of banks; let i = index">{{ bank.bankName }}, cuenta {{ bank.account }} {{ (banks.length > 1 && i + 1 !== banks.length) ? 'o ' : '' }}</span> y suba aquí una foto de la pantalla 👇 -->
       </p>
       <p class="text-description" *ngIf="paymentMethod === 'paypal'">
-        PayPal te cobra un {{ electronicPayments[0]?.feePercentage | percent:'1.1-2' }} adicional. Por favor haga el pago en <span *ngFor="let electronicPayment of electronicPayments; let i = index">{{ electronicPayment.email }} {{ (electronicPayments.length > 1 && i + 1 !== electronicPayments.length) ? 'o ' : '' }}</span> y suba aquí una foto de la pantalla 👇
+        <strong>PayPal te cobra un 7.5% adicional. Por favor haga el pago en id@id.com y suba aquí una foto de la pantalla 👇</strong>
+        <!-- PayPal te cobra un {{ electronicPayments[0]?.feePercentage | percent:'1.1-2' }} adicional. Por favor haga el pago en <span *ngFor="let electronicPayment of electronicPayments; let i = index">{{ electronicPayment.email }} {{ (electronicPayments.length > 1 && i + 1 !== electronicPayments.length) ? 'o ' : '' }}</span> y suba aquí una foto de la pantalla 👇 -->
       </p>
-
-      <div 
-        mat-button class="file-chooser" 
-        (click)="fileChooser.click()" 
-        [ngStyle]="{ 
-          backgroundImage: 'url(' + imageBase64 + ')',
-          padding: imageBase64 ? '70px' : '50px'
-        }"
-      >
-        <mat-icon style="color: #87CD9B; font-size: 45px; font-weight: bold;" *ngIf="!imageBase64">add</mat-icon>
+      <div style="position: relative; width: 145px; height: 150px;">
+        <div (click)="cleanPhoto()" class="cancel-btn" *ngIf="imageBase64">
+          <mat-icon>cancel</mat-icon>
+        </div>
+        <div mat-button class="file-add" (click)="fileChooser.click()" 
+            [ngStyle]="{ 
+              backgroundImage: 'url(' + imageBase64 + ')',
+              padding: imageBase64 ? '70px' : '50px'
+            }"
+          > 
+          <mat-icon class="file-icon-add" *ngIf="!imageBase64">add</mat-icon>
+        </div>
       </div>
     </ng-container>
 
@@ -139,14 +167,15 @@
       style="margin-top: 7em;"
       *ngIf="!paymentMethod && electronicPayments.length"
     >
+    
       PayPal te cobra un 7.5% adicional
     </p>
   </div>
 
-  <app-sticky-button
+  <!-- <app-sticky-button
     *ngIf="paymentMethod && (order || (!order && depositAmount > 0))"
     (click)="!disableButton && image && submitPayment()"
-    [mode]="!disableButton ? 'fixed' : 'disabled-fixed'"
+    [mode]="!imageBase64 ? 'disabled-fixed' : 'fixed'"
     [text]="
       image
         ? 'Confirmar el pago y facturar'
@@ -163,7 +192,7 @@
       color: '#FFFFFF'
     }"
     [color]="image ? '#293628' : '#fff'"
-  ></app-sticky-button>
+  ></app-sticky-button> -->
 
   <form [action]="this.azulPaymentURL" method="post" id="azulForm">
     <input type="hidden" id="MerchantID" name="MerchantID" value="...." />
@@ -240,7 +269,68 @@
     <input type="hidden" id="AuthHash" name="AuthHash" value="......." />
   </form>
 </div>
-
+<div class="container" *ngIf="imageBase64 && valComprobant">
+  <header class="header">
+    <button (click)="onBackClickComprobant()" class="back-btn">
+      <mat-icon class="go_back_arrow" style="font-size: 30px; margin-top: 0.7em;">keyboard_arrow_left</mat-icon>
+    </button>
+  </header>
+  <div class="payment-method">
+    <div class="amount-list">
+      <ng-container>
+        <div class="amount-flex-wrapper">
+          <h3 class="label">{{ this.order.items?.length }} Artículos facturados</h3>
+          <h2 class="amount">$ {{ subtotal | number : "1.2-2" }}</h2>
+        </div>
+        <div class="amount-flex-wrapper">
+          <h3 class="label">Zona de Entrega</h3>
+          <h2 class="amount">{{ this.order.items[0]?.deliveryLocation?.nickName }}</h2>
+        </div>
+        <div class="amount-flex-wrapper" *ngIf="paymentMethod === 'paypal' && electronicPayments[0]?.feePercentage">
+          <h3 class="label">Fee de PayPal</h3>
+          <h2 class="amount">$ {{ (paymentAmount * electronicPayments[0]?.feePercentage) | number : "1.2-2" }}</h2>
+        </div>
+      </ng-container>
+      <div class="amount-flex-wrapper">
+        <h3 class="label highlight">Monto Total</h3>
+        <h2 class="amount highlight">$ {{ (paymentMethod === 'paypal' && electronicPayments[0]?.feePercentage ? (paymentAmount * electronicPayments[0]?.feePercentage) + paymentAmount : paymentAmount) | number : "1.2-2" }}</h2>
+      </div>
+      <br>
+      <hr style="margin: 0;">
+    </div>
+  </div>
+  <div class="justify-content-center text-center">
+      <div mat-button class="comprobant"
+          [ngStyle]="{ backgroundImage: 'url(' + imageBase64 + ')',
+            padding: imageBase64 ? '70px' : '50px'
+          }">
+      </div>
+      <span (click)="cleanPhoto()" class="delete-comprobant">
+        Eliminar Comprobante
+      </span>
+  </div>
+  <app-sticky-button
+    *ngIf="paymentMethod && (order || (!order && depositAmount > 0))"
+    (click)="!disableButton && image && submitPayment()"
+    [mode]="!imageBase64 ? 'disabled-fixed' : 'fixed'"
+    [text]="
+      image
+        ? 'Confirmar el pago y facturar'
+        : paymentMethod
+        ? 'SUBE LA IMAGEN QUE EVIDENCIA EL PAGO'
+        : ''
+    "
+    [size]="'small'"
+    [bgColor]="image ? '#87CD9B' : '#A1A1A1'"
+    [customLeftButtonStyles]="{
+      'letter-space': '1px',
+      'font-family': 'RobotoMedium',
+      'font-size': '17px',
+      color: '#FFFFFF'
+    }"
+    [color]="image ? '#293628' : '#fff'"
+  ></app-sticky-button>
+</div>
 <app-dialog-flow
   [dialogFlowId]="'azulEmailRequest'"
   [status]="openedDialogFlow ? 'OPEN' : 'CLOSE'"

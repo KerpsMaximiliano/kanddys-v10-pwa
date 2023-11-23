@@ -338,3 +338,57 @@ a.disabled {
   align-items: center;
   justify-content: space-between;
 }
+
+.delete-comprobant{
+  font-weight: 600;
+  margin-left: 27vh;
+  cursor:pointer;
+  color: #936105;
+}
+
+.file-add{
+  background: #87CD9B; 
+  border-radius: 11px;
+  cursor: pointer;
+  border: 0px;
+  padding: 50px;
+  width: 145px;
+  height: 150px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+.file-icon-add{
+  color: #181D17; 
+  font-size: 45px; 
+  font-weight: bold;
+}
+
+.cancel-btn{
+  cursor: pointer;
+  position: absolute;
+  color: #a1afaa;
+  top: 0; 
+  right: 0;
+  z-index: 1;
+}
+
+.cancel-btn:active{
+  color: #4f504f;
+}
+
+.comprobant{
+  background: #87CD9B;
+  border-radius: 11px;
+  cursor: pointer;
+  border: 0px;
+  padding: 50px;
+  width: 70vh;
+  height: 71vh;
+  margin: 17px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
