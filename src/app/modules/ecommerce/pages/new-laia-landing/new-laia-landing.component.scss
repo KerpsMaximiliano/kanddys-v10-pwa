@@ -536,38 +536,17 @@ button {
         }
     }
 }
-@media screen and  (max-height: 780px) {
-    .container.mobile{
-        padding: 20px 20px;
-    }
-    .header.mobile {
-        max-width: 427px;
-    }
-    .iphone-img{
-        width: 230px
-    }
-    .iphone-img.mobile{
-        width: 216px
-    }
-    .try-laia{
-        p{
-            font-size: 13px;
-            padding-top: 40px;
-            padding-bottom: 30px;
-        }
-    }
-    .try-laia.mobile {
-        p {
-            padding-top: 20px;
-        }
-    }
-    .main-text.mobile {
-        p{
-            font-size: 31px;
-            line-height: 42px;
-        }
-    }
-}
+// @media screen and  (max-height: 780px) {
+    
+//     .try-laia{
+//         p{
+//             font-size: 13px;
+//             padding-top: 40px;
+//             padding-bottom: 30px;
+//         }
+//     }
+    
+// }
 @media screen and  (max-width: 390px) {
     .biggest-circle {
         margin-left: -152px;
@@ -669,3 +648,26 @@ button {
     }
 }
 
+.container.mobile{
+    padding: 20px 20px;
+}
+.header.mobile {
+    max-width: 427px;
+}
+.iphone-img{
+    width: 230px
+}
+.iphone-img.mobile{
+    width: 216px
+}
+.try-laia.mobile {
+    p {
+        padding-top: 20px;
+    }
+}
+.main-text.mobile {
+    p{
+        font-size: 31px;
+        line-height: 42px;
+    }
+}
