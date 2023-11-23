@@ -266,6 +266,7 @@ export class PaymentsComponent implements OnInit {
     'https://pruebas.azul.com.do/paymentpage/Default.aspx';
 
   valComprobant: boolean = false;
+  valDeliveryZone: any = null;
   constructor(
     private walletService: WalletService,
     private orderService: OrderService,
@@ -302,9 +303,8 @@ export class PaymentsComponent implements OnInit {
           const { orderStatus } = await this.orderService.getOrderStatus(
             orderId
           );
-
-          // const deliveryData = await this.deliveryZonesService.deliveryZone(orderId)
-
+          
+          
           if (orderStatus === 'draft')
             this.order = (await this.orderService.preOrder(orderId)).order;
           else if (orderStatus === 'in progress')
@@ -312,6 +312,12 @@ export class PaymentsComponent implements OnInit {
           else {
             this.orderCompleted(orderId);
             return;
+          }
+
+          // DELIVERY ZONE //
+          if(this.order.deliveryZone){
+            const deliveryData = await this.deliveryZonesService.deliveryZone(this.order.deliveryZone)
+            this.valDeliveryZone = deliveryData;
           }
           if (!this.headerService.saleflow)
             this.headerService.saleflow = this.headerService.getSaleflow();

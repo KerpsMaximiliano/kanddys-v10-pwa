@@ -26,9 +26,9 @@
           <h3 class="label">{{ this.order.items?.length }} Artículos facturados</h3>
           <h2 class="amount">$ {{ subtotal | number : "1.2-2" }}</h2>
         </div>
-        <div class="amount-flex-wrapper">
+        <div *ngIf="valDeliveryZone" class="amount-flex-wrapper">
           <h3 class="label">Zona de Entrega</h3>
-          <h2 class="amount">{{ this.order.items[0]?.deliveryLocation?.nickName}}</h2>
+          <h2 class="amount">{{ this.valDeliveryZone.zona }}</h2>
         </div>
         <div class="amount-flex-wrapper" *ngIf="paymentMethod === 'paypal' && electronicPayments[0]?.feePercentage">
           <h3 class="label">Fee de PayPal</h3>
@@ -282,9 +282,9 @@
           <h3 class="label">{{ this.order.items?.length }} Artículos facturados</h3>
           <h2 class="amount">$ {{ subtotal | number : "1.2-2" }}</h2>
         </div>
-        <div class="amount-flex-wrapper">
+        <div *ngIf="valDeliveryZone" class="amount-flex-wrapper">
           <h3 class="label">Zona de Entrega</h3>
-          <h2 class="amount">{{ this.order.items[0]?.deliveryLocation?.nickName }}</h2>
+          <h2 class="amount">{{ this.valDeliveryZone.zona }}</h2>
         </div>
         <div class="amount-flex-wrapper" *ngIf="paymentMethod === 'paypal' && electronicPayments[0]?.feePercentage">
           <h3 class="label">Fee de PayPal</h3>
