@@ -7,13 +7,19 @@
   >
     <ng-container *ngIf="layout === 'EXPANDED-SLIDE'">
         <div class="close" (click)="back()">X</div>
+        <div 
+          *ngIf="genericModelTemplate?.slides?.length > 0" 
+          class="center" 
+        >
+          <div class="slide-control" 
+            *ngFor="let slide of genericModelTemplate?.slides; index as i"
+            (click)="slideTo(i)"
+            [ngClass]="{ active: i === currentMediaSlide }"
+          >
+          </div>
+        </div>
         <div class="right">
-            <h2>Recibe el 🎁</h2>
-            <div class="icon" style="color: #C4C5C3">
-                <span>
-                  <mat-icon>ios_share</mat-icon>
-                </span>
-            </div>
+            <img src="{{env}}/share-icon2.svg">
         </div>
     </ng-container>
 

@@ -27,6 +27,23 @@ header {
     margin-right: 11px;
   }
 
+  .center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    .slide-control {
+      border-radius: 50%;
+      width: 8px;
+      height: 8px;
+      border: 1px solid #707070;
+    }
+    .slide-control.active {
+      border: 1px solid #d9d9d9;
+      background-color: #d9d9d9;
+    }
+  }
+
   .go-back-arrow {
     filter: invert(52%) sepia(12%) saturate(26%) hue-rotate(353deg)
       brightness(90%) contrast(85%);
@@ -38,21 +55,11 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
-
-    h2 {
-      margin: 0;
-      color:#C4C5C3;
-      text-align: center;
-      font-family: InterLight;
-      font-size: 17px;
-      font-weight: 300;
-      font-style: normal;
-      line-height: normal;
-    }
-  
-    .icon {
-      margin-left: 2px;
-      margin-top: 4px;
+    img {
+      width:14px;
+      height: 18px;
+      filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(359deg) 
+              brightness(102%) contrast(102%);
     }
   }
 }
