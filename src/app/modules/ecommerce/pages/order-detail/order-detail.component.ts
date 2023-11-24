@@ -55,6 +55,7 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
 import { ContactHeaderComponent } from 'src/app/shared/components/contact-header/contact-header.component';
 import * as moment from 'moment';
+import { OverlayDialogComponent } from 'src/app/shared/dialogs/overlay-dialog/overlay-dialog.component';
 
 
 interface Image {
@@ -188,6 +189,7 @@ export class OrderDetailComponent implements OnInit {
   //   'delivered',
   // ];
 
+  showOverlay = false;
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -219,27 +221,77 @@ export class OrderDetailComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.route.queryParams.subscribe(async (queryParams) => {
-      const {
-        notify: notification,
-        redirectTo,
-        from,
-        navigationWithMessage,
-      } = queryParams;
-      this.notify = Boolean(notification);
-      this.redirectTo = redirectTo;
-      this.from = from;
-      this.navigationWithMessage = navigationWithMessage;
+    // this.route.queryParams.subscribe(async (queryParams) => {
+    //   const {
+    //     notify: notification,
+    //     redirectTo,
+    //     from,
+    //     navigationWithMessage,
+    //   } = queryParams;
+    //   console.log("queryParams", queryParams)
+    //   this.notify = Boolean(notification);
+    //   this.redirectTo = redirectTo;
+    //   this.from = from;
+    //   this.navigationWithMessage = navigationWithMessage;
 
-      if (typeof redirectTo === 'undefined') this.redirectTo = null;
+    //   if (typeof redirectTo === 'undefined') this.redirectTo = null;
 
-      this.route.params.subscribe(async (params) => {
-        const { orderId } = params;
-        this.orderId = orderId;
-        await this.executeProcessesAfterLoading(orderId, notification);
-      });
+    //   this.route.params.subscribe(async (params) => {
+    //     const { orderId } = params;
+    //     this.orderId = orderId;
+    //     await this.executeProcessesAfterLoading(orderId, notification);
+    //   });
+    // });
+
+    this.route.params.subscribe(async (params) => {
+      const { orderId } = params;
+      this.order = (await this.orderService.order(orderId, false))?.order;
+      console.log("this.order", this.order)
+      let result = this.headerService.fetchSaleflow(this.order.items[0].saleflow._id);
+      console.log(result)
     });
+    
+    console.log("SIsss")
+    setTimeout(() => {
+      this.toggleOverlay()
+      // this.showOverlay = true;  
+    }, 200);
+  }
 
+
+  toggleOverlay() {
+    // this.showOverlay = !this.showOverlay;
+    this._bottomSheet.open(OverlayDialogComponent, {
+      data: {
+        title: `¡Gracias por tu compra CompradorID!`,
+        text1: `Recuerda que tu pedido llega Lunes 14 de Abril entre 9am - 12pm.`,
+        buttons: [
+          {
+            value: `Comunicate con MerchantID`,
+            class: {
+              background: 'linear-gradient(92deg, #6BC8A7 18.84%, #6A9EB8 93.01%)',
+              fontSize: '17px',
+              fontFamily: 'InterSemiBold',
+              color: '#181D17',
+              border: '0px'
+            },
+            callback: async () => {
+              this.showAlert('Comunicate con MerchantID')
+            },
+          },{
+            value: `Compartir`,
+            callback: () => {
+              this.showAlert('Compartir')
+            },
+          }
+          
+        ],
+        showActive: true
+      },
+    });
+  }
+  async showAlert(text: string){
+    alert(text)
   }
 
   async executeProcessesAfterLoading(orderId: string, notification?: string) {

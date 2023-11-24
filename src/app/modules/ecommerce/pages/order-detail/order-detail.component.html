@@ -1,7 +1,7 @@
 <!-- <app-navigation [opened]="openNavigation" (closed)="openNavigation = false"> -->
-  <div class="container">
-    <div class="header-navigation">
-      <mat-accordion>
+  <div class="container" [ngClass]="{'overlay-active': showOverlay}">
+     <div class="header-navigation">
+      <!-- <mat-accordion>
         <mat-expansion-panel
           (opened)="panelOpenState = true"
           (closed)="panelOpenState = false"
@@ -46,9 +46,6 @@
                 
               </div>
             </mat-panel-title>
-            <!-- <p class="userId" *ngIf="order">
-              {{ order.user.name || order.user.phone || order.user.email }}
-            </p> -->
             <button
               style="
                 all: unset;
@@ -64,34 +61,10 @@
               />
             </button>
           </mat-expansion-panel-header>
-          <!-- <app-contact-header
-            [link]="link"
-            [chatLink]="chatLink"
-            [bio]="order?.items[0].saleflow.merchant.bio"
-            [contact]="headerService.merchantContact"
-          ></app-contact-header> -->
         </mat-expansion-panel>
-      </mat-accordion>
+      </mat-accordion> -->
     </div>
-
-    <!-- <button
-      style="
-        all: unset;
-        cursor: pointer;
-        position: absolute;
-        top: 51px;
-        right: 20px;
-      "
-      *ngIf="messageLink"
-      (click)="goToWhatsapp()"
-    >
-      <img
-        [src]="env + '/whatsApp-img.webp'"
-        style="height: 22px; width: 22px"
-        alt=""
-      />
-    </button> -->
-
+    <!--
     <app-progress-slider
       [title]=""
       [statusList]="statusList"
@@ -126,9 +99,6 @@
         <div style="display: flex; align-items: center; margin-bottom: 10px">
           <p style="margin-right: auto">
             Factura <br />
-            <!-- <button class="top-name btn" *ngIf="isMerchant">
-              {{ order?.items[0].saleflow.headline }}
-            </button> -->
           </p>
 
           <span>
@@ -140,7 +110,6 @@
           <span style="text-transform: uppercase">
             {{ orderDate }}
           </span>
-          <!-- <p>Dirección {{ order?.items[0].saleflow.merchant?.address }}</p> -->
         </div>
       </div>
     </section>
@@ -276,10 +245,6 @@
                     <p class="total">Subtotal a pagar:</p>
                     <p class="amount">RD $ {{ payment | number : "1.2-2" }}</p>
                   </div>
-                  <!--       <div class="items-container space-between" style="margin-top: 4px">
-            <p class="total">Coins:</p>
-            <p class="amount">- {{ payment | number: "1.2-2" }}</p>
-          </div> -->
                   <div
                     class="items-container space-between"
                     style="margin-top: 4px"
@@ -296,11 +261,6 @@
                     <p class="amount">RD $ {{ 0 | number : "1.2-2" }}</p>
                   </div>
                 </ng-container>
-
-                <!-- <div class="items-container space-between" style="margin-top: 4px">
-          <p class="total">MerchantID GiftCard</p>
-          <p class="amount">$ {{ payment | number : "1.2-2" }}</p>
-        </div> -->
 
                 <div class="bottom-section" *ngIf="deliveryAmount">
                   <p class="inner-title">Zona de entrega</p>
@@ -386,7 +346,6 @@
         <ng-container *ngIf="deliveryImages?.deliveryZone">
           <p class="section-label">ZONA DE ENTREGA</p>
           <div class="questions">
-            <!-- <p class="label">Zona de entrega</p> -->
             <p class="label gray-out capitalize">
               {{ deliveryImages?.deliveryZone.zona }}
             </p>
@@ -464,15 +423,6 @@
         "
       >
         <p class="section-label">MENSAJE DE REGALO</p>
-
-        <!-- 
-          Condicional que tenía el div de abajo
-          *ngIf="
-            !post.envelopePresentation ||
-            (post.envelopePresentation &&
-              post.envelopePresentation === 'QR-TEXT')
-          " 
-        -->
         <div class="questions">
           <div class="question firstQuestion">
             <div class="flex">
@@ -499,7 +449,6 @@
                 <p class="top-text">Mensaje de dedicatoria</p>
                 <p class="bottom-text">
                   <ng-container *ngIf="post?.envelopeText">
-                    <!-- {{ post?.envelopeText }} -->
                     Contenido privado
                   </ng-container>
                 </p>
@@ -515,7 +464,6 @@
                 </p>
                 <p class="bottom-text">
                   <ng-container *ngIf="post?.envelopeText">
-                    <!-- {{ post?.envelopeText }} -->
                     Contenido privado
                   </ng-container>
                 </p>
@@ -569,9 +517,8 @@
       [style.display]="'none'"
       href="mailto:{{ order?.user?.email }}"
     ></a>
-
+    
     <footer class="bottom-footer" *ngIf="isMerchant" (click)="goToBenefits()">
       <p>Beneficio: ${{ itemsAmount | number : "1.2-2" }}</p>
-    </footer>
+    </footer> -->
   </div>
-<!-- </app-navigation> -->
