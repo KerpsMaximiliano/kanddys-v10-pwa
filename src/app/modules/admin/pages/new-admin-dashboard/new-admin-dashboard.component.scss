@@ -179,7 +179,7 @@ main {
 }
 
 .footer {
-  position: fixed;
+  position: absolute;
   bottom: 0;
   max-width: 500px;
   width: 100%;
@@ -191,6 +191,7 @@ main {
   justify-content: space-between;
   align-items: center;
   font-size: 17px;
+  margin: auto;
   button {
     border: none;
     font-size: 17px;
@@ -212,6 +213,7 @@ main {
 }
 .footer.mobile{
   max-width: 427px;
+  
 }
 
 .toggle-icon {

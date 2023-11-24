@@ -193,6 +193,7 @@ a {
 }
 .display-footer.mobile{
   max-width: 427px;
+  margin-bottom: calc(100vh - 745px);
 }
 
 .hide {
@@ -283,6 +284,7 @@ a {
 }
 .contact-bar.mobile{
   max-width: 427px;
+  margin-bottom: calc(100vh - 745px);
 }
 .chip-list {
   display: flex;
