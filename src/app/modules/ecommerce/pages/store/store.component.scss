@@ -34,6 +34,7 @@ header {
   position: fixed;
   max-width: 500px;
   width: 100%;
+  z-index: 9999;
 
   .small-bar {
     height: 45px;
@@ -78,6 +79,10 @@ header {
       display: flex;
       gap: 9px;
       width: 60%;
+
+      @media(max-width: 430px) {
+        width: 81%;
+      }
 
       .icon {
         width: 42px;

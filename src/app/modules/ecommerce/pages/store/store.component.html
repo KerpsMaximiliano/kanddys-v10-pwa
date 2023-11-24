@@ -14,7 +14,7 @@
       </div>
     </ng-template>
     <div *ngIf="!filterView; else elseBlock" class="top-bar">
-      <div class="merchant-info">
+      <div class="merchant-info" (click)="goToMerchantProfile()">
         <!--<mat-icon
             class="go_back_arrow"
             (click)="goToAdmin()"
@@ -30,16 +30,20 @@
             ">
           <i class="fa fa-instagram" aria-hidden="true"></i>
         </div>
-        <div (click)="goToMerchantProfile()">
+        <div>
           <span class="title">
             {{
-              headerService.saleflow?.merchant?.name.length < 40 ? 
+              headerService.saleflow?.merchant?.name.length < 26 ? 
               headerService.saleflow?.merchant?.name :
-              (headerService.saleflow?.merchant?.name.slice(0, 40) + ".." || "Tienda" | titlecase) 
+              (headerService.saleflow?.merchant?.name.slice(0, 26) + "..." || "Tienda" | titlecase) 
             }} 
           </span>
           <p *ngIf="headerService.saleflow?.merchant?.bio">
-            {{headerService.saleflow.merchant.bio}}
+            {{
+              headerService.saleflow.merchant.bio.length < 50 ? 
+              headerService.saleflow.merchant.bio :
+              (headerService.saleflow.merchant.bio.slice(0, 50) + "...") 
+            }}
           </p>
         </div>
       </div>
@@ -61,10 +65,10 @@
       <swiper *ngIf="tags?.length > 0" [config]="swiperConfig">
         <div class="swiper-slide" *ngFor="let tag of tags"
           (click)="onTagSelectionChange([{_id:tag._id, name:tag.name}])">
-          <div class="tag-img" [style.background]="
+          <div class="tag-img" [style.background]="tag.images[0] ?
               _DomSanitizer.bypassSecurityTrustStyle(
                 'url(' + tag.images[0] + ')  no-repeat center center/cover'
-              )"></div>
+              ) : '#d9d9d9'"></div>
           <p>{{truncateString(tag?.name, 8)}}</p>
         </div>
       </swiper>
