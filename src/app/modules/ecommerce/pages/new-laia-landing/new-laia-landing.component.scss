@@ -39,9 +39,9 @@ header {
     margin: 0px 40px;
     p {
         font-family: InterBold;
-        font-size: 6.50vw;
+        font-size: 35px;
         font-weight: 700;
-        line-height: 9.32vw;
+        line-height: 42px;
         letter-spacing: 0em;
         text-align: center;
         background: linear-gradient(141.96deg, #6fcf97 5.07%, #59a86a 52.09%, #6f9bcf 100.11%);
@@ -303,12 +303,13 @@ header {
     left: 0;
     right: 0;
     max-width: 500px;
-    margin: auto;
+    margin: 0px auto;
     padding: 20px;
 }
 
 .chat-box.mobile {
     max-width: 427px;
+    margin-bottom: calc(138px);
 }
 
 .custom-input {
@@ -465,6 +466,20 @@ button {
     }
 }
 
+@media screen and  (max-height: 980px) {
+    
+    .iphone{
+        margin-top: 120px;
+    }
+    .try-laia{
+        p{
+            font-size: 13px;
+            padding-top: 120px;
+            padding-bottom: 30px;
+        }
+    }
+    
+}
 
 @media screen and  (min-width: 480px) {
 
@@ -535,19 +550,88 @@ button {
             padding-bottom: 30px;
         }
     }
+   
 }
-// @media screen and  (max-height: 780px) {
-    
-//     .try-laia{
-//         p{
-//             font-size: 13px;
-//             padding-top: 40px;
-//             padding-bottom: 30px;
-//         }
-//     }
-    
-// }
+
+@media screen and  (max-width: 430px) {
+    .main-text {
+        p{
+            font-size: 24px;
+            line-height: 31px;
+        }
+    }
+    .tiny-cards {
+        margin: 20px 20px;
+    }
+    .green-card {
+        background: #59a86a;
+        border-radius: 20px;
+        width: 160px;
+        height: 160px;
+    }
+
+    .pink-card {
+        background: #f80eb6;
+        border-radius: 20px;
+        width: 160px;
+        height: 160px;
+    }
+
+    .purple-card {
+        background: #9747ff;
+        border-radius: 20px;
+        width: 160px;
+        height: 160px;
+    }
+
+    .blue-card {
+        background: #2874ad;
+        border-radius: 20px;
+        width: 160px;
+        height: 160px;
+    }
+
+    .title-card {
+        font-family: InterBold;
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 29px;
+        letter-spacing: 0em;
+        text-align: left;
+        color: #fafafa;
+        margin: 6px 13px;
+    }
+    .content-card {
+        font-family: InterRegular;
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 16px;
+        letter-spacing: 0em;
+        text-align: left;
+        color: #fafafa;
+        margin: 0px 13px;
+    }
+    .try-laia{
+        p{
+            font-size: 13px;
+            padding-top: 40px;
+            padding-bottom: 30px;
+        }
+    }
+    .iphone-img{
+        width: 216px
+    }
+    .iphone{
+        margin-top: 60px;
+    }
+}
 @media screen and  (max-width: 390px) {
+    .main-text {
+        p{
+            font-size: 24px;
+            line-height: 31px;
+        }
+    }
     .biggest-circle {
         margin-left: -152px;
     }
@@ -597,23 +681,23 @@ button {
     }
 }
 @media screen and (max-width: 360px) {
-    // .main-text {
-    //     p{
-    //         font-size: 24px;
-    //         line-height: 31px;
-    //     }
-    // }
+    .main-text {
+        p{
+            font-size: 20px;
+            line-height: 28px;
+        }
+    }
     .iphone{
-        margin-top: 80px;
+        margin-top: 40px;
     }
 
     .iphone-img{
-        width: 230px
+        width: 216px
     }
     .try-laia{
         p{
             font-size: 12px;
-            padding-top: 66px;
+            padding-top: 40px;
             padding-bottom: 30px;
         }
     }
