@@ -68,6 +68,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   calculateMargin = '0px';
   activeAssistantStatus: boolean = true;
   adminChat: boolean = false;
+  chatIpAddress: boolean = false;
 
   constructor(
     public headerService: HeaderService,
@@ -100,8 +101,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     }
     this.routeParamsSubscription = this.route.params.subscribe(({ chatId }) => {
       this.queryParamsSubscription = this.route.queryParams.subscribe(
-        async ({ fromStore }) => {
+        async ({ fromStore, chatIpAddress }) => {
           this.fromStore = fromStore ? JSON.parse(fromStore) : false;
+          this.chatIpAddress = chatIpAddress ? JSON.parse(chatIpAddress) : false;
+          console.log('notLogged', chatIpAddress)
 
           if (!this.headerService.user) {
             this.typeOfReceiver = 'MERCHANT';
@@ -172,13 +175,17 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
 
       this.socketConnected = true;
       // Send a message to the server
-      if (!this.headerService.user) {
+      if (this.chatIpAddress) {
+        this.socket.emit('GET_OR_CREATE_CHAT', {
+          owners: [this.socket.id],
+          chatId: chatId,
+        })
+      } else if (!this.headerService.user) {
         this.socket.emit('GET_OR_CREATE_CHAT', {
           owners: [this.socket.id],
           userId: this.headerService.saleflow.merchant.owner?._id,
           type: 'not_logged',
         })
-        console.log(this.socket)
       } else if (!chatId) {
         this.socket.emit('GET_OR_CREATE_CHAT', {
           owners: [this.socket.id],

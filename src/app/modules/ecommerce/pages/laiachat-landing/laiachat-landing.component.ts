@@ -222,8 +222,14 @@ export class LaiachatLandingComponent implements OnInit {
           (owner) => owner.userId !== this.headerService.user._id
         )?.userId;
 
+        const ipAddress = chat.owners.find(
+          (owner) => owner.ipAddress
+        )?.ipAddress;
+
         if (userId) {
           chat.receiver = this.usersById[userId];
+        } else if (ipAddress) {
+          chat.receiverIpAddress = ipAddress;
         }
 
         chat.pendingMessages = me.socketUserId && chat.lastUserWritten ? chat.lastUserWritten !== me.socketUserId : false;
@@ -301,16 +307,32 @@ export class LaiachatLandingComponent implements OnInit {
   }
 
   async goToChatDetail(chat: ExtendedChat) {
+    // const user = await this.authService.me();
     let slug;
-    await this.merchantsService.merchantDefault(chat.receiver._id).then((res)=> {
-      slug = res.slug;
-    })
-    this.router.navigate([
-      'ecommerce/' +
-        slug +
-        '/chat-merchant/' +
-        chat._id,
-    ]);
+    if(chat?.receiver?._id) {
+      await this.merchantsService.merchantDefault(chat.receiver._id).then((res)=> {
+        slug = (res?.slug || this.merchantSlug);
+      })
+    }
+    if(slug) {
+      this.router.navigate([
+        'ecommerce/' +
+         slug +
+          '/chat-merchant/' +
+          chat._id,
+      ]);
+    } else  {
+      this.router.navigate([
+        'ecommerce/' +
+         this.merchantSlug +
+          '/chat-merchant/' +
+          chat._id,
+      ], {
+        queryParams: {
+          chatIpAddress: true
+        }
+      });
+    }
   }
 
   openMsgDialog() {
