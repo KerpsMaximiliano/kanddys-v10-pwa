@@ -254,6 +254,7 @@ import { ContactUsDialogComponent } from './dialogs/contact-us-dialog/contact-us
 import { OrderStatusBadgeComponent } from './components/order-status-badge/order-status-badge.component';
 import { StatusAudioRecorderComponent } from './dialogs/status-audio-recorder/status-audio-recorder.component';
 import { ShareLinkInfoComponent } from './dialogs/share-link-info/share-link-info.component';
+import { SliderComponent } from './components/slider/slider.component';
 
 const imports = [
   CommonModule,
@@ -519,6 +520,7 @@ const declarations = [
   OrderStatusBadgeComponent,
   StatusAudioRecorderComponent,
   ShareLinkInfoComponent,
+  SliderComponent,
 ];
 
 @NgModule({

@@ -1,5 +1,5 @@
 .container {
-  min-height: 100vh;
+  height: 100%;
   background-color: #181d17;
   position: relative;
 }
@@ -27,6 +27,23 @@ header {
     margin-right: 11px;
   }
 
+  .center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    .slide-control {
+      border-radius: 50%;
+      width: 8px;
+      height: 8px;
+      border: 1px solid #707070;
+    }
+    .slide-control.active {
+      border: 1px solid #d9d9d9;
+      background-color: #d9d9d9;
+    }
+  }
+
   .go-back-arrow {
     filter: invert(52%) sepia(12%) saturate(26%) hue-rotate(353deg)
       brightness(90%) contrast(85%);
@@ -38,27 +55,17 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
-
-    h2 {
-      margin: 0;
-      color:#C4C5C3;
-      text-align: center;
-      font-family: InterLight;
-      font-size: 17px;
-      font-weight: 300;
-      font-style: normal;
-      line-height: normal;
-    }
-  
-    .icon {
-      margin-left: 2px;
-      margin-top: 4px;
+    img {
+      width:14px;
+      height: 18px;
+      filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(359deg) 
+              brightness(102%) contrast(102%);
     }
   }
 }
 
 main {
-  padding: 0px 15px;
+  padding: 0px 15px 18px;
   display: flex;
   flex-direction: column;
 
@@ -71,6 +78,7 @@ main {
   .media-canvas {
     .the-swiper-container {
       transition: 0.1s ease-in height;
+      height: 100%;
     }
 
     img {
@@ -96,6 +104,7 @@ main {
 .media-canvas {
   border-radius: 18px;
   overflow: hidden;
+  height: 76vh;
 
   ::ng-deep .swiper-container {
     padding: 0px !important;
@@ -111,23 +120,15 @@ main {
   cursor: pointer;
   margin: 0px;
   padding: 0px;
-  margin-top: 20px;
-  margin-bottom: 14px;
   color: #fff;
-  text-align: center;
-  font-size: 23px;
+  font-size: 15px;
   font-family: InterBold;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
-  -webkit-box-orient: vertical;
-  word-break: break-word;
 
   &.expanded {
     margin: 0px;
     margin-bottom: 14px;
     font-size: 15px !important;
+    text-align: center;
   }
 
   &.small {
@@ -138,19 +139,16 @@ main {
 .description {
   color: #F6F6F6;
   font-size: 15px;
-  font-family: InterRegular;
+  font-family: InterLight;
   width: 100%;
-  margin-top: 38px;
-  word-break: break-word;
-  overflow-y: scroll;
 
   &.center {
     font-weight: 300;
     text-align: center;
     margin: 0px;
     padding: 0px;
-    margin-top: 20px;
-    margin-bottom: 14px;
+    margin-top: 24px;
+    margin-bottom: 9px;
   }
 }
 
@@ -159,8 +157,6 @@ main {
   justify-content: center;
   align-items: center;
   padding: 0 15px;
-  margin-top: 3px;
-  margin-bottom: 20px;
   cursor: pointer;
 
   ul {
