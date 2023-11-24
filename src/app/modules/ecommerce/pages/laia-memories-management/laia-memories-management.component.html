@@ -5,6 +5,11 @@
       <h1>MEMORIAS DE LAIA</h1>
     </div>
     <div class="right">
+      <mat-slide-toggle
+        class="toggle"
+        [checked]="autoResponse"
+        (change) = "autoResponseSwitch()"
+      ></mat-slide-toggle>
       <button class="add" (click)="addMemory()">+</button>
       <button class="close" (click)="goBack()">X</button>
     </div>

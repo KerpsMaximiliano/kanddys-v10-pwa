@@ -1,18 +1,15 @@
 <div class="main-container">
   <nav *ngIf="itemId">
     <div class="subnav">
-      <a class="exit"> X </a>
+      <a class="exit" (click)="goBack()"> X </a>
     </div>
     <div class="subnav right">
-      <mat-slide-toggle
-        [checked]="active"
-        (change)="updateItem('toggle')"
-      >
+      <mat-slide-toggle [checked]="active" (change)="updateItem('toggle')">
       </mat-slide-toggle>
     </div>
   </nav>
   <nav *ngIf="!itemId">
-    <div class="subnav">
+    <div class="subnav" (click)="goBack()">
       <a class="exit"> X </a>
     </div>
     <div class="new-item">
@@ -25,36 +22,49 @@
         *ngIf="itemImage"
         class="image"
         [ngStyle]="{
-          backgroundImage: itemImage ? 'url(' + itemImage + ')'
-          : 'url(/assets/images/noimage.png)'
+          backgroundImage: itemImage
+            ? 'url(' + itemImage + ')'
+            : 'url(/assets/images/noimage.png)'
         }"
         (click)="uploader.click()"
       >
-      <input id="imgInput" accept="image/*" type="file" hidden #uploader (change)="getImg($event)">
-    </div>
-    <div
-        *ngIf="!itemImage"
-        class="iconImage"
-        (click)="uploader.click()"
-      >
-      <p class="addIcon">+</p>
-      <input id="imgInput" accept="image/*" type="file" hidden #uploader (change)="getImg($event)">
-    </div>
+        <input
+          id="imgInput"
+          accept="image/*"
+          type="file"
+          hidden
+          #uploader
+          (change)="getImg($event)"
+        />
+      </div>
+      <div *ngIf="!itemImage" class="iconImage" (click)="uploader.click()">
+        <p class="addIcon">+</p>
+        <input
+          id="imgInput"
+          accept="image/*"
+          type="file"
+          hidden
+          #uploader
+          (change)="getImg($event)"
+        />
+      </div>
       <div class="article">
         <div class="input-container">
-          <input 
-            type="text" 
+          <input
+            type="text"
             class="article-id"
             [formControl]="articleName"
-            placeholder="Sin nombre">
+            placeholder="Sin nombre"
+          />
         </div>
         <div class="input-container">
-          <textarea 
-            rows="3" 
+          <textarea
+            rows="3"
             cols="33"
             class="context"
             [formControl]="articleDescription"
-            placeholder="Opcional, adiciona una descripción"></textarea>
+            placeholder="Opcional, adiciona una descripción"
+          ></textarea>
         </div>
       </div>
     </div>
@@ -65,18 +75,13 @@
     <p class="article-description">{{item?.description}}</p>
   </div> -->
   <div class="tab-bar" *ngIf="itemId">
-    <p 
-      (click)="tabIndex = 1"
-      [class]="{'active': tabIndex === 1}"
-    >DATOS</p>
-    <p 
-      (click)="tabIndex = 2"
-      [class]="{'active': tabIndex === 2}"
-    >🌼 VITRINA</p>
-    <p 
-      (click)="tabIndex = 3"
-      [class]="{'active': tabIndex === 3}"
-    >RESULTADOS</p>
+    <p (click)="tabIndex = 1" [class]="{ active: tabIndex === 1 }">DATOS</p>
+    <p (click)="tabIndex = 2" [class]="{ active: tabIndex === 2 }">
+      🌼 VITRINA
+    </p>
+    <p (click)="tabIndex = 3" [class]="{ active: tabIndex === 3 }">
+      RESULTADOS
+    </p>
   </div>
   <main *ngIf="tabIndex === 2">
     <div class="category">
@@ -86,7 +91,7 @@
           <h3>Precio normal</h3>
           <mat-icon>chevron_right</mat-icon>
         </div>
-        <p>{{item?.pricing | currency}}</p>
+        <p>{{ item?.pricing | currency }}</p>
       </div>
       <div class="info-card" *ngIf="!itemId">
         <div class="title">
@@ -94,23 +99,23 @@
           <mat-icon>chevron_right</mat-icon>
         </div>
         <app-currency-input
-            [innerLabelStyles]="{
-              fontFamily: 'InterLight',
-              fontStyle: 'italic',
-              fontSize: '13px'
-            }"
-            [fieldStyles]="{
-              boxShadow: 'none',
-              backgroundColor: 'white',
-              borderRadius: '6px',
-              padding: '8px 0px',
-              height: '50%'
-            }"
-            [initialValue]="0"
-            (onInputEvent)="handleCurrencyInput($event)"
-            placeholderColor="#7B7B7B"
-            currencyLabel=""
-          ></app-currency-input>
+          [innerLabelStyles]="{
+            fontFamily: 'InterLight',
+            fontStyle: 'italic',
+            fontSize: '13px'
+          }"
+          [fieldStyles]="{
+            boxShadow: 'none',
+            backgroundColor: 'white',
+            borderRadius: '6px',
+            padding: '8px 0px',
+            height: '50%'
+          }"
+          [initialValue]="0"
+          (onInputEvent)="handleCurrencyInput($event)"
+          placeholderColor="#7B7B7B"
+          currencyLabel=""
+        ></app-currency-input>
       </div>
       <!--<div class="add-card">
         <p class="plus">+</p>
@@ -119,56 +124,103 @@
     </div>
     <div class="category">
       <h2>Categorias</h2>
-      <div *ngIf="isHashtagExist && hashtagSelected?.keyword" class="info-card"(click)="openDialog('hashtag')">
+      <div
+        *ngIf="isHashtagExist && hashtagSelected?.keyword"
+        class="info-card"
+        (click)="openDialog('hashtag')"
+      >
         <div class="title">
           <h3>Hashtag</h3>
           <mat-icon>chevron_right</mat-icon>
         </div>
-        <p>{{itemHashtagInput?.value}}</p>
+        <p>{{ itemHashtagInput?.value }}</p>
       </div>
-      <div *ngIf="itemCategoriesIds.length > 0" class="info-card" (click)="openCategoriesDialog()">
+      <div
+        *ngIf="itemCategoriesIds.length > 0"
+        class="info-card"
+        (click)="openCategoriesDialog()"
+      >
         <div class="title">
           <h3>Categorias donde se exhibiendo</h3>
           <mat-icon>chevron_right</mat-icon>
         </div>
-        <p>{{categoriesString}}</p>
+        <p>{{ categoriesString }}</p>
       </div>
-      <div *ngIf="itemCategoriesIds.length === 0" class="add-card" (click)="openCategoriesDialog()">
+      <div
+        *ngIf="itemCategoriesIds.length === 0"
+        class="add-card"
+        (click)="openCategoriesDialog()"
+      >
         <p class="plus">+</p>
         <p>Adiciona una Categoria</p>
       </div>
-      <div *ngIf="!hashtagSelected" class="add-card" (click)="openDialog('hashtag')">
+      <div
+        *ngIf="!hashtagSelected"
+        class="add-card"
+        (click)="openDialog('hashtag')"
+      >
         <p class="plus">+</p>
         <p>Adiciona un hashtag</p>
       </div>
     </div>
     <div class="category">
       <h2>Compra</h2>
-      <div *ngIf="numberOfRequiredQuestions > 0 || numberOfOptionalQuestions > 0" class="info-card" (click)="gotoWebform()">
+      <div
+        *ngIf="numberOfRequiredQuestions > 0 || numberOfOptionalQuestions > 0"
+        class="info-card"
+        (click)="gotoWebform()"
+      >
         <div class="title">
           <h3>Formulario de preguntas</h3>
           <mat-icon>chevron_right</mat-icon>
         </div>
-        <p *ngIf="numberOfRequiredQuestions > 0 && numberOfOptionalQuestions > 0" class="display-text">
+        <p
+          *ngIf="numberOfRequiredQuestions > 0 && numberOfOptionalQuestions > 0"
+          class="display-text"
+        >
           {{
-            numberOfRequiredQuestions + (numberOfRequiredQuestions > 1 ? ' preguntas requeridas y ' : ' pregunta requerida y ') +  
-            numberOfOptionalQuestions + (numberOfOptionalQuestions > 1 ? ' preguntas opcionales y ' : ' pregunta opcional')
+            numberOfRequiredQuestions +
+              (numberOfRequiredQuestions > 1
+                ? " preguntas requeridas y "
+                : " pregunta requerida y ") +
+              numberOfOptionalQuestions +
+              (numberOfOptionalQuestions > 1
+                ? " preguntas opcionales y "
+                : " pregunta opcional")
           }}
         </p>
-        <p *ngIf="numberOfRequiredQuestions > 0 && numberOfOptionalQuestions === 0" class="display-text">
+        <p
+          *ngIf="
+            numberOfRequiredQuestions > 0 && numberOfOptionalQuestions === 0
+          "
+          class="display-text"
+        >
           {{
-            numberOfRequiredQuestions + (numberOfRequiredQuestions > 1 ? ' preguntas requeridas' : ' pregunta requerida')
+            numberOfRequiredQuestions +
+              (numberOfRequiredQuestions > 1
+                ? " preguntas requeridas"
+                : " pregunta requerida")
           }}
         </p>
-        <p *ngIf="numberOfRequiredQuestions === 0 && numberOfOptionalQuestions > 0" class="display-text">
+        <p
+          *ngIf="
+            numberOfRequiredQuestions === 0 && numberOfOptionalQuestions > 0
+          "
+          class="display-text"
+        >
           {{
-            numberOfOptionalQuestions + (numberOfOptionalQuestions > 1 ? ' preguntas opcionales' : ' pregunta opcional')
+            numberOfOptionalQuestions +
+              (numberOfOptionalQuestions > 1
+                ? " preguntas opcionales"
+                : " pregunta opcional")
           }}
         </p>
       </div>
-      <div 
-        class="add-card" 
-        *ngIf="numberOfRequiredQuestions === 0 && numberOfOptionalQuestions === 0"  
+      <div
+        class="add-card"
+        *ngIf="
+          numberOfRequiredQuestions === 0 && numberOfOptionalQuestions === 0
+        "
         (click)="gotoWebform()"
       >
         <p class="plus">+</p>
@@ -177,33 +229,40 @@
     </div>
     <div class="category">
       <h2>Entrega</h2>
-      <div *ngIf="deliveryTimeStart || deliveryTimeEnd" class="info-card"(click)="openDialog('deliverytime')">
+      <div
+        *ngIf="deliveryTimeStart || deliveryTimeEnd"
+        class="info-card"
+        (click)="openDialog('deliverytime')"
+      >
         <div class="title">
           <h3>Tiempo de Entrega</h3>
           <mat-icon>chevron_right</mat-icon>
         </div>
         <p *ngIf="deliveryTimeStart && deliveryTimeEnd">
-          Desde {{deliveryTimeStart}} horas hasta {{deliveryTimeEnd}} horas
+          Desde {{ deliveryTimeStart }} horas hasta {{ deliveryTimeEnd }} horas
         </p>
         <p *ngIf="deliveryTimeStart && !deliveryTimeEnd">
-          {{deliveryTimeStart}} horas
+          {{ deliveryTimeStart }} horas
         </p>
         <p *ngIf="deliveryTimeEnd && !deliveryTimeStart">
-          {{deliveryTimeEnd}} horas
+          {{ deliveryTimeEnd }} horas
         </p>
       </div>
       <div class="costs-list" *ngFor="let expenditure of expenditures">
-        <div class="info-card" (click)="openDialog('expenditure-update', expenditure._id)">
+        <div
+          class="info-card"
+          (click)="openDialog('expenditure-update', expenditure._id)"
+        >
           <div class="title">
-            <h3>Costo: {{expenditure.name}}</h3>
+            <h3>Costo: {{ expenditure.name }}</h3>
             <mat-icon>chevron_right</mat-icon>
           </div>
-          <p>{{expenditure.amount | currency}}</p>
+          <p>{{ expenditure.amount | currency }}</p>
         </div>
       </div>
-      <div 
-        *ngIf="!deliveryTimeStart && !deliveryTimeEnd" 
-        class="add-card" 
+      <div
+        *ngIf="!deliveryTimeStart && !deliveryTimeEnd"
+        class="add-card"
         (click)="openDialog('deliverytime')"
       >
         <p class="plus">+</p>
@@ -280,8 +339,8 @@
     <p class="data-title">
       FUNCIONALIDADES OPCIONALES
     </p>
-    <div 
-      
+    <div
+
       class="input-card"
     >
       <p class="input-text">¿Te tiene que responder algo el comprador antes de pagarte por este artículo?</p>
@@ -309,7 +368,7 @@
     </div>
     <div class="metric">
       <h4>Cantidad de compradores diferentes</h4>
-      <p>{{buyers}}</p>
+      <p>{{ buyers }}</p>
     </div>
     <div class="metric">
       <h4>Comprador que mas lo ha comprado</h4>
@@ -328,43 +387,43 @@
   </div>
   <div
     class="bottom-bar"
-    [ngStyle]="{'background-color': active ? 'var(--El-verdecito, #87CD9B)' : 'var(--MoKito, #936105)'}"
+    [ngStyle]="{
+      'background-color': active
+        ? 'var(--El-verdecito, #87CD9B)'
+        : 'var(--MoKito, #936105)'
+    }"
     *ngIf="itemId"
   >
-    <p 
+    <p
       class="preview"
-      [ngStyle]="{'color': active ? '#181D17' : '#FFF'}"
+      [ngStyle]="{ color: active ? '#181D17' : '#FFF' }"
       (click)="goToItemDetail()"
     >
       Preview
     </p>
-    <p 
+    <p
       class="share"
-      [ngStyle]="{'color': active ? '#181D17' : '#FFF'}"
+      [ngStyle]="{ color: active ? '#181D17' : '#FFF' }"
       (click)="share()"
     >
-      {{active ? 'Comparte con Compradores' : 'Oculto en todas las Vitrinas'}}
+      {{ active ? "Comparte con Compradores" : "Oculto en todas las Vitrinas" }}
     </p>
   </div>
   <div
     class="bottom-bar-save"
-    [ngStyle]="{'background-color':  'var(--El-verdecito, #87CD9B)'}"
+    [ngStyle]="{ 'background-color': 'var(--El-verdecito, #87CD9B)' }"
     *ngIf="!itemId && pricing"
   >
-    <p 
-      class="center"
-      [ngStyle]="{'color':'#181D17'}"
-      (click)="toDoTask()"
-    >
+    <p class="center" [ngStyle]="{ color: '#181D17' }" (click)="toDoTask()">
       Salvar cambios
     </p>
   </div>
   <app-login-flow
-          *ngIf="loginflow"
-          [redirectionRoute]="redirectionRoute"
-          [redirectionRouteId]="redirectionRouteId"
-          [entity]="entity"
-          [jsondata]="jsondata"
-          (dialogIsOpen)="resetLoginDialog($event)"
-        ></app-login-flow>
+    *ngIf="loginflow"
+    [redirectionRoute]="redirectionRoute"
+    [redirectionRouteId]="redirectionRouteId"
+    [entity]="entity"
+    [jsondata]="jsondata"
+    (dialogIsOpen)="resetLoginDialog($event)"
+  ></app-login-flow>
 </div>
