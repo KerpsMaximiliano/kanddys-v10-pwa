@@ -105,6 +105,8 @@ export class StoreComponent implements OnInit {
 
   cart : any = null;
 
+  cart : any = null;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
