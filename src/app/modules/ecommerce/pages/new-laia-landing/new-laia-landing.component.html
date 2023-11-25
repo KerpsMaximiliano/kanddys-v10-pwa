@@ -1,19 +1,19 @@
-<div class="container">
-    <div class="header">
+<div class="container" [ngClass]="{mobile: !isMobile}">
+    <div class="header" [ngClass]="{mobile: !isMobile}">
         <header>
           <p>LaiaChat</p>
         </header>
     </div>
-    <div class="main-text">
+    <div class="main-text" [ngClass]="{mobile: !isMobile}">
       <p>
         Ahorra tiempo y recursos brindando respuestas precisas e instantáneas con ayuda de la IA.
       </p>
     </div>
     <div class="iphone">
-      <img class="iphone-img" src="./assets/images/iphone-dark.png" alt="">
+      <img class="iphone-img" [ngClass]="{mobile: !isMobile}" src="./assets/images/iphone-dark.png" alt="">
       <div class="degradado"></div>
     </div>
-    <div class="try-laia">
+    <div class="try-laia" [ngClass]="{mobile: !isMobile}">
       <p>Pruébalo tu mismo, tienes preguntas para LaiaChat?</p>
     </div>
   
@@ -144,7 +144,8 @@
           </div>
         </swiper>
       </div>
-      <div class="chat-box">
+      <div class="chat-box" [ngClass]="{mobile: !isMobile}"
+            >
           <div 
           class="custom-input"
           [style.backgroundColor]="inputFormGroup.get('input').value ? 'transparent' : '#d9d9d9'"

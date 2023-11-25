@@ -790,9 +790,11 @@
   </div>
 
   <footer
+    class="footer"
     *ngIf="currentView !== 'ITEM_METRICS'"
     [ngClass]="{
-      existingItem: typeOfFlow !== 'ITEM_CREATION'
+      existingItem: typeOfFlow !== 'ITEM_CREATION',
+      mobile: !isMobile
     }"
   >
     <button

@@ -42,6 +42,7 @@ export class NewLaiaLandingComponent implements OnInit {
     title: string;
   };
   inputOpen: boolean = false;
+  isMobile: boolean = false;
 
   constructor(private router: Router,
     private dialogService: DialogService,
@@ -50,12 +51,14 @@ export class NewLaiaLandingComponent implements OnInit {
     public headerService: HeaderService,
     private translate: TranslateService,
     private renderer: Renderer2) {
-    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
-    translate.setDefaultLang(language?.length === 2 ? language : 'es');
-    translate.use(language?.length === 2 ? language : 'es');
+      let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+      translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+      translate.use(language?.length === 2 ? language  : 'es');
   }
 
   ngOnInit(): void {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
     this.translate.get("modal.convertAudioText").subscribe(translate => this.convertAudioText = translate);
   }
 

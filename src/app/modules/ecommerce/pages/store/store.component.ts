@@ -20,6 +20,10 @@ import { TagFilteringComponent } from 'src/app/shared/dialogs/tag-filtering/tag-
 import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 import SwiperCore, { Virtual } from 'swiper/core';
+import { Location } from '@angular/common';
+import { filter } from 'rxjs/internal/operators/filter';
+import { pairwise } from 'rxjs/internal/operators/pairwise';
+import { TranslateService } from '@ngx-translate/core';
 
 SwiperCore.use([Virtual]);
 
@@ -97,6 +101,9 @@ export class StoreComponent implements OnInit {
   magicLink: boolean = false;
 
   assetsFolder: string = environment.assetsUrl;
+  isMobile: boolean = false;
+
+  cart : any = null;
 
   cart : any = null;
 
@@ -111,12 +118,20 @@ export class StoreComponent implements OnInit {
     private ngNavigatorShareService: NgNavigatorShareService,
     private _bottomSheet: MatBottomSheet,
     private changeDetectorRef: ChangeDetectorRef,
+    private translate: TranslateService,
+    private location: Location,
     private itemsService: ItemsService,
     private clipboard: Clipboard,
     private snackbar: MatSnackBar
-  ) {}
+  ) {
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+      translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+      translate.use(language?.length === 2 ? language  : 'es');
+  }
 
   async ngOnInit(): Promise<void> {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
     setTimeout(() => {
       this.route.queryParams.subscribe(async (queryParams) => {
         let { startOnSnapshot, adminView, mode, redirectTo, from } = queryParams;
