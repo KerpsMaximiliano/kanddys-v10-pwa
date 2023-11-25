@@ -134,7 +134,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   }
 
   async getIp() {
-    let ip = await fetch('http://api.ipify.org/?format=json')
+    let ip = await fetch('https://api.ipify.org/?format=json')
       .then((res) => {
         return res.json()
       })
@@ -142,7 +142,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   }
 
   async initSocketClientEventListeners(chatId: string) {
-    let ip = await fetch('http://api.ipify.org/?format=json')
+    let ip = await fetch('httpss://api.ipify.org/?format=json')
     .then((res) => {
       return res.json()
     });
