@@ -39,6 +39,10 @@ import { QuotationsService } from 'src/app/core/services/quotations.service';
 import { shareStore } from 'src/app/core/helpers/objects.helpers';
 import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { NgNavigatorShareService } from 'ng-navigator-share';
+import { environment } from 'src/environments/environment';
 
 interface ExtendedItem extends Item {
   media?: Array<{
@@ -63,6 +67,8 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   @ViewChild('swiperContainer', { read: ElementRef }) swiperContainer: ElementRef;
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
   @ViewChild('videoPlayer') private videoPlayer: ElementRef;
+
+  URI = environment.uri
 
   routeParamsSubscription: Subscription = null;
   queryParamsSubscription: Subscription = null;
@@ -186,6 +192,9 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     private elementRef: ElementRef,
     private location: Location,
     private bottomSheet: MatBottomSheet,
+    private clipboard: Clipboard,
+    private snackBar: MatSnackBar,
+    private ngNavigatorShareService: NgNavigatorShareService
   ) { }
 
   async ngOnInit() {
@@ -963,7 +972,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   shareStore() {
     const slug = this.saleflowData?.merchant?.slug
     const mode = this.modeUser === 'SUPPLIER' ? 'supplier' : 'standard'
-    const data = { slug, mode, storeQrCode: this.storeQrCode }
+    const data = { slug, mode, id: this.itemData._id }
     const labels = {
       title: "",
       copyLink: "",
@@ -971,11 +980,19 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
       share: "",
       bottomLabel: `ecommerce/${slug}/article-detail`
     }
-    this.bottomSheet.open(OptionsMenuComponent, shareStore(data, labels));
+    const services = {
+      clipboard: this.clipboard,
+      snackBar: this.snackBar,
+      ngNavigatorShareService: this.ngNavigatorShareService,
+      storeQrCode: this.storeQrCode
+    }
+    this.bottomSheet.open(OptionsMenuComponent, shareStore(data, labels, services));
   }
 
-  onAddToFavorites() {
-
+  getDataQR() {
+    const mode = this.modeUser === 'SUPPLIER' ? 'supplier' : 'standard'
+    const id = this.itemData?._id
+    return `${this.URI}/ecommerce/arepera-que-molleja/article-detail/item/${id}?mode=${mode}`
   }
 
   onGoBackToLogin() {

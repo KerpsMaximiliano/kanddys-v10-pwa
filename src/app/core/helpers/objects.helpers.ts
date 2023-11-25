@@ -1,9 +1,6 @@
 import { environment } from "src/environments/environment"
 import { downloadQr } from "../functions/qr-code"
-import { Clipboard } from '@angular/cdk/clipboard';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { NgNavigatorShareService } from 'ng-navigator-share';
-import { Inject } from "@angular/core";
+
 export const deleteIrrelevantDataFromObject = (dataObject) => {
   if (dataObject) {
     Object.keys(dataObject).forEach(key => {
@@ -41,9 +38,9 @@ export const deleteIrrelevantDataFromObject = (dataObject) => {
 }
 
 
-export const shareStore = (data: any, labels: any) => {
+export const shareStore = (data: any, labels: any, services: any) => {
   const URI = environment.uri
-  const { slug, mode, storeQrCode } = data
+  const { slug } = data
   const {
     title,
     copyLink,
@@ -52,9 +49,12 @@ export const shareStore = (data: any, labels: any) => {
     bottomLabel
   } = labels
 
-  const clipboard = Inject(Clipboard)
-  const snackBar = Inject(MatSnackBar)
-  const ngNavigatorShareService = Inject(NgNavigatorShareService)
+  const {
+    clipboard,
+    snackBar,
+    ngNavigatorShareService,
+    storeQrCode
+  } = services
 
   return {
     data: {
@@ -63,23 +63,22 @@ export const shareStore = (data: any, labels: any) => {
         {
           value: copyLink || `Copia el link`,
           callback: async () => {
-            clipboard.copy(`${URI}/ecommerce/${slug}/store?mode=${mode}`);
-            snackBar.open('Enlace copiado en el portapapeles', '', {
-              duration: 2000,
-            });
+            const { mode, id } = data
+            const url = `${URI}/ecommerce/arepera-que-molleja/article-detail/item/${id}?mode=${mode}`
+            clipboard.copy(url)
+            snackBar.open('Enlace copiado en el portapapeles', '', { duration: 2000, });
           },
         },
         {
           value: qrLabel || `Descarga el QR`,
-          callback: async () => downloadQr(storeQrCode),
+          callback: () => downloadQr(storeQrCode),
         },
         {
           value: shareLabel || `Compártela`,
           callback: async () => {
-            ngNavigatorShareService.share({
-              title: '',
-              url: `${URI}/ecommerce/${slug}/store?mode=${mode}`,
-            });
+            const { id, mode } = data
+            const url = `${URI}/ecommerce/arepera-que-molleja/article-detail/item/${id}?mode=${mode}`
+            ngNavigatorShareService.share({ title: '', url });
           },
         },
       ],

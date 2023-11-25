@@ -1,6 +1,6 @@
 import { base64ToBlob } from "../helpers/files.helpers";
 
-export const downloadQr = (qrCode) => {
+export const downloadQr = (qrCode: any) => {
   const parentElement = qrCode.nativeElement.querySelector('img').src;
   let blobData = base64ToBlob(parentElement);
   if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {

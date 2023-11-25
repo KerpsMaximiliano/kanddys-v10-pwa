@@ -7,7 +7,7 @@
   <header>
     <img
       style="cursor: pointer"
-      src="../../../../../assets/icons/close-button.svg"
+      src="../../../../../assets/icons/close.svg"
       alt="go back to previous page"
       class="go-back-arrow"
       (click)="back()"
@@ -16,7 +16,7 @@
     <div
       class="bullets"
       style="display: flex; gap: 6px"
-      *ngIf="layout === 'EXPANDED-SLIDE'"
+      *ngIf="layout === 'EXPANDED-SLIDE' && itemData?.images?.length > 1"
     >
       <span
         style="
@@ -223,5 +223,15 @@
         </div>
       </ng-container>
     </div>
+    <qrcode
+      style="display: none"
+      #storeQrCode
+      [qrdata]="getDataQR()"
+      [elementType]="'img'"
+      [width]="280"
+      [errorCorrectionLevel]="'M'"
+      [allowEmptyString]="true"
+      colorDark="#000"
+    ></qrcode>
   </footer>
 </div>

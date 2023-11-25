@@ -29,8 +29,6 @@ header {
   }
 
   .go-back-arrow {
-    filter: invert(52%) sepia(12%) saturate(26%) hue-rotate(353deg)
-      brightness(90%) contrast(85%);
     width: 13px;
     height: 16px;
   }
@@ -135,6 +133,7 @@ main {
   bottom: 0px;
   left: 0px;
   right: 0px;
+  z-index: 100;
   margin: auto;
   max-width: 500px;
   display: flex;
