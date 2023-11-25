@@ -66,6 +66,9 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   };
   isMobile: boolean = false;
   calculateMargin = '0px';
+  activeAssistantStatus: boolean = true;
+  adminChat: boolean = false;
+  chatIpAddress: boolean = false;
 
   constructor(
     public headerService: HeaderService,
@@ -77,6 +80,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private translate: TranslateService,
     private recordRTCService: RecordRTCService,
+    private merchantService: MerchantsService,
   ) {
     let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
     translate.setDefaultLang(language?.length === 2 ? language  : 'es');
@@ -97,8 +101,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     }
     this.routeParamsSubscription = this.route.params.subscribe(({ chatId }) => {
       this.queryParamsSubscription = this.route.queryParams.subscribe(
-        async ({ fromStore }) => {
+        async ({ fromStore, chatIpAddress }) => {
           this.fromStore = fromStore ? JSON.parse(fromStore) : false;
+          this.chatIpAddress = chatIpAddress ? JSON.parse(chatIpAddress) : false;
+          console.log('notLogged', chatIpAddress)
 
           if (!this.headerService.user) {
             this.typeOfReceiver = 'MERCHANT';
@@ -169,16 +175,22 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
 
       this.socketConnected = true;
       // Send a message to the server
-      if (!this.headerService.user) {
+      if (this.chatIpAddress) {
         this.socket.emit('GET_OR_CREATE_CHAT', {
           owners: [this.socket.id],
-          userId: this.headerService.saleflow.merchant.owner?._id
+          chatId: chatId,
         })
-        console.log(this.socket)
+      } else if (!this.headerService.user) {
+        this.socket.emit('GET_OR_CREATE_CHAT', {
+          owners: [this.socket.id],
+          userId: this.headerService.saleflow.merchant.owner?._id,
+          type: 'not_logged',
+        })
       } else if (!chatId) {
         this.socket.emit('GET_OR_CREATE_CHAT', {
           owners: [this.socket.id],
-          userId: this.headerService.saleflow.merchant.owner?._id
+          userId: this.headerService.saleflow.merchant.owner?._id,
+          type: 'logged',
         });
       } else {
         this.socket.emit('GET_OR_CREATE_CHAT', {
@@ -188,7 +200,9 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       }
       this.socket.on('GET_OR_CREATE_CHAT', (chat) => {
         console.log(chat)
+        this.adminChat = chat?.admins?.find((id) => id === this.receiverId);
         this.chat = chat;
+        this.activeAssistantStatus = chat?.activeAssistant;
 
         /*chat.owners.forEach((owner) => {
           console.log(owner)
@@ -210,6 +224,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
           ))
         );
 
+        if(!chat?.activeAssistant && this.adminChat) {
+          this.filterMessagesAndGenerateResponse();
+        }
+
         if (!chatId)
           this.router.navigate(
             [
@@ -224,12 +242,12 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
               },
             }
           );
-        else if (this.chat.drafts.length) {
-          const myDraft = this.chat.drafts.find(
-            (draft) => draft.userId === this.headerService.user._id
-          );
-          this.chatFormGroup.get('input').setValue(myDraft.content);
-        }
+        // else if (this.chat.drafts.length) {
+        //   const myDraft = this.chat.drafts.find(
+        //     (draft) => draft.userId === this.headerService.user._id
+        //   );
+        //   this.chatFormGroup.get('input').setValue(myDraft.content);
+        // }
 
         setTimeout(() => {
           this.scrollToBottom();
@@ -309,6 +327,62 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     });
   }
 
+  async getMerchantDefault() {
+    try {
+      const merchantDefault: Merchant = await this.merchantService.merchantDefault();
+      return merchantDefault;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async filterMessagesAndGenerateResponse() {
+    if(this.chat?.messages && this.chat?.messages?.length > 0) {
+      const lastIndex = this.chat?.messages?.map(item => item.sender).lastIndexOf(this.receiverId);
+      const lastMessageSent = lastIndex === (this.chat?.messages?.length - 1);
+      this.chat.messages = lastMessageSent ? this.chat?.messages : this.chat?.messages.slice(lastIndex + 1);
+      const merchant: Merchant = await this.getMerchantDefault();
+
+      if (!lastMessageSent && this.chat?.messages?.length > 1) {
+        const messageValues = this.chat?.messages?.map(item => item.message['changingThisBreaksApplicationSecurity'] ?? '');
+
+        const result = await this.gpt3Service.requestResponseFromKnowledgeBase({
+          prompt: '',
+          multiPrompt: messageValues,
+          merchantId: merchant._id,
+          chatRoomId: this.chat._id,
+          socketId: this.socket.id,
+          userId: merchant?.owner?._id ? merchant?.owner?._id : null,
+          isAuthorization: this.headerService.user ? true : false
+        });
+
+        const textarea = document.getElementById('autoExpandTextarea');
+        this.chatFormGroup.get('input').setValue(result?.response ?? '');
+        this.resizeTextarea(textarea);
+        const inputEvent = new Event('input', { bubbles: true });
+        textarea.dispatchEvent(inputEvent);
+      }
+
+      if (!lastMessageSent && this.chat?.messages?.length === 1) {
+        const messageValue = this.chat?.messages?.map(item => item.message['changingThisBreaksApplicationSecurity'] ?? '');
+        const result = await this.gpt3Service.requestResponseFromKnowledgeBase({
+          prompt: messageValue[0],
+          merchantId: merchant._id,
+          chatRoomId: this.chat._id,
+          socketId: this.socket.id,
+          userId: merchant?.owner?._id ? merchant?.owner?._id : null,
+          isAuthorization: this.headerService.user ? true : false
+        });
+
+        const textarea = document.getElementById('autoExpandTextarea');
+        this.chatFormGroup.get('input').setValue(result?.response ?? '');
+        this.resizeTextarea(textarea);
+        const inputEvent = new Event('input', { bubbles: true });
+        textarea.dispatchEvent(inputEvent);
+      }
+    }
+  }
+
   async fireUpPageEventListeners() {
     window.addEventListener('online', () => {
       // Code to execute when the browser goes online
@@ -359,9 +433,18 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     console.log(this.chat)
   }
 
+  async activatedAssistant() {
+    this.socket.emit('ACTIVATE_ASSISTANT', {
+      chatId: this.chat._id,
+    });
+    this.socket.on('ACTIVATE_ASSISTANT', (activateAssistant) => {
+      this.activeAssistantStatus = activateAssistant?.activeAssistant;
+    });
+  }
+
   scrollToBottom() {
     const scrollableDiv = document.getElementById('messages');
-    // Scroll to the bottom
+    // // Scroll to the bottom
     scrollableDiv.scrollTop = scrollableDiv.scrollHeight;
   }
 

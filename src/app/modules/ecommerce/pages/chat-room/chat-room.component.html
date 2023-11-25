@@ -1,27 +1,64 @@
 <div class="container">
-  <header>
+  <header [style.maxWidth]="!isMobile ? '427px' : '500px'">
     <div class="top">
       <ng-container *ngIf="!this.headerService.user">
-        <div class="header-title">
-          LAIACHAT CON IP {{ ipAddress }}
+        <div class="header-title" [ngClass]="{ 'header-title-activated': adminChat }">
+          <img
+            *ngIf="adminChat"
+            (click)="activatedAssistant()"
+            class="toggle-icon"
+            [src]="
+              assetsFolder +
+              (activeAssistantStatus
+                ? '/toggle-on.svg'
+                : '/toggle-off.svg')
+            "
+          />
+          LAIA {{ activeAssistantStatus ? '' : 'NO' }} RESPONDE EN AUTO A IP {{ ipAddress }}
         </div>
         <div class="close-button" (click)="goBack()">X</div>
       </ng-container>
       <ng-container *ngIf="this.headerService.user && isTheUserTheMerchant">
-        <div class="header-title">
-          LAIACHAT CON <span>{{
-            this.headerService.user.name || 
-            this.headerService.user.email
-          }}</span>
+        <div class="header-title" [ngClass]="{ 'header-title-activated': adminChat }">
+          <img
+            *ngIf="adminChat"
+            (click)="activatedAssistant()"
+            class="toggle-icon"
+            [src]="
+              assetsFolder +
+              (activeAssistantStatus
+                ? '/toggle-on.svg'
+                : '/toggle-off.svg')
+            "
+          />
+          <div>
+            LAIA {{ activeAssistantStatus ? '' : 'NO' }} RESPONDE EN AUTO A <span>{{
+              this.headerService.user.name || 
+              this.headerService.user.email
+            }}</span>
+          </div>
         </div>
         <div class="close-button" (click)="goBack()">X</div>
       </ng-container>
       <ng-container *ngIf="this.headerService.user && !isTheUserTheMerchant">
-        <div class="header-title">
-          LAIACHAT CON <span>{{
-            this.headerService.user.name || 
-            this.headerService.user.email
-          }}</span>
+        <div class="header-title" [ngClass]="{ 'header-title-activated': adminChat }">
+          <img
+            *ngIf="adminChat"
+            (click)="activatedAssistant()"
+            class="toggle-icon"
+            [src]="
+              assetsFolder +
+              (activeAssistantStatus
+                ? '/toggle-on.svg'
+                : '/toggle-off.svg')
+            "
+          />
+          <div>
+            LAIA {{ activeAssistantStatus ? '' : 'NO' }} RESPONDE EN AUTO A <span>{{
+              this.headerService.user.name || 
+              this.headerService.user.email
+            }}</span>
+          </div>
         </div>
         <div class="close-button" (click)="loggedAsAMerchant ? goBack() : null">
           X
@@ -43,7 +80,7 @@
       <mat-icon>error_outline</mat-icon>
     </div>
 
-    <div class="bottom" *ngIf="isTheUserTheMerchant">
+    <!-- <div class="bottom" *ngIf="isTheUserTheMerchant">
       <span>
         {{
           usersWithAssistantActivated[chatUsers["SENDER"]?._id]
@@ -60,7 +97,7 @@
             : '/toggle-off.svg')
         "
       />
-    </div>
+    </div> -->
   </header>
 
   <main>

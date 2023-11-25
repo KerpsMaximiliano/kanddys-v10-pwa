@@ -56,10 +56,9 @@
       </ng-container>
   
       <ng-container *ngIf="chatsByMonthCopy?.length > 0">
-        <div class="container-toggle">
+        <!-- <div class="container-toggle">
               <span class="title">
                 {{ "title.laia-question" | translate }}
-                <!-- Laia te preguntará antes de contestar -->
               </span>
               <img
                 class="toggle-icon"
@@ -68,7 +67,7 @@
                   ('/toggle-on.svg')
                 "
               />
-        </div>
+        </div> -->
 
         <div class="container-filters">
               <form class="search-bar-wrapper" style="margin-bottom: 5px">
@@ -106,16 +105,27 @@
             *ngFor="let chat of chatsByPeriod.chats"
           >
             <div class="top">
-              <h5>
-                {{
-                  chat.receiver?.name ||
-                    chat.receiver?.email ||
-                    chat.receiver?.phone
-                }}
-              </h5>
-              <span class="date">{{
-                getCreationDateDifferenceAsItsSaid(chat.updatedAt)
-              }}</span>
+              <div class="container-top">
+                <div 
+                  class="assistantStatus"
+                  [style.backgroundColor]="chat?.activeAssistant ? '#3B654A' : '#936105'"
+                  [style.marginRight.px]="8"
+                ></div>
+                <h5>
+                  {{
+                    chat.receiver?.name ||
+                      chat.receiver?.email ||
+                      chat.receiver?.phone ||
+                      chat.receiverIpAddress
+                  }}
+                </h5>
+              </div>
+              <div class="container-top">
+                <div *ngIf="chat?.pendingMessages" class="assistantStatus" [style.backgroundColor]="'#2874AD'" [style.marginRight.px]="4"></div>
+                <span class="date">{{
+                  getCreationDateDifferenceAsItsSaid(chat.updatedAt)
+                }}</span>
+              </div>
             </div>
   
             <p class="bottom">
