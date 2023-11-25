@@ -18,7 +18,7 @@ export class GraphQLModule {
   }
 
   async createApollo() {
-    let ip = await fetch('http://api.ipify.org/?format=json')
+    let ip = await fetch('https://api.ipify.org/?format=json')
     .then((res) => {
       return res.json()
     });
