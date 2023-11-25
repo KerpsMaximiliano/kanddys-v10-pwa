@@ -27,7 +27,7 @@
           border: 1px solid #fff;
         "
         [ngStyle]="{
-          backgroundColor: currentMediaSlide === index ? '#fff' : 'transparent'
+          backgroundColor: currentMediaSlide === 0 ? '#fff' : 'transparent'
         }"
         *ngFor="let item of itemData?.images; let index = index"
       ></span>
