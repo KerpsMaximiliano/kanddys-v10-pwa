@@ -32,7 +32,7 @@ a {
 
 header {
   position: fixed;
-  max-width: 500px;
+  max-width: 427px;
   width: 100%;
   z-index: 9999;
 
@@ -78,7 +78,7 @@ header {
     .merchant-info {
       display: flex;
       gap: 9px;
-      width: 60%;
+      width: 70%;
 
       @media(max-width: 430px) {
         width: 81%;
@@ -246,6 +246,10 @@ router-outlet {
     border-top-left-radius: 25px;
   }
 }
+.display-footer.mobile{
+  max-width: 427px;
+  margin-bottom: calc(100vh - 745px);
+}
 
 .hide {
   display: none;
@@ -293,6 +297,7 @@ router-outlet {
     filter: invert(99%) sepia(99%) saturate(34%) hue-rotate(112deg)
                   brightness(106%) contrast(100%);
   }
+  
 
   div {
     display: flex;
@@ -317,7 +322,10 @@ router-outlet {
     }
   }
 }
-
+.contact-bar.mobile{
+  max-width: 427px;
+  margin-bottom: calc(100vh - 745px);
+}
 .chip-list {
   display: flex;
   width: 100%;

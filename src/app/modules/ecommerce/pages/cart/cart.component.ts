@@ -45,6 +45,7 @@ import { NgNavigatorShareService } from 'ng-navigator-share';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { base64ToBlob } from 'src/app/core/helpers/files.helpers';
+import { TranslateService } from '@ngx-translate/core';
 
 interface ExtendedItem extends Item {
   ready?: boolean;
@@ -102,6 +103,7 @@ export class CartComponent implements OnInit {
   quotationLink: string;
 
   progress: 'checkout' | 'other';
+  isMobile:boolean = false;
 
   constructor(
     public headerService: HeaderService,
@@ -119,10 +121,17 @@ export class CartComponent implements OnInit {
     private _bottomSheet: MatBottomSheet,
     private ngNavigatorShareService: NgNavigatorShareService,
     private clipboard: Clipboard,
-    private matSnackBar: MatSnackBar
-  ) {}
+    private matSnackBar: MatSnackBar,
+    private translate: TranslateService
+  ) {
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+      translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+      translate.use(language?.length === 2 ? language  : 'es');
+  }
 
   async ngOnInit() {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
     console.log(this.headerService.saleflow);
     this.queryParamsSubscription = this.route.queryParams.subscribe(
       async ({ item, wait, redirectFromFlowRoute, progress, offers }) => {

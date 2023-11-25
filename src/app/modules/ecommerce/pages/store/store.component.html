@@ -96,7 +96,7 @@
   </header>
   <router-outlet></router-outlet>
 </div>
-<div id="footer" class="display-footer hide">
+<div id="footer" class="display-footer hide" [ngClass]="{mobile: !isMobile}">
   <button class="close" (click)="closeFooter()">X</button>
   <div class="footer-content">
     <ul class="footer-links">
@@ -115,7 +115,7 @@
   <button mat-mini-fab class="info-button" (click)="displayFooter()">i</button>
 </div> -->
 
-<div class="contact-bar">
+<div class="contact-bar" [ngClass]="{mobile: !isMobile}">
   <img (click)="displayFooter()" [src]="env + '/icon-i.svg'" alt="" />
   <div (click)="goToCart()" *ngIf="cart && cart.order && cart.order.products.length">
     <span>{{cart.order.products.length}}</span>

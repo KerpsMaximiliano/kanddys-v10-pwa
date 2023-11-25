@@ -1,7 +1,8 @@
 import { Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -17,6 +18,7 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./laiachat-webscraping.component.scss']
 })
 export class LaiachatWebscrapingComponent implements OnInit {
+  @ViewChild('baseText') memoryTextarea: ElementRef;
   assetsFolder: string = environment.assetsUrl;
   clicked: boolean = true;
   urlPattern = /^(https?|ftp|file):\/\/[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]/;
@@ -29,6 +31,8 @@ export class LaiachatWebscrapingComponent implements OnInit {
     jsondata: '',
   };
   queryParamsSubscription: Subscription;
+  isMobile: boolean = false;
+  calculateMargin = '0px';
 
   constructor(
     private headerService: HeaderService,
@@ -38,9 +42,17 @@ export class LaiachatWebscrapingComponent implements OnInit {
     private location: Location,
     private route: ActivatedRoute,
     private router: Router,
-  ) { }
+    private translate: TranslateService,
+  ) {
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+    translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+    translate.use(language?.length === 2 ? language  : 'es');
+  }
 
   ngOnInit(): void {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
+    this.calculateMargin = `calc(${window.innerHeight}px - 745px)`;
     this.queryParamsSubscription = this.route.queryParams.subscribe(
       async ({ jsondata }) => {
         if (jsondata) {
@@ -70,6 +82,13 @@ export class LaiachatWebscrapingComponent implements OnInit {
         });
       }
     );
+
+    
+    if (this.isMobile) {
+      setTimeout(() => {
+        this.memoryTextarea.nativeElement.focus();
+      }, 500);
+    }
   }
 
   async saveUrl() {
@@ -110,6 +129,29 @@ export class LaiachatWebscrapingComponent implements OnInit {
       return merchantDefault._id;
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  resizeTextarea(textarea) {
+    if(textarea.scrollHeight > 314) {
+      textarea.style.height = 314 + "px";
+      textarea.style.overflowY = "scroll";
+      return;
+    }
+    if(textarea.scrollHeight > textarea.clientHeight) {
+      textarea.style.height = textarea.scrollHeight > 118 ? textarea.scrollHeight + "px" : 118 + "px";
+    } else {
+      textarea.style.height = 0 + "px";
+      textarea.style.height = textarea.scrollHeight + "px";
+    }
+  }
+
+  async getClipboardText() {
+    try {
+      const text = await navigator.clipboard.readText();
+      this.textareaUrl.setValue(text ?? null);
+    } catch (err) {
+      this.headerService.showErrorToast();
     }
   }
 

@@ -14,7 +14,7 @@
         <span class="start" *ngIf="!isAudioRecording"></span>
         <span class="stop" *ngIf="isAudioRecording"></span>
       </button>
-      <p class="text">Tap para {{isAudioRecording ? 'parar' : 'iniciar'}} la grabación</p>
+      <p class="text">{{ "audio-recorder.tap" | translate}} {{isAudioRecording ? ('audio-recorder.stop' | translate) : ('audio-recorder.play' | translate)}} {{ "audio-recorder.recorder" | translate }}</p>
     </div>
   </div>
 </div>
