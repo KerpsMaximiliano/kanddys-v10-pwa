@@ -1,12 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, NavigationExtras, Route, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AppService } from 'src/app/app.service';
-import { urltoFile } from 'src/app/core/helpers/files.helpers';
+import { base64ToBlob, urltoFile } from 'src/app/core/helpers/files.helpers';
 import { completeImageURL, isVideo } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Item, ItemImageInput, ItemInput } from 'src/app/core/models/item';
@@ -23,7 +22,12 @@ import { QuotationItem } from 'src/app/core/services/quotations.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { FormComponent, FormData } from 'src/app/shared/dialogs/form/form.component';
 import { OptionsDialogComponent, OptionsDialogTemplate } from 'src/app/shared/dialogs/options-dialog/options-dialog.component';
+import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
 import { environment } from 'src/environments/environment';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { NgNavigatorShareService } from 'ng-navigator-share';
+
 
 
 type btnFilterName = 'exhibits' | 'noExhibits' | 'hidden' | 'byCommission' | 'lowStock'
@@ -35,6 +39,12 @@ type consumerType = 'supplier' | 'default'
   styleUrls: ['./provider-items.component.scss'],
 })
 export class ProviderItemsComponent implements OnInit {
+  @ViewChild('storeQrCode', { read: ElementRef }) storeQrCode: ElementRef;
+
+  mode: 'STANDARD' | 'SUPPLIER' = 'STANDARD';
+  view: 'LIST' | 'SEARCH' = 'LIST';
+  URI: string = environment.uri;
+
   drawerOpened: boolean = false;
   assetsFolder: string = environment.assetsUrl;
   presentationOpened: boolean = false;
@@ -59,9 +69,11 @@ export class ProviderItemsComponent implements OnInit {
 
   isSupplier = true;
   hiddenDashboard = false;
+  hasItemSelected = false
   itemsFiltering = []
 
   /**Button for filtering */
+  filteringOpened = false
   btnConsumerState = {
     supplier: false,
     default: false
@@ -122,9 +134,6 @@ export class ProviderItemsComponent implements OnInit {
   //userSpecific variables
   isTheUserAMerchant: boolean = null;
 
-  //Subscriptions
-  queryParamsSubscription: Subscription;
-
   //magicLink-specific variables
   encodedJSONData: string;
   fetchedItemsFromMagicLink: Array<Item> = [];
@@ -150,6 +159,8 @@ export class ProviderItemsComponent implements OnInit {
   merchantRole: Roles | null = null;
   roles: Roles[] = [];
 
+  wasPageLoaded = false
+
   private keyPresentationState = 'providersPresentationClosed'
   private keyTutorialState = 'tutorialClosed'
   private merchantData: Merchant | null = null;
@@ -166,7 +177,11 @@ export class ProviderItemsComponent implements OnInit {
     private route: ActivatedRoute,
     private authService: AuthService,
     private snackbar: MatSnackBar,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private bottomSheet: MatBottomSheet,
+    private clipboard: Clipboard,
+    private snackBar: MatSnackBar,
+    private ngNavigatorShareService: NgNavigatorShareService,
   ) { }
 
   async ngOnInit() {
@@ -176,6 +191,8 @@ export class ProviderItemsComponent implements OnInit {
         this.handleUserSubscription()
       } else {
         this.isUserLogged = true
+        const data = await this.authService.me()
+        this.loadUserData(data)
         await this.executeInitProcesses();
       }
     }
@@ -183,7 +200,6 @@ export class ProviderItemsComponent implements OnInit {
     if (!existToken) {
       await this.executeInitProcesses();
       await this.fetchItemsForNotSell(true);
-
     }
 
     this.initInputValueChanges()
@@ -212,28 +228,32 @@ export class ProviderItemsComponent implements OnInit {
     const subscription = this.appService.events
       .pipe(filter((e) => e.type === 'auth'))
       .subscribe(async ({ data }) => {
-        this.getDefaultMerchantAndSaleflows(data.user)
-          .then(async ({ merchantDefault, saleflowDefault }) => {
-            this.merchantData = merchantDefault;
-            this.saleflowData = saleflowDefault
-            this.isUserLogged = true
-            this.isSupplier = this.verifyIfIsSupplier(this.merchantData);
-
-            if (this.merchantData?._id) {
-              await this.fetchItemsForSell()
-              await this.fetchQuantifyFilters();
-              await this.fetchQuantityFiltersByRole()
-            }
-
-            this.getStatusSwitch();
-            await this.executeInitProcesses();
-
-            const roles = await this.merchantsService.rolesPublic()
-            this.roles = roles;
-            this.merchantRole = this.merchantData.roles[0]
-          })
+        this.loadUserData(data.user);
         subscription.unsubscribe();
       });
+  }
+
+  loadUserData(user: User) {
+    this.getDefaultMerchantAndSaleflows(user)
+      .then(async ({ merchantDefault, saleflowDefault }) => {
+        this.merchantData = merchantDefault;
+        this.saleflowData = saleflowDefault
+        this.isUserLogged = true
+        this.isSupplier = this.verifyIfIsSupplier(this.merchantData);
+
+        if (this.merchantData?._id) {
+          await this.fetchItemsForSell()
+          await this.fetchQuantifyFilters();
+          await this.fetchQuantityFiltersByRole()
+        }
+
+        this.getStatusSwitch();
+        await this.executeInitProcesses();
+
+        const roles = await this.merchantsService.rolesPublic()
+        this.roles = roles;
+        this.merchantRole = this.merchantData.roles[0]
+      })
   }
 
   /**
@@ -242,8 +262,9 @@ export class ProviderItemsComponent implements OnInit {
    * tutorial
    */
   async executeInitProcesses() {
-    this.queryParamsSubscription = this.route.queryParams.subscribe(
-      async ({ jsondata }) => {
+    this.route.queryParams.subscribe(
+      async (queryParams) => {
+        const { jsondata } = queryParams
         this.encodedJSONData = jsondata;
         if (this.encodedJSONData) {
           this.parseMagicLinkData();
@@ -1647,7 +1668,7 @@ export class ProviderItemsComponent implements OnInit {
   async onChangeBtnFiltering(selected: btnFilterName) {
     this.btnFilterState[selected] = !this.btnFilterState[selected]
     this.hiddenDashboard = Object.values(this.btnFilterState).some(value => value)
-    await this.filteringItemsBySearchbar(true, this.itemSearchbar.value, true)
+    await this.filteringItemsBySearchbar(true, '', true)
   }
 
   /**
@@ -1658,14 +1679,17 @@ export class ProviderItemsComponent implements OnInit {
   async onChangeConsumerState(selected: consumerType) {
     this.btnConsumerState[selected] = !this.btnConsumerState[selected]
     this.hiddenDashboard = Object.values(this.btnConsumerState).some(value => value)
-    await this.filteringItemsBySearchbar(true, this.itemSearchbar.value, true)
+    await this.filteringItemsBySearchbar(true, '', true)
   }
 
   onCloseSearchbar() {
     this.searchOpened = false
+    this.filteringOpened = false
     this.hiddenDashboard = false
+    this.itemSearchbar.setValue('')
     this.resetBtn(this.btnFilterState)
     this.resetBtn(this.btnConsumerState)
+    this.fetchItemsForSell(true)
   }
 
   /**
@@ -1697,7 +1721,14 @@ export class ProviderItemsComponent implements OnInit {
   }
 
   goToArticleDetail(id: string) {
-    this.router.navigate(['ecommerce/admin-article-detail/' + id]);
+    this.router.navigate(
+      ['ecommerce/admin-article-detail/' + id],
+      {
+        queryParams: {
+          redirectTo: this.router.url
+        }
+      }
+    );
   }
 
   updatePricing(id: string) {
@@ -1770,6 +1801,128 @@ export class ProviderItemsComponent implements OnInit {
         ]
       }
     })
+  }
+
+  onSelectItem(index: number) {
+    this.itemsISell[index].hasSelection = !this.itemsISell[index].hasSelection
+    this.hasItemSelected = this.itemsISell.some(item => item.hasSelection)
+  }
+
+  selectOptions() {
+    this.bottomSheet.open(OptionsMenuComponent, {
+      data: {
+        title: `Selecciona entre las opciones:`,
+        options: [
+          {
+            value: `Comparte este grupo con compradores`,
+            callback: async () => { },
+          },
+          {
+            value: `Adiciona colaboracion a Comunidades`,
+            callback: async () => { },
+          },
+          {
+            value: `Factúralo a un Cliente`,
+            callback: async () => { },
+          },
+        ],
+        styles: {
+          fullScreen: true,
+        },
+      },
+    });
+  }
+
+  shareStore() {
+    const slug = this.saleflowData?.merchant?.slug
+    const mode = this.mode === 'SUPPLIER' ? 'supplier' : 'standard'
+    this.bottomSheet.open(OptionsMenuComponent, {
+      data: {
+        title: `Comparte el Enlace de Compradores:`,
+        options: [
+          {
+            value: `Copia el link`,
+            callback: async () => {
+              this.clipboard.copy(
+                `${this.URI}/ecommerce/${slug}/store?mode=${mode}`
+              );
+              this.snackBar.open('Enlace copiado en el portapapeles', '', {
+                duration: 2000,
+              });
+            },
+          },
+          {
+            value: `Descarga el QR`,
+            callback: async () => {
+              this.downloadQr();
+            },
+          },
+          {
+            value: `Compártela`,
+            callback: async () => {
+              this.ngNavigatorShareService.share({
+                title: '',
+                url: `${this.URI}/ecommerce/${slug}/store?mode=${mode}`,
+              });
+            },
+          },
+        ],
+        styles: {
+          fullScreen: true,
+        },
+        bottomLabel: `${this.URI}/ecommerce/${slug}/store`,
+      },
+    });
+  }
+
+  goToStore() {
+    const url = `/ecommerce/${this.merchantData?.slug}/store` || ''
+    this.router.navigate([url], {
+      queryParams: {
+        adminView: true,
+        mode: this.mode === 'SUPPLIER' ? 'supplier' : 'standard',
+        redirectTo: this.router.url
+      }
+    });
+  }
+
+  goTo(url: string) {
+    this.router.navigate(
+      [url],
+      {
+        queryParams: {
+          redirectTo: this.router.url
+        }
+      }
+    );
+  }
+
+  downloadQr() {
+    const parentElement =
+      this.storeQrCode.nativeElement.querySelector('img').src;
+    let blobData = base64ToBlob(parentElement);
+    if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
+      //IE
+      (window.navigator as any).msSaveOrOpenBlob(
+        blobData,
+        'Enlace a vista de compradores de mi KiosKo'
+      );
+    } else {
+      // chrome
+      const blob = new Blob([blobData], { type: 'image/png' });
+      const url = window.URL.createObjectURL(blob);
+      // window.open(url);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'Enlace a vista de compradores de mi KiosKo';
+      link.click();
+    }
+  }
+
+  getDataQR() {
+    const slug = this.saleflowData?.merchant?.slug
+    const mode = this.mode === 'SUPPLIER' ? 'supplier' : 'standard'
+    return `${this.URI}/ecommerce/${slug}/store?mode=${mode}`
   }
 
   /**

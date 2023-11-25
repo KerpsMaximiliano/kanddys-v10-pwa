@@ -33,7 +33,7 @@ export class OptionsMenuComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log(this.data)
+    console.log(this.data?.bottomLabel)
     if(this.data && this.data.styles) {
       if(this.data.styles['fullScreen']) {
         const element: HTMLElement = document.querySelector('.mat-bottom-sheet-container');
@@ -69,6 +69,12 @@ export class OptionsMenuComponent implements OnInit {
         const element : HTMLElement = document.querySelector('.mat-bottom-sheet-container');
         element.style.backgroundColor = '#403D3D';
       }
+    }
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    const isMobile = regex.test(navigator.userAgent);
+    if(!isMobile) {
+      const element : HTMLElement = document.querySelector('.cdk-overlay-pane');
+      element?.style?.setProperty('max-width', '427px', 'important');
     }
   }
 

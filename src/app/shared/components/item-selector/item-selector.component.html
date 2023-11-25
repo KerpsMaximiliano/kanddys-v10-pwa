@@ -1,13 +1,9 @@
 <div
-  class="top-flex"
-  style="
-    position: fixed;
-    max-width: 500px;
-    width: 100%;
-    z-index: 100;
-    background-color: #181d17;
-    padding: 20px;
-  "
+  class="header-top"
+  [ngClass]="{
+    mobile: !isMobile
+  }"
+  
   *ngIf="currentView === 'ALL_ITEMS'"
 >
   <div class="top-flex" style="cursor: pointer" (click)="back()">
