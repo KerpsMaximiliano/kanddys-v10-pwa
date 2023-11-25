@@ -143,27 +143,29 @@
     </p>
   </div>
 
-  <app-sticky-button
-    *ngIf="paymentMethod && (order || (!order && depositAmount > 0))"
-    (click)="!disableButton && image && submitPayment()"
-    [mode]="!disableButton ? 'fixed' : 'disabled-fixed'"
-    [text]="
-      image
-        ? 'Confirmar el pago y facturar'
-        : paymentMethod
-        ? 'SUBE LA IMAGEN QUE EVIDENCIA EL PAGO'
-        : ''
-    "
-    [size]="'small'"
-    [bgColor]="image ? '#87CD9B' : '#A1A1A1'"
-    [customLeftButtonStyles]="{
-      'letter-space': '1px',
-      'font-family': 'RobotoMedium',
-      'font-size': '17px',
-      color: '#FFFFFF'
-    }"
-    [color]="image ? '#293628' : '#fff'"
-  ></app-sticky-button>
+  <div class="footer" [ngClass]="{mobile: !isMobile}">
+    <app-sticky-button
+      *ngIf="paymentMethod && (order || (!order && depositAmount > 0))"
+      (click)="!disableButton && image && submitPayment()"
+      [mode]="!disableButton ? 'fixed' : 'disabled-fixed'"
+      [text]="
+        image
+          ? 'Confirmar el pago y facturar'
+          : paymentMethod
+          ? 'SUBE LA IMAGEN QUE EVIDENCIA EL PAGO'
+          : ''
+      "
+      [size]="'small'"
+      [bgColor]="image ? '#87CD9B' : '#A1A1A1'"
+      [customLeftButtonStyles]="{
+        'letter-space': '1px',
+        'font-family': 'RobotoMedium',
+        'font-size': '17px',
+        color: '#FFFFFF'
+      }"
+      [color]="image ? '#293628' : '#fff'"
+    ></app-sticky-button>
+  </div>
 
   <form [action]="this.azulPaymentURL" method="post" id="azulForm">
     <input type="hidden" id="MerchantID" name="MerchantID" value="...." />

@@ -271,6 +271,16 @@ main {
 }
 
 footer {
+  
+
+  &.traditional {
+    
+  }
+
+  
+}
+
+.white-footer{
   position: fixed;
   bottom: 0;
   max-width: 500px;
@@ -281,22 +291,6 @@ footer {
   justify-content: space-between;
   align-items: center;
   font-size: 17px;
-
-  &.traditional {
-    justify-content: flex-end;
-    background-color: #6fcf97;
-
-    button {
-      background-color: transparent;
-      color: #272727;
-      text-align: right;
-      font-size: 17px;
-      font-family: InterBold;
-      font-style: normal;
-      line-height: normal;
-    }
-  }
-
   button {
     border: none;
     background-color: #fff;
@@ -315,6 +309,39 @@ footer {
   .right {
     font-family: InterBold;
   }
+}
+
+.white-footer.mobile{
+  max-width: 427px;
+  margin-bottom: calc(100vh - 745px);
+}
+
+.traditional-footer{
+  position: fixed;
+  bottom: 0;
+  max-width: 500px;
+  width: 100%;
+  padding: 11px 17px;
+  display: flex;
+  align-items: center;
+  font-size: 17px;
+  justify-content: flex-end;
+  background-color: #6fcf97;
+
+    button {
+      background-color: transparent;
+      color: #272727;
+      text-align: right;
+      font-size: 17px;
+      font-family: InterBold;
+      font-style: normal;
+      line-height: normal;
+    }
+}
+
+.traditional-footer.mobile{
+  max-width: 427px;
+  margin-bottom: calc(100vh - 745px);
 }
 
 .gray {
