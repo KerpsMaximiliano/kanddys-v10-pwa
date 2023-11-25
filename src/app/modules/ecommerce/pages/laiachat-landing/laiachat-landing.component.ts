@@ -35,6 +35,7 @@ import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 interface ExtendedChat extends Chat {
   receiver?: User;
   receiverId?: string;
+  pendingMessages?: boolean;
 }
 
 interface ChatsByMonth {
@@ -140,6 +141,12 @@ export class LaiachatLandingComponent implements OnInit {
     const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
     this.isMobile = regex.test(navigator.userAgent);
     this.calculateMargin = `calc(${window.innerHeight}px - 745px)`;
+    if(!this.isMobile) {
+      setTimeout(() => {
+        const element: HTMLElement = document.querySelector('.empty-chat');
+        element?.style?.setProperty('margin-top', '18vh');
+      }, 500);
+    }
     await this.getMerchantDefault();
     if (this.headerService.user) {
       this.clientConnectionStatus = await this.whatsappService.clientConnectionStatus();
@@ -179,6 +186,7 @@ export class LaiachatLandingComponent implements OnInit {
   }
 
   async getChats() {
+    const me = await this.chatsService.me();
     const chats = await this.chatsService.listMyChats();
     let usersToFetch = [];
 
@@ -186,8 +194,8 @@ export class LaiachatLandingComponent implements OnInit {
       this.chats = chats;
 
       this.chats.sort((a, b) => {
-        const dateA = new Date(a.createdAt);
-        const dateB = new Date(b.createdAt);
+        const dateA = new Date(a.updatedAt);
+        const dateB = new Date(b.updatedAt);
         return dateB.getTime() - dateA.getTime();
       });
 
@@ -212,11 +220,19 @@ export class LaiachatLandingComponent implements OnInit {
       this.chats.forEach((chat, index) => {
         const userId = chat.owners.find(
           (owner) => owner.userId !== this.headerService.user._id
-        ).userId;
+        )?.userId;
+
+        const ipAddress = chat.owners.find(
+          (owner) => owner.ipAddress
+        )?.ipAddress;
 
         if (userId) {
           chat.receiver = this.usersById[userId];
+        } else if (ipAddress) {
+          chat.receiverIpAddress = ipAddress;
         }
+
+        chat.pendingMessages = me.socketUserId && chat.lastUserWritten ? chat.lastUserWritten !== me.socketUserId : false;
 
         this.chatsByMonth = this.groupChatsByMonth(chat, this.chatsByMonth);
 
@@ -291,16 +307,32 @@ export class LaiachatLandingComponent implements OnInit {
   }
 
   async goToChatDetail(chat: ExtendedChat) {
+    // const user = await this.authService.me();
     let slug;
-    await this.merchantsService.merchantDefault(chat.receiver._id).then((res)=> {
-      slug = res.slug;
-    })
-    this.router.navigate([
-      'ecommerce/' +
-        slug +
-        '/chat-merchant/' +
-        chat._id,
-    ]);
+    if(chat?.receiver?._id) {
+      await this.merchantsService.merchantDefault(chat.receiver._id).then((res)=> {
+        slug = (res?.slug || this.merchantSlug);
+      })
+    }
+    if(slug) {
+      this.router.navigate([
+        'ecommerce/' +
+         slug +
+          '/chat-merchant/' +
+          chat._id,
+      ]);
+    } else  {
+      this.router.navigate([
+        'ecommerce/' +
+         this.merchantSlug +
+          '/chat-merchant/' +
+          chat._id,
+      ], {
+        queryParams: {
+          chatIpAddress: true
+        }
+      });
+    }
   }
 
   openMsgDialog() {

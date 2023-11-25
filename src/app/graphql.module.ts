@@ -18,10 +18,10 @@ export class GraphQLModule {
   }
 
   async createApollo() {
-    let ip = await fetch('http://api.ipify.org/?format=json')
-    .then((res) => {
-      return res.json()
-    });
+    // let ip = await fetch('http://api.ipify.org/?format=json')
+    // .then((res) => {
+    //   return res.json()
+    // });
 
     const httpHandler = this.httpLink.create({ uri });
 
@@ -30,7 +30,7 @@ export class GraphQLModule {
         Accept: 'application/json',
         Authorization: `Bearer ${localStorage.getItem('session-token')}`,
         'App-Key': environment.api.key,
-        'x-forwarded-for': ip?.ip,
+        // 'x-forwarded-for': ip?.ip,
       },
     }));
 
