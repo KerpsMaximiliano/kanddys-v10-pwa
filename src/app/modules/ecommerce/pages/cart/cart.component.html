@@ -73,7 +73,7 @@
     <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
   </main>
 
-  <footer class="quotations-footer">
+  <footer class="quotations-footer" [ngClass]="{mobile: !isMobile}">
     <button class="continue-order" (click)="openSubmitDialog()">
       Continuar
     </button>

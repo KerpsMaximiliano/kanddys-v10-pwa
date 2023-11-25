@@ -53,6 +53,7 @@ import { AppService } from 'src/app/app.service';
 //Third party modules
 import * as Hammer from 'hammerjs';
 import { QuotationsService } from 'src/app/core/services/quotations.service';
+import { TranslateService } from '@ngx-translate/core';
 
 interface ExtendedItem extends Item {
   media?: Array<{
@@ -177,7 +178,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   @ViewChild('swiperContainer', { read: ElementRef })
   swiperContainer: ElementRef;
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
-
+  isMobile:boolean = false;
   constructor(
     private itemsService: ItemsService,
     private router: Router,
@@ -193,9 +194,16 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     private postsService: PostsService,
     private elementRef: ElementRef,
     private location: Location,
-  ) {}
+    private translate: TranslateService
+  ) {
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+      translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+      translate.use(language?.length === 2 ? language  : 'es');
+  }
 
   async ngOnInit() {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
     this.routeParamsSubscription = this.route.params.subscribe(
       async (routeParams) => {
         this.queryParamsSubscription = this.route.queryParams.subscribe(

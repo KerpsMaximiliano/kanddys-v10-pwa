@@ -1,0 +1,757 @@
+.container {
+    min-height: 100vh;
+    background-color: #181d17;
+    padding: 41px 20px;
+}
+
+
+
+header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #6fcf97;
+    font-family: InterRegular;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 22px;
+    letter-spacing: 0em;
+    text-align: center;
+}
+
+.header {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    left: 0;
+    right: 0;
+    max-width: 500px;
+    margin: auto;
+    background: rgba(24, 29, 23, 0.9);
+}
+
+
+
+.main-text {
+    color: linear-gradient(141.96deg, #6fcf97 5.07%, #59a86a 52.09%, #6f9bcf 100.11%);
+    margin: 0px 40px;
+    p {
+        font-family: InterBold;
+        font-size: 35px;
+        font-weight: 700;
+        line-height: 42px;
+        letter-spacing: 0em;
+        text-align: center;
+        background: linear-gradient(141.96deg, #6fcf97 5.07%, #59a86a 52.09%, #6f9bcf 100.11%);
+        -webkit-text-fill-color: transparent;
+        -webkit-background-clip: text;
+    }
+}
+.iphone {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    object-fit: cover;
+    height: auto;
+    width: 100%;
+    margin-top: 80px;
+}
+.iphone-img{
+    width: 250px
+}
+
+
+.degradado {
+    width: 100%;
+    height: 110px;
+    background: linear-gradient(1deg, #181d17 14.98%, rgba(24, 29, 23, 0) 90%);
+    margin-top: -95px;
+}
+.try-laia {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    p {
+        font-family: InterRegular;
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 19px;
+        letter-spacing: 0em;
+        text-align: center;
+        color: #c4c4c4;
+        padding-top: 60px;
+    }
+}
+
+
+
+.biggest-circle {
+    border: 3px solid #000000;
+    height: 675px;
+    width: 675px;
+    border-radius: 50%;
+    margin-left: -124px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.first-circle {
+    border: 3px solid #000000;
+    height: 467px;
+    width: 467px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.second-circle {
+    border: 3px solid #000000;
+    height: 355px;
+    width: 355px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.third-circle {
+    border: 3px solid #000000;
+    height: 269px;
+    width: 269px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.fourth-circle {
+    border: 3px solid #000000;
+    height: 195px;
+    width: 195px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.fifth-circle {
+    border: 3px solid #000000;
+    height: 131px;
+    width: 131px;
+    border-radius: 50%;
+    background: linear-gradient(158.16deg, #6fcf97 11.19%, #189ac1 87.72%), linear-gradient(0deg, #ffffff, #ffffff);
+
+    p {
+        font-family: InterRegular;
+        font-size: 35px;
+        font-weight: 700;
+        line-height: 42px;
+        letter-spacing: 0em;
+        text-align: center;
+        color: #000000;
+    }
+}
+.second-green-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 57px 35px;
+    .green-text {
+        font-family: InterBold;
+        font-size: 45px;
+        font-weight: 700;
+        line-height: 54px;
+        letter-spacing: 0em;
+        text-align: center;
+        color: #6fcf97;
+    }
+    .regular-text {
+        font-family: InterRegular;
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 19px;
+        letter-spacing: 0em;
+        text-align: center;
+        color: #c4c4c4;
+        margin-top: 0px;
+    }
+}
+.third-green-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 93px 35px;
+    .green-text {
+        font-family: InterBold;
+        font-size: 45px;
+        font-weight: 700;
+        line-height: 54px;
+        letter-spacing: 0em;
+        text-align: center;
+        color: #6fcf97;
+    }
+    .regular-text {
+        font-family: InterRegular;
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 19px;
+        letter-spacing: 0em;
+        text-align: center;
+        color: #c4c4c4;
+        margin-top: 0px;
+    }
+}
+
+.tiny-cards {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 12px;
+}
+
+.green-card {
+    background: #59a86a;
+    border-radius: 20px;
+    width: 174px;
+    height: 174px;
+}
+
+.pink-card {
+    background: #f80eb6;
+    border-radius: 20px;
+    width: 174px;
+    height: 174px;
+}
+
+.purple-card {
+    background: #9747ff;
+    border-radius: 20px;
+    width: 174px;
+    height: 174px;
+}
+
+.blue-card {
+    background: #2874ad;
+    border-radius: 20px;
+    width: 174px;
+    height: 174px;
+}
+
+.title-card {
+    font-family: InterBold;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 29px;
+    letter-spacing: 0em;
+    text-align: left;
+    color: #fafafa;
+    margin: 16px 13px;
+}
+.content-card {
+    font-family: InterRegular;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 16px;
+    letter-spacing: 0em;
+    text-align: left;
+    color: #fafafa;
+    margin: 13px 13px;
+}
+
+.swiper-div {
+    padding-bottom: 120px !important;
+}
+.category-swiper {
+    ::ng-deep .swiper-container {
+        height: 38px;
+    }
+}
+
+.swiper-slide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 60px;
+    overflow: hidden;
+    max-height: 38px;
+}
+
+.swiper-slide p {
+    max-height: 38px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+
+
+
+.chat-box {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    bottom: 0px;
+    left: 0;
+    right: 0;
+    max-width: 500px;
+    margin: 0px auto;
+    padding: 20px;
+}
+
+.chat-box.mobile {
+    max-width: 427px;
+    margin-bottom: calc(100vh - 750px);
+}
+
+.custom-input {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    background-color: #d9d9d9;
+    border-radius: 300px;
+    width: 100%;
+    // height: 51px;
+
+    .audio-freq {
+        width: 27px;
+        height: 24px;
+    }
+}
+
+.custom-input textarea {
+    flex: 1;
+    height: 100%;
+    padding: 14px;
+    color: #181d17;
+    background-color: transparent;
+    font-family: InterRegular;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    border: none;
+    outline: none;
+    overflow-y: hidden;
+    resize: none;
+    height: 46px;
+}
+
+.custom-input textarea::placeholder {
+    color: #7b7b7b;
+}
+
+.textareaHeight {
+    height: 46px !important;
+}
+
+.custom-input img {
+    margin-right: 15px;
+}
+
+.container-send {
+    background-color: #87cd9b;
+    border-radius: 50%;
+    margin-left: 8px;
+    width: 47px;
+    height: 47px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .icon {
+        width: 23px;
+        height: 23px;
+    }
+}
+button {
+    margin-left: 8px;
+    border: none;
+    border-radius: 50%;
+    padding: 0px;
+    height: 39px;
+    filter: brightness(0.5);
+}
+
+.first-chat {
+    position: absolute;
+    left: 32px;
+    top: 878px;
+
+    p {
+        background: rgba(255, 255, 255, 1);
+        border-radius: 11px;
+        font-family: Inter;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 17px;
+        letter-spacing: 0em;
+        text-align: left;
+        padding: 6px;
+        margin-left: -5px;
+        margin-top: -8px;
+        width: 143px;
+    }
+}
+
+.second-chat {
+    position: absolute;
+    right: 13px;
+    top: 945px;
+
+    p {
+        background: rgba(255, 255, 255, 1);
+        border-radius: 11px;
+        font-family: Inter;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 17px;
+        letter-spacing: 0em;
+        text-align: left;
+        padding: 6px;
+        margin-left: -69px;
+        margin-top: -8px;
+        width: 169px;
+    }
+}
+
+.third-chat {
+    position: absolute;
+    left: 61px;
+    top: 1099px;
+
+    p {
+        background: white;
+        border-radius: 11px;
+        font-family: Inter;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 17px;
+        letter-spacing: 0em;
+        text-align: left;
+        padding: 6px;
+        margin-left: -17px;
+        margin-top: -8px;
+        width: 233px;
+    }
+}
+
+.fourth-chat {
+    position: absolute;
+    right: 50px;
+    top: 1210px;
+
+    p {
+        background: white;
+        border-radius: 11px;
+        font-family: Inter;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 17px;
+        letter-spacing: 0em;
+        text-align: left;
+        padding: 6px;
+        margin-left: -118px;
+        margin-top: -8px;
+        width: 210px;
+    }
+}
+
+@media screen and  (max-height: 980px) {
+    
+    .iphone{
+        margin-top: 80px;
+    }
+    .try-laia{
+        p{
+            font-size: 13px;
+            padding-top: 120px;
+            padding-bottom: 30px;
+        }
+    }
+    
+}
+
+@media screen and  (min-width: 480px) {
+
+    .main-text {
+        p{
+            font-size: 35px;
+            line-height: 42px;
+        }
+    }
+  
+}
+@media screen and  (max-width: 470px) {
+    .tiny-cards {
+        margin: 20px 28px;
+    }
+    .green-card {
+        background: #59a86a;
+        border-radius: 20px;
+        width: 160px;
+        height: 160px;
+    }
+
+    .pink-card {
+        background: #f80eb6;
+        border-radius: 20px;
+        width: 160px;
+        height: 160px;
+    }
+
+    .purple-card {
+        background: #9747ff;
+        border-radius: 20px;
+        width: 160px;
+        height: 160px;
+    }
+
+    .blue-card {
+        background: #2874ad;
+        border-radius: 20px;
+        width: 160px;
+        height: 160px;
+    }
+
+    .title-card {
+        font-family: InterBold;
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 29px;
+        letter-spacing: 0em;
+        text-align: left;
+        color: #fafafa;
+        margin: 6px 13px;
+    }
+    .content-card {
+        font-family: InterRegular;
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 16px;
+        letter-spacing: 0em;
+        text-align: left;
+        color: #fafafa;
+        margin: 0px 13px;
+    }
+    .try-laia{
+        p{
+            font-size: 13px;
+            padding-top: 80px;
+            padding-bottom: 30px;
+        }
+    }
+   
+}
+
+@media screen and  (max-width: 430px) {
+    .main-text {
+        p{
+            font-size: 24px;
+            line-height: 31px;
+        }
+    }
+    .tiny-cards {
+        margin: 20px 20px;
+    }
+    .green-card {
+        background: #59a86a;
+        border-radius: 20px;
+        width: 160px;
+        height: 160px;
+    }
+
+    .pink-card {
+        background: #f80eb6;
+        border-radius: 20px;
+        width: 160px;
+        height: 160px;
+    }
+
+    .purple-card {
+        background: #9747ff;
+        border-radius: 20px;
+        width: 160px;
+        height: 160px;
+    }
+
+    .blue-card {
+        background: #2874ad;
+        border-radius: 20px;
+        width: 160px;
+        height: 160px;
+    }
+
+    .title-card {
+        font-family: InterBold;
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 29px;
+        letter-spacing: 0em;
+        text-align: left;
+        color: #fafafa;
+        margin: 6px 13px;
+    }
+    .content-card {
+        font-family: InterRegular;
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 16px;
+        letter-spacing: 0em;
+        text-align: left;
+        color: #fafafa;
+        margin: 0px 13px;
+    }
+    .try-laia{
+        p{
+            font-size: 13px;
+            padding-top: 40px;
+            padding-bottom: 30px;
+        }
+    }
+    .iphone-img{
+        width: 216px
+    }
+    .iphone{
+        margin-top: 60px;
+    }
+}
+@media screen and  (max-width: 390px) {
+    .main-text {
+        p{
+            font-size: 24px;
+            line-height: 31px;
+        }
+    }
+    .biggest-circle {
+        margin-left: -152px;
+    }
+ 
+    .iphone{
+        margin-top: 97px;
+    }
+
+    .iphone-img{
+        width: 230px
+    }
+    .try-laia{
+        p{
+            font-size: 13px;
+            padding-top: 119px;
+            padding-bottom: 30px;
+        }
+    }
+    .first-chat{
+        top: 881px;
+    }
+    .second-chat{
+        top: 917px;
+    }
+    .third-chat {
+        top: 1152px;
+    }
+
+    .fourth-chat {
+        top: 1275px;
+    }
+
+    .second-green-text{
+        .green-text{
+            font-size: 31px;
+            line-height: 40px;
+        }
+    }
+    .third-green-text{
+        .green-text{
+            font-size: 31px;
+            line-height: 40px;
+        }
+    }
+    .tiny-cards{
+        margin: 20px -7px;
+    }
+}
+@media screen and (max-width: 360px) {
+    .main-text {
+        p{
+            font-size: 20px;
+            line-height: 28px;
+        }
+    }
+    .iphone{
+        margin-top: 40px;
+    }
+
+    .iphone-img{
+        width: 216px
+    }
+    .try-laia{
+        p{
+            font-size: 12px;
+            padding-top: 40px;
+            padding-bottom: 30px;
+        }
+    }
+    .first-chat{
+        top: 768px;
+    }
+    .second-chat{
+        top: 816px;
+    }
+    .third-chat {
+        top: 1052px;
+    }
+
+    .fourth-chat {
+        top: 1175px;
+    }
+
+    .second-green-text{
+        .green-text{
+            font-size: 31px;
+            line-height: 40px;
+        }
+    }
+    .third-green-text{
+        .green-text{
+            font-size: 31px;
+            line-height: 40px;
+        }
+    }
+    .tiny-cards{
+        margin: 20px -7px;
+    }
+}
+
+.container.mobile{
+    padding: 20px 20px;
+}
+.header.mobile {
+    max-width: 427px;
+}
+.iphone-img{
+    width: 230px
+}
+.iphone-img.mobile{
+    width: 216px
+}
+.try-laia.mobile {
+    p {
+        padding-top: 20px;
+    }
+}
+.main-text.mobile {
+    p{
+        font-size: 31px;
+        line-height: 42px;
+    }
+}

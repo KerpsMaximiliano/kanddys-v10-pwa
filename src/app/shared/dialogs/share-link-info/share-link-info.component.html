@@ -1,18 +1,18 @@
 <div class="container">
-    <p class="title">Comparte tu Enlace Directo para Brindar respuestas Precesasal Instante</p>
+    <p class="title">{{ "share-link.title" | translate }}</p>
 
     <div class="container-copy-link" (click)="copyLink()">
         <span class="text">
             {{ link }}
         </span>
-        <span class="copy-text">Copia</span>
+        <span class="copy-text">{{ "copy" | translate }}</span>
     </div>
 
     <div class="container-content">
         <p class="text">
-          Utiliza a Laia como tu asistente personal en múltiples lugares como tu Página Web y WhatsApp
+            {{ "share-link.textWeb" | translate }}
         </p>
 
-        <button type="button" class="button" (click)="goIntegrationLink()">Tap aquí para integrarla</button>
+        <button type="button" class="button" (click)="goIntegrationLink()">{{ "share-link.textTap" | translate }}</button>
     </div>
 </div>
