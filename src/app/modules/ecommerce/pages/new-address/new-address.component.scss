@@ -159,3 +159,13 @@ main {
     color: darken($color: #a1a1a1, $amount: 10);
   }
 }
+.footer{
+  position: fixed;
+  bottom: 0;
+  margin: auto;
+  max-width: 500px;
+}
+.footer.mobile{
+  max-width: 427px;
+  margin-bottom: calc(100vh - 745px);
+}

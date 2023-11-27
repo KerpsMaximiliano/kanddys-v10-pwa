@@ -60,6 +60,7 @@ export class NewSymbolComponent implements OnInit {
     'video/mxf',
   ];
   audioFiles: string[] = [];
+  isMobile:boolean = false;
 
   constructor(
     private router: Router,
@@ -69,13 +70,19 @@ export class NewSymbolComponent implements OnInit {
     public postsService: PostsService,
     private fb: FormBuilder,
     private translate: TranslateService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    
   ) {
     translate.setDefaultLang('en');
     translate.use('en');
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+      translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+      translate.use(language?.length === 2 ? language  : 'es');
   }
 
   ngOnInit(): void {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
     this.route.queryParams.subscribe(({ flow, type }) => {
       if (flow) this.flow = flow as 'cart' | 'checkout';
 
