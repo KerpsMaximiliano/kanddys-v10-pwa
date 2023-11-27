@@ -1,0 +1,48 @@
+<ng-contaiener class="Dialog-receipt-fiscal" *ngIf="showFiscalForm">
+  <h1 mat-dialog-title>Sobre el comprobante fiscal:</h1>
+  <div class="mat-dialog-content" mat-dialog-content>
+    <a class="" (click)="changeLogin()">
+      <img alt="user" src="{{ assetsFolder }}/user-placeholder.png" />
+      Sign In
+    </a>
+
+    <div class="line-divider">
+      <p>ó</p>
+      <div class="line"></div>
+    </div>
+
+    <form
+      class="dialog-form"
+      [formGroup]="formNewDataFiscal"
+      (ngSubmit)="sendData()"
+    >
+      <mat-form-field>
+        <mat-label>Cedula o Numero de Indentificacion Fiscal (NIF):</mat-label>
+        <input
+          type="text"
+          matInput
+          placeholder="Escribe tu NIF"
+          formControlName="nif"
+        />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Nombre o Nombre de comercio:</mat-label>
+        <input
+          type="text"
+          matInput
+          placeholder="Escribe tu Nombre"
+          formControlName="name"
+        />
+      </mat-form-field>
+
+      <div class="dialog-actions" mat-dialog-actions>
+        <button type="reset"  mat-button >Cancelar</button>
+        <button mat-button>Guardar</button>
+      </div>
+    </form>
+  </div>
+</ng-contaiener>
+
+<ng-container *ngIf="showLoginFlow">
+  <app-login-flow (dialogIsOpen)="resetValueShowLoginFlow($event)"></app-login-flow>
+</ng-container>

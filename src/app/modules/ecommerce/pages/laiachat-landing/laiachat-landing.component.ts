@@ -30,6 +30,7 @@ import { FilesService } from 'src/app/core/services/files.service';
 import { fileToBase64 } from 'src/app/core/helpers/files.helpers';
 import { ShareLinkInfoComponent } from 'src/app/shared/dialogs/share-link-info/share-link-info.component';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FiscalReceiptDialogComponent } from 'src/app/shared/dialogs/fiscal-receipt-dialog/fiscal-receipt-dialog.component';
 
 interface ExtendedChat extends Chat {
   receiver?: User;
@@ -609,8 +610,8 @@ export class LaiachatLandingComponent implements OnInit {
         ],
       },
     };
-
-    this.bottomSheet.open(OptionsMenuComponent, data)
+    this.bottomSheet.open(FiscalReceiptDialogComponent);
+    //this.bottomSheet.open(OptionsMenuComponent, data)
   }
 
   async saveAudio(chatText : boolean = false) {

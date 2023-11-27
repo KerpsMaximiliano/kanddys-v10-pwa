@@ -254,8 +254,10 @@ import { ContactUsDialogComponent } from './dialogs/contact-us-dialog/contact-us
 import { OrderStatusBadgeComponent } from './components/order-status-badge/order-status-badge.component';
 import { StatusAudioRecorderComponent } from './dialogs/status-audio-recorder/status-audio-recorder.component';
 import { ShareLinkInfoComponent } from './dialogs/share-link-info/share-link-info.component';
+import { FiscalReceiptDialogComponent } from './dialogs/fiscal-receipt-dialog/fiscal-receipt-dialog.component';
 
 const imports = [
+  
   CommonModule,
   DialogModule,
   NgxFormsModule,
@@ -292,7 +294,7 @@ const imports = [
   MatSidenavModule,
   MatSlideToggleModule,
   TranslateModule,
-  MatDatepickerModule
+  MatDatepickerModule,
 ];
 const declarations = [
   // Pages
@@ -300,6 +302,7 @@ const declarations = [
   ItemListComponent,
   CustomFieldsComponent,
   // ...
+  FiscalReceiptDialogComponent,
   TitlebarComponent,
   CommunityPreviewComponent,
   FilterbarComponent,
