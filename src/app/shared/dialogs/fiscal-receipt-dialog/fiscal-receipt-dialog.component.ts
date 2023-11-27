@@ -1,5 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { MatDialogRef } from '@angular/material/dialog';
 import { environment } from 'src/environments/environment';
 
@@ -16,8 +17,8 @@ export class FiscalReceiptDialogComponent implements OnInit {
   showFiscalForm: boolean = true;
 
   constructor(
+    private _bottomSheetRef: MatBottomSheetRef,
     private fb: FormBuilder,
-   
   ) {}
 
   ngOnInit(): void {
@@ -41,5 +42,6 @@ export class FiscalReceiptDialogComponent implements OnInit {
         JSON.stringify(this.formNewDataFiscal.value)
       );
     }
+    this._bottomSheetRef.dismiss();
   }
 }
