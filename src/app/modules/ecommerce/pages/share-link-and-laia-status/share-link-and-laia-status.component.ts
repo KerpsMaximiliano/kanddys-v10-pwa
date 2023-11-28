@@ -22,6 +22,8 @@ export class ShareLinkAndLaiaStatusComponent implements OnInit, OnDestroy {
   whatsappStatus: boolean = true;
   iframeStatus: boolean = true;
   autoResponse: boolean;
+  calculateMargin = '0px';
+  isMobile: boolean = false;
 
   constructor(
     private clipboard: Clipboard,
@@ -40,8 +42,9 @@ export class ShareLinkAndLaiaStatusComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
-    const isMobile = regex.test(navigator.userAgent);
-    if(!isMobile) {
+    this.isMobile = regex.test(navigator.userAgent);
+    this.calculateMargin = `calc(${window.innerHeight}px - 745px)`;
+    if(!this.isMobile) {
       const element : HTMLElement = document.querySelector('.dialog-frame');
       element?.style?.setProperty('max-width', '427px', 'important');
     }

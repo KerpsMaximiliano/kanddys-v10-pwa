@@ -69,7 +69,7 @@
         </div>
     </div>
 
-    <div class="footer">
+    <div class="footer" [style.maxWidth]="!isMobile ? '427px' : '500px'" [style.marginBottom]="!isMobile ? calculateMargin : '0px'">
         <p>Permisos global para contestar</p>
         <img
             (click)="autoResponseSwitch()"
