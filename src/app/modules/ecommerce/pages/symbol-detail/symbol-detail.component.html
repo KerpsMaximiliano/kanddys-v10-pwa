@@ -27,9 +27,10 @@
           border: 1px solid #fff;
         "
         [ngStyle]="{
-          backgroundColor: currentMediaSlide === 0 ? '#fff' : 'transparent'
+          backgroundColor: currentMediaSlide === index ? '#fff' : 'transparent'
         }"
         *ngFor="let item of itemData?.images; let index = index"
+        (click)="onChangeImage(index)"
       ></span>
     </div>
 
@@ -64,6 +65,7 @@
     >
       <div
         #swiperContainer
+        #swiperRef
         class="the-swiper-container"
         [ngStyle]="{
           width: '100%',

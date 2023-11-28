@@ -65,6 +65,7 @@ type ValidEntities = 'item' | 'post' | 'collection';
 export class SymbolDetailComponent implements OnInit, AfterViewInit {
   @ViewChild('storeQrCode', { read: ElementRef }) storeQrCode: ElementRef;
   @ViewChild('swiperContainer', { read: ElementRef }) swiperContainer: ElementRef;
+  @ViewChild('swiperRef') swiperRef?: SwiperComponent;
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
   @ViewChild('videoPlayer') private videoPlayer: ElementRef;
 
@@ -596,7 +597,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     this.layout = 'EXPANDED-SLIDE';
   }
 
-  updateCurrentSlideData(event: any) {
+  updateCurrentSlideData(event: Event) {
     const prevIndex = this.currentMediaSlide;
     this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
 
@@ -997,5 +998,9 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
 
   onGoBackToLogin() {
     this.router.navigate(['/admin/dashboard']);
+  }
+
+  onChangeImage(index: number) {
+    this.mediaSwiper.directiveRef.setIndex(index)
   }
 }
