@@ -84,4 +84,27 @@ export class ChatService {
       return null;
     }
   }
+
+  async addDomain(body: any): Promise<any> {
+    try {
+      let response = await fetch(
+        `${environment.chatAPI.url}/configuration/domain/add`,
+        {
+          method: 'POST',
+          body: JSON.stringify(body),
+          headers: {
+            'App-Key': "k2ejNpopkk9Txga6kmQZwAQXUCLNZxs9BI8dDfVgmdMXvjcVcI",
+            'token': localStorage.getItem('session-token'),
+            'content-Type': 'application/json',
+            'accept': '*/*',
+          },
+        }
+      );
+
+      return response;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
 }

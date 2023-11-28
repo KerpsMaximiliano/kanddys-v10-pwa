@@ -65,7 +65,7 @@ export class ShareLinkAndLaiaStatusComponent implements OnInit, OnDestroy {
   }
 
   copyLink() {
-    this.clipboard.copy('');
+    this.clipboard.copy(this.link);
     this.toastrService.success(
       'Enlace copiado satisfactoriamente'
     );

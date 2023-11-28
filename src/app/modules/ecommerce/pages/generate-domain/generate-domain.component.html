@@ -1,0 +1,45 @@
+<div class="container">
+    <header>
+        <span (click)="goBack()">X</span>
+    </header>
+
+    <ng-container [formGroup]="domainOptions">
+        <label
+            for="amount"
+            class="input-label"
+        >
+            Nombre del dominio:
+        </label>
+        <input
+            class="input"
+            formControlName="name"
+        />
+
+        <label
+            for="toggle"
+            class="input-label"
+        >
+            Laia responde:
+        </label>
+        <mat-slide-toggle
+            class="toggle"
+            formControlName="activeAssistant"
+        ></mat-slide-toggle>
+    </ng-container>
+
+    <div *ngIf="iframe" class="container-content">
+        <p class="text">
+           {{ iframe }}
+        </p>
+
+        <button type="button" class="button" (click)="copyLink()">Copiar</button>
+    </div>
+
+    <div 
+        class="button-container"
+        [style.maxWidth]="!isMobile ? '427px' : '500px'"
+        [style.marginBottom]="!isMobile ? calculateMargin : '0px'"
+    >
+        <button mat-raised-button class="button" [disabled]="domainOptions.invalid" (click)="addDomain()">Crear</button>
+    </div>
+</div>

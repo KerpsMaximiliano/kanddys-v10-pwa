@@ -66,6 +66,10 @@ export class LaiachatIntegrationsComponent implements OnInit {
     }
   }
 
+  generateDomain() {
+    this.router.navigate(['/ecommerce/generate-domain']);
+  }
+
   goBack() {
     this.location.back();
   }
