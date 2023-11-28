@@ -53,11 +53,10 @@ export class ShareLinkAndLaiaStatusComponent implements OnInit, OnDestroy {
     });
     this.checkAutoResponse();
     const response = await this.chatService.getConfiguration();
-    console.log(response);
-    if(response) {
-      this.usersStatus = response?.logged;
-      this.whatsappStatus = response?.whatsapp;
-      this.iframeStatus = response?.iframe;
+    if(response?.data) {
+      this.usersStatus = response.data?.logged;
+      this.whatsappStatus = response.data?.whatsapp;
+      this.iframeStatus = response.data?.iframe;
     }
   }
 
@@ -73,17 +72,13 @@ export class ShareLinkAndLaiaStatusComponent implements OnInit, OnDestroy {
   }
 
   async checkAutoResponse() {
-    console.log(this.headerService.user)
     let id = this.headerService.user._id;
     await this.gptService.doUsersHaveAssistantActivated(
         [
           id
         ]
       ).then((res) => {
-        console.log(res)
-        console.log(res[`${id}`])
         this.autoResponse = res[`${id}`];
-        console.log(this.autoResponse)
     });
   }
 
@@ -95,7 +90,6 @@ export class ShareLinkAndLaiaStatusComponent implements OnInit, OnDestroy {
 
     try {
       const response = await this.chatService.updateConfiguration(body);
-      console.log(response)
       if(type === 'users') this.usersStatus = !this.usersStatus;
       else if(type === 'whatsapp') this.whatsappStatus = !this.whatsappStatus;
       else if(type === 'iframe') this.iframeStatus = !this.iframeStatus;
@@ -114,6 +108,10 @@ export class ShareLinkAndLaiaStatusComponent implements OnInit, OnDestroy {
       console.error(error);
       this.headerService.showErrorToast();
     }
+  }
+
+  goLaiaIntegrations() {
+    this.router.navigate(['/ecommerce/laiachat-integrations']);
   }
 
   goBack() {

@@ -63,19 +63,25 @@ export class ChatService {
   }
 
   async updateConfiguration(body: any): Promise<any> {
-    const url = `${environment.api.url}/configuration`;
-    const headers = new HttpHeaders()
-      .set('App-Key', "k2ejNpopkk9Txga6kmQZwAQXUCLNZxs9BI8dDfVgmdMXvjcVcI")
-      .set('token', localStorage.getItem('session-token'));
-    this.http.post(url, body, { headers }).toPromise();
     try {
-      const response = await this.http.post(url, body, { headers }).toPromise();
-
-     console.log(response);
+      let response = await fetch(
+        `${environment.chatAPI.url}/configuration`,
+        {
+          method: 'POST',
+          body: JSON.stringify(body),
+          headers: {
+            'App-Key': "k2ejNpopkk9Txga6kmQZwAQXUCLNZxs9BI8dDfVgmdMXvjcVcI",
+            'token': localStorage.getItem('session-token'),
+            'content-Type': 'application/json',
+            'accept': '*/*',
+          },
+        }
+      );
 
       return response;
     } catch (error) {
-      console.error(error);
+      console.log(error);
+      return null;
     }
   }
 }
