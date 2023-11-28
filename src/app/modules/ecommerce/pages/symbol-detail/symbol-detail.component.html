@@ -15,17 +15,10 @@
 
     <div
       class="bullets"
-      style="display: flex; gap: 6px"
       *ngIf="layout === 'EXPANDED-SLIDE' && itemData?.images?.length > 1"
     >
       <span
-        style="
-          display: inline-block;
-          height: 8px;
-          width: 8px;
-          border-radius: 50%;
-          border: 1px solid #fff;
-        "
+        class="bullet"
         [ngStyle]="{
           backgroundColor: currentMediaSlide === index ? '#fff' : 'transparent'
         }"

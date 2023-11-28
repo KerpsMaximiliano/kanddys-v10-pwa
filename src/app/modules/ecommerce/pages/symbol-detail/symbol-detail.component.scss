@@ -215,3 +215,16 @@ video {
 .hidden {
   opacity: 0;
 }
+
+.bullets {
+  display: flex;
+  gap: 6px;
+}
+
+.bullet {
+  display: inline-block;
+  height: 8px;
+  width: 8px;
+  border-radius: 50%;
+  border: 1px solid #fff;
+}
