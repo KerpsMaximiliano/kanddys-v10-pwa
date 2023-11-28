@@ -1,0 +1,84 @@
+<div class="container">
+    <header>
+        <span (click)="goBack()">X</span>
+    </header>
+
+    <p class="title">{{ "share-link.title" | translate }}</p>
+
+    <div class="container-copy-link" (click)="copyLink()">
+        <span class="text">
+            {{ link }}
+        </span>
+        <span class="copy-text">{{ "copy" | translate }}</span>
+    </div>
+
+    <div class="integrations-titles">
+        <p class="title">Integraciones</p>
+        <p class="subtitle">Mira las  Integraciones de WhatsApp y Páginas Web</p>
+    </div>
+
+    <div class="container-integrations" [style.opacity]="autoResponse ? 1 : .4">
+        <p class="title">Configuración de los nuevos Chats</p>
+
+        <div class="integration">
+            <p class="title">En www.laichat.com/userID</p>
+            <div class="bottom">
+                <p class="subtitle">Laia contestará sin preguntarte</p>
+                <img
+                    [src]="
+                        assetsFolder +
+                        (usersStatus
+                            ? '/toggle-on.svg'
+                            : '/toggle-off.svg')
+                    "
+                    (click)="autoResponse ? updateConfiguration('users', !usersStatus) : null"
+                />
+            </div>
+        </div>
+
+        <div class="integration">
+            <p class="title">En www.página.com</p>
+            <div class="bottom">
+                <p class="subtitle">Laia contestará sin preguntarte</p>
+                <img
+                    [src]="
+                        assetsFolder +
+                        (iframeStatus
+                            ? '/toggle-on.svg'
+                            : '/toggle-off.svg')
+                    "
+                    (click)="autoResponse ? updateConfiguration('iframe', !iframeStatus) : null"
+                />
+            </div>
+        </div>
+
+        <div class="integration">
+            <p class="title">En WhatsApp (000) 000-0000</p>
+            <div class="bottom">
+                <p class="subtitle">Laia contestará sin preguntarte</p>
+                <img
+                    [src]="
+                        assetsFolder +
+                        (whatsappStatus
+                            ? '/toggle-on.svg'
+                            : '/toggle-off.svg')
+                    "
+                    (click)="autoResponse ? updateConfiguration('whatsapp', !whatsappStatus) : null"
+                />
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Permisos global para contestar</p>
+        <img
+            (click)="autoResponseSwitch()"
+            [src]="
+                assetsFolder +
+                (autoResponse
+                    ? '/toggle-on.svg'
+                    : '/toggle-off.svg')
+            "
+        />
+    </div>
+</div>
