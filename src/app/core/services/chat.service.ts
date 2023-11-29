@@ -107,4 +107,26 @@ export class ChatService {
       return null;
     }
   }
+
+  async removeDomain(domainId: string): Promise<any> {
+    try {
+      let response = await fetch(
+        `${environment.chatAPI.url}/configuration/domain/remove/${domainId}`,
+        {
+          method: 'POST',
+          headers: {
+            'App-Key': "k2ejNpopkk9Txga6kmQZwAQXUCLNZxs9BI8dDfVgmdMXvjcVcI",
+            'token': localStorage.getItem('session-token'),
+            // 'content-Type': 'application/json',
+            'accept': '*/*',
+          },
+        }
+      );
+
+      return response;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
 }
