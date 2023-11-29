@@ -3,7 +3,7 @@
         <span (click)="goBack()">X</span>
     </header>
 
-    <p class="title">{{ "share-link.title" | translate }}</p>
+    <p class="title">{{ "share-link-status.title" | translate }}</p>
 
     <div class="container-copy-link" (click)="copyLink()">
         <span class="text">
@@ -13,17 +13,17 @@
     </div>
 
     <div class="integrations-titles">
-        <p class="title">Integraciones</p>
-        <p class="subtitle" (click)="goLaiaIntegrations()">Mira las  Integraciones de WhatsApp y Páginas Web</p>
+        <p class="title">{{ "share-link-status.integrations" | translate }}</p>
+        <p class="subtitle" (click)="goLaiaIntegrations()">{{ "share-link-status.showTitle" | translate }}</p>
     </div>
 
     <div class="container-integrations" [style.opacity]="autoResponse ? 1 : .4">
-        <p class="title">Configuración de los nuevos Chats</p>
+        <p class="title">{{ "share-link-status.titleConfiguration" | translate }}</p>
 
         <div class="integration">
-            <p class="title">En www.laichat.com/userID</p>
+            <p class="title">{{ "share-link-status.in" | translate }} www.laichat.com/userID</p>
             <div class="bottom">
-                <p class="subtitle">Laia contestará sin preguntarte</p>
+                <p class="subtitle">{{ "share-link-status.responseLaia" | translate }}</p>
                 <img
                     [src]="
                         assetsFolder +
@@ -37,9 +37,9 @@
         </div>
 
         <div class="integration">
-            <p class="title">En www.página.com</p>
+            <p class="title">{{ "share-link-status.in" | translate }} www.página.com</p>
             <div class="bottom">
-                <p class="subtitle">Laia contestará sin preguntarte</p>
+                <p class="subtitle">{{ "share-link-status.responseLaia" | translate }}</p>
                 <img
                     [src]="
                         assetsFolder +
@@ -53,9 +53,9 @@
         </div>
 
         <div class="integration">
-            <p class="title">En WhatsApp (000) 000-0000</p>
+            <p class="title">{{ "share-link-status.in" | translate }} WhatsApp (000) 000-0000</p>
             <div class="bottom">
-                <p class="subtitle">Laia contestará sin preguntarte</p>
+                <p class="subtitle">{{ "share-link-status.responseLaia" | translate }}</p>
                 <img
                     [src]="
                         assetsFolder +
@@ -70,7 +70,7 @@
     </div>
 
     <div class="footer" [style.maxWidth]="!isMobile ? '427px' : '500px'" [style.marginBottom]="!isMobile ? calculateMargin : '0px'">
-        <p>Permisos global para contestar</p>
+        <p>{{ "share-link-status.permissionsTitle" | translate}}</p>
         <img
             (click)="autoResponseSwitch()"
             [src]="

@@ -8,7 +8,7 @@
             for="amount"
             class="input-label"
         >
-            Nombre del dominio:
+            {{ "generate-domain.labelOne" | translate }}:
         </label>
         <input
             class="input"
@@ -19,7 +19,7 @@
             for="toggle"
             class="input-label"
         >
-            Laia responde:
+            {{ "generate-domain.labelTwo" | translate }}:
         </label>
         <mat-slide-toggle
             class="toggle"
@@ -32,7 +32,7 @@
            {{ iframe }}
         </p>
 
-        <button type="button" class="button" (click)="copyLink()">Copiar</button>
+        <button type="button" class="button" (click)="copyLink()">{{ "copy" | translate }}</button>
     </div>
 
     <div 
@@ -40,6 +40,6 @@
         [style.maxWidth]="!isMobile ? '427px' : '500px'"
         [style.marginBottom]="!isMobile ? calculateMargin : '0px'"
     >
-        <button mat-raised-button class="button" [disabled]="domainOptions.invalid" (click)="addDomain()">Crear</button>
+        <button mat-raised-button class="button" [disabled]="domainOptions.invalid" (click)="addDomain()">{{ "general.create" | translate}}</button>
     </div>
 </div>

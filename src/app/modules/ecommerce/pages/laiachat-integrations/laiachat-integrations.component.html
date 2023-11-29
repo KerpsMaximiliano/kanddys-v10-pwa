@@ -1,17 +1,17 @@
 <div class="container">
     <header>
-      <h2>INTEGRACIONES</h2>
+      <h2>{{ "share-link-status.integrations" | translate }}</h2>
       <div class="close-button" (click)="goBack()">X</div>
     </header>
 
     <main>
-        <p class="title">Brinda Respuestas Precisas y al Instante en Múltiples Lugares</p>
+        <p class="title">{{ "laia-integrations.title" | translate }}</p>
 
         <div class="integrations">
           <div class="media">
-            <p class="title">Página Web</p>
-            <p class="subtitle">Pega el EmbedCode en donde los programadores nos informarán</p>
-            <p class="text-integration">EmbedCode</p>
+            <p class="title">{{ "laia-integrations.websites" | translate }}</p>
+            <p class="subtitle">{{ "laia-integrations.webSubtitle" | translate }}</p>
+            <p class="text-integration">{{ "laia-integrations.embedCode" | translate }}</p>
 
             <svg (click)="generateDomain()" [style.cursor]="'pointer'" xmlns="http://www.w3.org/2000/svg" width="49" height="50" viewBox="0 0 49 50" fill="none">
               <g clip-path="url(#clip0_2666_4974)">
@@ -30,7 +30,7 @@
             <ng-container *ngFor="let domain of domains">
               <div class="media">
                 <p class="title">{{ domain?.name }}</p>
-                <p class="subtitle" [style.cursor]="'pointer'" (click)="showIframe(domain?._id)">Pega el EmbedCode en donde los programadores nos informarán</p>
+                <p class="subtitle" [style.cursor]="'pointer'" (click)="showIframe(domain?._id)">{{ "laia-integrations.webSubtitle" | translate }}</p>
     
                 <svg (click)="removeDomain(domain?._id, domain?.name)" [style.marginTop.px]="20" [style.cursor]="'pointer'" xmlns="http://www.w3.org/2000/svg" width="47" height="48" viewBox="0 0 47 48" fill="none">
                   <path d="M42.2668 25.3066V22.6705L45.5676 19.7823C46.1761 19.2461 46.5753 18.5119 46.6949 17.7097C46.8144 16.9075 46.6465 16.0889 46.2209 15.3985L42.1637 8.5219C41.7637 7.83717 41.1411 7.31015 40.3998 7.02862C39.6584 6.7471 38.843 6.72805 38.0893 6.97466L33.9117 8.3901C33.1905 7.91081 32.4381 7.48007 31.6597 7.10073L30.7829 2.76847C30.6257 1.97698 30.1951 1.266 29.5665 0.759985C28.9379 0.253973 28.1514 -0.0148297 27.3446 0.00063167H19.2989C18.4921 -0.0148297 17.7056 0.253973 17.077 0.759985C16.4484 1.266 16.0178 1.97698 15.8606 2.76847L14.9839 7.10073C14.1998 7.47998 13.4417 7.91071 12.7146 8.3901L8.623 6.91163C8.26421 6.81814 7.89266 6.78331 7.52275 6.80848C6.91979 6.80909 6.32761 6.96826 5.80559 7.27C5.28357 7.57175 4.85009 8.00546 4.54861 8.52763L0.49141 15.4042C0.0901372 16.0936 -0.0589741 16.901 0.0696144 17.6882C0.198203 18.4755 0.59649 19.1935 1.19626 19.7193L4.44546 22.6934V25.3295L1.19626 28.2177C0.580976 28.7469 0.172715 29.4767 0.0437186 30.2779C-0.0852778 31.0791 0.0733062 31.9002 0.49141 32.5958L4.54861 39.4724C4.94863 40.1571 5.57116 40.6841 6.31252 40.9656C7.05388 41.2472 7.86931 41.2662 8.623 41.0196L12.8005 39.6099C13.5218 40.0892 14.2742 40.5199 15.0526 40.8993L15.9294 45.2315C16.0866 46.023 16.5172 46.734 17.1458 47.24C17.7744 47.746 18.5609 48.0148 19.3677 47.9994H27.4821C28.2889 48.0148 29.0755 47.746 29.704 47.24C30.3326 46.734 30.7632 46.023 30.9204 45.2315L31.7972 40.8993C32.5812 40.52 33.3393 40.0893 34.0665 39.6099L38.2268 41.0196C38.9805 41.2662 39.7959 41.2472 40.5373 40.9656C41.2787 40.6841 41.9012 40.1571 42.3012 39.4724L46.2209 32.5958C46.6222 31.9064 46.7713 31.099 46.6427 30.3118C46.5141 29.5245 46.1158 28.8065 45.516 28.2807L42.2668 25.3066ZM39.1895 37.7532L33.2928 35.759C31.9108 36.9288 30.3312 37.8428 28.6282 38.4581L27.4133 44.6298H19.2989L18.0841 38.5268C16.3966 37.8935 14.8275 36.9811 13.4424 35.8278L7.52275 37.7532L3.46554 30.8766L8.14164 26.7506C7.82376 24.9711 7.82376 23.1493 8.14164 21.3697L3.46554 17.1234L7.52275 10.2468L13.4194 12.241C14.8015 11.0712 16.3811 10.1572 18.0841 9.54193L19.2989 3.37017H27.4133L28.6282 9.47316C30.3157 10.1065 31.8848 11.0189 33.2699 12.1722L39.1895 10.2468L43.2467 17.1234L38.5706 21.2494C38.8885 23.0289 38.8885 24.8507 38.5706 26.6303L43.2467 30.8766L39.1895 37.7532Z" fill="#7B7B7B"/>
@@ -42,8 +42,8 @@
 
           <div class="media">
             <p class="title">WhatsApp</p>
-            <p class="subtitle" [style.marginBottom.px]="clientConnectionStatus ? 20 : 0">{{ clientConnectionStatus ? 'Está vinculado con Laia' : 'Enlaza tu WhatsApp escaneando el QRCode desde tu mobile.'}}</p>
-            <p *ngIf="!clientConnectionStatus" class="text-integration">QRCode</p>
+            <p class="subtitle" [style.marginBottom.px]="clientConnectionStatus ? 20 : 0">{{ clientConnectionStatus ? ("laia-integrations.wsTitleOne" | translate) : ("laia-integrations.wsTitleTwo" | translate)}}</p>
+            <p *ngIf="!clientConnectionStatus" class="text-integration">{{ "laia-integrations.qrCode" | translate }}</p>
 
             <ng-container *ngIf="clientConnectionStatus; else elseTemplate">
               <svg (click)="optionsWhatsApp()" [style.cursor]="'pointer'" xmlns="http://www.w3.org/2000/svg" width="48" height="49" viewBox="0 0 48 49" fill="none">

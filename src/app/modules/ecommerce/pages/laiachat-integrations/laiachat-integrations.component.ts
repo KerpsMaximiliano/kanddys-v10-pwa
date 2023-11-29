@@ -2,6 +2,7 @@ import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
 import { ChatService } from 'src/app/core/services/chat.service';
@@ -32,7 +33,12 @@ export class LaiachatIntegrationsComponent implements OnInit {
     private dialogService: DialogService,
     private headerService: HeaderService,
     private merchantsService: MerchantsService,
-  ) { }
+    private translate: TranslateService,
+  ) {
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+    translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+    translate.use(language?.length === 2 ? language  : 'es');
+  }
 
   async ngOnInit() {
     if(this.headerService.user) {
