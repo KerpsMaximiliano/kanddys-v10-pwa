@@ -255,6 +255,7 @@ import { OrderStatusBadgeComponent } from './components/order-status-badge/order
 import { StatusAudioRecorderComponent } from './dialogs/status-audio-recorder/status-audio-recorder.component';
 import { ShareLinkInfoComponent } from './dialogs/share-link-info/share-link-info.component';
 import { OverlayDialogComponent } from './dialogs/overlay-dialog/overlay-dialog.component';
+import { ProgressDialogComponent } from './dialogs/progress-dialog/progress-dialog.component';
 
 const imports = [
   CommonModule,
@@ -520,7 +521,8 @@ const declarations = [
   OrderStatusBadgeComponent,
   StatusAudioRecorderComponent,
   ShareLinkInfoComponent,
-  OverlayDialogComponent
+  OverlayDialogComponent,
+  ProgressDialogComponent
 ];
 
 @NgModule({

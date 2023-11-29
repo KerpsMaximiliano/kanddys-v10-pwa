@@ -56,8 +56,16 @@ import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/option
 import { ContactHeaderComponent } from 'src/app/shared/components/contact-header/contact-header.component';
 import * as moment from 'moment';
 import { OverlayDialogComponent } from 'src/app/shared/dialogs/overlay-dialog/overlay-dialog.component';
+import { Chat } from 'src/app/core/models/chat';
+import { User } from 'src/app/core/models/user';
+import { base64ToBlob } from 'src/app/core/helpers/files.helpers';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ProgressDialogComponent } from 'src/app/shared/dialogs/progress-dialog/progress-dialog.component';
 
-
+interface ExtendedChat extends Chat {
+  receiver?: User;
+  receiverId?: string;
+}
 interface Image {
   src: string;
   filter?: string;
@@ -190,6 +198,16 @@ export class OrderDetailComponent implements OnInit {
   // ];
 
   showOverlay = false;
+  merchantSlug: string;
+  merchant: string;
+  merchantName: string;
+  merchantEmail: string;
+  merchanNameIsUser: string = '';
+  qrdata: string = `${this.URI}${this.router.url}`;
+  @ViewChild('qrcode', { read: ElementRef }) qrcode: ElementRef;
+  countOrders: number = 0
+  user: string = '';
+  address: string = '';
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -212,7 +230,8 @@ export class OrderDetailComponent implements OnInit {
     public _DomSanitizer: DomSanitizer,
     private contactService: ContactService,
     private _bottomSheet: MatBottomSheet,
-    private NgNavigatorShareService: NgNavigatorShareService
+    private NgNavigatorShareService: NgNavigatorShareService,
+    private snackBar: MatSnackBar,
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
@@ -220,6 +239,7 @@ export class OrderDetailComponent implements OnInit {
     });
   }
 
+  headerData: any;
   async ngOnInit(): Promise<void> {
     // this.route.queryParams.subscribe(async (queryParams) => {
     //   const {
@@ -242,32 +262,51 @@ export class OrderDetailComponent implements OnInit {
     //     await this.executeProcessesAfterLoading(orderId, notification);
     //   });
     // });
-
     this.route.params.subscribe(async (params) => {
       const { orderId } = params;
+      this.orderId = orderId;
       this.order = (await this.orderService.order(orderId, false))?.order;
       console.log("this.order", this.order)
-      let result = this.headerService.fetchSaleflow(this.order.items[0].saleflow._id);
-      console.log(result)
+      
+      // DIRECCIÓN //
+      if(!this.order?.items[0]?.deliveryLocation?.street){
+        this.address = `${this.order?.items[0]?.deliveryLocation?.nickName}, República Dominicana`
+      }else{
+        let house = this.order?.items[0]?.deliveryLocation?.houseNumber ? "#" + this.order?.items[0]?.deliveryLocation?.houseNumber + ", " : "";
+        let street = this.order?.items[0]?.deliveryLocation?.street + ", ";
+        let referencePoint = this.order?.items[0]?.deliveryLocation?.referencePoint ? this.order?.items[0]?.deliveryLocation?.referencePoint + ", " : "";
+        let city = this.order?.items[0]?.deliveryLocation?.city + ", República Dominicana"
+        this.address = house + street + referencePoint + city;
+      }
+      
+      await this.executeProcessesAfterLoadingW(this.order)
+      
     });
     
-    console.log("SIsss")
-    setTimeout(() => {
-      this.toggleOverlay()
-      // this.showOverlay = true;  
-    }, 200);
+  }
+  
+  async getMerchantDefault() {
+    try {
+      const merchantDefault: Merchant = await this.merchantsService.merchantDefault();
+      this.merchant = merchantDefault._id;
+      this.merchantSlug = merchantDefault.slug;
+      this.merchantName = merchantDefault.name;
+      this.merchantEmail = merchantDefault.email;
+    } catch (error) {
+      console.error('error');
+    }
   }
 
-
-  toggleOverlay() {
-    // this.showOverlay = !this.showOverlay;
+  async toggleOverlay() {
+    let merchant = this.order?.items[0].saleflow.merchant?.name.length < 14 ? this.order?.items[0].saleflow.merchant?.name : this.order?.items[0].saleflow.merchant?.name.slice(0, 14) + "...";
+    
     this._bottomSheet.open(OverlayDialogComponent, {
       data: {
-        title: `¡Gracias por tu compra CompradorID!`,
-        text1: `Recuerda que tu pedido llega Lunes 14 de Abril entre 9am - 12pm.`,
+        title: `¡Gracias por tu compra ${this.user.length < 10 ? this.user : (this.user.slice(0, 10) + "...")}!`,
+        text1: `Recuerda que tu pedido llega el ${this.displayReservationW(this.deliveryImages?.reservation)}`,
         buttons: [
           {
-            value: `Comunicate con MerchantID`,
+            value: `Comunícate con ${await this.capitalizeWords(merchant)}`,
             class: {
               background: 'linear-gradient(92deg, #6BC8A7 18.84%, #6A9EB8 93.01%)',
               fontSize: '17px',
@@ -276,12 +315,12 @@ export class OrderDetailComponent implements OnInit {
               border: '0px'
             },
             callback: async () => {
-              this.showAlert('Comunicate con MerchantID')
+              this.showAlert(1)
             },
           },{
             value: `Compartir`,
             callback: () => {
-              this.showAlert('Compartir')
+              this.showAlert(2)
             },
           }
           
@@ -290,10 +329,185 @@ export class OrderDetailComponent implements OnInit {
       },
     });
   }
-  async showAlert(text: string){
-    alert(text)
+
+  async capitalizeWords(sentence: string) {
+    return sentence.split(' ').map(function(word) {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    }).join(' ');
   }
 
+  async showAlert(option: number){
+    if(option == 1){
+      this.goToChatDetail();
+    }else{
+      this.shareDialog()
+    }
+  }
+
+  shareDialog() {
+    this._bottomSheet.open(OptionsMenuComponent, {
+      data: {
+        title: 'Comparte el Enlace de la Tienda:',
+        options: [
+          {
+            value: 'Copia',
+            callback: () => {
+              this.clipboard.copy(this.qrdata);
+              this.snackBar.open('Enlace copiado', 'Cerrar', {
+                duration: 3000,
+              });
+            },
+          },
+          {
+            value: 'Comparte',
+            callback: () => {
+              this.NgNavigatorShareService.share({
+                title: 'Compartir enlace de www.flores.club',
+                url: `${this.qrdata}`,
+              });
+            },
+          },
+          {
+            value: 'Descarga el QR',
+            callback: () => {
+              this.downloadQr();
+            },
+          },
+        ],
+      },
+    });
+  }
+
+  downloadQr() {
+    const parentElement = this.qrcode.nativeElement.querySelector('img').src;
+    let blobData = base64ToBlob(parentElement);
+    if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
+      (window.navigator as any).msSaveOrOpenBlob(blobData, 'Landing QR Code');
+    } else {
+      const blob = new Blob([blobData], { type: 'image/png' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = "Landing QR Code";
+      link.click();
+    }
+  }
+  async goToChatDetail() {
+    this.router.navigate(
+      [
+        `ecommerce/${this.order.items[0].saleflow.merchant.slug}/chat-merchant`
+      ],
+      {
+        queryParams: {
+          fromStore: true,
+        },
+      }
+    );
+  }
+  
+  getPricePart(price: number, part: 'main' | 'decimal'): string | number {
+    if(!price)
+      return '';
+    const parts = price.toString().split('.');
+    if (parts.length === 2 && (part === 'main' || part === 'decimal')) {
+      return part === 'main' ? parts[0] : parts[1];
+    }
+    
+    return part == 'decimal' ?  '' : price;
+  }
+  totalProducts: number = 0;
+  async executeProcessesAfterLoadingW(order: ItemOrder){
+    // USUARIO //
+    this.user = this.order.user.name || this.order.user.email || this.order.user.phone
+    const user = this.headerService.user;
+    console.log("user", user)
+
+    let deliveryZone: DeliveryZone;
+    let reservation: Reservation;
+    if (this.order.deliveryZone) {
+      deliveryZone = await this.deliveryzoneService.deliveryZone(
+        this.order.deliveryZone
+      );
+    }
+
+    if (this.order.items[0].reservation) {
+      reservation = await this.reservationService.getReservation(
+        this.order.items[0].reservation._id
+      );
+    }
+
+    this.deliveryImages = {
+      image: this.order.deliveryData?.image
+        ? this.order.deliveryData.image
+        : null,
+      deliveryZone: deliveryZone ? deliveryZone : null,
+      reservation: reservation ? reservation : null,
+    };
+
+    // VERIFICAMOS PARA MOSTRAR EL OVERLAY DE AGRADECIMIENTO //
+    if(this.headerService.user)
+      if(this.headerService.user._id == this.order.user._id)
+        setTimeout(() => {
+          this.toggleOverlay() 
+        }, 100);
+
+    this.buildStatusList();
+    await this.isMerchantOwner(this.order);
+    // CANTIDAD DE ÓRDENES //
+    this.countOrders = this.order.items?.length;
+    // TOTALES DE PRODUCTOS // 
+    this.itemsAmount = this.order.subtotals.reduce((a, b) => (b?.type === 'item' ? a + b.amount : a), 0);
+    // TOTAL ENVÍO // 
+    this.deliveryAmount = this.order.subtotals.reduce((a, b) => (b?.type === 'delivery' ? a + b.amount : a), 0);
+    // TOTAL FEE //
+    this.paymentFeeAmount = this.order.subtotals.reduce((a, b) => (b?.type === 'fee-payment-method' ? a + b.amount : a), 0);// TOTALES //
+    
+    this.payment = this.order.subtotals.reduce((a, b) => a + b.amount, 0);
+    
+    if (order.items) {
+      for (const itemSubOrder of order.items) {
+        itemSubOrder.item.media = itemSubOrder.item.images
+          .sort(({ index: a }, { index: b }) => (a > b ? 1 : -1))
+          .map((image) => {
+            let url = image.value;
+            const fileParts = image.value.split('.');
+            const fileExtension = fileParts[fileParts.length - 1].toLowerCase();
+            let auxiliarImageFileExtension = 'image/' + fileExtension;
+            let auxiliarVideoFileExtension = 'video/' + fileExtension;
+
+            if (url && !url.includes('http') && !url.includes('https')) {
+              url = 'https://' + url;
+            }
+
+            if (this.imageFiles.includes(auxiliarImageFileExtension)) {
+              return {
+                src: url,
+                type: 'IMAGE',
+              };
+            } else if (this.videoFiles.includes(auxiliarVideoFileExtension)) {
+              return {
+                src: url,
+                type: 'VIDEO',
+              };
+            }
+          });
+      }
+    }
+    
+    this.orderStatus = this.orderService.getOrderStatusNameUpperCase(
+      this.order.orderStatus
+    );
+
+    // FECHA //
+    moment.locale('es')
+    this.orderDate = moment(this.order.createdAt).format("DD [de] MMMM" )
+    
+    // MÉTODO DE PAGO // 
+    this.paymentType = (this.order.ocr) ? this.getPaymentMethodName(this.order.ocr?.platform) : null;
+    
+    
+  }
+  // ======================================================================================== //
   async executeProcessesAfterLoading(orderId: string, notification?: string) {
     this.order = (await this.orderService.order(orderId, false))?.order;
     await this.isMerchantOwner(this.order);
@@ -734,7 +948,7 @@ export class OrderDetailComponent implements OnInit {
     ).length;
   }
 
-  downloadQr(qrElment: ElementRef) {
+  async downloadQr2(qrElment: ElementRef) {
     const parentElement = qrElment.nativeElement.querySelector('img').src;
     let blobData = this.convertBase64ToBlob(parentElement);
     if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
@@ -750,7 +964,7 @@ export class OrderDetailComponent implements OnInit {
       // window.open(url);
       const link = document.createElement('a');
       link.href = url;
-      link.download = this.formatId(this.order.dateId);
+      link.download = await this.formatId(this.order.dateId);
       link.click();
     }
   }
@@ -859,7 +1073,9 @@ export class OrderDetailComponent implements OnInit {
   async isMerchantOwner(order: ItemOrder) {
     const merchants = order.merchants;
     const orderMerchant = await this.merchantsService.merchantDefault();
+    console.log("orderMerchant", orderMerchant)
     this.isMerchant = merchants.filter(merchant => merchant._id === orderMerchant?._id).length > 0;
+    return this.isMerchant;
   }
 
   async handleStatusUpdated(updatedStatus: string) {
@@ -1052,7 +1268,7 @@ export class OrderDetailComponent implements OnInit {
   }
 
   goToPostDetail() {
-    this.downloadQr(this.qrcodeTemplate);
+    this.downloadQr2(this.qrcodeTemplate);
     /*
     this.headerService.flowRoute = window.location.href
       .split('/')
@@ -1231,13 +1447,10 @@ export class OrderDetailComponent implements OnInit {
 
     const /* The above code is declaring a variable named "orderStatuDelivery" in TypeScript. */
     orderStatuDelivery = this.order.orderStatusDelivery;
-    console.log("🚀 ~ file: order-detail.component.ts:1056 ~ OrderDetailComponent ~ buildStatusList ~ orderStatuDelivery:", orderStatuDelivery)
-
-    this.activeStatusIndex = statusList.findIndex(
+   this.activeStatusIndex = statusList.findIndex(
       (status) => status === orderStatuDelivery
     );
-    console.log("🚀 ~ file: order-detail.component.ts:1062 ~ OrderDetailComponent ~ buildStatusList ~ this.activeStatusIndex:", this.activeStatusIndex)
-  }
+   }
 
   private getPaymentMethodName(paymentMethod: string): string {
     switch (paymentMethod) {
@@ -1254,5 +1467,59 @@ export class OrderDetailComponent implements OnInit {
       default:
         return '';
     }
+  }
+
+  progress(){
+    // this.activeStatusIndex = 3;
+    let val = (this.activeStatusIndex == this.statusList.length - 1) ? true: false; 
+    let fecha = this.order.dateId?.split("N")
+    this._bottomSheet.open(ProgressDialogComponent, {
+      data: {
+        title: '',
+        state: this.orderStatus,
+        description: `Tu pedido llegará el ${this.displayReservationW(this.deliveryImages?.reservation)} en la dirección ${this.address}`,
+        statusList: this.statusList,
+        activeIndex: this.activeStatusIndex,
+        isAdmin: this.isMerchant,
+        orderId: this.orderId,
+        valOrderFinish: val,
+        buttons: [
+          {
+            value: 'Volver a comprar',
+            callback: (event) => {
+              this.handleStatusUpdated_(event)
+            },
+          },
+        ],
+        changeStatus: {
+          callback: (event) => {
+            this.handleStatusUpdated(event)
+          },
+        },
+      },
+    });
+  }
+  async handleStatusUpdated_(event: any){
+
+  }
+
+  displayReservationW(reservation: Reservation) {
+    const fromDate = new Date(reservation.date.from);
+    const untilDate = new Date(reservation.date.until);
+  
+    const day = fromDate.getDate();
+    const weekday = fromDate.toLocaleString('es-MX', {
+      weekday: 'long',
+    }).replace(/^\w/, (c) => c.toUpperCase());
+    const month = fromDate.toLocaleString('es-MX', {
+      month: 'long',
+    }).replace(/^\w/, (c) => c.toUpperCase()); 
+    const time = `entre ${this.formatHour(fromDate)} - ${this.formatHour(
+      untilDate,
+      reservation.breakTime
+    )}`
+    // .replace('/a\. m\./g', 'am').replace(/p\. m\./g, 'pm');
+  
+    return `${weekday} ${day} de ${month} ${time}`;
   }
 }
