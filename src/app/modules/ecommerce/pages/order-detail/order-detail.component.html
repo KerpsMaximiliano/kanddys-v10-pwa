@@ -157,16 +157,18 @@
         <div *ngIf="order" class="grid-container">
           <div class="item-container" *ngFor="let item of order?.items; index as i">
             <!-- (click)="item.item.images?.length && openImageModal(item.item.images[0].value)" -->
-            <div class="image" *ngIf="!item.item.images.length || !item.item.images || (item.item.images?.length && !urlIsVideo(item.item.images[0].value))"
-              [ngStyle]="{
-                backgroundImage: item.item.images?.length ? 'url(' + item.item.images[0].value + ')' : 'url(/assets/images/noimage.png)',
+            <!-- *ngIf="!item.item.images.length || !item.item.images || (item.item.images?.length && !urlIsVideo(item.item.images[0].value))" -->
+             
+            <div class="image" 
+             [ngStyle]="{
+                backgroundImage: item.item?.images?.length > 0 ? getValidImageUrl(item.item?.images) : 'url(/assets/images/noimage.png)',
                 backgroundRepeat: 'no-repeat',
                 backgroundPosition: 'center',
                 backgroundSize: 'cover'
               }"></div>
             <div class="text">
               <span class="text-items">
-                {{ item.item?.description.length < 32 ? item.item?.description : (item.item?.description.slice(0, 32) + "..") }} 
+                {{ item.item?.description?.length < 32 ? item.item?.description : (item.item?.description?.slice(0, 32) + "..") }} 
               </span>
               <div class="price-container">
                 <span *ngIf="item.item?.amount > 1" class="main-price">X2</span>
@@ -214,7 +216,7 @@
         <div *ngIf="order" class="item-container" style="width: 100%; padding: 12px 22px 4px; align-items: start; height: auto;">
           <div class="image"
             [ngStyle]="{
-              backgroundImage: order.ocr.image ? 'url(' + order.ocr.image + ')' : 'url(/assets/images/noimage.png)',
+              backgroundImage: order.ocr?.image ? 'url(' + order.ocr.image + ')' : 'url(/assets/images/noimage.png)',
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
               backgroundSize: 'cover'}">

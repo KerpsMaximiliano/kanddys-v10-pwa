@@ -1522,4 +1522,20 @@ export class OrderDetailComponent implements OnInit {
   
     return `${weekday} ${day} de ${month} ${time}`;
   }
+
+  getValidImageUrl(images: any[]): string {
+    const validExtensions = ['png', 'jpg', 'jpeg'];
+    const defaultImageUrl = '/assets/images/noimage.png';
+  
+    if (images && images.length > 0) {
+      for (const image of images) {
+        const extension = image.value.split('.').pop()?.toLowerCase();
+        if (validExtensions.includes(extension)) {
+          return 'url(' + image.value + ')';
+        }
+      }
+    }
+  
+    return 'url(' + defaultImageUrl + ')';
+  }
 }
