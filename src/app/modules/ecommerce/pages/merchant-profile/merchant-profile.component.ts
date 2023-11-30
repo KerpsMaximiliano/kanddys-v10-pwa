@@ -2,13 +2,15 @@ import { Location } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SwiperComponent } from 'ngx-swiper-wrapper';
+import { SwiperComponent, SwiperDirective } from 'ngx-swiper-wrapper';
 import { truncateString } from 'src/app/core/helpers/strings.helpers';
 import { Merchant } from 'src/app/core/models/merchant';
 import { ContactService } from 'src/app/core/services/contact.service';
 import { MerchantsService } from 'src/app/core/services/merchants.service';
 import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 import { SwiperOptions } from 'swiper';
+import { environment } from 'src/environments/environment';
+
 
 @Component({
   selector: 'app-merchant-profile',
@@ -16,8 +18,11 @@ import { SwiperOptions } from 'swiper';
   styleUrls: ['./merchant-profile.component.scss']
 })
 export class MerchantProfileComponent implements OnInit {
+  @ViewChild(SwiperDirective) directiveRef: SwiperDirective;
   @ViewChild('swiperContainer', { read: ElementRef }) swiperContainer: ElementRef;
   @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
+
+  env = environment.assetsUrl;
 
   deviceViewportHeight: number = 0;
   swiperConfig: SwiperOptions = {
@@ -192,6 +197,11 @@ export class MerchantProfileComponent implements OnInit {
     // ) {
     //   this.playCurrentSlideVideo('media' + this.currentMediaSlide);
     // }
+  }
+
+  slideTo(index) {
+    this.directiveRef.setIndex(index);
+    this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
   }
 
   back() {

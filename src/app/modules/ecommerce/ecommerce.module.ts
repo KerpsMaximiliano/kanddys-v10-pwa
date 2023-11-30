@@ -87,6 +87,7 @@ import { LaiachatLandingComponent } from './pages/laiachat-landing/laiachat-land
 import { InvisibleMarketingLandingComponent } from './pages/invisible-marketing-landing/invisible-marketing-landing.component';
 import { LaiachatWebscrapingComponent } from './pages/laiachat-webscraping/laiachat-webscraping.component';
 import { LaiachatIntegrationsComponent } from './pages/laiachat-integrations/laiachat-integrations.component';
+import { NewLaiaLandingComponent } from './pages/new-laia-landing/new-laia-landing.component';
 
 const routes: Routes = [
   {
@@ -317,6 +318,10 @@ const routes: Routes = [
   {
     path: 'laiachat-landing',
     component: LaiachatLandingComponent,
+  },
+  {
+    path: 'new-laiachat-landing',
+    component: NewLaiaLandingComponent,
   },
   {
     path: 'laia-training',
@@ -571,6 +576,7 @@ const routes: Routes = [
     InvisibleMarketingLandingComponent,
     LaiachatWebscrapingComponent,
     LaiachatIntegrationsComponent,
+    NewLaiaLandingComponent,
   ],
   imports: [
     CommonModule,

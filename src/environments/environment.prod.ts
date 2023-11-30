@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  uri: 'https://www.flores.club',
+  uri: 'https://www.laiachat.com',
   whatsAppAPI: 'https://api.whatsapp.com',
   api: {
     //url: 'https://api.rewardcharly.com',
@@ -21,4 +21,8 @@ export const environment = {
     'pk_test_51I1G6OBy432m6iRAJAxaouCusq5ALGZhdf1jjTkDrWm3wIFgQ8eosO99wo0CFtigqhpw9FCMfOy4FWoI7qZOkwCo00QMV7cbTI',
   assetsUrl:
     'https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets',
+  ai: {
+    slug: 'laia',
+    id: '653c24fd372ca83e1470f535'
+  }
 };

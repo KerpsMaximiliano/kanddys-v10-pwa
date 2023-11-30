@@ -70,6 +70,12 @@ export class OptionsMenuComponent implements OnInit {
         element.style.backgroundColor = '#403D3D';
       }
     }
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    const isMobile = regex.test(navigator.userAgent);
+    if(!isMobile) {
+      const element : HTMLElement = document.querySelector('.cdk-overlay-pane');
+      element?.style?.setProperty('max-width', '427px', 'important');
+    }
   }
 
   onClick(index: number) {

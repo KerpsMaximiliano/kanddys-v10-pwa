@@ -210,7 +210,7 @@
       </ng-container>
     </main>
 
-    <footer>
+    <footer class="footer" [ngClass]="{mobile: !isMobile}">
       <button class="left" (click)="goToStore()">Preview</button>
       <button class="right" (click)="shareStore()">Comparte</button>
     </footer>

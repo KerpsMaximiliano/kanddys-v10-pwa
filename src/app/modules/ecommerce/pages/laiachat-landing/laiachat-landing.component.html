@@ -1,197 +1,153 @@
 <div class="container" [style.paddingBottom.px]="headerService.user ? 40 : 150">
-  <div
-    class="header-wrapper"
-    [style.justifyContent]="headerService.user ? 'space-between' : 'flex-start'"
-  >
+  <div class="header-wrapper" [style.justifyContent]="headerService.user ? 'space-between' : 'flex-start'">
     <div class="left-part">
       <div class="title">
         <ng-container *ngIf="!headerService.user">
-          <img
-            alt="user"
-            (click)="loginflow = true"
-            src="{{ assetsFolder }}/user-placeholder.png"
-          />
+          <img alt="user" (click)="loginflow = true" src="{{assetsFolder}}/user-placeholder.png">
           <p (click)="loginflow = true" class="sign-in">
-            <!-- {{ "general.register" | translate }} -->
-            Registro
+            {{ "general.register" | translate }}
+            <!-- Registro -->
           </p>
         </ng-container>
         <ng-container *ngIf="headerService.user">
-          <img
-            alt="user"
-            (click)="showRoleDialog()"
-            src="{{ assetsFolder }}/user-placeholder.png"
-          />
-          <span (click)="showRoleDialog()" style="color: #87cd9b">
+          <img alt="user" (click)="showRoleDialog()" src="{{assetsFolder}}/user-placeholder.png">
+          <span (click)="showRoleDialog()" style="color: #87CD9B;">
             {{
-              headerService.user.name
-                ? headerService.user.name
-                : headerService.user.email
-                ? truncateString(headerService.user.email)
-                : headerService.user.phone
+              headerService.user.name ?
+              headerService.user.name :
+              headerService.user.email ?
+              truncateString(headerService.user.email) :
+              headerService.user.phone
             }}
           </span>
         </ng-container>
       </div>
-
-
     </div>
 
     <div *ngIf="headerService.user" class="right-part">
-      <div class="icon" (click)="goClubLanding()">
-        <svg
-          [style.marginRight.px]="25"
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="25"
-          viewBox="0 0 24 25"
-          fill="none"
-        >
-          <g clip-path="url(#clip0_2291_38)">
-            <path
-              d="M10.998 22.4364C9.52847 22.4403 8.07365 22.144 6.72272 21.5657C5.40913 21.0245 4.21568 20.2287 3.21118 19.224C2.20668 18.2194 1.41102 17.0258 0.870078 15.7121C0.295911 14.3599 0 12.9059 0 11.4369C0 9.9678 0.295911 8.5138 0.870078 7.1616C1.41107 5.84775 2.20685 4.65403 3.21152 3.64929C4.21618 2.64455 5.40984 1.84867 6.72364 1.30758C8.07584 0.733411 9.52984 0.4375 10.9989 0.4375C12.4679 0.4375 13.922 0.733411 15.2742 1.30758C16.5881 1.84852 17.7819 2.64428 18.7867 3.64895C19.7915 4.65361 20.5875 5.8473 21.1286 7.16114C21.7028 8.51334 21.9987 9.96734 21.9987 11.4364C21.9987 12.9054 21.7028 14.3595 21.1286 15.7117C20.5876 17.0256 19.7918 18.2195 18.7871 19.2243C17.7823 20.2291 16.5885 21.025 15.2746 21.5661C13.9232 22.1445 12.4679 22.4406 10.998 22.4364ZM6.42209 19.9012C7.82419 20.6698 9.39905 21.0684 10.998 21.0593C12.6987 21.0719 14.3704 20.6186 15.8319 19.7486C17.2778 18.9051 18.478 17.6981 19.3134 16.2474C18.6034 16.9201 17.7624 17.4393 16.8428 17.7725C15.8518 18.1362 14.8033 18.3182 13.7476 18.3096C11.5992 18.3096 9.9163 17.7009 8.69881 16.4834C7.48132 15.2659 6.87288 13.5833 6.87349 11.4355C6.86919 10.4738 7.21261 9.54302 7.84046 8.8146C6.7214 9.33697 5.77477 10.168 5.11188 11.21C4.43609 12.31 4.09295 13.5819 4.12384 14.8726C4.1383 15.7823 4.34328 16.6788 4.72555 17.5044C5.12336 18.41 5.70084 19.2254 6.42301 19.9012H6.42209ZM10.998 14.1851C11.7272 14.1851 12.4266 13.8954 12.9423 13.3798C13.4579 12.8641 13.7476 12.1647 13.7476 11.4355C13.7476 10.7062 13.4579 10.0068 12.9423 9.49118C12.4266 8.97552 11.7272 8.68582 10.998 8.68582C10.2687 8.68582 9.56934 8.97552 9.05368 9.49118C8.53802 10.0068 8.24832 10.7062 8.24832 11.4355C8.24832 12.1647 8.53802 12.8641 9.05368 13.3798C9.56934 13.8954 10.2687 14.1851 10.998 14.1851ZM2.68485 6.62358C3.39483 5.95085 4.23585 5.43167 5.15542 5.09844C6.14574 4.73502 7.19346 4.55308 8.24832 4.56134C10.3967 4.56134 12.0797 5.17008 13.2972 6.38757C14.5146 7.60505 15.1231 9.28769 15.1225 11.4355C15.1268 12.3971 14.7834 13.3279 14.1555 14.0564C15.2746 13.534 16.2212 12.7029 16.8841 11.661C17.5599 10.561 17.903 9.28901 17.8721 7.99841C17.8577 7.08871 17.6527 6.19214 17.2704 5.36653C16.873 4.46162 16.2961 3.64673 15.5748 2.97112C14.1725 2.20187 12.5973 1.80282 10.998 1.81168C9.29771 1.79933 7.62648 2.25259 6.16546 3.12235C4.71984 3.96601 3.51996 5.17301 2.68485 6.62358Z"
-              fill="#C4C5C3"
-            />
-          </g>
-          <defs>
-            <clipPath id="clip0_2291_38">
-              <rect
-                width="22"
-                height="22"
-                fill="white"
-                transform="translate(0 0.4375)"
-              />
-            </clipPath>
-          </defs>
-        </svg>
-        <svg
-          (click)="goLaiaMemories()"
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="25"
-          viewBox="0 0 24 25"
-          fill="none"
-        >
-          <g clip-path="url(#clip0_2291_35)">
-            <path
-              d="M19.6497 7.54949C19.8047 7.0062 19.8384 6.43548 19.7484 5.87772C19.6584 5.31997 19.447 4.7888 19.129 4.32181C18.811 3.85481 18.3943 3.46341 17.9083 3.17529C17.4223 2.88717 16.879 2.70938 16.3167 2.65449C16.14 2.13954 15.8381 1.67662 15.438 1.30743C15.0379 0.938245 14.5522 0.674389 14.0248 0.539632C13.4973 0.404874 12.9446 0.403449 12.4164 0.535485C11.8883 0.667521 11.4013 0.92887 10.9993 1.29599C10.5981 0.929064 10.1118 0.667841 9.58438 0.535907C9.05694 0.403972 8.50496 0.40548 7.97825 0.540295C7.45154 0.67511 6.96671 0.938986 6.56752 1.3081C6.16833 1.67721 5.86736 2.13993 5.69179 2.65449C5.12862 2.70803 4.58414 2.88485 4.09697 3.1724C3.6098 3.45995 3.19187 3.85118 2.87284 4.31834C2.5538 4.7855 2.34148 5.31714 2.25093 5.87555C2.16038 6.43396 2.19382 7.00545 2.34889 7.54949C1.73912 7.87079 1.21335 8.33084 0.813973 8.89258C0.414591 9.45431 0.152761 10.102 0.0495818 10.7835C-0.0535971 11.465 0.00476172 12.1611 0.219955 12.8159C0.435149 13.4707 0.801157 14.0658 1.28848 14.5532C1.16326 14.97 1.09953 15.4028 1.09929 15.838C1.10164 16.8713 1.46716 17.8709 2.13194 18.6619C2.79672 19.453 3.71843 19.9852 4.73589 20.1654C4.99228 20.7381 5.38499 21.2392 5.87973 21.6251C6.37446 22.011 6.95616 22.2699 7.57402 22.3792C8.19187 22.4885 8.82708 22.4448 9.42416 22.252C10.0212 22.0592 10.562 21.7231 10.9993 21.2731C11.4359 21.7227 11.9758 22.0587 12.5721 22.2518C13.1684 22.4448 13.8028 22.489 14.4201 22.3805C15.0373 22.272 15.6187 22.0142 16.1134 21.6294C16.6081 21.2446 17.0012 20.7447 17.2583 20.1731C17.872 20.0649 18.4559 19.8277 18.9712 19.4773C19.4865 19.1268 19.9217 18.671 20.2479 18.14C20.5741 17.609 20.784 17.0148 20.8637 16.3967C20.9433 15.7786 20.891 15.1507 20.7101 14.5543C21.1976 14.0669 21.5638 13.4717 21.7792 12.8168C21.9945 12.1619 22.0529 11.4656 21.9497 10.784C21.8465 10.1023 21.5846 9.45449 21.1851 8.89267C20.7856 8.33084 20.2597 7.87075 19.6497 7.54949ZM8.24929 20.238C7.86891 20.2381 7.50019 20.1067 7.20553 19.8662C6.91087 19.6256 6.70836 19.2907 6.63229 18.918L6.39909 18.038H5.49929C4.91581 18.038 4.35623 17.8062 3.94365 17.3936C3.53107 16.981 3.29929 16.4215 3.29929 15.838C3.29678 15.4602 3.39269 15.0883 3.57758 14.7589L4.07919 13.8613L3.21679 13.3003C2.84073 13.06 2.54649 12.7113 2.373 12.3001C2.19952 11.889 2.15496 11.4349 2.24522 10.9979C2.33549 10.5609 2.55632 10.1615 2.8785 9.85279C3.20068 9.54403 3.60902 9.34038 4.04949 9.26879L5.91179 8.98279L4.74689 7.50219C4.5378 7.23491 4.41621 6.90967 4.39868 6.57079C4.38116 6.2319 4.46854 5.89585 4.64893 5.60843C4.82932 5.32101 5.09394 5.09619 5.40674 4.96462C5.71953 4.83305 6.06529 4.80113 6.39689 4.87319L7.70149 5.06569V3.73799C7.70149 3.44625 7.81738 3.16646 8.02367 2.96017C8.22996 2.75388 8.50975 2.63799 8.80149 2.63799C9.09322 2.63799 9.37301 2.75388 9.5793 2.96017C9.78559 3.16646 9.90148 3.44625 9.90148 3.73799V18.588C9.90148 18.8049 9.85873 19.0196 9.77568 19.2199C9.69262 19.4203 9.57088 19.6022 9.41743 19.7555C9.26398 19.9087 9.08183 20.0302 8.88139 20.113C8.68095 20.1958 8.46615 20.2383 8.24929 20.238ZM18.7818 13.2992L17.9194 13.858L18.421 14.7556C18.6061 15.0861 18.702 15.4591 18.6993 15.838C18.6974 16.131 18.6373 16.4207 18.5226 16.6904C18.408 16.96 18.2409 17.2042 18.0312 17.4089C17.8214 17.6135 17.5732 17.7745 17.3008 17.8824C17.0284 17.9904 16.7373 18.0433 16.4443 18.038H15.5445L15.3663 18.918C15.2849 19.319 15.0573 19.6754 14.7279 19.9181C14.3984 20.1608 13.9906 20.2724 13.5835 20.2313C13.1763 20.1902 12.799 19.9992 12.5248 19.6956C12.2505 19.3919 12.0989 18.9972 12.0993 18.588V3.73799C12.0993 3.44625 12.2152 3.16646 12.4215 2.96017C12.6278 2.75388 12.9075 2.63799 13.1993 2.63799C13.3479 2.63972 13.4947 2.67119 13.631 2.73054C13.7673 2.78989 13.8903 2.87592 13.9928 2.98356C14.0953 3.0912 14.1753 3.21827 14.2279 3.35729C14.2805 3.4963 14.3048 3.64445 14.2993 3.79299V5.12069L15.6039 4.87319C15.9355 4.80113 16.2812 4.83305 16.594 4.96462C16.9068 5.09619 17.1715 5.32101 17.3518 5.60843C17.5322 5.89585 17.6196 6.2319 17.6021 6.57079C17.5846 6.90967 17.463 7.23491 17.2539 7.50219L16.0868 8.98389L17.9491 9.26989C18.39 9.34035 18.7991 9.54332 19.1219 9.85183C19.4447 10.1603 19.666 10.5598 19.7564 10.9971C19.8468 11.4344 19.8019 11.8888 19.6279 12.3C19.4538 12.7112 19.1587 13.0597 18.7818 13.2992Z"
-              fill="#C4C5C3"
-            />
-          </g>
-          <defs>
-            <clipPath id="clip0_2291_35">
-              <rect
-                width="22"
-                height="22"
-                fill="white"
-                transform="translate(0 0.4375)"
-              />
-            </clipPath>
-          </defs>
-        </svg>
+      <div class="icon">
+          <!-- <svg (click)="goClubLanding()" [style.marginRight.px]="25" xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none">
+              <g clip-path="url(#clip0_2291_38)">
+                  <path d="M10.998 22.4364C9.52847 22.4403 8.07365 22.144 6.72272 21.5657C5.40913 21.0245 4.21568 20.2287 3.21118 19.224C2.20668 18.2194 1.41102 17.0258 0.870078 15.7121C0.295911 14.3599 0 12.9059 0 11.4369C0 9.9678 0.295911 8.5138 0.870078 7.1616C1.41107 5.84775 2.20685 4.65403 3.21152 3.64929C4.21618 2.64455 5.40984 1.84867 6.72364 1.30758C8.07584 0.733411 9.52984 0.4375 10.9989 0.4375C12.4679 0.4375 13.922 0.733411 15.2742 1.30758C16.5881 1.84852 17.7819 2.64428 18.7867 3.64895C19.7915 4.65361 20.5875 5.8473 21.1286 7.16114C21.7028 8.51334 21.9987 9.96734 21.9987 11.4364C21.9987 12.9054 21.7028 14.3595 21.1286 15.7117C20.5876 17.0256 19.7918 18.2195 18.7871 19.2243C17.7823 20.2291 16.5885 21.025 15.2746 21.5661C13.9232 22.1445 12.4679 22.4406 10.998 22.4364ZM6.42209 19.9012C7.82419 20.6698 9.39905 21.0684 10.998 21.0593C12.6987 21.0719 14.3704 20.6186 15.8319 19.7486C17.2778 18.9051 18.478 17.6981 19.3134 16.2474C18.6034 16.9201 17.7624 17.4393 16.8428 17.7725C15.8518 18.1362 14.8033 18.3182 13.7476 18.3096C11.5992 18.3096 9.9163 17.7009 8.69881 16.4834C7.48132 15.2659 6.87288 13.5833 6.87349 11.4355C6.86919 10.4738 7.21261 9.54302 7.84046 8.8146C6.7214 9.33697 5.77477 10.168 5.11188 11.21C4.43609 12.31 4.09295 13.5819 4.12384 14.8726C4.1383 15.7823 4.34328 16.6788 4.72555 17.5044C5.12336 18.41 5.70084 19.2254 6.42301 19.9012H6.42209ZM10.998 14.1851C11.7272 14.1851 12.4266 13.8954 12.9423 13.3798C13.4579 12.8641 13.7476 12.1647 13.7476 11.4355C13.7476 10.7062 13.4579 10.0068 12.9423 9.49118C12.4266 8.97552 11.7272 8.68582 10.998 8.68582C10.2687 8.68582 9.56934 8.97552 9.05368 9.49118C8.53802 10.0068 8.24832 10.7062 8.24832 11.4355C8.24832 12.1647 8.53802 12.8641 9.05368 13.3798C9.56934 13.8954 10.2687 14.1851 10.998 14.1851ZM2.68485 6.62358C3.39483 5.95085 4.23585 5.43167 5.15542 5.09844C6.14574 4.73502 7.19346 4.55308 8.24832 4.56134C10.3967 4.56134 12.0797 5.17008 13.2972 6.38757C14.5146 7.60505 15.1231 9.28769 15.1225 11.4355C15.1268 12.3971 14.7834 13.3279 14.1555 14.0564C15.2746 13.534 16.2212 12.7029 16.8841 11.661C17.5599 10.561 17.903 9.28901 17.8721 7.99841C17.8577 7.08871 17.6527 6.19214 17.2704 5.36653C16.873 4.46162 16.2961 3.64673 15.5748 2.97112C14.1725 2.20187 12.5973 1.80282 10.998 1.81168C9.29771 1.79933 7.62648 2.25259 6.16546 3.12235C4.71984 3.96601 3.51996 5.17301 2.68485 6.62358Z" fill="#C4C5C3"/>
+              </g>
+              <defs>
+                  <clipPath id="clip0_2291_38">
+                      <rect width="22" height="22" fill="white" transform="translate(0 0.4375)"/>
+                  </clipPath>
+              </defs>
+          </svg> -->
+          <svg (click)="goLaiaMemories()" xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none">
+              <g clip-path="url(#clip0_2291_35)">
+                  <path d="M19.6497 7.54949C19.8047 7.0062 19.8384 6.43548 19.7484 5.87772C19.6584 5.31997 19.447 4.7888 19.129 4.32181C18.811 3.85481 18.3943 3.46341 17.9083 3.17529C17.4223 2.88717 16.879 2.70938 16.3167 2.65449C16.14 2.13954 15.8381 1.67662 15.438 1.30743C15.0379 0.938245 14.5522 0.674389 14.0248 0.539632C13.4973 0.404874 12.9446 0.403449 12.4164 0.535485C11.8883 0.667521 11.4013 0.92887 10.9993 1.29599C10.5981 0.929064 10.1118 0.667841 9.58438 0.535907C9.05694 0.403972 8.50496 0.40548 7.97825 0.540295C7.45154 0.67511 6.96671 0.938986 6.56752 1.3081C6.16833 1.67721 5.86736 2.13993 5.69179 2.65449C5.12862 2.70803 4.58414 2.88485 4.09697 3.1724C3.6098 3.45995 3.19187 3.85118 2.87284 4.31834C2.5538 4.7855 2.34148 5.31714 2.25093 5.87555C2.16038 6.43396 2.19382 7.00545 2.34889 7.54949C1.73912 7.87079 1.21335 8.33084 0.813973 8.89258C0.414591 9.45431 0.152761 10.102 0.0495818 10.7835C-0.0535971 11.465 0.00476172 12.1611 0.219955 12.8159C0.435149 13.4707 0.801157 14.0658 1.28848 14.5532C1.16326 14.97 1.09953 15.4028 1.09929 15.838C1.10164 16.8713 1.46716 17.8709 2.13194 18.6619C2.79672 19.453 3.71843 19.9852 4.73589 20.1654C4.99228 20.7381 5.38499 21.2392 5.87973 21.6251C6.37446 22.011 6.95616 22.2699 7.57402 22.3792C8.19187 22.4885 8.82708 22.4448 9.42416 22.252C10.0212 22.0592 10.562 21.7231 10.9993 21.2731C11.4359 21.7227 11.9758 22.0587 12.5721 22.2518C13.1684 22.4448 13.8028 22.489 14.4201 22.3805C15.0373 22.272 15.6187 22.0142 16.1134 21.6294C16.6081 21.2446 17.0012 20.7447 17.2583 20.1731C17.872 20.0649 18.4559 19.8277 18.9712 19.4773C19.4865 19.1268 19.9217 18.671 20.2479 18.14C20.5741 17.609 20.784 17.0148 20.8637 16.3967C20.9433 15.7786 20.891 15.1507 20.7101 14.5543C21.1976 14.0669 21.5638 13.4717 21.7792 12.8168C21.9945 12.1619 22.0529 11.4656 21.9497 10.784C21.8465 10.1023 21.5846 9.45449 21.1851 8.89267C20.7856 8.33084 20.2597 7.87075 19.6497 7.54949ZM8.24929 20.238C7.86891 20.2381 7.50019 20.1067 7.20553 19.8662C6.91087 19.6256 6.70836 19.2907 6.63229 18.918L6.39909 18.038H5.49929C4.91581 18.038 4.35623 17.8062 3.94365 17.3936C3.53107 16.981 3.29929 16.4215 3.29929 15.838C3.29678 15.4602 3.39269 15.0883 3.57758 14.7589L4.07919 13.8613L3.21679 13.3003C2.84073 13.06 2.54649 12.7113 2.373 12.3001C2.19952 11.889 2.15496 11.4349 2.24522 10.9979C2.33549 10.5609 2.55632 10.1615 2.8785 9.85279C3.20068 9.54403 3.60902 9.34038 4.04949 9.26879L5.91179 8.98279L4.74689 7.50219C4.5378 7.23491 4.41621 6.90967 4.39868 6.57079C4.38116 6.2319 4.46854 5.89585 4.64893 5.60843C4.82932 5.32101 5.09394 5.09619 5.40674 4.96462C5.71953 4.83305 6.06529 4.80113 6.39689 4.87319L7.70149 5.06569V3.73799C7.70149 3.44625 7.81738 3.16646 8.02367 2.96017C8.22996 2.75388 8.50975 2.63799 8.80149 2.63799C9.09322 2.63799 9.37301 2.75388 9.5793 2.96017C9.78559 3.16646 9.90148 3.44625 9.90148 3.73799V18.588C9.90148 18.8049 9.85873 19.0196 9.77568 19.2199C9.69262 19.4203 9.57088 19.6022 9.41743 19.7555C9.26398 19.9087 9.08183 20.0302 8.88139 20.113C8.68095 20.1958 8.46615 20.2383 8.24929 20.238ZM18.7818 13.2992L17.9194 13.858L18.421 14.7556C18.6061 15.0861 18.702 15.4591 18.6993 15.838C18.6974 16.131 18.6373 16.4207 18.5226 16.6904C18.408 16.96 18.2409 17.2042 18.0312 17.4089C17.8214 17.6135 17.5732 17.7745 17.3008 17.8824C17.0284 17.9904 16.7373 18.0433 16.4443 18.038H15.5445L15.3663 18.918C15.2849 19.319 15.0573 19.6754 14.7279 19.9181C14.3984 20.1608 13.9906 20.2724 13.5835 20.2313C13.1763 20.1902 12.799 19.9992 12.5248 19.6956C12.2505 19.3919 12.0989 18.9972 12.0993 18.588V3.73799C12.0993 3.44625 12.2152 3.16646 12.4215 2.96017C12.6278 2.75388 12.9075 2.63799 13.1993 2.63799C13.3479 2.63972 13.4947 2.67119 13.631 2.73054C13.7673 2.78989 13.8903 2.87592 13.9928 2.98356C14.0953 3.0912 14.1753 3.21827 14.2279 3.35729C14.2805 3.4963 14.3048 3.64445 14.2993 3.79299V5.12069L15.6039 4.87319C15.9355 4.80113 16.2812 4.83305 16.594 4.96462C16.9068 5.09619 17.1715 5.32101 17.3518 5.60843C17.5322 5.89585 17.6196 6.2319 17.6021 6.57079C17.5846 6.90967 17.463 7.23491 17.2539 7.50219L16.0868 8.98389L17.9491 9.26989C18.39 9.34035 18.7991 9.54332 19.1219 9.85183C19.4447 10.1603 19.666 10.5598 19.7564 10.9971C19.8468 11.4344 19.8019 11.8888 19.6279 12.3C19.4538 12.7112 19.1587 13.0597 18.7818 13.2992Z" fill="#C4C5C3"/>
+              </g>
+              <defs>
+                  <clipPath id="clip0_2291_35">
+                      <rect width="22" height="22" fill="white" transform="translate(0 0.4375)"/>
+                  </clipPath>
+              </defs>
+          </svg>
       </div>
     </div>
   </div>
 
   <ng-container *ngIf="headerService.user; else elseTemplate">
-    <ng-container *ngIf="chatsByMonthCopy?.length === 0">
-      <ng-container *ngTemplateOutlet="emptyChat"></ng-container>
-    </ng-container>
-
-    <ng-container *ngIf="chatsByMonthCopy?.length > 0">
-      <div class="container-toggle">
-        <span class="title"> Laia te preguntará antes de contestar </span>
-        <img class="toggle-icon" [src]="assetsFolder + '/toggle-on.svg'" />
-      </div>
-
-      <div class="container-filters">
-        <form class="search-bar-wrapper" style="margin-bottom: 5px">
-          <div class="filters">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="23"
-              height="25"
-              viewBox="0 0 23 25"
-              fill="none"
-            >
-              <path
-                d="M9.83693 22.4375H7.7V11.3397L0 2.1711V0.4375H20.9V2.16132L13.5667 11.328V18.7102L9.83693 22.4375ZM9.16667 20.9708H9.22973L12.1 18.1006V10.8161L19.2275 1.90417H1.69107L9.16667 10.8019V20.9708Z"
-                fill="#7B7B7B"
+      <ng-container *ngIf="chatsByMonthCopy?.length === 0">
+          <ng-container *ngTemplateOutlet="emptyChat"></ng-container>
+      </ng-container>
+  
+      <ng-container *ngIf="chatsByMonthCopy?.length > 0">
+        <!-- <div class="container-toggle">
+              <span class="title">
+                {{ "title.laia-question" | translate }}
+              </span>
+              <img
+                class="toggle-icon"
+                [src]="
+                  assetsFolder +
+                  ('/toggle-on.svg')
+                "
               />
-            </svg>
-          </div>
+        </div> -->
 
-          <input
-            type="text"
-            name="item-search"
-            [formControl]="filter"
-            class="input search-bar"
-            placeholder="Todos los IDs (3,589).."
-          />
-        </form>
+        <div class="container-filters">
+              <form class="search-bar-wrapper" style="margin-bottom: 5px">
+                  <div class="filters">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="23" height="25" viewBox="0 0 23 25" fill="none">
+                          <path d="M9.83693 22.4375H7.7V11.3397L0 2.1711V0.4375H20.9V2.16132L13.5667 11.328V18.7102L9.83693 22.4375ZM9.16667 20.9708H9.22973L12.1 18.1006V10.8161L19.2275 1.90417H1.69107L9.16667 10.8019V20.9708Z" fill="#7B7B7B"/>
+                      </svg>
+                  </div>
+  
+                  <input
+                      type="text"
+                      name="item-search"
+                      [formControl]="filter"
+                      class="input search-bar"
+                      placeholder="{{ 'laia-landing.placeholderFilter' | translate }}"
+                  />
+              </form>
 
-        <div class="search">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="25"
-            viewBox="0 0 24 25"
-            fill="none"
-          >
-            <path
-              d="M16.1458 15.1652C17.4772 13.3484 18.0735 11.096 17.8154 8.85851C17.5574 6.62102 16.464 4.56345 14.754 3.09748C13.0441 1.6315 10.8437 0.865223 8.59303 0.951945C6.34236 1.03867 4.20744 1.972 2.61537 3.5652C1.0233 5.15841 0.0915002 7.29401 0.00638872 9.54473C-0.0787228 11.7955 0.689131 13.9953 2.15633 15.7042C3.62353 17.4131 5.68187 18.505 7.91956 18.7615C10.1572 19.0179 12.4092 18.42 14.225 17.0873C14.2665 17.1429 14.3115 17.1957 14.3598 17.2455L19.6533 22.539C19.9111 22.797 20.2608 22.942 20.6256 22.9421C20.9903 22.9423 21.3402 22.7975 21.5981 22.5397C21.8561 22.2819 22.0012 21.9321 22.0013 21.5674C22.0014 21.2027 21.8566 20.8528 21.5988 20.5948L16.3053 15.3013C16.2561 15.2515 16.2033 15.2056 16.1472 15.1638L16.1458 15.1652ZM16.5005 9.87989C16.5005 11.3756 16.057 12.8376 15.2261 14.0812C14.3951 15.3248 13.2141 16.2941 11.8323 16.8664C10.4505 17.4388 8.92997 17.5886 7.46305 17.2968C5.99613 17.005 4.64868 16.2848 3.59109 15.2272C2.5335 14.1696 1.81327 12.8221 1.52148 11.3552C1.22969 9.88828 1.37945 8.36778 1.95181 6.98597C2.52418 5.60416 3.49344 4.42311 4.73704 3.59217C5.98063 2.76122 7.4427 2.31771 8.93836 2.31771C10.944 2.31771 12.8674 3.11444 14.2856 4.53262C15.7038 5.95081 16.5005 7.87428 16.5005 9.87989Z"
-              fill="#7B7B7B"
-            />
-          </svg>
+              <div class="search">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none">
+                      <path d="M16.1458 15.1652C17.4772 13.3484 18.0735 11.096 17.8154 8.85851C17.5574 6.62102 16.464 4.56345 14.754 3.09748C13.0441 1.6315 10.8437 0.865223 8.59303 0.951945C6.34236 1.03867 4.20744 1.972 2.61537 3.5652C1.0233 5.15841 0.0915002 7.29401 0.00638872 9.54473C-0.0787228 11.7955 0.689131 13.9953 2.15633 15.7042C3.62353 17.4131 5.68187 18.505 7.91956 18.7615C10.1572 19.0179 12.4092 18.42 14.225 17.0873C14.2665 17.1429 14.3115 17.1957 14.3598 17.2455L19.6533 22.539C19.9111 22.797 20.2608 22.942 20.6256 22.9421C20.9903 22.9423 21.3402 22.7975 21.5981 22.5397C21.8561 22.2819 22.0012 21.9321 22.0013 21.5674C22.0014 21.2027 21.8566 20.8528 21.5988 20.5948L16.3053 15.3013C16.2561 15.2515 16.2033 15.2056 16.1472 15.1638L16.1458 15.1652ZM16.5005 9.87989C16.5005 11.3756 16.057 12.8376 15.2261 14.0812C14.3951 15.3248 13.2141 16.2941 11.8323 16.8664C10.4505 17.4388 8.92997 17.5886 7.46305 17.2968C5.99613 17.005 4.64868 16.2848 3.59109 15.2272C2.5335 14.1696 1.81327 12.8221 1.52148 11.3552C1.22969 9.88828 1.37945 8.36778 1.95181 6.98597C2.52418 5.60416 3.49344 4.42311 4.73704 3.59217C5.98063 2.76122 7.4427 2.31771 8.93836 2.31771C10.944 2.31771 12.8674 3.11444 14.2856 4.53262C15.7038 5.95081 16.5005 7.87428 16.5005 9.87989Z" fill="#7B7B7B"/>
+                  </svg>
+              </div>
         </div>
-      </div>
 
-      <section
-        class="chat-grouped"
-        *ngFor="let chatsByPeriod of chatsByMonthCopy"
-      >
-        <!-- <h3>{{ chatsByPeriod.month.label }}</h3> -->
-
-        <div
-          class="chat-card"
-          (click)="goToChatDetail(chat)"
-          *ngFor="let chat of chatsByPeriod.chats"
+        <section
+          class="chat-grouped"
+          *ngFor="let chatsByPeriod of chatsByMonthCopy"
         >
-          <div class="top">
-            <h5>
+          <!-- <h3>{{ chatsByPeriod.month.label }}</h3> -->
+  
+          <div
+            class="chat-card"
+            (click)="goToChatDetail(chat)"
+            *ngFor="let chat of chatsByPeriod.chats"
+          >
+            <div class="top">
+              <div class="container-top">
+                <div 
+                  class="assistantStatus"
+                  [style.backgroundColor]="chat?.activeAssistant ? '#3B654A' : '#936105'"
+                  [style.marginRight.px]="8"
+                ></div>
+                <h5>
+                  {{
+                    chat.receiver?.name ||
+                      chat.receiver?.email ||
+                      chat.receiver?.phone ||
+                      chat.receiverIpAddress
+                  }}
+                </h5>
+              </div>
+              <div class="container-top">
+                <div *ngIf="chat?.pendingMessages" class="assistantStatus" [style.backgroundColor]="'#2874AD'" [style.marginRight.px]="4"></div>
+                <span class="date">{{
+                  getCreationDateDifferenceAsItsSaid(chat.updatedAt)
+                }}</span>
+              </div>
+            </div>
+  
+            <p class="bottom">
               {{
-                chat.receiver?.name ||
-                  chat.receiver?.email ||
-                  chat.receiver?.phone
+                chat.lastMessageWritten
+                  ? chat.lastMessageWritten
+                  : ("laia-landing.noMessages" | translate)
               }}
-            </h5>
-            <span class="date">{{
-              getCreationDateDifferenceAsItsSaid(chat.updatedAt)
-            }}</span>
+            </p>
           </div>
-
-          <p class="bottom">
-            {{
-              chat.lastMessageWritten
-                ? chat.lastMessageWritten
-                : "Todavía no han escrito nada"
-            }}
-          </p>
-        </div>
-      </section>
-    </ng-container>
+        </section>
+      </ng-container>
   </ng-container>
   <ng-template #elseTemplate>
-    <div class="container-title">
-      <!-- <p class="title">{{ "title.laia-introduction" | translate }}</p> -->
-      <p class="title">LAIACHAT</p>
-      <!-- <p class="subtitle">{{ "subtitle.spent-less-time" | translate }}</p> -->
-      <p class="subtitle">
-        Ahorra Tiempo Brindando Respuestas Precisas al Instante
-      </p>
-    </div>
+      <div class="container-title">
+        <p class="title">{{ "title.laia-introduction" | translate }}</p>
+        <!-- <p class="title">LAIACHAT</p> -->
+        <p class="subtitle">{{ "subtitle.spent-less-time" | translate }}</p>
+        <!-- <p class="subtitle">Ahorra Tiempo Brindando Respuestas Precisas al Instante</p> -->
+      </div>
 
-    <!-- <div class="container-title">
+      <!-- <div class="container-title">
         <p class="title" [style.marginBottom.px]="23">{{ "title.laia-memory" | translate }}</p>
           
           <div class="textarea-wrapper">
@@ -219,277 +175,203 @@
           <p class="text" [style.marginTop.px]="12">{{ "text.write-laia-description" | translate }}</p>
       </div> -->
 
-    <div class="container-content">
-      <p class="text">
-        Introduce contenido en la Memoria de Laia para empezar a brindar
-        respuestas en cualquier idioma con Inteligencia Artificial
-      </p>
+      <div class="container-content">
+        <p class="text">
+          {{ "laia-landing.titleMemory" | translate }}
+          <!-- Introduce contenido en la Memoria de Laia para empezar a brindar respuestas en cualquier idioma con Inteligencia Artificial -->
+        </p>
 
-      <button type="button" class="button" (click)="openDialogOptions()">
-        Tap aquí para introducir contenido
-      </button>
-    </div>
-
-    <input
-      type="file"
-      id="file"
-      [style.display]="'none'"
-      (change)="loadFileOption($event)"
-      multiple
-    />
-
-    <div class="social-media">
-      <!-- <p class="title">{{ "title.laia-integrations" | translate }}</p> -->
-      <p class="title">INTEGRACIONES DE CHATS</p>
-
-      <div class="filters">
-        <div class="filter">
-          Completas
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="14"
-            height="13"
-            viewBox="0 0 20 19"
-            fill="none"
-          >
-            <ellipse cx="10" cy="9.5" rx="10" ry="9.5" fill="#7B7B7B" />
-          </svg>
-        </div>
-        <div
-          class="filter"
-          [style.margin]="'0 8px'"
-          [style.justifyContent]="'center'"
-        >
-          En Desarrollo
-          <img
-            width="12"
-            alt="user"
-            (click)="loginflow = true"
-            src="{{ assetsFolder }}/semi-circle.png"
-          />
-        </div>
-        <div class="filter" [style.justifyContent]="'flex-end'">
-          Potenciales
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="14"
-            height="13"
-            viewBox="0 0 20 19"
-            fill="none"
-          >
-            <path
-              d="M19.5 9.5C19.5 14.4467 15.2712 18.5 10 18.5C4.72882 18.5 0.5 14.4467 0.5 9.5C0.5 4.55329 4.72882 0.5 10 0.5C15.2712 0.5 19.5 4.55329 19.5 9.5Z"
-              stroke="#7B7B7B"
-            />
-          </svg>
-        </div>
+        <button type="button" class="button" (click)="openDialogOptions()">{{ "laia-landing.subtitleMemory" | translate }}</button>
       </div>
 
-      <div class="socials" [style.marginTop.px]="15">
-        <div class="media">
-          <!-- {{ "general.websites" | translate }} -->
-          Websites
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="19"
-            viewBox="0 0 20 19"
-            fill="none"
+      <input
+        type="file"
+        id="file"
+        [style.display]="'none'"
+        (change)="loadFileOption($event)"
+        multiple
+      />
+      
+      <div class="social-media">
+        <p class="title">{{ "title.laia-integrations" | translate }}</p>
+        <!-- <p class="title">INTEGRACIONES DE CHATS</p> -->
+
+        <div class="filters">
+          <div class="filter">
+            {{ "laia-landing.titleFilterOne" | translate }}
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="13" viewBox="0 0 20 19" fill="none">
+              <ellipse cx="10" cy="9.5" rx="10" ry="9.5" fill="#7B7B7B"/>
+            </svg>
+          </div>
+          <div 
+            class="filter"
+            [style.margin]="'0 8px'"
+            [style.justifyContent]="'center'"  
           >
-            <ellipse cx="10" cy="9.5" rx="10" ry="9.5" fill="#7B7B7B" />
-          </svg>
+          {{ "laia-landing.titleFilterTwo" | translate }}
+            <img width="12" alt="user" (click)="loginflow = true" src="{{assetsFolder}}/semi-circle.png">
+          </div>
+          <div class="filter" [style.justifyContent]="'flex-end'" >
+            {{ "laia-landing.titleFilterThree" | translate }}
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="13" viewBox="0 0 20 19" fill="none">
+              <path d="M19.5 9.5C19.5 14.4467 15.2712 18.5 10 18.5C4.72882 18.5 0.5 14.4467 0.5 9.5C0.5 4.55329 4.72882 0.5 10 0.5C15.2712 0.5 19.5 4.55329 19.5 9.5Z" stroke="#7B7B7B"/>
+            </svg>
+          </div>
         </div>
-        <div class="media">
-          <!-- {{ "general.link" | translate }} -->
-          Enlace
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="19"
-            viewBox="0 0 20 19"
-            fill="none"
-          >
-            <ellipse cx="10" cy="9.5" rx="10" ry="9.5" fill="#7B7B7B" />
-          </svg>
-        </div>
-        <div class="media" (click)="goLaiaWhatsapp()">
-          WhatsApp
-          <img
-            width="20"
-            alt="user"
-            (click)="loginflow = true"
-            src="{{ assetsFolder }}/semi-circle.png"
-          />
-        </div>
-        <div class="media">
-          Shopify
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="19"
-            viewBox="0 0 20 19"
-            fill="none"
-          >
-            <path
-              d="M19.5 9.5C19.5 14.4467 15.2712 18.5 10 18.5C4.72882 18.5 0.5 14.4467 0.5 9.5C0.5 4.55329 4.72882 0.5 10 0.5C15.2712 0.5 19.5 4.55329 19.5 9.5Z"
-              stroke="#7B7B7B"
-            />
-          </svg>
-        </div>
-        <div class="media">
-          Wix
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="19"
-            viewBox="0 0 20 19"
-            fill="none"
-          >
-            <path
-              d="M19.5 9.5C19.5 14.4467 15.2712 18.5 10 18.5C4.72882 18.5 0.5 14.4467 0.5 9.5C0.5 4.55329 4.72882 0.5 10 0.5C15.2712 0.5 19.5 4.55329 19.5 9.5Z"
-              stroke="#7B7B7B"
-            />
-          </svg>
-        </div>
-        <div class="media">
-          Foursquare
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="19"
-            viewBox="0 0 20 19"
-            fill="none"
-          >
-            <path
-              d="M19.5 9.5C19.5 14.4467 15.2712 18.5 10 18.5C4.72882 18.5 0.5 14.4467 0.5 9.5C0.5 4.55329 4.72882 0.5 10 0.5C15.2712 0.5 19.5 4.55329 19.5 9.5Z"
-              stroke="#7B7B7B"
-            />
-          </svg>
-        </div>
-        <div class="media">
-          Instagram
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="19"
-            viewBox="0 0 20 19"
-            fill="none"
-          >
-            <path
-              d="M19.5 9.5C19.5 14.4467 15.2712 18.5 10 18.5C4.72882 18.5 0.5 14.4467 0.5 9.5C0.5 4.55329 4.72882 0.5 10 0.5C15.2712 0.5 19.5 4.55329 19.5 9.5Z"
-              stroke="#7B7B7B"
-            />
-          </svg>
-        </div>
-        <div class="media">
-          Wordpress
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="19"
-            viewBox="0 0 20 19"
-            fill="none"
-          >
-            <path
-              d="M19.5 9.5C19.5 14.4467 15.2712 18.5 10 18.5C4.72882 18.5 0.5 14.4467 0.5 9.5C0.5 4.55329 4.72882 0.5 10 0.5C15.2712 0.5 19.5 4.55329 19.5 9.5Z"
-              stroke="#7B7B7B"
-            />
-          </svg>
+
+        <div class="socials" [style.marginTop.px]="15">
+            <div class="media">
+              {{ "general.websites" | translate }}
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19" fill="none">
+                    <ellipse cx="10" cy="9.5" rx="10" ry="9.5" fill="#7B7B7B"/>
+                </svg>
+            </div>
+            <div class="media">
+              {{ "general.link" | translate }}
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19" fill="none">
+                    <ellipse cx="10" cy="9.5" rx="10" ry="9.5" fill="#7B7B7B"/>
+                </svg>
+            </div>
+            <div class="media" (click)="goLaiaWhatsapp()">
+                WhatsApp
+                <img width="20" alt="user" (click)="loginflow = true" src="{{assetsFolder}}/semi-circle.png">
+            </div>
+            <div class="media">
+                Shopify
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19" fill="none">
+                    <path d="M19.5 9.5C19.5 14.4467 15.2712 18.5 10 18.5C4.72882 18.5 0.5 14.4467 0.5 9.5C0.5 4.55329 4.72882 0.5 10 0.5C15.2712 0.5 19.5 4.55329 19.5 9.5Z" stroke="#7B7B7B"/>
+                </svg>
+            </div>
+            <div class="media">
+                Wix
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19" fill="none">
+                    <path d="M19.5 9.5C19.5 14.4467 15.2712 18.5 10 18.5C4.72882 18.5 0.5 14.4467 0.5 9.5C0.5 4.55329 4.72882 0.5 10 0.5C15.2712 0.5 19.5 4.55329 19.5 9.5Z" stroke="#7B7B7B"/>
+                </svg>
+            </div>
+            <div class="media">
+                Foursquare
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19" fill="none">
+                    <path d="M19.5 9.5C19.5 14.4467 15.2712 18.5 10 18.5C4.72882 18.5 0.5 14.4467 0.5 9.5C0.5 4.55329 4.72882 0.5 10 0.5C15.2712 0.5 19.5 4.55329 19.5 9.5Z" stroke="#7B7B7B"/>
+                </svg>
+            </div>
+            <div class="media">
+                Instagram
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19" fill="none">
+                    <path d="M19.5 9.5C19.5 14.4467 15.2712 18.5 10 18.5C4.72882 18.5 0.5 14.4467 0.5 9.5C0.5 4.55329 4.72882 0.5 10 0.5C15.2712 0.5 19.5 4.55329 19.5 9.5Z" stroke="#7B7B7B"/>
+                </svg>
+            </div>
+            <div class="media">
+                Wordpress
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="19" viewBox="0 0 20 19" fill="none">
+                    <path d="M19.5 9.5C19.5 14.4467 15.2712 18.5 10 18.5C4.72882 18.5 0.5 14.4467 0.5 9.5C0.5 4.55329 4.72882 0.5 10 0.5C15.2712 0.5 19.5 4.55329 19.5 9.5Z" stroke="#7B7B7B"/>
+                </svg>
+            </div>
         </div>
       </div>
-    </div>
   </ng-template>
 </div>
 
-<div *ngIf="headerService.user" class="footer-fixed">
+<div *ngIf="headerService.user && vectorsFromVectorDatabase && vectorsFromVectorDatabase?.length > 0" class="footer-fixed" [style.maxWidth]="!isMobile ? '427px' : '500px'" [style.marginBottom]="!isMobile ? calculateMargin : '0px'">
   <div class="container-permissions" (click)="shareLink()">
-    <span class="title"> Permisos & Enlace directo de Laia </span>
-    <i class="fas fa-chevron-right icon"></i>
+      <span class="title">
+        {{ "laia-landing.titlePermissions" | translate }}
+      </span>
+      <i class="fas fa-chevron-right icon"></i>
   </div>
 </div>
 
-<div *ngIf="!headerService.user" class="message" [formGroup]="inputFormGroup">
-  <div class="info" (click)="goToWhatsapp()">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="8"
-      height="28"
-      viewBox="0 0 8 28"
-      fill="none"
-    >
-      <g clip-path="url(#clip0_2276_1338)">
-        <path
-          d="M7.28986 9.41244L0.419857 10.2734L0.173857 11.4134L1.52386 11.6624C2.40586 11.8724 2.57986 12.1904 2.38786 13.0694L0.173857 23.4694C-0.408143 26.1604 0.488857 27.4264 2.59786 27.4264C4.24256 27.4337 5.82306 26.7886 6.99286 25.6324L7.25686 24.3844C6.6737 24.8555 5.94845 25.1155 5.19886 25.1224C4.37386 25.1224 4.07386 24.5434 4.28686 23.5224L7.28986 9.41244ZM7.49986 3.14844C7.49986 3.74178 7.32391 4.3218 6.99427 4.81515C6.66462 5.3085 6.19609 5.69301 5.64791 5.92008C5.09973 6.14714 4.49653 6.20655 3.91459 6.09079C3.33264 5.97504 2.79809 5.68932 2.37854 5.26976C1.95898 4.8502 1.67326 4.31565 1.5575 3.73371C1.44175 3.15177 1.50116 2.54857 1.72822 2.00039C1.95528 1.45221 2.3398 0.983673 2.83315 0.654029C3.32649 0.324385 3.90651 0.148438 4.49986 0.148438C5.29551 0.148438 6.05857 0.464508 6.62118 1.02712C7.18379 1.58973 7.49986 2.35279 7.49986 3.14844Z"
-          fill="#7B7B7B"
-        />
-      </g>
-      <defs>
-        <clipPath id="clip0_2276_1338">
-          <rect
-            width="7.5"
-            height="27.281"
-            fill="white"
-            transform="translate(0 0.148438)"
-          />
-        </clipPath>
-      </defs>
-    </svg>
+<div
+  *ngIf="!headerService.user"
+  class="message"
+  [style.maxWidth]="!isMobile ? '427px' : '500px'"
+  [style.marginBottom]="!this.isMobile ? calculateMargin : '0px'"
+  [formGroup]="inputFormGroup"
+>
+  <div class="info" (click)="goToWhatsapp()" [style.marginBottom.px]="3">
+      <svg xmlns="http://www.w3.org/2000/svg" width="8" height="28" viewBox="0 0 8 28" fill="none">
+          <g clip-path="url(#clip0_2276_1338)">
+              <path d="M7.28986 9.41244L0.419857 10.2734L0.173857 11.4134L1.52386 11.6624C2.40586 11.8724 2.57986 12.1904 2.38786 13.0694L0.173857 23.4694C-0.408143 26.1604 0.488857 27.4264 2.59786 27.4264C4.24256 27.4337 5.82306 26.7886 6.99286 25.6324L7.25686 24.3844C6.6737 24.8555 5.94845 25.1155 5.19886 25.1224C4.37386 25.1224 4.07386 24.5434 4.28686 23.5224L7.28986 9.41244ZM7.49986 3.14844C7.49986 3.74178 7.32391 4.3218 6.99427 4.81515C6.66462 5.3085 6.19609 5.69301 5.64791 5.92008C5.09973 6.14714 4.49653 6.20655 3.91459 6.09079C3.33264 5.97504 2.79809 5.68932 2.37854 5.26976C1.95898 4.8502 1.67326 4.31565 1.5575 3.73371C1.44175 3.15177 1.50116 2.54857 1.72822 2.00039C1.95528 1.45221 2.3398 0.983673 2.83315 0.654029C3.32649 0.324385 3.90651 0.148438 4.49986 0.148438C5.29551 0.148438 6.05857 0.464508 6.62118 1.02712C7.18379 1.58973 7.49986 2.35279 7.49986 3.14844Z" fill="#7B7B7B"/>
+          </g>
+          <defs>
+              <clipPath id="clip0_2276_1338">
+                  <rect width="7.5" height="27.281" fill="white" transform="translate(0 0.148438)"/>
+              </clipPath>
+          </defs>
+      </svg>
   </div>
-  <!-- <p class="plus-sign" (click)="goClubLanding()">
-  +
-  </p> -->
-  <textarea
-    (keyup)="resizeTextarea($event.target)"
-    placeholder="Qué necesitas saber de Laia?..."
-    [ngClass]="{ loggedout: !headerService.user }"
-    class="input"
-    formControlName="input"
+
+  <!-- <div 
+      [ngClass]="{ 'loggedout': !headerService.user }"
+      class="input"
+      formControlName="input" 
   ></textarea>
   <img
     class="audio-freq"
-    src="{{ assetsFolder }}/audio-freq.png"
+    src="{{assetsFolder}}/audio-freq.png"
     alt="img"
     (click)="speechToText(true)"
-    [ngStyle]="{ right: inputOpen ? '70px' : '30px' }"
-  />
-  <div
-    (click)="inputFormGroup.get('input').value ? sendLaiaMessage() : null"
-    class="arrow-div"
-    *ngIf="inputOpen"
+    [ngStyle]="{'right': inputOpen ? '70px' : '30px'}"
   >
-    <svg
-      width="22"
-      height="20"
-      viewBox="0 0 22 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M21.0336 8.6153L21.0263 8.61189L1.51958 0.521373C1.35562 0.45255 1.17715 0.425428 1.00014 0.442432C0.823129 0.459436 0.65309 0.520036 0.505223 0.618814C0.348931 0.721156 0.22056 0.860779 0.131681 1.0251C0.042801 1.18942 -0.00379435 1.37327 -0.00390607 1.56009V6.73469C-0.00385475 6.98988 0.0852276 7.23706 0.247984 7.43361C0.410741 7.63017 0.636972 7.76378 0.887678 7.81141L11.5268 9.77874C11.5686 9.78664 11.6064 9.8089 11.6335 9.84168C11.6607 9.87446 11.6756 9.9157 11.6756 9.95828C11.6756 10.0009 11.6607 10.0421 11.6335 10.0749C11.6064 10.1077 11.5686 10.1299 11.5268 10.1378L0.888165 12.1047C0.637534 12.1522 0.411316 12.2856 0.248482 12.4819C0.0856482 12.6783 -0.00360648 12.9253 -0.00390607 13.1804V18.356C-0.00400887 18.5342 0.0401398 18.7097 0.124579 18.8667C0.209018 19.0236 0.331106 19.1572 0.479888 19.2554C0.658787 19.3742 0.86874 19.4378 1.08353 19.4381C1.23282 19.4379 1.38058 19.4079 1.51812 19.3499L21.0248 11.3052L21.0336 11.3013C21.2962 11.1884 21.52 11.0011 21.6773 10.7624C21.8346 10.5237 21.9184 10.2441 21.9184 9.95828C21.9184 9.67243 21.8346 9.39286 21.6773 9.15416C21.52 8.91546 21.2962 8.72811 21.0336 8.6153Z"
-        fill="#181D17"
-      />
-    </svg>
+    Qué necesitas saber de Laia?..
+      <div>
+          <img
+              class="audio-freq"
+              src="{{assetsFolder}}/audio-freq.png"
+              alt="img"
+          >
+      </div>
+  </div> -->
+
+  <div 
+    class="custom-input"
+    [style.backgroundColor]="inputFormGroup.get('input').value ? 'transparent' : '#d9d9d9'"
+    [style.alignItems]="inputFormGroup.get('input').value ? 'end' : 'center'"
+    [formGroup]="inputFormGroup"
+  >
+    <textarea 
+      id="autoExpandTextarea"
+      type="text"
+      placeholder="{{ 'text.question-about-laia' | translate }}"
+      [style.backgroundColor]="inputFormGroup.get('input').value ? '#d9d9d9' : 'transparent'"
+      [style.borderRadius.px]="inputFormGroup.get('input').value ? 20 : 300"
+      [ngClass]="{ textareaHeight: !inputFormGroup.get('input').value }"
+      (keyup)="resizeTextarea($event.target)"
+      formControlName="input"
+    ></textarea>
+    <img *ngIf="!inputFormGroup.get('input').value" (click)="speechToText(true)" class="audio-freq" src="{{assetsFolder}}/audio-freq.png" alt="img">
+    <ng-container *ngIf="inputFormGroup.get('input').value">
+      <div class="container-send" (click)="inputFormGroup.get('input').value ? sendLaiaMessage() : null" >
+        <img 
+          class="icon"
+          src="{{assetsFolder}}/chat-send-button.png"
+          alt="img"
+          [style.marginRight.px]="0"
+        >
+      </div>
+    </ng-container>
   </div>
 </div>
 
 <ng-template #emptyChat>
   <div class="empty-chat">
-    <img src="../../../../../assets/images/person-default.png" />
-    <p class="text">Aquí estarán los Chats</p>
+    <img src="../../../../../assets/images/person-default.png">
+    <p class="text">
+      {{ "laia-landing.titleEmptyChat" | translate }}
+    </p>
   </div>
 </ng-template>
 
 <ng-template #chatCard>
-  <div class="chat-card">
-    <div class="top">
-      <h5>ReceptorID</h5>
-      <span class="date">HoraIDdeUltimoEscrito</span>
-    </div>
-
-    <p class="bottom">
-      Lo último escritoID que irá en dos lineas como wl WahtsApp
-    </p>
+<div class="chat-card">
+  <div class="top">
+    <h5>ReceptorID</h5>
+    <span class="date">HoraIDdeUltimoEscrito</span>
   </div>
+
+  <p class="bottom">
+    Lo último escritoID que irá en dos lineas como wl WahtsApp
+  </p>
+</div>
 </ng-template>
 
 <app-login-flow

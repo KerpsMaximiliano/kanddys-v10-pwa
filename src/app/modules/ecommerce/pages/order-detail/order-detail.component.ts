@@ -55,6 +55,7 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
 import { ContactHeaderComponent } from 'src/app/shared/components/contact-header/contact-header.component';
 import * as moment from 'moment';
+import { TranslateService } from '@ngx-translate/core';
 
 
 interface Image {
@@ -187,6 +188,7 @@ export class OrderDetailComponent implements OnInit {
   //   'shipped',
   //   'delivered',
   // ];
+  isMobile:boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -210,15 +212,21 @@ export class OrderDetailComponent implements OnInit {
     public _DomSanitizer: DomSanitizer,
     private contactService: ContactService,
     private _bottomSheet: MatBottomSheet,
-    private NgNavigatorShareService: NgNavigatorShareService
+    private NgNavigatorShareService: NgNavigatorShareService,
+    private translate: TranslateService
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
       history.pushState(null, null, window.location.href);
     });
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+      translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+      translate.use(language?.length === 2 ? language  : 'es');
   }
 
   async ngOnInit(): Promise<void> {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
     this.route.queryParams.subscribe(async (queryParams) => {
       const {
         notify: notification,

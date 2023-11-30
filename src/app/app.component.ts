@@ -12,7 +12,7 @@ import { ReloadComponent } from './shared/dialogs/reload/reload.component';
 @Component({
   selector: 'app-root',
   template: `
-    <main [ngStyle]="{overflowX: 'hidden', maxWidth: '500px !important', position: 'relative'}">
+    <main [ngStyle]="{overflowX: 'hidden', maxWidth: '500px !important', position: 'relative'}" [style.maxHeight]="!isMobile ? '745px' : 'none'" [style.maxWidth]="!isMobile ? '427px' : '500px'">
       <div [@routeAnimations]="getRouteAnimationData()" style="height: 100%;">
         <router-outlet></router-outlet>
       </div>
@@ -29,6 +29,7 @@ export class AppComponent implements OnDestroy, OnInit {
   isfullscreen = false;
   navsub: Subscription;
   loader: boolean = false;
+  isMobile: boolean = false;
   constructor(
     private swUpdate: SwUpdate,
     public service: AppService, 
@@ -63,6 +64,8 @@ export class AppComponent implements OnDestroy, OnInit {
       country: ''
     }));
     this.getIp();
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
   }
 
   async getIp() {

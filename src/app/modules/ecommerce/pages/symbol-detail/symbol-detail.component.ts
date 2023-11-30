@@ -1,14 +1,8 @@
 //Angular specific
-import {
-  Component,
-  OnInit,
-  ViewChild,
-  ElementRef,
-  AfterViewInit,
-} from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { formatNumber, Location } from '@angular/common';
+import { Location } from '@angular/common';
 
 //Services
 import { HeaderService } from 'src/app/core/services/header.service';
@@ -17,18 +11,8 @@ import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
 
 //Helper functions
-import {
-  formatID,
-  isVideo,
-  truncateString,
-} from 'src/app/core/helpers/strings.helpers';
-import {
-  isVideoPlaying,
-  lockUI,
-  playVideoNoFullscreen,
-  playVideoOnFullscreen,
-  unlockUI,
-} from 'src/app/core/helpers/ui.helpers';
+import { isVideo, truncateString } from 'src/app/core/helpers/strings.helpers';
+import { isVideoPlaying, lockUI, playVideoNoFullscreen, unlockUI, } from 'src/app/core/helpers/ui.helpers';
 
 //Imported models
 import { Item, ItemImage } from 'src/app/core/models/item';
@@ -37,7 +21,6 @@ import { User } from 'src/app/core/models/user';
 //Other components
 
 //Project configurations
-import { environment } from 'src/environments/environment';
 import { SwiperOptions } from 'swiper';
 import { Post, PostInput, Slide } from 'src/app/core/models/post';
 import { Tag } from 'src/app/core/models/tags';
@@ -53,6 +36,14 @@ import { AppService } from 'src/app/app.service';
 //Third party modules
 import * as Hammer from 'hammerjs';
 import { QuotationsService } from 'src/app/core/services/quotations.service';
+import { shareStore } from 'src/app/core/helpers/objects.helpers';
+import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { NgNavigatorShareService } from 'ng-navigator-share';
+import { environment } from 'src/environments/environment';
+import { TranslateService } from '@ngx-translate/core';
 
 interface ExtendedItem extends Item {
   media?: Array<{
@@ -73,6 +64,14 @@ type ValidEntities = 'item' | 'post' | 'collection';
   styleUrls: ['./symbol-detail.component.scss'],
 })
 export class SymbolDetailComponent implements OnInit, AfterViewInit {
+  @ViewChild('storeQrCode', { read: ElementRef }) storeQrCode: ElementRef;
+  @ViewChild('swiperContainer', { read: ElementRef }) swiperContainer: ElementRef;
+  @ViewChild('swiperRef') swiperRef?: SwiperComponent;
+  @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
+  @ViewChild('videoPlayer') private videoPlayer: ElementRef;
+
+  URI = environment.uri
+
   routeParamsSubscription: Subscription = null;
   queryParamsSubscription: Subscription = null;
   mode: 'preview' | 'image-preview' | 'saleflow' | 'symbol-editor-preview';
@@ -174,10 +173,11 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
 
   fromQR: boolean = false;
 
-  @ViewChild('swiperContainer', { read: ElementRef })
-  swiperContainer: ElementRef;
-  @ViewChild('mediaSwiper') mediaSwiper: SwiperComponent;
+  modeUser: 'STANDARD' | 'SUPPLIER' = 'STANDARD';
 
+  saleflowData = null
+
+  isMobile:boolean = false;
   constructor(
     private itemsService: ItemsService,
     private router: Router,
@@ -193,18 +193,27 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     private postsService: PostsService,
     private elementRef: ElementRef,
     private location: Location,
-  ) {}
+    private bottomSheet: MatBottomSheet,
+    private clipboard: Clipboard,
+    private snackBar: MatSnackBar,
+    private ngNavigatorShareService: NgNavigatorShareService,
+    private translate: TranslateService
+  ) {
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+      translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+      translate.use(language?.length === 2 ? language  : 'es');
+  }
 
   async ngOnInit() {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
     this.routeParamsSubscription = this.route.params.subscribe(
       async (routeParams) => {
         this.queryParamsSubscription = this.route.queryParams.subscribe(
           async (queryParams) => {
             this.routeParams = routeParams;
             this.queryParams = queryParams;
-
             await this.executeInitProcesses();
-
             this.applyConfigurationsForSlidesDimensions();
           }
         );
@@ -233,7 +242,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     });
   }
 
-  async applyAnyEntityToGenericModelForTheHTML() {}
+  async applyAnyEntityToGenericModelForTheHTML() { }
 
   async executeInitProcesses() {
     await this.verifyIfUserIsLogged();
@@ -270,6 +279,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
         } else if (entity === 'collection') {
           await this.getCollection();
         }
+        this.saleflowData = await this.saleflowService.saleflowDefault(this.itemData.merchant._id)
       } else {
         let entityTemplate = await this.entityTemplateService.entityTemplate(
           entityId
@@ -315,9 +325,9 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
         } else {
           const redirectionRoute = this.headerService.saleflow._id
             ? 'ecommerce/' +
-              this.headerService.saleflow._id +
-              '/article-template/' +
-              entityId
+            this.headerService.saleflow._id +
+            '/article-template/' +
+            entityId
             : '';
 
           this.router.navigate([redirectionRoute]);
@@ -341,8 +351,8 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
         this.supplierItemInSaleflow = doesThisItemExistInCurrentSaleflow
           ? true
           : !this.headerService.saleflow || this.supplierPreview
-          ? true
-          : false;
+            ? true
+            : false;
 
         if (foundItemIndex < 0) {
           this.addedItemToQuotation = false;
@@ -355,9 +365,11 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
 
       if (this.headerService.saleflow?._id && this.entity === 'item')
         this.itemInCart();
+
     } else {
       this.router.navigate([`others/error-screen/`]);
     }
+
   }
 
   async verifyIfUserIsLogged() {
@@ -593,11 +605,9 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     this.layout = 'EXPANDED-SLIDE';
   }
 
-  updateCurrentSlideData(event: any) {
+  updateCurrentSlideData(event: Event) {
     const prevIndex = this.currentMediaSlide;
     this.currentMediaSlide = this.mediaSwiper.directiveRef.getIndex();
-
-    //console.log(this.currentMediaSlide);
 
     if (this.genericModelTemplate.slides[prevIndex].type === 'VIDEO') {
       this.playCurrentSlideVideo('media' + prevIndex);
@@ -725,7 +735,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
 
         //if (this.postSlides.length < 2) this.startTimeout();
       }
-    } catch (error) {}
+    } catch (error) { }
   }
 
   updateFractions(): void {
@@ -733,15 +743,13 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
       (this.entity === 'item'
         ? this.itemData.images
         : this.entity === 'post'
-        ? this.postSlides
-        : this.entity === 'collection'
-        ? this.tagData.images
-        : []) as Array<any>
+          ? this.postSlides
+          : this.entity === 'collection'
+            ? this.tagData.images
+            : []) as Array<any>
     )
       .map(() => `${'1'}fr`)
       .join(' ');
-
-    //console.log(this.fractions);
   }
 
   itemInCart() {
@@ -789,7 +797,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   }
 
   back = async () => {
-    if(this.redirectTo === 'symbol-editor') return this.location.back();
+    if (this.redirectTo === 'symbol-editor') return this.location.back();
     if (this.supplierPreview) {
       return this.headerService.redirectFromQueryParams();
     }
@@ -841,7 +849,6 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     this.itemsService.removeTemporalItem();
 
     if (this.headerService.saleflow) {
-      console.log("store 1")
       this.router.navigate([`../../../store`], {
         replaceUrl: this.headerService.checkoutRoute ? true : false,
         relativeTo: this.route,
@@ -855,13 +862,12 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
           this.itemData.merchant._id
         );
 
-        console.log("store 2");
-        if (itemSaleflow) 
+        if (itemSaleflow)
           this.router.navigate(['ecommerce/store/' + itemSaleflow._id], {
             queryParams: {
               mode: this.itemData?.type === 'supplier' ? 'supplier' : 'standard',
             }
-        });
+          });
       }
     }
   };
@@ -905,8 +911,8 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   async saveProduct() {
     if (this.itemData && this.itemData.type === 'supplier' && this.supplierViewer) {
       const foundItemIndex =
-      this.quotationsService.selectedItemsForQuotation.findIndex(
-        (itemId) => itemId === this.itemData._id
+        this.quotationsService.selectedItemsForQuotation.findIndex(
+          (itemId) => itemId === this.itemData._id
         );
 
       if (foundItemIndex < 0) {
@@ -938,7 +944,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
 
     if (this.entityPresentation === 'PREVIEW' || this.mode === 'image-preview') return;
 
-    
+
     if (!this.isItemInCart && this.headerService.saleflow && !this.headerService.saleflow?.canBuyMultipleItems)
       this.headerService.emptyOrderProducts();
 
@@ -968,20 +974,41 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
   }
 
   playCurrentSlideVideo(id: string) {
-    const elem: HTMLVideoElement = document.getElementById(
-      id
-    ) as HTMLVideoElement;
+    const elem: HTMLVideoElement = document.getElementById(id) as HTMLVideoElement;
+    elem.pause();
+  }
 
-    if (!isVideoPlaying(elem)) {
-      this.playVideo(id);
-    } else {
-      elem.pause();
+  shareStore() {
+    const slug = this.saleflowData?.merchant?.slug
+    const mode = this.modeUser === 'SUPPLIER' ? 'supplier' : 'standard'
+    const data = { slug, mode, id: this.itemData._id }
+    const labels = {
+      title: "",
+      copyLink: "",
+      qr: "",
+      share: "",
+      bottomLabel: `ecommerce/${slug}/article-detail`
     }
+    const services = {
+      clipboard: this.clipboard,
+      snackBar: this.snackBar,
+      ngNavigatorShareService: this.ngNavigatorShareService,
+      storeQrCode: this.storeQrCode
+    }
+    this.bottomSheet.open(OptionsMenuComponent, shareStore(data, labels, services));
+  }
 
-    /*
-    setTimeout(() => {
-      this.videosPlaying[id] = isVideoPlaying(elem);
-    }, 500);
-    */
+  getDataQR() {
+    const mode = this.modeUser === 'SUPPLIER' ? 'supplier' : 'standard'
+    const id = this.itemData?._id
+    return `${this.URI}/ecommerce/arepera-que-molleja/article-detail/item/${id}?mode=${mode}`
+  }
+
+  onGoBackToLogin() {
+    this.router.navigate(['/admin/dashboard']);
+  }
+
+  onChangeImage(index: number) {
+    this.mediaSwiper.directiveRef.setIndex(index)
   }
 }

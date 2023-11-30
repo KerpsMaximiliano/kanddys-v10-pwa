@@ -1,0 +1,178 @@
+<div class="container" [ngClass]="{mobile: !isMobile}">
+    <div class="header" [ngClass]="{mobile: !isMobile}">
+        <header>
+          <p>LaiaChat</p>
+        </header>
+    </div>
+    <div class="main-text" [ngClass]="{mobile: !isMobile}">
+      <p>
+        Ahorra tiempo y recursos brindando respuestas precisas e instantáneas con ayuda de la IA.
+      </p>
+    </div>
+    <div class="iphone">
+      <img class="iphone-img" [ngClass]="{mobile: !isMobile}" src="./assets/images/iphone-dark.png" alt="">
+      <div class="degradado"></div>
+    </div>
+    <div class="try-laia" [ngClass]="{mobile: !isMobile}">
+      <p>Pruébalo tu mismo, tienes preguntas para LaiaChat?</p>
+    </div>
+  
+    <!---Este espacio será para el campo de texto-->
+      <div class="biggest-circle">
+        <div class="first-circle">
+          <div class="second-circle">
+            <div class="first-chat">
+                <img src="./assets/images/chat1.png" alt="">
+                <p>Cuando presento la 
+                    prueba SAT?</p>
+            </div>
+            <div class="third-circle">
+                <div class="second-chat">
+                    <img src="./assets/images/chat4.png" alt="">
+                    <p>Cuando es la audicion
+                        para el musical?</p>
+                </div>
+                <div class="third-chat">
+                    <img src="./assets/images/chat3.png" alt="">
+                    <p>Fecha limite para presentar
+                        mi solicitud de beca universitaria?</p>
+                </div>
+                <div class="fourth-chat">
+                    <img src="./assets/images/chat2.png" alt="">
+                    <p>Cuando abren inscripciones?</p>
+                </div>
+              <div class="fourth-circle">
+                <div class="fifth-circle">
+                  <p>
+                    Laia
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="second-green-text">
+        <p class="green-text">
+          Transformando la comunicacion instantanea
+        </p>
+        <p class="regular-text">
+          Imagina un mundo donde cada pregunta de estudiantes, padres y personal, ya sea en tu página web o por WhatsApp, se resuelve de inmediato, sin esperas ni confusiones.
+        </p>
+      </div>
+      <div class="third-green-text">
+        <p class="green-text">
+          Tu Aliada en la Revolución de la Comunicación Escolar
+        </p>
+        <p class="regular-text">
+          Laia es más que una herramienta: es tu asistente personal de inteligencia artificial, optimizando la comunicación con tu comunidad escolar y permitiéndote enfocarte en lo que realmente importa. Estás a punto de cambiar las reglas del juego en la gestión de consultas.
+        </p>
+      </div>
+  
+      <div class="tiny-cards">
+        <div class="green-card">
+          <p class="title-card">
+            De Fácil Integración 
+          </p>
+          <p class="content-card">
+            Se integra rápido y sin problemas en tu página web y WhatsApp.
+          </p>
+        </div>
+        <div class="pink-card">
+          <p class="title-card">
+            Respuestas Inteligentes
+          </p>
+          <p class="content-card">
+            Utiliza la IA para formular respuestas adecuadas y relevantes.
+          </p>
+        </div>
+      </div>
+      <div class="tiny-cards">
+        <div class="purple-card">
+          <p class="title-card">
+            Análisis de Datos 
+          </p>
+          <p class="content-card">
+            Ofrece insights sobre las consultas, ayudando a mejorar la comunicación y servicios.
+          </p>
+        </div>
+        <div class="blue-card">
+          <p class="title-card">
+            Personaliza el dialogo 
+          </p>
+          <p class="content-card">
+            Ajusta las respuestas y la interacción según las necesidades de la escuela.
+          </p>
+        </div>
+      </div>
+      <div class="swiper-div">
+        <swiper  [config]="swiperConfig" class="category-swiper">
+          <div class="swiper-slide">
+            <p class="content-card">
+              ¿Tiene Laia más sorpresas además de esto?
+            </p>
+          </div>
+          <div class="swiper-slide">
+            <p class="content-card">
+              ¿Qué es la memoria o cerebro de Laia?
+            </p>
+          </div>
+          <div class="swiper-slide">
+            <p class="content-card">
+              ¿Cómo funciona el enlace directo con Laia?
+            </p>
+          </div>
+          <div class="swiper-slide">
+            <p class="content-card">
+              ¿Cómo se integra Laia con otras aplicaciones?
+            </p>
+          </div>
+          <div class="swiper-slide">
+            <p class="content-card">
+              ¿Laia funciona en otras aplicaciones?
+            </p>
+          </div>
+          <div class="swiper-slide">
+            <p class="content-card">
+              ¿Cuánto cuesta usar Laia?
+            </p>
+          </div>
+          <div class="swiper-slide">
+            <p class="content-card">
+              Espera, aun hay mucho mas! pero preferimos que LaiaChat te lo cuente
+            </p>
+          </div>
+        </swiper>
+      </div>
+      <div class="chat-box" [ngClass]="{mobile: !isMobile}"
+            >
+          <div 
+          class="custom-input"
+          [style.backgroundColor]="inputFormGroup.get('input').value ? 'transparent' : '#d9d9d9'"
+          [style.alignItems]="inputFormGroup.get('input').value ? 'end' : 'center'"
+          [formGroup]="inputFormGroup"
+        >
+          <textarea 
+            id="autoExpandTextarea"
+            type="text"
+            placeholder="{{ 'Qué necesitas saber de Laia?..' | translate }}"
+            [style.backgroundColor]="inputFormGroup.get('input').value ? '#d9d9d9' : 'transparent'"
+            [style.borderRadius.px]="inputFormGroup.get('input').value ? 20 : 300"
+            [ngClass]="{ textareaHeight: !inputFormGroup.get('input').value }"
+            (keyup)="resizeTextarea($event.target)"
+            formControlName="input"
+          ></textarea>
+          <img *ngIf="!inputFormGroup.get('input').value" (click)="speechToText(true)" class="audio-freq" src="{{assetsFolder}}/audio-freq.png" alt="img">
+          <ng-container *ngIf="inputFormGroup.get('input').value">
+            <div class="container-send" (click)="inputFormGroup.get('input').value ? sendLaiaMessage() : null" >
+              <img 
+                class="icon"
+                src="{{assetsFolder}}/chat-send-button.png"
+                alt="img"
+                [style.marginRight.px]="0"
+              >
+            </div>
+          </ng-container>
+        </div>
+      </div>
+  </div>  
