@@ -4,6 +4,7 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { filter } from 'rxjs/operators';
 import { AppService } from 'src/app/app.service';
@@ -153,6 +154,7 @@ export class ItemCreationComponent implements OnInit {
   categoriesToCreate: Array<ItemCategory> = [];
 
   isTheUserAnAdmin: boolean = false;
+  isMobile: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -173,10 +175,17 @@ export class ItemCreationComponent implements OnInit {
     private appService: AppService,
     private route: ActivatedRoute,
     private gpt3Service: Gpt3Service,
-    private _bottomSheet: MatBottomSheet
-  ) { }
+    private _bottomSheet: MatBottomSheet,
+    private translate: TranslateService
+  ) {
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+      translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+      translate.use(language?.length === 2 ? language  : 'es');
+   }
 
   ngOnInit(): void {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
     if (!this.headerService.user) {
       let sub = this.appService.events
         .pipe(filter((e) => e.type === 'auth'))

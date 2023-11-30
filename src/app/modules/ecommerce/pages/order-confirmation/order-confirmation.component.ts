@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { capitalize, formatID, isVideo } from 'src/app/core/helpers/strings.helpers';
 import { playVideoOnFullscreen } from 'src/app/core/helpers/ui.helpers';
 import { ItemOrder, OrderStatusDeliveryType } from 'src/app/core/models/order';
@@ -49,16 +50,24 @@ export class OrderConfirmationComponent implements OnInit {
   activeStatusIndex: number;
 
   payment: number;
+  isMobile:boolean = false;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private orderService: OrderService,
     private reservationService: ReservationService,
-    private dialogService: DialogService
-  ) { }
+    private dialogService: DialogService,
+    private translate: TranslateService
+  ) {
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+      translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+      translate.use(language?.length === 2 ? language  : 'es');
+   }
 
   ngOnInit(): void {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
     this.route.params.subscribe(async (params) => {
       const { orderId } = params;
 

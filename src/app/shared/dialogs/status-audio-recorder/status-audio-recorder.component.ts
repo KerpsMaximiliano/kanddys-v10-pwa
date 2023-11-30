@@ -12,6 +12,12 @@ export class StatusAudioRecorderComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    const isMobile = regex.test(navigator.userAgent);
+    if(!isMobile) {
+      const element : HTMLElement = document.querySelector('.dialog-frame');
+      element?.style?.setProperty('max-width', '427px', 'important');
+    }
   }
 
 }

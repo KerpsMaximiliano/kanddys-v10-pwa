@@ -179,7 +179,7 @@ export class LoginFlowComponent implements OnInit {
         {
           name: 'magicLinkEmailOrPhone',
           type: 'email',
-          placeholder: 'Escribe el correo electrónico..',
+          placeholder: 'Escribe..',
           validators: [Validators.email, Validators.required],
           inputStyles: {
             padding: '11px 6px',
@@ -187,21 +187,21 @@ export class LoginFlowComponent implements OnInit {
           styles: {
             gap: '0px',
           },
-          bottomTexts: [
-            {
-              text: 'Este correo también sirve para accesar al Club y aprovechar todas las herramientas que se están creando.',
-              styles: {
-                color: '#FFF',
-                fontFamily: 'InterLight',
-                fontSize: '19px',
-                fontStyle: 'normal',
-                fontWeight: '300',
-                lineHeight: 'normal',
-                marginBottom: '28px',
-                marginTop: '36px',
-              },
-            },
-          ],
+          // bottomTexts: [
+          //   {
+          //     text: 'Este correo también sirve para accesar al Club y aprovechar todas las herramientas que se están creando.',
+          //     styles: {
+          //       color: '#FFF',
+          //       fontFamily: 'InterLight',
+          //       fontSize: '19px',
+          //       fontStyle: 'normal',
+          //       fontWeight: '300',
+          //       lineHeight: 'normal',
+          //       marginBottom: '28px',
+          //       marginTop: '36px',
+          //     },
+          //   },
+          // ],
           submitButton: {
             text: '>',
             styles: {

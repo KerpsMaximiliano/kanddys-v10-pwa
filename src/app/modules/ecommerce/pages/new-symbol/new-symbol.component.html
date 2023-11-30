@@ -357,7 +357,7 @@
         </form>
       </main>
 
-      <footer>
+      <footer class="white-footer" [ngClass]="{mobile: !isMobile}">
         <button
           class="left"
           style="color: #272727"
@@ -420,7 +420,8 @@
       </main>
 
       <footer
-        class="traditional"
+        class="traditional-footer"
+        [ngClass]="{mobile: !isMobile}"
         *ngIf="postForm.controls['envelopeText'].value"
         (click)="saveTraditionalMessage()"
       >

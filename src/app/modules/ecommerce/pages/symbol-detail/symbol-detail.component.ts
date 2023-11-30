@@ -43,6 +43,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { NgNavigatorShareService } from 'ng-navigator-share';
 import { environment } from 'src/environments/environment';
+import { TranslateService } from '@ngx-translate/core';
 
 interface ExtendedItem extends Item {
   media?: Array<{
@@ -176,7 +177,7 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
 
   saleflowData = null
 
-
+  isMobile:boolean = false;
   constructor(
     private itemsService: ItemsService,
     private router: Router,
@@ -195,10 +196,17 @@ export class SymbolDetailComponent implements OnInit, AfterViewInit {
     private bottomSheet: MatBottomSheet,
     private clipboard: Clipboard,
     private snackBar: MatSnackBar,
-    private ngNavigatorShareService: NgNavigatorShareService
-  ) { }
+    private ngNavigatorShareService: NgNavigatorShareService,
+    private translate: TranslateService
+  ) {
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+      translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+      translate.use(language?.length === 2 ? language  : 'es');
+  }
 
   async ngOnInit() {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
     this.routeParamsSubscription = this.route.params.subscribe(
       async (routeParams) => {
         this.queryParamsSubscription = this.route.queryParams.subscribe(

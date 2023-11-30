@@ -163,19 +163,22 @@
   </h5>
 </div>
 
-<app-sticky-button
-  *ngIf="mode === 'add' || editingId"
-  [mode]="addressForm?.valid && !disableButton ? 'fixed' : 'disabled-fixed'"
-  text="CONTINUAR"
-  [bgColor]="headerService.colorTheme"
-  size="small"
-  (click)="!disableButton && formSubmit()"
-></app-sticky-button>
-<app-sticky-button
-  *ngIf="(mode === 'edit' && !editingId) || mode === 'delete'"
-  mode="fixed"
-  [backButton]="true"
-  [bgColor]="headerService.colorTheme"
-  size="small"
-  (click)="goBack()"
-></app-sticky-button>
+<div class="footer" [ngClass]="{mobile: !isMobile}" *ngIf="mode === 'add' || editingId">
+  <app-sticky-button
+    
+    [mode]="addressForm?.valid && !disableButton ? 'fixed' : 'disabled-fixed'"
+    text="CONTINUAR"
+    [bgColor]="headerService.colorTheme"
+    size="small"
+    (click)="!disableButton && formSubmit()"
+  ></app-sticky-button>
+</div>
+<div class="footer" [ngClass]="{mobile: !isMobile}" *ngIf="(mode === 'edit' && !editingId) || mode === 'delete'">
+  <app-sticky-button
+    mode="fixed"
+    [backButton]="true"
+    [bgColor]="headerService.colorTheme"
+    size="small"
+    (click)="goBack()"
+  ></app-sticky-button>
+</div>

@@ -38,6 +38,7 @@ import {
 } from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { base64ToFile } from 'src/app/core/helpers/files.helpers';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-payments',
@@ -263,6 +264,7 @@ export class PaymentsComponent implements OnInit {
 
   azulPaymentURL: string =
     'https://pruebas.azul.com.do/paymentpage/Default.aspx';
+    isMobile:boolean = false;
 
   constructor(
     private walletService: WalletService,
@@ -279,15 +281,21 @@ export class PaymentsComponent implements OnInit {
     private entityTemplateService: EntityTemplateService,
     private authService: AuthService,
     private matDialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private translate: TranslateService
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
       history.pushState(null, null, window.location.href);
     });
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+      translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+      translate.use(language?.length === 2 ? language  : 'es');
   }
 
   async ngOnInit(): Promise<void> {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
     this.route.params.subscribe((params) => {
       this.route.queryParams.subscribe(async (queryParams) => {
         const orderId = params['orderId'];

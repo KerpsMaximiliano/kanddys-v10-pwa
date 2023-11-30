@@ -180,7 +180,7 @@
     </ng-container>
   </main>
 
-  <footer class="bottom-flex">
+  <footer class="bottom-flex" [ngClass]="{mobile: !isMobile}">
     <div class="left">
       <ng-container [ngSwitch]="entity">
         <div class="price" *ngSwitchCase="'item'">

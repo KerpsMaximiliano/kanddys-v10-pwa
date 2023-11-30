@@ -29,6 +29,7 @@ import { Country, State, City } from 'country-state-city';
 import { SwiperComponent } from 'ngx-swiper-wrapper';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { capitalize } from 'src/app/core/helpers/strings.helpers';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-webform-client-view',
@@ -70,7 +71,7 @@ export class WebformClientViewComponent implements OnInit {
   ];
   PhoneNumberFormat = PhoneNumberFormat;
   redirectTo: string = 'checkout';
-
+  isMobile:boolean = false;
   capitalize = capitalize;
   @ViewChild('questionsSwiper') questionsSwiper: SwiperComponent;
 
@@ -80,10 +81,17 @@ export class WebformClientViewComponent implements OnInit {
     private webformsService: WebformsService,
     private itemsService: ItemsService,
     private headerService: HeaderService,
-    private snackbar: MatSnackBar
-  ) {}
+    private snackbar: MatSnackBar,
+    private translate: TranslateService,
+  ) {
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+      translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+      translate.use(language?.length === 2 ? language  : 'es');
+  }
 
   ngOnInit(): void {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
     this.routeParamsSubscription = this.route.params.subscribe(
       async ({ itemId, formId }) => {
         this.routeQueryParamsSubscription = this.route.queryParams.subscribe(

@@ -12,6 +12,12 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { UsersService } from 'src/app/core/services/users.service';
 import { User } from 'src/app/core/models/user';
 import { Subscription } from 'rxjs';
+import { DialogService } from 'src/app/libs/dialog/services/dialog.service';
+import { AudioRecorderComponent } from 'src/app/shared/components/audio-recorder/audio-recorder.component';
+import { filter } from 'rxjs/operators';
+import { StatusAudioRecorderComponent } from 'src/app/shared/dialogs/status-audio-recorder/status-audio-recorder.component';
+import { TranslateService } from '@ngx-translate/core';
+import { RecordRTCService } from 'src/app/core/services/recordrtc.service';
 
 const SERVER_URL = environment.chatAPI.url; // Replace with your server URL
 
@@ -52,6 +58,17 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   socketConnected: boolean = true;
   inputOpen: boolean = false;
   ipAddress: number;
+  textareaAudio: boolean = false;
+  convertAudioText: string = 'Conviertiéndo el audio a texto';
+  audio: {
+    blob: Blob;
+    title: string;
+  };
+  isMobile: boolean = false;
+  calculateMargin = '0px';
+  activeAssistantStatus: boolean = true;
+  adminChat: boolean = false;
+  chatIpAddress: boolean = false;
 
   constructor(
     public headerService: HeaderService,
@@ -59,10 +76,21 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     private gpt3Service: Gpt3Service,
     private sanitizer: DomSanitizer,
     private usersService: UsersService,
-    private router: Router
-  ) { }
+    private router: Router,
+    private dialogService: DialogService,
+    private translate: TranslateService,
+    private recordRTCService: RecordRTCService,
+    private merchantService: MerchantsService,
+  ) {
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+    translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+    translate.use(language?.length === 2 ? language  : 'es');
+  }
 
   async ngOnInit() {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
+    this.calculateMargin = `calc(${window.innerHeight}px - 745px)`;
     if (this.route.snapshot.params.merchantSlug === this.aiSlug) {
       let message = this.route.snapshot.queryParams['message']
       if (message) {
@@ -73,8 +101,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     }
     this.routeParamsSubscription = this.route.params.subscribe(({ chatId }) => {
       this.queryParamsSubscription = this.route.queryParams.subscribe(
-        async ({ fromStore }) => {
+        async ({ fromStore, chatIpAddress }) => {
           this.fromStore = fromStore ? JSON.parse(fromStore) : false;
+          this.chatIpAddress = chatIpAddress ? JSON.parse(chatIpAddress) : false;
+          console.log('notLogged', chatIpAddress)
 
           if (!this.headerService.user) {
             this.typeOfReceiver = 'MERCHANT';
@@ -100,10 +130,11 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     if (!this.headerService.user) {
       this.getIp()
     }
+    this.translate.get("modal.convertAudioText").subscribe(translate => this.convertAudioText = translate);
   }
 
   async getIp() {
-    let ip = await fetch('http://api.ipify.org/?format=json')
+    let ip = await fetch('https://api.ipify.org/?format=json')
       .then((res) => {
         return res.json()
       })
@@ -111,11 +142,16 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   }
 
   async initSocketClientEventListeners(chatId: string) {
+    let ip = await fetch('https://api.ipify.org/?format=json')
+    .then((res) => {
+      return res.json()
+    });
     if (!this.headerService.user) {
       console.log('no user socket')
       this.socket = io(SERVER_URL, {
         extraHeaders: {
-          "App-key": "k2ejNpopkk9Txga6kmQZwAQXUCLNZxs9BI8dDfVgmdMXvjcVcI"
+          "App-key": "k2ejNpopkk9Txga6kmQZwAQXUCLNZxs9BI8dDfVgmdMXvjcVcI",
+          "x-forwarded-for": ip.ip,
         },
       });
       console.log(this.socket)
@@ -123,7 +159,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       this.socket = io(SERVER_URL, {
         extraHeaders: {
           token: localStorage.getItem('session-token'),
-          "App-key": "k2ejNpopkk9Txga6kmQZwAQXUCLNZxs9BI8dDfVgmdMXvjcVcI"
+          "App-key": "k2ejNpopkk9Txga6kmQZwAQXUCLNZxs9BI8dDfVgmdMXvjcVcI",
+          "x-forwarded-for": ip.ip,
         },
       });
       console.log(this.socket)
@@ -138,16 +175,22 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
 
       this.socketConnected = true;
       // Send a message to the server
-      if (!this.headerService.user) {
+      if (this.chatIpAddress) {
         this.socket.emit('GET_OR_CREATE_CHAT', {
           owners: [this.socket.id],
-          userId: this.headerService.saleflow.merchant.owner?._id
+          chatId: chatId,
         })
-        console.log(this.socket)
+      } else if (!this.headerService.user) {
+        this.socket.emit('GET_OR_CREATE_CHAT', {
+          owners: [this.socket.id],
+          userId: this.headerService.saleflow.merchant.owner?._id,
+          type: 'not_logged',
+        })
       } else if (!chatId) {
         this.socket.emit('GET_OR_CREATE_CHAT', {
           owners: [this.socket.id],
-          userId: this.headerService.saleflow.merchant.owner?._id
+          userId: this.headerService.saleflow.merchant.owner?._id,
+          type: 'logged',
         });
       } else {
         this.socket.emit('GET_OR_CREATE_CHAT', {
@@ -157,7 +200,9 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       }
       this.socket.on('GET_OR_CREATE_CHAT', (chat) => {
         console.log(chat)
+        this.adminChat = chat?.admins?.find((id) => id === this.receiverId);
         this.chat = chat;
+        this.activeAssistantStatus = chat?.activeAssistant;
 
         /*chat.owners.forEach((owner) => {
           console.log(owner)
@@ -179,6 +224,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
           ))
         );
 
+        if(!chat?.activeAssistant && this.adminChat) {
+          this.filterMessagesAndGenerateResponse();
+        }
+
         if (!chatId)
           this.router.navigate(
             [
@@ -193,12 +242,12 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
               },
             }
           );
-        else if (this.chat.drafts.length) {
-          const myDraft = this.chat.drafts.find(
-            (draft) => draft.userId === this.headerService.user._id
-          );
-          this.chatFormGroup.get('input').setValue(myDraft.content);
-        }
+        // else if (this.chat.drafts.length) {
+        //   const myDraft = this.chat.drafts.find(
+        //     (draft) => draft.userId === this.headerService.user._id
+        //   );
+        //   this.chatFormGroup.get('input').setValue(myDraft.content);
+        // }
 
         setTimeout(() => {
           this.scrollToBottom();
@@ -278,6 +327,62 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     });
   }
 
+  async getMerchantDefault() {
+    try {
+      const merchantDefault: Merchant = await this.merchantService.merchantDefault();
+      return merchantDefault;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async filterMessagesAndGenerateResponse() {
+    if(this.chat?.messages && this.chat?.messages?.length > 0) {
+      const lastIndex = this.chat?.messages?.map(item => item.sender).lastIndexOf(this.receiverId);
+      const lastMessageSent = lastIndex === (this.chat?.messages?.length - 1);
+      this.chat.messages = lastMessageSent ? this.chat?.messages : this.chat?.messages.slice(lastIndex + 1);
+      const merchant: Merchant = await this.getMerchantDefault();
+
+      if (!lastMessageSent && this.chat?.messages?.length > 1) {
+        const messageValues = this.chat?.messages?.map(item => item.message['changingThisBreaksApplicationSecurity'] ?? '');
+
+        const result = await this.gpt3Service.requestResponseFromKnowledgeBase({
+          prompt: '',
+          multiPrompt: messageValues,
+          merchantId: merchant._id,
+          chatRoomId: this.chat._id,
+          socketId: this.socket.id,
+          userId: merchant?.owner?._id ? merchant?.owner?._id : null,
+          isAuthorization: this.headerService.user ? true : false
+        });
+
+        const textarea = document.getElementById('autoExpandTextarea');
+        this.chatFormGroup.get('input').setValue(result?.response ?? '');
+        this.resizeTextarea(textarea);
+        const inputEvent = new Event('input', { bubbles: true });
+        textarea.dispatchEvent(inputEvent);
+      }
+
+      if (!lastMessageSent && this.chat?.messages?.length === 1) {
+        const messageValue = this.chat?.messages?.map(item => item.message['changingThisBreaksApplicationSecurity'] ?? '');
+        const result = await this.gpt3Service.requestResponseFromKnowledgeBase({
+          prompt: messageValue[0],
+          merchantId: merchant._id,
+          chatRoomId: this.chat._id,
+          socketId: this.socket.id,
+          userId: merchant?.owner?._id ? merchant?.owner?._id : null,
+          isAuthorization: this.headerService.user ? true : false
+        });
+
+        const textarea = document.getElementById('autoExpandTextarea');
+        this.chatFormGroup.get('input').setValue(result?.response ?? '');
+        this.resizeTextarea(textarea);
+        const inputEvent = new Event('input', { bubbles: true });
+        textarea.dispatchEvent(inputEvent);
+      }
+    }
+  }
+
   async fireUpPageEventListeners() {
     window.addEventListener('online', () => {
       // Code to execute when the browser goes online
@@ -315,6 +420,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
 
     setTimeout(() => {
       this.chatFormGroup.get('input').setValue('');
+      this.textareaAudio = false;
     }, 200);
     await this.gpt3Service.requestResponseFromKnowledgeBase({
       prompt: this.chatFormGroup.get('input').value,
@@ -327,9 +433,18 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     console.log(this.chat)
   }
 
+  async activatedAssistant() {
+    this.socket.emit('ACTIVATE_ASSISTANT', {
+      chatId: this.chat._id,
+    });
+    this.socket.on('ACTIVATE_ASSISTANT', (activateAssistant) => {
+      this.activeAssistantStatus = activateAssistant?.activeAssistant;
+    });
+  }
+
   scrollToBottom() {
     const scrollableDiv = document.getElementById('messages');
-    // Scroll to the bottom
+    // // Scroll to the bottom
     scrollableDiv.scrollTop = scrollableDiv.scrollHeight;
   }
 
@@ -373,9 +488,60 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     return this.sanitizer.bypassSecurityTrustHtml(transformedValue);
   }
 
+  openRecorder() {
+    const dialogref = this.dialogService.open(AudioRecorderComponent,{
+      type: 'flat-action-sheet',
+      props: { canRecord: true, isDialog: true },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+    const dialogSub = dialogref.events
+      .pipe(filter((e) => e.type === 'result'))
+      .subscribe((e) => {
+        if(e.data) {
+          this.audio = e.data;
+          this.saveAudio();
+        }
+        this.audio = null;
+        this.recordRTCService.abortRecording();
+        dialogSub.unsubscribe();
+      });
+  }
+
+  async saveAudio() {
+    let dialogRef;
+    try {
+      dialogRef = this.dialogService.open(StatusAudioRecorderComponent, {
+        type: 'flat-action-sheet',
+        props: {
+          message: this.convertAudioText,
+          backgroundColor: '#181D17',
+        },
+        customClass: 'app-dialog',
+        flags: ['no-header'],
+      });
+
+      if (!this.audio) return;
+      const result = await this.gpt3Service.openAiWhisper((this.audio && new File([this.audio.blob], this.audio.title || 'audio.mp3', {type: (<Blob>this.audio.blob)?.type})),);
+      const textarea = document.getElementById('autoExpandTextarea');
+
+      this.chatFormGroup.get('input').setValue(result);
+      this.resizeTextarea(textarea);
+      const inputEvent = new Event('input', { bubbles: true });
+      textarea.dispatchEvent(inputEvent);
+
+      dialogRef.close();
+    } catch (error) {
+      dialogRef.close();
+
+      console.error(error);
+      this.headerService.showErrorToast();
+    }
+  }
+
   resizeTextarea(textarea) {
-    if (textarea.scrollHeight > 253) {
-      textarea.style.height = 253 + "px";
+    if (textarea.scrollHeight > 146) {
+      textarea.style.height = 146 + "px";
       textarea.style.overflowY = "scroll";
       return;
     }
@@ -384,6 +550,18 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     } else {
       textarea.style.height = 0 + "px";
       textarea.style.height = textarea.scrollHeight + "px";
+    }
+  }
+
+  onTextareaClick() {
+    if(!this.chatFormGroup.get('input').value) {
+      this.textareaAudio = true;
+    }
+  }
+
+  onTextareaBlur() {
+    if(!this.chatFormGroup.get('input').value) {
+      this.textareaAudio = false;
     }
   }
 
