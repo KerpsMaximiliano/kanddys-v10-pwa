@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import {
@@ -36,6 +37,7 @@ import { environment } from 'src/environments/environment';
 })
 export class NewAddressComponent implements OnInit {
   addressForm: FormGroup;
+  isMobile:boolean = false;
 
   constructor(
     private router: Router,
@@ -47,8 +49,12 @@ export class NewAddressComponent implements OnInit {
     private usersService: UsersService,
     private toastr: ToastrService,
     private merchantsService: MerchantsService,
-    private matDialog: MatDialog
+    private matDialog: MatDialog,
+    private translate: TranslateService
   ) {
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+      translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+      translate.use(language?.length === 2 ? language  : 'es');
     this.addressForm = fb.group({
       nickName: fb.control('Mi casa', [
         Validators.required,
@@ -113,6 +119,8 @@ export class NewAddressComponent implements OnInit {
   viewMerchantForDelivery: ViewsMerchant = null;
 
   async ngOnInit(): Promise<void> {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
     const magicLinkData = this.route.snapshot.queryParamMap.get('data');
     const flow = this.route.snapshot.queryParamMap.get('flow');
     const messageFlow = this.route.snapshot.queryParamMap.get('messageFlow');

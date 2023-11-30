@@ -538,13 +538,20 @@ table {
 }
 
 .confirmButton {
+  position: fixed;
   font-family: "InterBold";
   font-weight: bold;
   font-size: 16px;
   text-align: center;
-  // width: 280px;
+  max-width: 500px;
   cursor: pointer;
 }
+
+.confirmButton.mobile{
+  max-width: 427px;
+  margin-bottom: calc(100vh - 745px);
+}
+
 
 .list-of-webform-questions {
   list-style: none;

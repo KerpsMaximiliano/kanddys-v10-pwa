@@ -247,7 +247,7 @@
       </div>
     </div>
   </div>
-  <footer class="bottom-footer" (click)="openDatePicker()" *ngIf="orderIds.length < 1 && !filterOpened">
+  <footer class="bottom-footer" (click)="openDatePicker()" *ngIf="orderIds.length < 1 && !filterOpened" [ngClass]="{mobile: !isMobile}">
     <mat-form-field appearance="fill" style="display: none">
       <mat-label>Enter a date range</mat-label>
       <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
@@ -266,10 +266,10 @@
     <p *ngIf="startDateLabel !== ''">{{startDateLabel}} a {{endDateLabel}}</p>
     <p class="benefits">({{orders.length}} facturas) ${{benefit | CurrencyPipe}}</p>
   </footer>
-  <footer class="bottom-footer" (click)="openSelectedOrdersOptionsMenu()" *ngIf="orderIds.length > 0 && !filterOpened">
+  <footer class="bottom-footer" (click)="openSelectedOrdersOptionsMenu()" *ngIf="orderIds.length > 0 && !filterOpened" [ngClass]="{mobile: !isMobile}">
     <p class="center-text" >Opciones para los {{orderIds.length}} artículos seleccionados</p>
   </footer>
-  <footer class="bottom-footer" (click)="applyFilters()" *ngIf="filterOpened">
+  <footer class="bottom-footer" (click)="applyFilters()" *ngIf="filterOpened" [ngClass]="{mobile: !isMobile}">
     <p >Guardar filtro</p>
     <p class="benefits">Ver {{orders.length}} facturas filtradas</p>
   </footer>
