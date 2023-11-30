@@ -107,6 +107,13 @@ export class FormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    const isMobile = regex.test(navigator.userAgent);
+    if(!isMobile) {
+      const element : HTMLElement = document.querySelector('.cdk-overlay-pane');
+      element?.style?.setProperty('max-width', '427px', 'important');
+    }
+
     this.formGroup = this.fb.group({});
 
     if (!this.data.automaticallyFocusFirstField) {

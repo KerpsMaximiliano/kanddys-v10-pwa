@@ -1,5 +1,5 @@
 <div class="container">
-  <header>
+  <header [style.maxWidth]="!isMobile ? '427px' : '500px'">
     <!-- <div class="knowledge-slot-header" (click)="editMemoryName()">
       Memoria
       <span class="knowledge-slot-name">
@@ -16,23 +16,44 @@
             "
             alt="brain"
           />
-          <h2 (click)="showMemories = false">MEMORIAS DE LAIA</h2>
+          <h2 (click)="showMemories = false">{{ "title.laia-memories" | translate}}</h2>
         </div>
       </ng-container>
       <ng-template #elseLabelMemories>
         <h2>
-          RESPUESTAS FORMULADAS 
-          <span (click)="showMemories = true" [style.color]="'#7AA787'">DESDE {{ memories && memories?.length > 0 ? memories.length : 0 }} 
-          <span [style.color]="'#87CD9B'">MEMORIAS</span> DE LAIA
+          {{ "laia-training.memoriesOne" | translate }}
+          <span (click)="showMemories = true" [style.color]="'#7AA787'">{{ "laia-training.memoriesTwo" | translate }} {{ memories && memories?.length > 0 ? memories.length : 0 }} 
+          <span [style.color]="'#87CD9B'">{{ "laia-training.memoriesThree" | translate }}</span> {{ "laia-training.memoriesFour" | translate }}
           </span>
         </h2>
       </ng-template>
       
     </ng-container>
     <ng-template #elseTemplate>
-      <h2>{{ showTextareaMemory ? 'RESPUESTAS FORMULADAS DESDE LA MEMORIA DE LAIA' : 'MEMORIA DE LAIA' }}</h2>
+        <h2>
+          {{ vectorId ? ('title.laia-memory' | translate) : showTextareaMemory ? ('laia-training.normalHeader' | translate) : ('title.laia-memory' | translate) }}
+          <span *ngIf="vectorId" [style.color]="'#87cd9b'" (click)="editMemoryName()">
+            {{ memoryName ? memoryName : (('laia-training.noName' | translate) + " #1") }}
+          </span>
+        </h2>
+
     </ng-template>
-    <div class="close-button" (click)="goBack()">X</div>
+    <div class="close-button">
+      <svg *ngIf="vectorId" (click)="deleteMemory()" xmlns="http://www.w3.org/2000/svg" width="17" height="19" viewBox="0 0 17 19" fill="none">
+        <g clip-path="url(#clip0_6262_22305)">
+          <path d="M5.42969 6.78572H6.78683V14.9286H5.42969V6.78572Z" fill="#9F2817"/>
+          <path d="M9.5 6.78572H10.8571V14.9286H9.5V6.78572Z" fill="#9F2817"/>
+          <path d="M0 2.71428V4.07142H1.35714V17.6429C1.35714 18.0028 1.50013 18.348 1.75464 18.6025C2.00915 18.857 2.35435 19 2.71429 19H13.5714C13.9314 19 14.2766 18.857 14.5311 18.6025C14.7856 18.348 14.9286 18.0028 14.9286 17.6429V4.07142H16.2857V2.71428H0ZM2.71429 17.6429V4.07142H13.5714V17.6429H2.71429Z" fill="#9F2817"/>
+          <path d="M5.42969 0H10.8583V1.35714H5.42969V0Z" fill="#9F2817"/>
+        </g>
+        <defs>
+          <clipPath id="clip0_6262_22305">
+            <rect width="16.2857" height="19" fill="white"/>
+          </clipPath>
+        </defs>
+      </svg>  
+      <span (click)="goBack()">X</span>
+    </div>
   </header>
 
   <ng-container *ngIf="requestResponse; else default">
@@ -43,7 +64,7 @@
           class="memory"
           (click)="editMemory(memorie?.vectorId)"
         >
-          <div class="name">{{ memorie.name ? memorie.name : "Sin nombre" }} <span>#{{i}}</span></div>
+          <div class="name">{{ memorie.name ? memorie.name : ('laia-memories.emptyName' | translate) }} <span>#{{i}}</span></div>
           <div class="content">{{ memorie.content }}</div>
         </div>
       </div>
@@ -67,12 +88,12 @@
                 contenteditable="true"
               ></div> -->
 
-              <div
+              <!-- <div
                 *ngIf="editingQuestion && (i === editingIndex)"
                 [id]="'question-box-input' + i"
                 class="question-box-input"
                 contenteditable="true"
-              ></div>
+              ></div> -->
   
               <!-- <img
                 class="edit-or-confirm"
@@ -91,7 +112,7 @@
                 alt="edit question"
               /> -->
 
-              <img
+              <!-- <img
                 class="edit-or-confirm"
                 (click)="
                   !(editingQuestion && !questionForm.get('question').value) || (editingQuestion && !questionForm.get('question').value)
@@ -106,10 +127,10 @@
                   (editingQuestion && (i === editingIndex) ? '/check-black.svg' : '/edit-comment.svg')
                 "
                 alt="edit question"
-              />
+              /> -->
             </div>
   
-            <div class="sender" *ngIf="headerService.user">
+            <!-- <div class="sender" *ngIf="headerService.user">
               {{
                 headerService.user.name ||
                   headerService.user.email ||
@@ -117,14 +138,14 @@
               }}
             </div>
   
-            <div class="sender" *ngIf="!headerService.user">DESCONOCIDO</div>
+            <div class="sender" *ngIf="!headerService.user">DESCONOCIDO</div> -->
           </div>
   
           <div class="response-box-wrapper">
             <div class="content">
               <div class="response-box">{{ generated.response }}</div>
   
-              <div class="sender">LAIA</div>
+              <!-- <div class="sender">LAIA</div> -->
             </div>
           </div>
         </div>
@@ -133,26 +154,32 @@
 
     <div
       class="message"
+      [style.maxWidth]="!isMobile ? '427px' : '500px'"
+      [style.marginBottom]="!isMobile ? calculateMargin : '0px'"
     >
       <div *ngIf="!audioText.value" class="formulate-more">        
         <p class="title">
-          Prueba las respuestas que formulará Laia, haz una pregunta de ejemplo 👇
+          {{ "laia-memories.testResponses" | translate }}
         </p>
       </div>
       <div 
         class="custom-input"
-        [style.backgroundColor]="audioText.value ? 'transparent' : '#87CD9B'"
+        [style.backgroundColor]="audioText.value ? 'transparent' : textareaAudio ? '#F6F6F6' : '#87CD9B'"
         [style.alignItems]="audioText.value ? 'end' : 'center'"
         (click)="showTextareaMemory ? showTextareaMemory = false : null"
       >
         <textarea 
           id="autoExpandTextarea"
           type="text"
+          #baseText
           [formControl]="audioText"
-          placeholder="Haz una pregunta de ejemplo.."
-          [style.backgroundColor]="audioText.value ? '#F6F6F6' : 'transparent'"
+          placeholder="{{ 'laia-memories.responseExample' | translate }}"
+          [style.backgroundColor]="audioText.value || textareaAudio ? '#F6F6F6' : 'transparent'"
           [style.padding]="audioText.value ? '12px 14px 10px' : '14px 14px 10px'"
           [ngClass]="{ textareaHeight: !audioText.value }"
+          (keyup)="resizeTextarea($event.target)"
+          (blur)="onTextareaBlur()"
+          (click)="onTextareaClick()"
         ></textarea>
         <img *ngIf="!audioText.value" (click)="openRecorder()" class="audio-freq" src="{{assetsFolder}}/audio-freq.png" alt="img">
         <ng-container *ngIf="audioText.value">
@@ -178,9 +205,9 @@
         <!-- <label for="base-text">Ahorra Tiempo Brindando Respuestas Precisas al Instante.</label> -->
 
         <ng-container *ngIf="typeFile; else textWrapper">
-          <div class="container-file">
+          <div *ngIf="!generatedQA" class="container-file">
             <span class="title">
-              Archivo Cargado
+              {{ "laia-training.uploadFileText" | translate }}
             </span>
             <i 
               class="fal"
@@ -198,16 +225,31 @@
               name="base-text"
               formControlName="memory"
               id="base-text"
-              [placeholder]="'Escribe o pega un texto..'"
+              #baseText
+              placeholder="{{ 'model.writeOrCopy' | translate }}"
               class="base-text"
               [ngStyle]="{ 
                 'background-color': clicked ? '#F6F6F6' : '#181d17',
                 'color': clicked ? '#7B7B7B' : '#C4C5C3'
               }"
               (click)="clicked = true"
+              (keyup)="resizeTextareaMemory($event.target)"
             ></textarea>
   
             <img *ngIf="form.get('memory').value && !clicked" src="../../../../../assets/icons/shortcut.svg" alt="" class="shortcut" (click)="form.get('memory').setValue(null)"/>
+
+            <div *ngIf="form.get('memory').value && clicked" class="container-clean-textarea" (click)="form.get('memory').setValue(null)">
+              <span class="text-clean-textarea">{{ 'laia-training.deleteText' | translate}}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="17" height="14" viewBox="0 0 17 14" fill="none">
+                <path d="M7.37542 10.4459L10.3305 7.49086L13.2856 10.4459L14.075 9.65645L11.12 6.70101L14.075 3.74594L13.2856 2.95645L10.3305 5.91152L7.37542 2.95645L6.58594 3.74594L9.54101 6.70101L6.58594 9.65608L7.37542 10.4459Z" fill="#7B7B7B"/>
+                <path d="M15.9125 0H6.23472C6.12105 9.10523e-05 6.00858 0.0232275 5.90411 0.0680111C5.79964 0.112795 5.70533 0.178296 5.62688 0.260555L0 6.19824V7.20324L5.62614 13.1394C5.70458 13.2217 5.79889 13.2872 5.90337 13.332C6.00784 13.3768 6.12031 13.3999 6.23398 13.4H15.9118C16.1338 13.3997 16.3466 13.3114 16.5036 13.1544C16.6606 12.9974 16.749 12.7845 16.7493 12.5625V0.8375C16.749 0.615601 16.6607 0.402863 16.5039 0.245887C16.3471 0.0889104 16.1344 0.000492258 15.9125 0ZM15.6333 12.2833H6.35383L1.11667 6.75658V6.64491L6.35383 1.11667H15.6333V12.2833Z" fill="#7B7B7B"/>
+              </svg>
+            </div>
+
+            <div *ngIf="clicked && !form.get('memory').value" class="container-clean-textarea" (click)="getClipboardText()">
+              <span class="text-clean-textarea">{{ 'paste' | translate}}</span>
+              <i class="far fa-copy" [style.color]="'#7B7B7B'"></i>
+            </div>
             
             <div 
               *ngIf="clicked"
@@ -263,12 +305,12 @@
           Según lo escrito no se pueden generar preguntas todavía
         </p>
 
-        <p 
+        <!-- <p 
           *ngIf="!showTextareaMemory && vectorText && form.get('memory').value && vectorText != form.get('memory').value" class="show-save-memory-vector"
           (click)="saveMemoryInKnowledgeBase()"  
         >
           SALVAR CAMBIOS DE LA MEMORIA
-        </p>
+        </p> -->
 
         <ng-container *ngIf="generatedQA">
           <div *ngFor="let generated of generatedQA; let i=index" class="request-response-box">
@@ -278,7 +320,7 @@
                   {{ generated.question }}
                 </div>
   
-                <div
+                <!-- <div
                   *ngIf="editingQuestion && (i === editingIndex)"
                   [id]="'question-box-input' + i"
                   class="question-box-input"
@@ -300,25 +342,25 @@
                     (editingQuestion && (i === editingIndex) ? '/check-black.svg' : '/edit-comment.svg')
                   "
                   alt="edit question"
-                />
+                /> -->
               </div>
   
-              <div class="sender" *ngIf="headerService.user">
+              <!-- <div class="sender" *ngIf="headerService.user">
                 {{
                   headerService.user.name ||
                     headerService.user.email ||
                     headerService.user.phone
                 }}
-              </div>
+              </div> -->
   
-              <div class="sender" *ngIf="!headerService.user">DESCONOCIDO</div>
+              <!-- <div class="sender" *ngIf="!headerService.user">DESCONOCIDO</div> -->
             </div>
   
             <div class="response-box-wrapper">
               <div class="content">
                 <div class="response-box">{{ generated.response }}</div>
   
-                <div class="sender">LAIA</div>
+                <!-- <div class="sender">LAIA</div> -->
               </div>
             </div>
           </div>
@@ -356,18 +398,6 @@
           <span class="title-save-memory">Guarda la memoria para compartir tu enlace de chat</span>
         </div> -->
 
-        <div 
-          *ngIf="(showTextareaMemory && form.get('memory').value && (generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response)) || (showTextareaMemory && form.get('memory').value === null && (generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response))"
-          class="container-content"
-          [style.marginTop.px]="generatedQA && generatedQA?.length > 2 ? 0 : 120"
-        >
-          <p class="text">
-            Guarda el contenido de la Memoria de Laia para empezar a brindar respuestas en cualquier idioma con Inteligencia Artificial
-          </p>
-  
-          <button type="button" class="button" (click)="saveMemoryInKnowledgeBase()">Tap para guardar</button>
-      </div>
-
         <div id="question-response-bottom"></div>
       </div>
     </main>
@@ -375,15 +405,31 @@
     <div 
       [style.display]="!clicked ? 'block' : 'none'"
       class="message"
+      [style.maxWidth]="!isMobile ? '427px' : '500px'"
+      [style.marginBottom]="!isMobile ? calculateMargin : '0px'"
     >
-      <div *ngIf="!audioText.value" class="formulate-more">        
+      <div
+        *ngIf="((form.get('memory').value || typeFile) && (generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response)) || (showTextareaMemory && form.get('memory').value === null && (generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response))"
+        class="container-save"
+      >
+        <div class="content">
+          <p class="text">
+            {{ "laia-training.saveMemory" | translate }}
+          </p>
+  
+          <button type="button" class="button" (click)="saveMemoryInKnowledgeBase()">{{ "laia-training.tapSave" | translate }}</button>
+        </div>
+      </div>
+
+      <div *ngIf="!((form.get('memory').value || typeFile) && (generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response)) || (showTextareaMemory && form.get('memory').value === null && (generatedQA && generatedQA?.length > 0 && generatedQA[0]?.response))" class="formulate-more">        
         <p class="title">
-          Prueba las respuestas que formulará Laia, haz una pregunta de ejemplo 👇
+          {{ "laia-memories.testResponses" | translate }}
         </p>
       </div>
+
       <div 
         class="custom-input"
-        [style.backgroundColor]="audioText.value ? 'transparent' : '#87CD9B'"
+        [style.backgroundColor]="audioText.value ? 'transparent' : textareaAudio ? '#F6F6F6' :  '#87CD9B'"
         [style.alignItems]="audioText.value ? 'end' : 'center'"
         (click)="showTextareaMemory ? showTextareaMemory = false : null"
       >
@@ -391,10 +437,13 @@
           id="autoExpandTextarea"
           type="text"
           [formControl]="audioText"
-          placeholder="Haz una pregunta de ejemplo.."
-          [style.backgroundColor]="audioText.value ? '#F6F6F6' : 'transparent'"
+          placeholder="{{ 'laia-memories.responseExample' | translate }}"
+          [style.backgroundColor]="audioText.value || textareaAudio ? '#F6F6F6' : 'transparent'"
           [style.padding]="audioText.value ? '12px 14px 10px' : '14px 14px 10px'"
           [ngClass]="{ textareaHeight: !audioText.value }"
+          (keyup)="resizeTextarea($event.target)"
+          (blur)="onTextareaBlur()"
+          (click)="onTextareaClick()"
         ></textarea>
         <img *ngIf="!audioText.value" (click)="openRecorder()" class="audio-freq" src="{{assetsFolder}}/audio-freq.png" alt="img">
         <ng-container *ngIf="audioText.value">

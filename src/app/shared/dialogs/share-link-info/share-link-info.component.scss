@@ -30,6 +30,10 @@
           font-style: normal;
           line-height: normal;
           letter-spacing: 0.88px;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          width: 85%;
         }
       
         .copy-text {

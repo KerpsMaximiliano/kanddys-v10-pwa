@@ -96,6 +96,15 @@ export const updateVectorInKnowledgeBase = gql`
   }
 `;
 
+export const deleteMemoryById = gql`
+  mutation deleteMemoryById(
+    $id: String!
+    $merchantId: ObjectID!
+  ) {
+    deleteMemoryById(id: $id, merchantId: $merchantId)
+  }
+`;
+
 export const deleteVectorInKnowledgeBase = gql`
   mutation deleteVectorInKnowledgeBase($id: String!) {
     deleteVectorInKnowledgeBase(id: $id)

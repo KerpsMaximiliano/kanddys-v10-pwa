@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { filter } from 'rxjs/operators';
 import { AppService } from 'src/app/app.service';
 import { isVideo } from 'src/app/core/helpers/strings.helpers';
@@ -61,6 +62,7 @@ export class ItemSelectorComponent implements OnInit {
     | 'QUOTATION_UPDATE_WITHOUT_USER_SESSION'
     | 'NEW_QUOTATION_BASED_ON_EXISTING_QUOTATION' =
     'QUOTATION_CREATION_WITHOUT_USER_SESSION';
+    isMobile: boolean = false;
 
   constructor(
     private itemsService: ItemsService,
@@ -74,10 +76,17 @@ export class ItemSelectorComponent implements OnInit {
     private router: Router,
     private location: Location,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
-  ) {}
+    private dialog: MatDialog,
+    private translate: TranslateService
+  ) {
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+      translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+      translate.use(language?.length === 2 ? language  : 'es');
+  }
 
   async ngOnInit() {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
     if (localStorage.getItem('session-token')) {
       if (!this.headerService.user) {
         let sub = this.appService.events

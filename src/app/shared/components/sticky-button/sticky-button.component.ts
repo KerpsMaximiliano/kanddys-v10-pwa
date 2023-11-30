@@ -11,6 +11,7 @@ import { NgNavigatorShareService } from 'ng-navigator-share';
 import { copyText } from 'src/app/core/helpers/strings.helpers';
 import { ToastrService } from 'ngx-toastr';
 import { environment } from 'src/environments/environment';
+import { TranslateService } from '@ngx-translate/core';
 
 interface Extra {
   text?: string;
@@ -29,6 +30,7 @@ interface Extra {
     color?: string;
   };
 }
+
 
 @Component({
   selector: 'app-sticky-button',
@@ -70,17 +72,25 @@ export class StickyButtonComponent implements OnInit {
 
   env: string = environment.assetsUrl;
   private ngNavigatorShareService: NgNavigatorShareService;
+  isMobile:boolean = false;
 
   constructor(
     ngNavigatorShareService: NgNavigatorShareService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private translate: TranslateService
   ) {
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+      translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+      translate.use(language?.length === 2 ? language  : 'es');
     this.ngNavigatorShareService = ngNavigatorShareService;
   }
 
   @ViewChild('qrcode', { read: ElementRef }) qr: ElementRef;
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
+  }
 
   downloadQr() {
     const parentElement = this.qr.nativeElement.querySelector('img').src;

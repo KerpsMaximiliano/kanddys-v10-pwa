@@ -446,3 +446,13 @@ a.disabled {
   font-style: normal;
   line-height: normal;
 }
+.footer{
+  position: fixed;
+  bottom: 0;
+  margin: auto;
+  max-width: 500px;
+}
+.footer.mobile{
+  max-width: 427px;
+  margin-bottom: calc(100vh - 745px);
+}
