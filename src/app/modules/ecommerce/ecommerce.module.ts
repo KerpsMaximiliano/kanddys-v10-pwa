@@ -88,6 +88,8 @@ import { InvisibleMarketingLandingComponent } from './pages/invisible-marketing-
 import { LaiachatWebscrapingComponent } from './pages/laiachat-webscraping/laiachat-webscraping.component';
 import { LaiachatIntegrationsComponent } from './pages/laiachat-integrations/laiachat-integrations.component';
 import { NewLaiaLandingComponent } from './pages/new-laia-landing/new-laia-landing.component';
+import { ShareLinkAndLaiaStatusComponent } from './pages/share-link-and-laia-status/share-link-and-laia-status.component';
+import { GenerateDomainComponent } from './pages/generate-domain/generate-domain.component';
 
 const routes: Routes = [
   {
@@ -318,6 +320,14 @@ const routes: Routes = [
   {
     path: 'laiachat-landing',
     component: LaiachatLandingComponent,
+  },
+  {
+    path: 'share-link',
+    component: ShareLinkAndLaiaStatusComponent,
+  },
+  {
+    path: 'generate-domain',
+    component: GenerateDomainComponent,
   },
   {
     path: 'new-laiachat-landing',
@@ -577,6 +587,8 @@ const routes: Routes = [
     LaiachatWebscrapingComponent,
     LaiachatIntegrationsComponent,
     NewLaiaLandingComponent,
+    ShareLinkAndLaiaStatusComponent,
+    GenerateDomainComponent,
   ],
   imports: [
     CommonModule,
