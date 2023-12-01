@@ -1084,6 +1084,7 @@ export class OrderDetailComponent implements OnInit {
     this.activeStatusIndex = status.findIndex(
       (status) => status === updatedStatus
     );
+    this.orderDelivery = this.statusList[this.activeStatusIndex].name;
     this.openNotificationDialog()
   }
 
