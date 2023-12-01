@@ -5,6 +5,7 @@ interface Owner extends Model<Owner> {
   connected: boolean;
   socketsId: Array<string>;
   userId: string;
+  ipAddress?: string;
 }
 
 export interface Chat extends Model<Chat> {
@@ -20,6 +21,9 @@ export interface Chat extends Model<Chat> {
     content: string;
   }>;
   _id: string;
+  activeAssistant: boolean;
+  lastUserWritten?: string;
+  receiverIpAddress?: string;
 }
 
 export interface Message {

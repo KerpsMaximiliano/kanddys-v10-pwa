@@ -3,10 +3,6 @@
     scroll-behavior: smooth;
   
     header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
       padding-bottom: 13px;
       padding-top: 15px;
       display: flex;
@@ -16,8 +12,6 @@
       padding-right: 23px;
       margin: auto;
       max-width: 500px;
-      z-index: 999;
-  
       background-color: #181d17;
   
       h2 {
@@ -37,7 +31,7 @@
   
       .close-button {
         cursor: pointer;
-        color: #fff;
+        color: #7B7B7B;
         font-family: FiraSansMedium;
         font-size: 19.005px;
         font-style: normal;
@@ -50,19 +44,18 @@
         background-color: #181d17;
         min-height: 100%;
         padding: 0px 24px;
-        padding-top: 40px;
+        padding-top: 5px;
         padding-bottom: 145px;
 
         .title {
             color: #F6F6F6;
             font-family: FiraSansMedium;
-            font-size: 19px;
+            font-size: 17px;
             padding: 0 30px;
             font-style: normal;
             font-weight: 500;
             line-height: 128.023%;
-            margin-top: 20px;
-            margin-bottom: 18px;
+            margin-top: 5px;
             text-align: center;
             letter-spacing: 1.265px;
             margin-bottom: 35px;
@@ -74,7 +67,6 @@
             gap: 8px;
         
             .media {
-              cursor: pointer;
               display: flex;
               flex-direction: column;
               align-items: center;

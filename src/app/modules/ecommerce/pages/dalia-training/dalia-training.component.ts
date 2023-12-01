@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -33,6 +34,7 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./dalia-training.component.scss'],
 })
 export class DaliaTrainingComponent implements OnInit, OnDestroy {
+  @ViewChild('baseText') memoryTextarea: ElementRef;
   assetsFolder: string = environment.assetsUrl;
   showExtendButton: boolean = false;
   alreadyClickedShowButton: boolean = false;
@@ -100,9 +102,13 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   file: File;
   typeFile: string;
   clicked: boolean = true;
+  textareaAudio: boolean = false;
   showTextareaMemory: boolean = false;
   vectorText: string = null;
   showMemories: boolean = false;
+  isMobile: boolean = false;
+  convertAudioText: string = 'Conviertiéndo el audio a texto';
+  calculateMargin = '0px';
 
   constructor(
     private gptService: Gpt3Service,
@@ -117,9 +123,17 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     private toastrService: ToastrService,
     private recordRTCService: RecordRTCService,
     private filesService: FilesService,
-  ) {}
+    private translate: TranslateService,
+  ) {
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+    translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+    translate.use(language?.length === 2 ? language  : 'es');
+  }
 
   async ngOnInit() {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
+    this.calculateMargin = `calc(${window.innerHeight}px - 745px)`;
     this.clientConnectionStatus = await this.whatsappService.clientConnectionStatus();
     console.log(this.clientConnectionStatus);
 
@@ -139,8 +153,8 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
 
             if (audioResult) {
               this.form.get('memory').setValue(audioResult);
-              this.testMemory();
-              this.clicked = false;
+              // this.testMemory();
+              // this.clicked = false;
             }
 
             if (typeFile) {
@@ -195,12 +209,12 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
               await this.loadVectorData();
             }
 
-            const textarea = document.getElementById('autoExpandTextarea');
+            // const textarea = document.getElementById('autoExpandTextarea');
 
-            textarea.addEventListener('input', function () {
-              this.style.height = 'auto';
-              this.style.height = (this.scrollHeight) + 'px';
-            });
+            // textarea.addEventListener('input', function () {
+            //   this.style.height = 'auto';
+            //   this.style.height = (this.scrollHeight) + 'px';
+            // });
 
             const textareaMemory: HTMLElement = document.querySelector('.base-text');
 
@@ -288,6 +302,14 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
         );
       }
     );
+
+    this.translate.get("modal.convertAudioText").subscribe(translate => this.convertAudioText = translate);
+
+    if (this.isMobile) {
+      setTimeout(() => {
+        this.memoryTextarea.nativeElement.focus();
+      }, 500);
+    }
   }
 
   onKeyUp() {
@@ -378,12 +400,12 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
         }
 
         // Usage example:
-        if (this.isTextareaFullHeight('base-text')) {
-          setTimeout(() => {
-            // Call the function to scroll to the bottom smoothly
-            this.scrollToBottom();
-          }, 500);
-        }
+        // if (this.isTextareaFullHeight('base-text')) {
+        //   setTimeout(() => {
+        //     // Call the function to scroll to the bottom smoothly
+        //     this.scrollToBottom();
+        //   }, 500);
+        // }
       }
 
       this.showDots = false;
@@ -392,8 +414,9 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
       if(audioQuestion) {
         unlockUI();
         this.audioText.setValue(null);
-        const textarea = document.getElementById('autoExpandTextarea');
-        textarea.style.height = '51px';
+        this.textareaAudio = false;
+        // const textarea = document.getElementById('autoExpandTextarea');
+        // textarea.style.height = '51px';
       };
     } catch (error) {
       if(audioQuestion) unlockUI();
@@ -405,6 +428,8 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
 
   async openAiRequestResponseFromFile() {
     try {
+      lockUI();
+
       let response = await this.gptService.openAiRequestResponseFromFile(
         this.file,
         this.audioText.value,
@@ -425,7 +450,11 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
       }
       this.showDots = false;
       this.audioText.setValue(null);
+      this.textareaAudio = false;
+
+      unlockUI();
     } catch (error) {
+      unlockUI();
       this.showDots = false;
       this.headerService.showErrorToast();
       console.error(error);
@@ -506,8 +535,9 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
 
       if(this.audioText.value) {
         this.audioText.setValue(null);
-        const textarea = document.getElementById('autoExpandTextarea');
-        textarea.style.height = '51px';
+        this.textareaAudio = false;
+        // const textarea = document.getElementById('autoExpandTextarea');
+        // textarea.style.height = '51px';
       }
       unlockUI();
     } catch (error) {
@@ -525,8 +555,8 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
       }
       if(this.audioText.value) {
         this.audioText.setValue(null);
-        const textarea = document.getElementById('autoExpandTextarea');
-        textarea.style.height = '51px';
+        // const textarea = document.getElementById('autoExpandTextarea');
+        // textarea.style.height = '51px';
       }
       console.error(error);
     }
@@ -605,7 +635,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
         if (!this.vectorId) {
           const dataFeeded =
             await this.gptService.feedKnowledgeBaseWithTextData(
-              this.form.get('memory').value,
+              this.typeFile ? (this.generatedQA[0]?.response || '') : this.form.get('memory').value,
               this.memoryName
             );
 
@@ -654,13 +684,53 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
     console.log('scrolleando');
   }
 
-  isTextareaFullHeight(textareaId: string) {
-    const textarea = document.getElementById(textareaId); // Replace 'yourTextareaId' with the actual ID of your textarea element
+  resizeTextarea(textarea) {
+    if(textarea.scrollHeight > 146) {
+      textarea.style.height = 146 + "px";
+      textarea.style.overflowY = "scroll";
+      return;
+    }
+    if(textarea.scrollHeight > textarea.clientHeight) {
+      textarea.style.height = textarea.scrollHeight > 39 ? textarea.scrollHeight + "px" : 39 + "px";
+    } else {
+      textarea.style.height = 0 + "px";
+      textarea.style.height = textarea.scrollHeight + "px";
+    }
+  }
 
-    const textareaHeight = textarea.offsetHeight;
-    const windowHeight = window.innerHeight;
+  resizeTextareaMemory(textarea) {
+    if(textarea.scrollHeight > 314) {
+      textarea.style.height = 314 + "px";
+      textarea.style.overflowY = "scroll";
+      return;
+    }
+    if(textarea.scrollHeight > textarea.clientHeight) {
+      textarea.style.height = textarea.scrollHeight > 118 ? textarea.scrollHeight + "px" : 118 + "px";
+    } else {
+      textarea.style.height = 0 + "px";
+      textarea.style.height = textarea.scrollHeight + "px";
+    }
+  }
 
-    return textareaHeight >= windowHeight;
+  onTextareaClick() {
+    if(!this.audioText.value) {
+      this.textareaAudio = true;
+    }
+  }
+
+  onTextareaBlur() {
+    if(!this.audioText.value) {
+      this.textareaAudio = false;
+    }
+  }
+
+  async getClipboardText() {
+    try {
+      const text = await navigator.clipboard.readText();
+      this.form.get('memory').setValue(text ?? null);
+    } catch (err) {
+      this.headerService.showErrorToast();
+    }
   }
 
   goBack() {
@@ -683,51 +753,70 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
   }
 
   editMemoryName = () => {
-    let fieldsToCreate: FormData = {
-      fields: [
-        {
-          label: 'Nombre de la memoria',
-          name: 'memoryName',
-          type: 'text',
-          validators: [Validators.pattern(/[\S]/), Validators.required],
-        },
-      ],
-      automaticallyFocusFirstField: true,
-    };
-
-    const dialogRef = this.matDialog.open(FormComponent, {
-      data: fieldsToCreate,
-    });
-
-    this.memoryNameDialogSubscription = dialogRef
-      .afterClosed()
-      .subscribe(async (result: FormGroup) => {
-        if (result?.value['memoryName']) {
-          this.memoryName = result?.value['memoryName'];
-
-          this.loginData.jsondata = JSON.stringify({
-            memoryToSave: this.form.get('memory').value,
-            memoryName: this.memoryName,
-          });
-
-          if (
-            this.vectorId &&
-            this.form.get('memory').value &&
-            this.memoryName
-          ) {
-            lockUI();
-
-            await this.gptService.updateVectorInKnowledgeBase(
-              this.vectorId,
-              this.form.get('memory').value,
-              this.memoryName
-            );
-
-            unlockUI();
-          }
-        }
+    this.translate.get("laia-training.nameMemoryText").subscribe(translate => {
+      let fieldsToCreate: FormData = {
+        fields: [
+          {
+            label: translate,
+            name: 'memoryName',
+            type: 'text',
+            validators: [Validators.pattern(/[\S]/), Validators.required],
+          },
+        ],
+        automaticallyFocusFirstField: true,
+      };
+  
+      const dialogRef = this.matDialog.open(FormComponent, {
+        data: fieldsToCreate,
       });
+  
+      this.memoryNameDialogSubscription = dialogRef
+        .afterClosed()
+        .subscribe(async (result: FormGroup) => {
+          if (result?.value['memoryName']) {
+            this.memoryName = result?.value['memoryName'];
+  
+            this.loginData.jsondata = JSON.stringify({
+              memoryToSave: this.form.get('memory').value,
+              memoryName: this.memoryName,
+            });
+  
+            if (
+              this.vectorId &&
+              this.form.get('memory').value &&
+              this.memoryName
+            ) {
+              lockUI();
+  
+              await this.gptService.updateVectorInKnowledgeBase(
+                this.vectorId,
+                this.form.get('memory').value,
+                this.memoryName
+              );
+  
+              unlockUI();
+            }
+          }
+        });
+    });
   };
+
+  async deleteMemory(){
+    try {
+      lockUI();
+
+      const merchantId: string = await this.getMerchantDefault();
+
+      await this.gptService.deleteMemoryById(this.vectorId, merchantId);
+      
+      this.router.navigate(['/ecommerce/laia-memories-management']);
+
+      unlockUI();
+    } catch (err) {
+      this.router.navigate(['/ecommerce/laia-memories-management']);
+      unlockUI();
+    }
+  }
 
   openIntegrationsDialog() {
     let data: {
@@ -1072,7 +1161,7 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
       dialogRef = this.dialog.open(StatusAudioRecorderComponent, {
         type: 'flat-action-sheet',
         props: {
-          message: 'Conviertiéndo el audio a texto..',
+          message: this.convertAudioText,
           backgroundColor: '#181D17',
         },
         customClass: 'app-dialog',
@@ -1081,11 +1170,12 @@ export class DaliaTrainingComponent implements OnInit, OnDestroy {
 
       if (!this.audio) return;
       const result = await this.gptService.openAiWhisper((this.audio && new File([this.audio.blob], this.audio.title || 'audio.mp3', {type: (<Blob>this.audio.blob)?.type})),);
+      const textarea = document.getElementById('autoExpandTextarea');
 
       this.audioText.setValue(result);
+      this.resizeTextarea(textarea);
       if(this.typeFile) this.showDots = true;
       if(!this.typeFile) {
-        const textarea = document.getElementById('autoExpandTextarea');
         const inputEvent = new Event('input', { bubbles: true });
         textarea.dispatchEvent(inputEvent);
       }

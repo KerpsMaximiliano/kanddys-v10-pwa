@@ -18,7 +18,7 @@
             </button>
         </div>
     </main>
-    <div class="fixed-section">
+    <div class="fixed-section" [ngClass]="{mobile: !isMobile}">
         <div style="margin: 0 17px;">
             <div class="flex">
                 <p>{{ order?.items?.length }} Artículos en tu factura</p>

@@ -1,206 +1,113 @@
 <div class="component">
-  <!-- <mat-toolbar class="header">
-    <div class="spacer"></div>
-    <button mat-button style="border-radius: 0" (click)="openNavigation = true">
-      <span>{{
-        headerService.user?._id === headerService.saleflow?.merchant.owner._id
-          ? "Vista de compradores"
-          : "Stars for Causes"
-      }}</span>
-      <mat-icon>menu</mat-icon>
-    </button>
-  </mat-toolbar> -->
-  <div class="header">
-    <div class="contact-button">
-      <div>
-        <div>
-          <mat-icon
+  <header>
+    <ng-template #elseBlock>
+      <div class="small-bar">
+        <div class="right-side">
+          <mat-icon class="go_back_arrow" (click)="backToMainView()">
+            keyboard_arrow_left
+          </mat-icon>
+          <p *ngIf="selectedCategories.length > 0">
+            {{selectedCategories[0].name}}
+          </p>
+        </div>
+        <img (click)="shareDialog()" class="share-light" src="{{assetsFolder}}/share-icon2.svg" alt="share">
+      </div>
+    </ng-template>
+    <div *ngIf="!filterView; else elseBlock" class="top-bar">
+      <div class="merchant-info" (click)="goToMerchantProfile()">
+        <!--<mat-icon
             class="go_back_arrow"
-            (click)="goToAdmin()"
+            (click)="goBack()"
             *ngIf="adminView"
             >keyboard_arrow_left</mat-icon
-          >
-          <div
-            class="icon"
-            [style.background]="
-              _DomSanitizer.bypassSecurityTrustStyle(
+          >-->
+        <div class="icon" [style.background]="
+            _DomSanitizer.bypassSecurityTrustStyle(
                 'url(' +
                   headerService.saleflow?.merchant?.image +
-                  ') no-repeat center center / cover #e9e371'
+                  ')  no-repeat center center/cover'
               )
-            "
-          ></div>
+            ">
+          <i class="fa fa-instagram" aria-hidden="true"></i>
+        </div>
+        <div>
           <span class="title">
             {{
-              headerService.saleflow?.merchant?.name.length < 40
-                ? headerService.saleflow?.merchant?.name
-                : (headerService.saleflow?.merchant?.name.slice(0, 40) + ".." ||
-                    "Tienda" | titlecase)
-            }}
+              headerService.saleflow?.merchant?.name.length < 26 ? 
+              headerService.saleflow?.merchant?.name :
+              (headerService.saleflow?.merchant?.name.slice(0, 26) + "..." || "Tienda" | titlecase) 
+            }} 
           </span>
-        </div>
-        <!-- <button class="btn" (click)="openContactInfo()">
-          <span>Simbolos & Contactos</span>
-        </button> -->
-        <!-- <div class="flex">
-
-        <mat-icon>favorite_filled</mat-icon>4
-        </div> -->
-        <div (click)="loginflow = true" class="left-end" *ngIf="!headerService.user">
-          <p>
-            Sign in
+          <p *ngIf="headerService.saleflow?.merchant?.bio">
+            {{
+              headerService.saleflow.merchant.bio.length < 50 ? 
+              headerService.saleflow.merchant.bio :
+              (headerService.saleflow.merchant.bio.slice(0, 50) + "...") 
+            }}
           </p>
-          <img src="{{assetsFolder}}/user-placeholder.png" alt="user">
         </div>
-        <app-login-flow
-          *ngIf="loginflow"
-          [loginEmail]="loginEmail"
-          [magicLink]="magicLink"
-          [redirectionRoute]="redirectionRoute"
-          [redirectionRouteId]="redirectionRouteId"
-          [entity]="entity"
-          [jsondata]="jsondata"
-          (dialogIsOpen)="resetLoginDialog($event)"
-        ></app-login-flow>
-        <p *ngIf="headerService.user" class="user-id" (click)="goToBuyerOrders()">
-          {{
-            headerService.user.name ?
-            headerService.user.name :
-            headerService.user.email ?
-            truncateString(headerService.user.email) :
-            headerService.user.phone
-          }}
-        </p>
-        <!--<div
-          class="shopping-cart-container"
-          *ngIf="headerService.order?.products?.length"
-          (click)="goToCart()"
-        >
-          <mat-icon>shopping_cart</mat-icon>
-          {{ headerService.order?.products?.length }}
-        </div>-->
       </div>
+      <button type="button">
+        <img (click)="shareDialog()" src="{{assetsFolder}}/share-icon2.svg" alt="share">
+      </button>
     </div>
-    <!-- <div class="top-bar" *ngIf="tags.length">
-      <div
-        class="chip-list"
-        #elemt
-        (mousedown)="startDragging($event, elemt)"
-        (mouseup)="stopDragging()"
-        (mouseleave)="stopDragging()"
-        (mousemove)="moveEvent($event, elemt)"
-      >
-        <a
-          class="chip"
-          [routerLink]="[
-            '/ecommerce',
-            headerService.saleflow.merchant.slug,
-            'store'
-          ]"
-          routerLinkActive="selected"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
-          Todos
-        </a>
-        <a
-          *ngFor="let tag of tags"
-          class="chip"
-          [routerLink]="[
-            '/ecommerce',
-            headerService.saleflow.merchant.slug,
-            'store',
-            'categories',
-            tag._id
-          ]"
-          routerLinkActive="selected"
-        >
-          {{ tag.name }}
-        </a>
-      </div>
-    </div> -->
-    <!--<div
-      class="input-container"
-      #elemt
-      (mousedown)="startDragging($event, elemt)"
-      (mouseup)="stopDragging()"
-      (mouseleave)="stopDragging()"
-      (mousemove)="moveEvent($event, elemt)"
-    >
-      <input 
-        placeholder="Buscar.."
-        (keyup)="onKeywordSearch($event)"
-      />
-      <div class="input-items">
-        <div class="icon-button" (click)="openEstimatedDeliveryDialog()">⏰</div>
-        <div class="icon-button" (click)="openPriceRangeDialog()">💰</div>
-        <div class="icon-button" (click)="openTagsDialog()" *ngIf="tags.length">🖇️️</div>
-        <div class="icon-button">🏷️</div>
-      </div>
-      <div class="input-item-text">
-        ⏰  Artículos que se entregan en menos de 2 horas en Santo Domingo
-      </div>
-      <div class="input-item-text">
-        💰 Artículos que cuestan entre $id - $id
-      </div>
-      <div class="input-item-text">
-        🏷️  Artículos con tagid, tagid
-      </div>
-      <div class="input-item-text">
-        🖇️ Artículos en categoriaID, categoryID
-      </div> 
+    <div *ngIf="!filterView" class="filters-bar">
 
-    </div>-->
-    <div class="buttons-bar">
-      <div 
-        class="sub-button"
-        [ngClass]="{'logged-in' : headerService.user}"
-        >
-        Suscriptions
-      </div>
+      <svg (click)="showPriceSlider()" width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12.0996 20.185V19.9511L11.8686 19.9146C9.17161 19.4882 8.29446 17.745 8.17283 16.6218H10.2867C10.3479 16.8127 10.4784 17.0558 10.7405 17.2815C11.1617 17.6442 11.8914 17.9358 13.1399 17.9358C14.0915 17.9358 14.8013 17.7012 15.2816 17.3932C15.521 17.2397 15.7057 17.0664 15.8331 16.8926C15.9563 16.7244 16.0416 16.5334 16.0416 16.3481V16.3419C16.0417 16.1218 16.0418 15.6819 15.6155 15.3238C15.21 14.9832 14.4694 14.7603 13.1399 14.7603C10.9013 14.7603 9.67192 14.1566 8.99787 13.4289C8.32013 12.6972 8.15754 11.7905 8.15754 11.092C8.15754 9.55744 9.34657 7.95475 11.8704 7.53832L12.0996 7.5005V7.26822V6.10969H14.1801V7.30764V7.5312L14.3992 7.57587C15.2155 7.74234 15.9509 8.18176 16.4843 8.82181C16.9578 9.39002 17.2471 10.0863 17.3176 10.8183H15.2323C15.1999 10.5894 15.117 10.3146 14.8979 10.0735C14.5804 9.72405 14.0333 9.50423 13.1399 9.50423C12.2422 9.50423 11.5351 9.72172 11.0438 10.0183C10.7988 10.1662 10.603 10.3366 10.4657 10.5141C10.3315 10.6876 10.2381 10.8883 10.2381 11.092C10.2381 11.0954 10.2381 11.0989 10.2381 11.1024C10.238 11.3497 10.2378 11.7934 10.6674 12.1435C11.0737 12.4747 11.8146 12.6798 13.1399 12.6798C15.3784 12.6798 16.6078 13.2834 17.2818 14.0112C17.9596 14.7429 18.1222 15.6495 18.1222 16.3481C18.1222 17.8827 16.933 19.4859 14.408 19.9151L14.1801 19.9539V20.185V21.3304H12.0996V20.185Z" fill="#7B7B7B" stroke="white" stroke-width="0.547507"/>
+        <path d="M2.90179 3.20518V2.93143H2.62803H0.273753V0.850902H3.94205H26.0066V2.93143H23.6523H23.3785V3.20518V25.5435C23.3785 25.8194 23.269 26.084 23.0739 26.279C22.8788 26.4741 22.6142 26.5837 22.3383 26.5837H3.94205C3.66615 26.5837 3.40156 26.4741 3.20647 26.279C3.01139 26.084 2.90179 25.8194 2.90179 25.5435V3.20518ZM21.0243 24.5032H21.298V24.2295V3.20518V2.93143H21.0243H5.25607H4.98231V3.20518V24.2295V24.5032H5.25607H21.0243Z" fill="#7B7B7B" stroke="white" stroke-width="0.547507"/>
+      </svg> 
 
-      <svg (click)="openPriceRangeDialog()" width="29" height="28" viewBox="0 0 29 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M14.1215 18.2016C11.5455 18.2016 11.3215 16.9976 11.3215 16.8016H8.52148C8.52148 18.0896 9.44548 20.3716 12.7215 20.8896V22.4016H15.5215V20.8896C18.3215 20.4136 19.7215 18.6076 19.7215 16.8016C19.7215 15.2336 18.9935 12.6016 14.1215 12.6016C11.3215 12.6016 11.3215 11.7196 11.3215 11.2016C11.3215 10.6836 12.3015 9.80156 14.1215 9.80156C15.9415 9.80156 16.0675 10.6976 16.0815 11.2016H18.8815C18.8626 10.2478 18.5195 9.32893 17.9088 8.5961C17.2981 7.86327 16.4562 7.36016 15.5215 7.16956V5.60156H12.7215V7.12756C9.92148 7.58956 8.52148 9.39556 8.52148 11.2016C8.52148 12.7696 9.24948 15.4016 14.1215 15.4016C16.9215 15.4016 16.9215 16.3536 16.9215 16.8016C16.9215 17.2496 16.0535 18.2016 14.1215 18.2016Z" fill="#435A4A"/>
-        <path d="M4.32305 0H0.123047V2.8H2.92305V26.6C2.92305 26.9713 3.07055 27.3274 3.3331 27.59C3.59565 27.8525 3.95174 28 4.32305 28H23.923C24.2943 28 24.6504 27.8525 24.913 27.59C25.1755 27.3274 25.323 26.9713 25.323 26.6V2.8H28.123V0H4.32305ZM22.523 25.2H5.72305V2.8H22.523V25.2Z" fill="#435A4A"/>
-      </svg>
-
-      <svg (click)="openEstimatedDeliveryDialog()" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!--<svg (click)="openEstimatedDeliveryDialog()" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M27.3801 14.703L21.3971 11.9492V4.05804C21.3944 3.89248 21.3441 3.7312 21.2523 3.59343C21.1604 3.45566 21.0309 3.34722 20.8791 3.28103L14.4041 0.302516C14.2904 0.249907 14.1667 0.222656 14.0415 0.222656C13.9163 0.222656 13.7925 0.249907 13.6789 0.302516L7.20385 3.28103C7.05404 3.35038 6.92727 3.46123 6.83856 3.60044C6.74985 3.73965 6.70291 3.90138 6.70333 4.06646V11.9576L0.746289 14.703C0.596266 14.7723 0.469292 14.8832 0.380452 15.0226C0.291612 15.1619 0.244641 15.3238 0.245121 15.4891V23.9325C0.244708 24.0976 0.291641 24.2593 0.380354 24.3985C0.469068 24.5378 0.59584 24.6486 0.745641 24.7179L7.22068 27.6965C7.33432 27.7491 7.45805 27.7763 7.58328 27.7763C7.70851 27.7763 7.83224 27.7491 7.94589 27.6965L14.0583 24.8818L20.1708 27.6965C20.2844 27.7491 20.4081 27.7763 20.5334 27.7763C20.6586 27.7763 20.7823 27.7491 20.896 27.6965L27.371 24.7179C27.5208 24.6486 27.6476 24.5378 27.7363 24.3985C27.825 24.2593 27.8719 24.0976 27.8715 23.9325V15.4891C27.8727 15.3249 27.827 15.1638 27.7398 15.0247C27.6527 14.8856 27.5277 14.7742 27.3794 14.7037L27.3801 14.703ZM24.9539 15.4891L20.5424 17.5009L16.131 15.4891L20.5424 13.4604L24.9539 15.4891ZM14.0583 2.02941L18.4698 4.05804L14.0583 6.08667L9.6553 4.05804L14.0583 2.02941ZM7.58328 13.4514L11.9947 15.48L7.58328 17.5002L3.17184 15.4891L7.58328 13.4514ZM13.1952 23.3711L7.58328 25.9612L1.97137 23.3711V16.8359L7.22068 19.2271C7.33195 19.2771 7.45255 19.303 7.57454 19.303C7.69653 19.303 7.81714 19.2771 7.9284 19.2271L13.1777 16.81L13.1952 23.3711ZM8.44705 11.9492V5.41391L13.6957 7.83104C13.8094 7.88365 13.9331 7.9109 14.0583 7.9109C14.1836 7.9109 14.3073 7.88365 14.4209 7.83104L19.6702 5.41391V11.9576L14.0583 14.5476L8.44705 11.9492ZM26.1537 23.3796L20.5418 25.9696L14.9214 23.3796V16.8268L20.1798 19.2271C20.2899 19.2759 20.409 19.3011 20.5295 19.3011C20.6499 19.3011 20.769 19.2759 20.8791 19.2271L26.1284 16.81L26.1537 23.3796Z" fill="#435A4A"/>
-      </svg>
+      </svg>-->
+      <img alt="search" src="{{assetsFolder}}/search.svg" (click)="showSearchBar()">
+      <swiper *ngIf="tags?.length > 0" [config]="swiperConfig">
+        <div class="swiper-slide" *ngFor="let tag of tags"
+          (click)="onTagSelectionChange([{_id:tag._id, name:tag.name}])">
+          <div class="tag-img" [style.background]="tag.images[0] ?
+              _DomSanitizer.bypassSecurityTrustStyle(
+                'url(' + tag.images[0] + ')  no-repeat center center/cover'
+              ) : '#d9d9d9'"></div>
+          <p>{{truncateString(tag?.name, 8)}}</p>
+        </div>
+      </swiper>
+    </div>
+    <div *ngIf="searchBar" class="input-container">
+      <img alt="search" src="{{assetsFolder}}/search.svg" (click)="showSearchBar()">
+      <input placeholder="Buscar.." (keyup)="onKeywordSearch($event)" />
+    </div>
+    <div *ngIf="priceSlider" class="slider-container">
+      <p>
+        {{minPricing | currency}}
+      </p>
+      <app-slider
+        [min]="minPricing"
+        [max]="maxPricing"
+        (newMax)="onMaxPricingChange($event)"
+        (newMin)="onMinPricingChange($event)"
+      >
 
-      <svg (click)="searchBar = !searchBar" width="29" height="30" viewBox="0 0 29 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M21.2803 19.2471C23.0356 16.8519 23.8217 13.8824 23.4815 10.9325C23.1413 7.98269 21.6998 5.27006 19.4455 3.33736C17.1911 1.40465 14.2902 0.394413 11.323 0.508745C8.35574 0.623076 5.54111 1.85355 3.44217 3.95399C1.34323 6.05444 0.114772 8.86994 0.00256334 11.8372C-0.109645 14.8045 0.902672 17.7048 2.83699 19.9577C4.7713 22.2107 7.48496 23.6502 10.4351 23.9883C13.3852 24.3264 16.3541 23.5381 18.748 21.7812C18.8027 21.8545 18.862 21.9241 18.9257 21.9897L25.9045 28.9685C26.2444 29.3086 26.7055 29.4998 27.1863 29.5C27.6672 29.5002 28.1284 29.3093 28.4686 28.9694C28.8087 28.6295 28.9999 28.1684 29 27.6876C29.0002 27.2067 28.8094 26.7455 28.4695 26.4054L21.4906 19.4265C21.4258 19.3609 21.3561 19.3003 21.2822 19.2453L21.2803 19.2471ZM21.748 12.2791C21.748 14.2509 21.1633 16.1785 20.0678 17.818C18.9723 19.4575 17.4152 20.7354 15.5935 21.49C13.7718 22.2446 11.7672 22.442 9.83323 22.0573C7.89928 21.6726 6.12283 20.7231 4.72854 19.3288C3.33424 17.9345 2.38471 16.1581 2.00002 14.2241C1.61534 12.2902 1.81277 10.2856 2.56736 8.46384C3.32195 6.6421 4.5998 5.08503 6.23932 3.98954C7.87884 2.89405 9.8064 2.30933 11.7782 2.30933C14.4224 2.30933 16.9582 3.35971 18.8279 5.22941C20.6976 7.0991 21.748 9.63496 21.748 12.2791Z" fill="#3B654A"/>
-      </svg>
+      </app-slider>
+      <p>
+        {{maxPricing | currency}}
+      </p>      
     </div>
-    <div class="bio" *ngIf="headerService.saleflow.merchant.bio">
-      {{ headerService.saleflow.merchant.bio }}
-    </div>
-    <div *ngIf="searchBar === true" class="input-container">
-      <input 
-        placeholder="Buscar.."
-        (keyup)="onKeywordSearch($event)"
-      />
-    </div>
-  </div>
+  </header>
   <router-outlet></router-outlet>
 </div>
-<div id="footer" class="display-footer hide">
+<div id="footer" class="display-footer hide" [ngClass]="{mobile: !isMobile}">
   <button class="close" (click)="closeFooter()">X</button>
   <div class="footer-content">
     <ul class="footer-links">
-      <li
-        *ngFor="let term of terms"
-        class="link"
-        (click)="redirectToTermsOfUse(term)"
-      >
+      <li *ngFor="let term of terms" class="link" (click)="redirectToTermsOfUse(term)">
         {{ term.text }}
       </li>
     </ul>
 
     <div class="logos">
-      <img
-        class="payment-methods-logos"
-        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fpayment_methods_logos.svg"
-      />
+      <img class="payment-methods-logos"
+        src="https://storage-rewardcharly.sfo2.digitaloceanspaces.com/new-assets%2Fpayment_methods_logos.svg" />
     </div>
   </div>
 </div>
@@ -208,101 +115,21 @@
   <button mat-mini-fab class="info-button" (click)="displayFooter()">i</button>
 </div> -->
 
-<div class="contact-bar">
-  <ul>
-    <li>
-      <a (click)="displayFooter()" style="cursor: pointer">
-        <div class="contact">
-          <div class="logo phone">
-            <img
-              [src]="env + '/icon-i.svg'"
-              alt=""
-              style="
-                filter: invert(99%) sepia(99%) saturate(34%) hue-rotate(112deg)
-                  brightness(106%) contrast(100%);
-              "
-            />
-          </div>
-        </div>
-      </a>
-    </li>
-    <!-- <li *ngIf="headerService.saleflow?.merchant.owner.phone">
-      <a
-        [href]="'tel:+' + headerService.saleflow?.merchant.owner.phone"
-        target="_blank"
-      >
-        <div class="contact">
-          <div class="logo phone" style="transform: rotate(90deg)">
-            <i class="fa fa-phone" aria-hidden="true"></i>
-          </div>
-        </div>
-      </a>
-    </li> -->
-    <li *ngIf="headerService.saleflow?.merchant.owner.phone">
-      <a
-        [href]="
-          'https://wa.me/' +
-          headerService.saleflow?.merchant.owner.phone.replace('+', '')
-        "
-        target="_blank"
-      >
-        <div class="contact">
-          <div class="logo whatsapp">
-            <i class="fa fa-whatsapp" aria-hidden="true"></i>
-          </div>
-        </div>
-      </a>
-    </li>
-    <li *ngIf="headerService.saleflow?.merchant.owner.email">
-      <a
-        [href]="'mailto:' + headerService.saleflow?.merchant.owner.email"
-        target="_blank"
-      >
-        <div class="contact">
-          <div class="logo email">
-            <i class="fa fa-envelope" aria-hidden="true"></i>
-          </div>
-        </div>
-      </a>
-    </li>
-    <ng-container *ngIf="headerService.merchantContact">
-      <li
-        *ngFor="let link of headerService.merchantContact.link"
-        [ngStyle]="{ display: link.name !== 'Twitter' ? 'block' : 'none' }"
-      >
-        <a [href]="link.value" target="_blank" *ngIf="link.name !== 'Twitter'">
-          <div class="contact">
-            <div class="logo instagram" *ngIf="link.name == 'Instagram'">
-              <i class="fa fa-instagram" aria-hidden="true"></i>
-            </div>
-            <div class="logo facebook" *ngIf="link.name == 'Facebook'">
-              <i class="fa fa-facebook-square" aria-hidden="true"></i>
-            </div>
-            <!-- <div class="logo twitter" *ngIf="link.name == 'Twitter'">
-              <i class="fa fa-twitter-square" aria-hidden="true"></i>
-            </div> -->
-          </div>
-        </a>
-      </li>
-    </ng-container>
-  </ul>
-  <div style="cursor: pointer; display: flex; justify-content: center; align-items: center;">
-    <ng-container>
-      <!-- <img [src]="env + '/star-highlight.png'" alt="" style="width: 40px" /> -->
-      <!--<p class="highlighted-text">Guarda y Monetiza</p>
-      <p style="font-size: 16px;">💚</p>-->
-    </ng-container>
-    <!-- <div
-      class="cart-container"
-      *ngIf="headerService.order?.products?.length"
-      (click)="goToCart()"
-    >
-      {{ headerService.order?.products?.length }}
-      <img
-        [src]="env + '/cart-green.png'"
-        alt=""
-        style="width: 15px; margin-bottom: 2px"
-      />
-    </div> -->
+<div class="contact-bar" [ngClass]="{mobile: !isMobile}">
+  <img (click)="displayFooter()" [src]="env + '/icon-i.svg'" alt="" />
+  <div (click)="goToCart()" *ngIf="cart && cart.order && cart.order.products.length">
+    <span>{{cart.order.products.length}}</span>
+    <img [src]="env + '/cart-green.png'" alt="cart" />
   </div>
 </div>
+<qrcode
+    style="display: none"
+    #qrcode
+    [qrdata]="qrdata"
+    [elementType]="'img'"
+    [width]="500"
+    [errorCorrectionLevel]="'M'"
+    [allowEmptyString]="true"
+    colorDark="#000"
+    >
+  </qrcode>

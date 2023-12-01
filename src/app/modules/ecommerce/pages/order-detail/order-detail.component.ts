@@ -61,6 +61,7 @@ import { User } from 'src/app/core/models/user';
 import { base64ToBlob } from 'src/app/core/helpers/files.helpers';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProgressDialogComponent } from 'src/app/shared/dialogs/progress-dialog/progress-dialog.component';
+import { TranslateService } from '@ngx-translate/core';
 
 interface ExtendedChat extends Chat {
   receiver?: User;
@@ -196,6 +197,7 @@ export class OrderDetailComponent implements OnInit {
   //   'shipped',
   //   'delivered',
   // ];
+  isMobile:boolean = false;
 
   showOverlay = false;
   merchantSlug: string;
@@ -233,36 +235,21 @@ export class OrderDetailComponent implements OnInit {
     private _bottomSheet: MatBottomSheet,
     private NgNavigatorShareService: NgNavigatorShareService,
     private snackBar: MatSnackBar,
+    private translate: TranslateService
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
       history.pushState(null, null, window.location.href);
     });
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+      translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+      translate.use(language?.length === 2 ? language  : 'es');
   }
 
   headerData: any;
   async ngOnInit(): Promise<void> {
-    // this.route.queryParams.subscribe(async (queryParams) => {
-    //   const {
-    //     notify: notification,
-    //     redirectTo,
-    //     from,
-    //     navigationWithMessage,
-    //   } = queryParams;
-    //   console.log("queryParams", queryParams)
-    //   this.notify = Boolean(notification);
-    //   this.redirectTo = redirectTo;
-    //   this.from = from;
-    //   this.navigationWithMessage = navigationWithMessage;
-
-    //   if (typeof redirectTo === 'undefined') this.redirectTo = null;
-
-    //   this.route.params.subscribe(async (params) => {
-    //     const { orderId } = params;
-    //     this.orderId = orderId;
-    //     await this.executeProcessesAfterLoading(orderId, notification);
-    //   });
-    // });
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
     this.route.params.subscribe(async (params) => {
       const { orderId } = params;
       this.orderId = orderId;

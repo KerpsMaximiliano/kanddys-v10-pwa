@@ -1,10 +1,9 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, Renderer2 } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import * as moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
-
 import { ToastrService } from 'ngx-toastr';
 import { truncateString } from 'src/app/core/helpers/strings.helpers';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
@@ -30,11 +29,13 @@ import { StatusAudioRecorderComponent } from 'src/app/shared/dialogs/status-audi
 import { FilesService } from 'src/app/core/services/files.service';
 import { fileToBase64 } from 'src/app/core/helpers/files.helpers';
 import { ShareLinkInfoComponent } from 'src/app/shared/dialogs/share-link-info/share-link-info.component';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { SaleFlowService } from 'src/app/core/services/saleflow.service';
 
 interface ExtendedChat extends Chat {
   receiver?: User;
   receiverId?: string;
+  pendingMessages?: boolean;
 }
 
 interface ChatsByMonth {
@@ -55,6 +56,8 @@ interface ChatsByMonth {
 export class LaiachatLandingComponent implements OnInit {
   loginflow: boolean = false;
   assetsFolder: string = environment.assetsUrl;
+  aiId: string = environment.ai.id;
+  aiSlug: string = environment.ai.slug;
 
   loginEmail: string = null;
   magicLink: boolean = false;
@@ -93,6 +96,22 @@ export class LaiachatLandingComponent implements OnInit {
   };
   typeFile: string;
   filter = new FormControl(null);
+  audioText = new FormControl(null);
+  isMobile: boolean = false;
+  vectorsFromVectorDatabase: Array<{
+    id: string;
+    name?: string;
+    text: string;
+  }> = [];
+  convertAudioText: string = 'Conviertiéndo el audio a texto';
+
+  inputOpen : boolean = false;
+
+  inputFormGroup: FormGroup = new FormGroup({
+    input: new FormControl(),
+  });
+
+  calculateMargin = '0px';
 
   constructor(
     public headerService: HeaderService,
@@ -110,19 +129,64 @@ export class LaiachatLandingComponent implements OnInit {
     private translate: TranslateService,
     private recordRTCService: RecordRTCService,
     private filesService: FilesService,
-  ) { }
+    private renderer: Renderer2,
+    private saleflowsService: SaleFlowService,
+  ) {
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+    translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+    translate.use(language?.length === 2 ? language  : 'es');
+  }
 
   async ngOnInit() {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
+    this.calculateMargin = `calc(${window.innerHeight}px - 745px)`;
+    if(!this.isMobile) {
+      setTimeout(() => {
+        const element: HTMLElement = document.querySelector('.empty-chat');
+        element?.style?.setProperty('margin-top', '18vh');
+      }, 500);
+    }
     await this.getMerchantDefault();
     if (this.headerService.user) {
       this.clientConnectionStatus = await this.whatsappService.clientConnectionStatus();
       console.log(this.clientConnectionStatus);
       this.getChats();
       this.filterChats();
+      this.fetchAllMemories();
+    }
+    this.translate.get("modal.convertAudioText").subscribe(translate => this.convertAudioText = translate);
+  }
+
+  async fetchAllMemories() {
+    try {
+      lockUI();
+
+      await this.headerService.checkIfUserIsAMerchantAndFetchItsData();
+      const merchantSaleflow = await this.saleflowsService.saleflowDefault(
+        this.merchantsService.merchantData?._id
+      );
+
+      const embeddingQueryResponse =
+        await this.gptService.fetchAllDataInVectorDatabaseNamespace(
+          merchantSaleflow?._id
+        );
+
+      if (
+        embeddingQueryResponse?.data &&
+        embeddingQueryResponse?.data?.length
+      ) {
+        this.vectorsFromVectorDatabase = embeddingQueryResponse?.data;
+      }
+
+      unlockUI();
+    } catch (error) {
+      console.error(error);
     }
   }
 
   async getChats() {
+    const me = await this.chatsService.me();
     const chats = await this.chatsService.listMyChats();
     let usersToFetch = [];
 
@@ -130,8 +194,8 @@ export class LaiachatLandingComponent implements OnInit {
       this.chats = chats;
 
       this.chats.sort((a, b) => {
-        const dateA = new Date(a.createdAt);
-        const dateB = new Date(b.createdAt);
+        const dateA = new Date(a.updatedAt);
+        const dateB = new Date(b.updatedAt);
         return dateB.getTime() - dateA.getTime();
       });
 
@@ -156,11 +220,19 @@ export class LaiachatLandingComponent implements OnInit {
       this.chats.forEach((chat, index) => {
         const userId = chat.owners.find(
           (owner) => owner.userId !== this.headerService.user._id
-        ).userId;
+        )?.userId;
+
+        const ipAddress = chat.owners.find(
+          (owner) => owner.ipAddress
+        )?.ipAddress;
 
         if (userId) {
           chat.receiver = this.usersById[userId];
+        } else if (ipAddress) {
+          chat.receiverIpAddress = ipAddress;
         }
+
+        chat.pendingMessages = me.socketUserId && chat.lastUserWritten ? chat.lastUserWritten !== me.socketUserId : false;
 
         this.chatsByMonth = this.groupChatsByMonth(chat, this.chatsByMonth);
 
@@ -235,16 +307,32 @@ export class LaiachatLandingComponent implements OnInit {
   }
 
   async goToChatDetail(chat: ExtendedChat) {
+    // const user = await this.authService.me();
     let slug;
-    await this.merchantsService.merchantDefault(chat.receiver._id).then((res)=> {
-      slug = res.slug;
-    })
-    this.router.navigate([
-      'ecommerce/' +
-        slug +
-        '/chat-merchant/' +
-        chat._id,
-    ]);
+    if(chat?.receiver?._id) {
+      await this.merchantsService.merchantDefault(chat.receiver._id).then((res)=> {
+        slug = (res?.slug || this.merchantSlug);
+      })
+    }
+    if(slug) {
+      this.router.navigate([
+        'ecommerce/' +
+         slug +
+          '/chat-merchant/' +
+          chat._id,
+      ]);
+    } else  {
+      this.router.navigate([
+        'ecommerce/' +
+         this.merchantSlug +
+          '/chat-merchant/' +
+          chat._id,
+      ], {
+        queryParams: {
+          chatIpAddress: true
+        }
+      });
+    }
   }
 
   openMsgDialog() {
@@ -513,122 +601,127 @@ export class LaiachatLandingComponent implements OnInit {
   }
 
   shareLink() {
-    this.dialogService.open(ShareLinkInfoComponent, {
-      type: 'flat-action-sheet',
-      props: {
-        link: 'www.laichat.com/userID',
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
+    // this.dialogService.open(ShareLinkInfoComponent, {
+    //   type: 'flat-action-sheet',
+    //   props: {
+    //     link: `${environment.uri}/ecommerce/${this.merchantSlug}/chat-merchant?fromStore=true`,
+    //   },
+    //   customClass: 'app-dialog',
+    //   flags: ['no-header'],
+    // });
+    this.router.navigate(['/ecommerce/share-link'], {
+      queryParams: {
+        link: `${environment.uri}/ecommerce/${this.merchantSlug}/chat-merchant?fromStore=true`
+      }
     });
   }
 
   openDialogOptions() {
-    let data = {
-      data: {
-        description: 'Selecciona como adicionar el contenido:',
-        options: [
-          {
-            value: 'Escribe o pega un texto',
-            complete: true,
-            callback: () => {
-              this.router.navigate(['/ecommerce/laia-training']);
-            },
-            settings: {
-              value: 'fal fa-keyboard',
-              color: '#87CD9B',
+    this.translate.get([
+      "modal.options-menu-title",
+      "model.writeOrCopy",
+      "model.addWebUrl",
+      "model.audioText",
+      "model.uploadPdf",
+      "model.uploadExcel",
+    ]).subscribe(translations => {
+      let data = {
+        data: {
+          description: translations["modal.options-menu-title"],
+          options: [
+            {
+              value: translations["model.writeOrCopy"],
+              complete: true,
               callback: () => {
+                this.router.navigate(['/ecommerce/laia-training']);
               },
-            }
-          },
-          {
-            value: 'Adiciona una página web',
-            complete: true,
-            callback: () => {
-              this.router.navigate(['/ecommerce/laiachat-webscraping']);
+              settings: {
+                value: 'fal fa-keyboard',
+                color: '#87CD9B',
+                callback: () => {
+                },
+              }
             },
-            settings: {
-              value: 'fal fa-keyboard',
-              color: '#87CD9B',
+            {
+              value: translations["model.addWebUrl"],
+              complete: true,
               callback: () => {
+                this.router.navigate(['/ecommerce/laiachat-webscraping']);
               },
-            }
-          },
-          {
-            value: 'Texto desde tu micrófono',
-            complete: true,
-            callback: () => {
-              const dialogref = this.dialogService.open(AudioRecorderComponent,{
-                type: 'flat-action-sheet',
-                props: { canRecord: true, isDialog: true },
-                customClass: 'app-dialog',
-                flags: ['no-header'],
-              });
-              const dialogSub = dialogref.events
-                .pipe(filter((e) => e.type === 'result'))
-                .subscribe((e) => {
-                  if(e.data) {
-                    this.audio = e.data;
-                    this.saveAudio();
-                  }
-                  this.audio = null;
-                  this.recordRTCService.abortRecording();
-                  dialogSub.unsubscribe();
-                });
+              settings: {
+                value: 'fal fa-keyboard',
+                color: '#87CD9B',
+                callback: () => {
+                },
+              }
             },
-            settings: {
-              value: 'fal fa-waveform-path',
-              color: '#87CD9B',
+            // {
+            //   value: 'Texto desde tu micrófono',
+            //   complete: true,
+            //   callback: () => {
+            //     this.speechToText();
+            //   }
+            // },
+            {
+              value: translations["model.audioText"],
+              complete: true,
               callback: () => {
+                this.speechToText();
               },
-            }
-          },
-          {
-            value: 'Carga un PDF',
-            complete: true,
-            callback: () => {
-              const fileInput = document.getElementById('file') as HTMLInputElement;
-              fileInput.accept = '.pdf';
-              fileInput.click();
-              this.typeFile = 'pdf';
+              settings: {
+                value: 'fal fa-waveform-path',
+                color: '#87CD9B',
+                callback: () => {
+                },
+              }
             },
-            settings: {
-              value: 'fal fa-file-pdf',
-              color: '#87CD9B',
+            {
+              value: translations["model.uploadPdf"],
+              complete: true,
               callback: () => {
+                const fileInput = document.getElementById('file') as HTMLInputElement;
+                fileInput.accept = '.pdf';
+                fileInput.click();
+                this.typeFile = 'pdf';
               },
-            }
-          },
-          {
-            value: 'Carga un archivo de Excel',
-            complete: true,
-            callback: () => {
-              const fileInput = document.getElementById('file') as HTMLInputElement;
-              fileInput.accept = '.xls';
-              fileInput.click();
-              this.typeFile = 'xls';
+              settings: {
+                value: 'fal fa-file-pdf',
+                color: '#87CD9B',
+                callback: () => {
+                },
+              }
             },
-            settings: {
-              value: 'fal fa-file-excel',
-              color: '#87CD9B',
+            {
+              value: translations["model.uploadExcel"],
+              complete: true,
               callback: () => {
+                const fileInput = document.getElementById('file') as HTMLInputElement;
+                fileInput.accept = '.xls';
+                fileInput.click();
+                this.typeFile = 'xls';
               },
-            }
-          },
-        ],
-      },
-    };
-
-    this.bottomSheet.open(OptionsMenuComponent, data)
+              settings: {
+                value: 'fal fa-file-excel',
+                color: '#87CD9B',
+                callback: () => {
+                },
+              }
+            },
+          ],
+        },
+      };
+  
+      this.bottomSheet.open(OptionsMenuComponent, data);
+    });
   }
 
-  async saveAudio() {
+  async saveAudio(chatText : boolean = false) {
     let dialogRef;
     try {
       dialogRef = this.dialogService.open(StatusAudioRecorderComponent, {
         type: 'flat-action-sheet',
         props: {
-          message: 'Conviertiéndo el audio a texto..',
+          message: this.convertAudioText,
           backgroundColor: '#181D17',
         },
         customClass: 'app-dialog',
@@ -636,13 +729,19 @@ export class LaiachatLandingComponent implements OnInit {
       });
 
       if (!this.audio) return;
+      console.log(this.audio)
       const result = await this.gptService.openAiWhisper((this.audio && new File([this.audio.blob], this.audio.title || 'audio.mp3', {type: (<Blob>this.audio.blob)?.type})),);
 
-      this.router.navigate(['/ecommerce/laia-training'], {
-        queryParams: {
-          audioResult: result,
-        },
-      });
+      if(chatText) {
+        this.inputFormGroup.get('input').setValue(result);
+        this.inputOpen = true;
+      } else {
+        this.router.navigate(['/ecommerce/laia-training'], {
+          queryParams: {
+            audioResult: result,
+          },
+        });
+      }
 
       dialogRef.close();
     } catch (error) {
@@ -680,5 +779,82 @@ export class LaiachatLandingComponent implements OnInit {
         }
       });
     }
+  }
+
+  resizeTextarea(textarea) {
+    const alturaActual = textarea.scrollHeight;
+    const alturaMaxima = 146;
+    const relacionAltura = alturaActual / alturaMaxima;
+    const borderRadius = 146 - 146 * relacionAltura;
+    const borderRadiusPx = getComputedStyle(textarea).borderRadius;
+
+    if(borderRadiusPx === '22px') {
+      this.renderer.setStyle(textarea, 'border-radius', '22px');
+    } else {
+      this.renderer.setStyle(textarea, 'border-radius', `${borderRadius}px`);
+    };
+
+    if(textarea.scrollHeight > 146) {
+      textarea.style.height = 146 + "px";
+      textarea.style.overflowY = "scroll";
+      return;
+    }
+    console.log(textarea.scrollHeight > textarea.clientHeight)
+    if(textarea.scrollHeight > textarea.clientHeight) {
+      textarea.style.height = textarea.scrollHeight > 46 ? textarea.scrollHeight + "px" : 46 + "px";
+    } else {
+      textarea.style.height = 46 + "px";
+      textarea.style.height = textarea.scrollHeight + "px";
+    }
+  }
+
+  openRecorder() {
+    const dialogref = this.dialogService.open(AudioRecorderComponent,{
+      type: 'flat-action-sheet',
+      props: { canRecord: true, isDialog: true },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+    const dialogSub = dialogref.events
+      .pipe(filter((e) => e.type === 'result'))
+      .subscribe((e) => {
+        if(e.data) {
+          this.audio = e.data;
+          this.saveAudio(true);
+        }
+        this.audio = null;
+        this.recordRTCService.abortRecording();
+        dialogSub.unsubscribe();
+      });
+  }
+
+  speechToText(chatText : boolean = false) {
+    const dialogref = this.dialogService.open(AudioRecorderComponent,{
+      type: 'flat-action-sheet',
+      props: { canRecord: true, isDialog: true },
+      customClass: 'app-dialog',
+      flags: ['no-header'],
+    });
+    const dialogSub = dialogref.events
+      .pipe(filter((e) => e.type === 'result'))
+      .subscribe((e) => {
+        if(e.data) {
+          this.audio = e.data;
+          this.saveAudio(chatText);
+        }
+        this.audio = null;
+        this.recordRTCService.abortRecording();
+        dialogSub.unsubscribe();
+      });
+  }
+
+  sendLaiaMessage () {
+    let message = this.inputFormGroup.get('input').value;
+    console.log(message)
+    this.router.navigate([`/ecommerce/${this.aiSlug}/chat-merchant`], {
+      queryParams: {
+        message: message,
+      },
+    });
   }
 }

@@ -414,6 +414,10 @@ footer {
     line-height: normal;
   }
 }
+.quotations-footer.mobile{
+  max-width: 427px;
+  margin-bottom: calc(100vh - 745px);
+}
 
 .flex {
   display: flex;

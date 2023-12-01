@@ -17,7 +17,7 @@ export class GraphQLModule {
     this.createApollo();
   }
 
-  createApollo() {
+  async createApollo() {
     const httpHandler = this.httpLink.create({ uri });
 
     const ctx = setContext((operation, context) => ({
@@ -39,6 +39,29 @@ export class GraphQLModule {
         addTypename: false
       }),
       link: ApolloLink.from([ctx, errorHandler, httpHandler]),
+    });
+
+    let ip = await fetch('http://api.ipify.org/?format=json')
+      .then((res) => {
+        return res.json()
+      });
+
+    this.apollo.removeClient();
+
+    const ctxIpHeader = setContext((operation, context) => ({
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('session-token')}`,
+        'App-Key': environment.api.key,
+        'x-forwarded-for': ip?.ip,
+      },
+    }));
+
+    this.apollo.createDefault({
+      cache: new InMemoryCache({
+        addTypename: false
+      }),
+      link: ApolloLink.from([ctxIpHeader, errorHandler, httpHandler]),
     });
   }
 }

@@ -127,6 +127,10 @@
     position: relative;
   }
 }
+.fixed-container.mobile{
+  max-width: 427px;
+  margin-bottom: calc(100vh - 745px);
+}
 
 .fixed-double {
   width: 100%;

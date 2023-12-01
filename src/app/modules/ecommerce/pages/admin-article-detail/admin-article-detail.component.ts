@@ -11,16 +11,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { FormComponent, FormData } from 'src/app/shared/dialogs/form/form.component';
 import { Validators, FormControl, FormGroup } from '@angular/forms';
-import { Code, CodeInput } from 'src/app/core/models/codes';
+import { Code } from 'src/app/core/models/codes';
 import { PaginationInput, SaleFlow } from 'src/app/core/models/saleflow';
 import { NgNavigatorShareService } from 'ng-navigator-share';
-import { SlideInput } from 'src/app/core/models/post';
-import {
-  Item,
-  ItemCategory,
-  ItemImageInput,
-  ItemInput,
-} from 'src/app/core/models/item';
+import {  Item,  ItemCategory,  ItemImageInput,  ItemInput,} from 'src/app/core/models/item';
 import { TagFilteringComponent } from 'src/app/shared/dialogs/tag-filtering/tag-filtering.component';
 import { lockUI, unlockUI } from 'src/app/core/helpers/ui.helpers';
 import { CommunityCategory } from 'src/app/core/models/community-categories';
@@ -34,6 +28,9 @@ import { Merchant } from 'src/app/core/models/merchant';
   styleUrls: ['./admin-article-detail.component.scss']
 })
 export class AdminArticleDetailComponent implements OnInit {
+  redirectTo = null
+  from = null
+
   item: any = {};
   buyers: number;
   merchantId: string;
@@ -87,7 +84,6 @@ export class AdminArticleDetailComponent implements OnInit {
   loginflow: boolean = false;
   saleFlowId;
   saleFlowDefault: string;
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -116,12 +112,20 @@ export class AdminArticleDetailComponent implements OnInit {
 
   async validateLoginFromLink() {
     let parsedData;
-    this.route.queryParams.subscribe(async ({ jsondata }) => {
-      if(jsondata){
+    this.route.queryParams.subscribe(async (queryParams) => {
+      const { redirectTo, from, jsondata } = queryParams;
+      this.redirectTo = redirectTo;
+      this.from = from;
+
+      if (typeof redirectTo === 'undefined') {
+        this.redirectTo = null;
+      }
+
+      if (jsondata) {
         parsedData = JSON.parse(decodeURIComponent(jsondata));
       }
     });
-    if(parsedData){
+    if (parsedData) {
       this.preItemId = parsedData.itemId;
       await this.addItemToSaleFlow();
     }
@@ -134,7 +138,7 @@ export class AdminArticleDetailComponent implements OnInit {
       );
       this.saleFlowId = saleflowDefault._id;
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
@@ -154,7 +158,6 @@ export class AdminArticleDetailComponent implements OnInit {
       this.articleName.setValue(this.item.name ? this.item.name : "");
       this.itemImage = this.item?.images[0].value;
     });
-    console.log(this.item)
     await this.getSalesData();
     await this.getHashtags(this.itemId);
     if (this.item.expenditures) {
@@ -187,7 +190,6 @@ export class AdminArticleDetailComponent implements OnInit {
 
   getwebForm() {
     this.webformsService.webform(this.webForm.reference).then((res) => {
-      console.log(res)
       res.questions.forEach((question) => {
         if (question.required) {
           this.numberOfRequiredQuestions += 1;
@@ -275,7 +277,6 @@ export class AdminArticleDetailComponent implements OnInit {
           this.deliveryTimeStart = Number(res.value['deliveryTimeStart']);
         }
         if (res.value['deliveryTimeEnd']) {
-          console.log(res.value['deliveryTimeEnd'])
           this.deliveryTimeEnd = Number(res.value['deliveryTimeEnd']);
         }
         this.updateItem('deliverytime');
@@ -454,7 +455,6 @@ export class AdminArticleDetailComponent implements OnInit {
         url: image.value,
       };
     })
-    console.log(images)
     const itemInput: ExtendedItemInput = {
       name: this.item.name,
       description: this.item.description,
@@ -469,9 +469,7 @@ export class AdminArticleDetailComponent implements OnInit {
       layout: 'EXPANDED-SLIDE',
       slides,
     };
-    console.log(itemInput)
     this.itemsService.temporalItemInput = itemInput;
-    console.log(this.itemsService.temporalItemInput)
     /*
     this.itemsService.tagDataForTheItemEdition = {
       allTags: this.allTags,
@@ -481,7 +479,7 @@ export class AdminArticleDetailComponent implements OnInit {
       tagsString: this.tagsString,
       tagsToCreate: this.tagsToCreate,
     };
-  
+
     this.itemsService.categoriesDataForTheItemEdition = {
       allCategories: this.allCategories,
       categoriesInItem: this.categoriesInItem,
@@ -694,7 +692,7 @@ export class AdminArticleDetailComponent implements OnInit {
     this.price.setValue(value);
     this.pricing = this.price.value
   }
-  
+
   async resetLoginDialog(event) {
     this.loginflow = false;
     await this.addItemToSaleFlow();
@@ -707,7 +705,7 @@ export class AdminArticleDetailComponent implements OnInit {
       });
       return saleflow.createSaleflow._id;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       unlockUI();
     }
   }
@@ -717,7 +715,7 @@ export class AdminArticleDetailComponent implements OnInit {
       const saleFlowDefault = await this.saleflowService.setDefaultSaleflow(this.merchantId, saleFlowId);
       return saleFlowDefault.saleflowSetDefault._id;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       unlockUI();
     }
   }
@@ -737,7 +735,7 @@ export class AdminArticleDetailComponent implements OnInit {
       const { me: { _id } } = await this.merchantsService.getMe();
       return _id;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return error;
     }
   }
@@ -747,7 +745,7 @@ export class AdminArticleDetailComponent implements OnInit {
       const merchantDefault: Merchant = await this.merchantsService.merchantDefault();
       this.merchantId = merchantDefault._id;
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
@@ -762,7 +760,7 @@ export class AdminArticleDetailComponent implements OnInit {
           );
           this.saleFlowDefault = saleflowDefault._id;
         } catch (error) {
-          console.log(error);
+          console.error(error);
           unlockUI();
         }
 
@@ -776,7 +774,7 @@ export class AdminArticleDetailComponent implements OnInit {
               this.saleFlowDefault
             );
           } catch (error) {
-            console.log(error);
+            console.error(error);
             unlockUI();
           }
           unlockUI();
@@ -792,7 +790,7 @@ export class AdminArticleDetailComponent implements OnInit {
               this.saleFlowId
             );
           } catch (error) {
-            console.log(error);
+            console.error(error);
             unlockUI();
           }
           unlockUI();
@@ -821,7 +819,7 @@ export class AdminArticleDetailComponent implements OnInit {
             saleFlowDefault
           );
         } catch (error) {
-          console.log(error);
+          console.error(error);
           unlockUI();
         }
         unlockUI();
@@ -843,13 +841,13 @@ export class AdminArticleDetailComponent implements OnInit {
         this.preItemId
       );
     } catch (error) {
-      console.log(error);
+      console.error(error);
       unlockUI();
     }
   }
 
-  async toDoTask(){
-    if(!this.itemId){
+  async toDoTask() {
+    if (!this.itemId) {
       await this.createItem();
     }
   }
@@ -857,24 +855,23 @@ export class AdminArticleDetailComponent implements OnInit {
   async createItem() {
     lockUI();
     let itemDataInput: ItemInput;
-    
-      itemDataInput = {
-        merchant: this.merchantId,
-        pricing: parseInt(this.pricing),
-        name: this.articleName.value,
-        description: this.articleDescription.value
-      }
-    
 
-    if(this.itemImage){
+    itemDataInput = {
+      merchant: this.merchantId,
+      pricing: parseInt(this.pricing),
+      name: this.articleName.value,
+      description: this.articleDescription.value
+    }
+
+
+    if (this.itemImage) {
       const type = this.itemImage.split(';')[0].split(':')[1];
       const imageBlob = this.fileService.dataURItoBlob(this.itemImage);
       const imageFile = new File([imageBlob], this.articleName?.value ? this.articleName?.value : 'image', { type: type });
-      console.log(imageFile);
       itemDataInput.images = [{
-        file:imageFile
+        file: imageFile
       }]
-    } 
+    }
 
     if (this.merchantId) {
       const { createItem } = await this.itemsService.createItem(
@@ -920,7 +917,60 @@ export class AdminArticleDetailComponent implements OnInit {
       const preItem = await this.itemsService.createPreItem(itemDataInput);
       return preItem;
     } catch (error) {
-      console.log(error);
+      console.error(error);
+    }
+  }
+
+  goBack() {
+    if (!this.redirectTo && !this.from) {
+      this.router.navigate(['/admin/order-progress']);
+    }
+    if (!this.redirectTo && this.from) return this.redirectFromQueryParams();
+    let queryParams = {};
+    if (this.redirectTo.includes('?')) {
+      const url = this.redirectTo.split('?');
+      this.redirectTo = url[0];
+      const queryParamList = url[1].split('&');
+      for (const param in queryParamList) {
+        const keyValue = queryParamList[param].split('=');
+        queryParams[keyValue[0]] = keyValue[1].replace('%20', ' ');
+      }
+    }
+    this.router.navigate([this.redirectTo], {
+      queryParams,
+    });
+  }
+
+  redirectFromQueryParams() {
+    if (this.from.includes('?')) {
+      const redirectURL: { url: string; queryParams: Record<string, string> } =
+        { url: null, queryParams: {} };
+      const routeParts = this.from.split('?');
+      const redirectionURL = routeParts[0];
+      const routeQueryStrings = routeParts[1].split('&').map((queryString) => {
+        const queryStringElements = queryString.split('=');
+
+        return {
+          [queryStringElements[0]]: queryStringElements[1].replace('%20', ' '),
+        };
+      });
+
+      redirectURL.url = redirectionURL;
+      redirectURL.queryParams = {};
+
+      routeQueryStrings.forEach((queryString) => {
+        const key = Object.keys(queryString)[0];
+        redirectURL.queryParams[key] = queryString[key];
+      });
+
+      this.router.navigate([redirectURL.url], {
+        queryParams: redirectURL.queryParams,
+        replaceUrl: true,
+      });
+    } else {
+      this.router.navigate([this.from], {
+        replaceUrl: true,
+      });
     }
   }
 }
