@@ -149,7 +149,7 @@ export class OrderDetailComponent implements OnInit {
   entityTemplate: EntityTemplate;
   entityTemplateLink: string;
   notify: boolean = false;
-  orderDeliveryStatus = this.orderService.orderDeliveryStatus;
+  orderDeliveryStatus = this.orderService.orderDeliveryStatusUpperCaseSpanish;
   questionsForAnswers: Record<string, Question> = {};
 
   // deliveryStatusOptions: DropdownOptionItem[] = [
@@ -208,6 +208,7 @@ export class OrderDetailComponent implements OnInit {
   countOrders: number = 0
   user: string = '';
   address: string = '';
+  orderDelivery: string = '';
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -1440,16 +1441,17 @@ export class OrderDetailComponent implements OnInit {
 
     for (const status of statusList) {
       this.statusList.push({
-        name: this.orderService.orderDeliveryStatus(status),
+        name: this.orderService.orderDeliveryStatusUpperCaseSpanish(status),
         status: status
       });
     }
 
     const /* The above code is declaring a variable named "orderStatuDelivery" in TypeScript. */
     orderStatuDelivery = this.order.orderStatusDelivery;
-   this.activeStatusIndex = statusList.findIndex(
+    this.activeStatusIndex = statusList.findIndex(
       (status) => status === orderStatuDelivery
     );
+    this.orderDelivery = this.statusList[this.activeStatusIndex].name
    }
 
   private getPaymentMethodName(paymentMethod: string): string {

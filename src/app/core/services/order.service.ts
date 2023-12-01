@@ -784,4 +784,16 @@ export class OrderService {
       }[status] ?? 'Error'
     );
   }
+
+  orderDeliveryStatusUpperCaseSpanish(status: OrderStatusDeliveryType) {
+    return (
+      {
+        'in progress': 'Procesando',
+        pending: 'Preparando',
+        pickup: 'Recoger',
+        shipped: 'Enviada',
+        delivered: 'Entregado',
+      }[status] || 'Desconocido'
+    );
+  }
 }
