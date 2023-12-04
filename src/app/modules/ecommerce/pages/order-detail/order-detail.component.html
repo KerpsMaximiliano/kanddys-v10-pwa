@@ -232,7 +232,12 @@
         <p class="label-two">Lo recibe</p>
         <p class="resp-two">{{order.receiverData?.receiver}}</p>
       </div>
-      <div class="flex-wrapper-items" style="border-bottom: 1px solid #D9D9D9; padding: 3px 6px;">
+      <div 
+        *ngIf="order.items[0].deliveryLocation?.note && 
+        order.items[0].deliveryLocation.note.length > 0" 
+        class="flex-wrapper-items" 
+        style="border-bottom: 1px solid #D9D9D9; padding: 3px 6px;"
+      >
         <p class="text-t">{{order.items[0].deliveryLocation?.note}}</p>
       </div>
     </div>
