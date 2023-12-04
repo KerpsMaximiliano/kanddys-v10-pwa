@@ -44,6 +44,7 @@
   <!-- <p class="msj">Excelente! Mira como va tu factura.</p> -->
   <button
     class="top confirmButton"
+    [ngClass]="{mobile: !isMobile}"
     [ngStyle]="{
       backgroundColor:
         missingOrderData || !areWebformsValid ? '#b5b5b5' : '#87CD9B'

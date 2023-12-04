@@ -41,9 +41,9 @@ button {
     }
 
     .method {
-      font-family: "SfProBold";
+      font-family: InterMedium;
       font-size: 1.313rem;
-      font-weight: 500;
+      // font-weight: 500;
       color: #ffffff;
       margin: 0px;
     }
@@ -103,7 +103,7 @@ button {
     margin-bottom: 23px;
 
     .amount-flex-wrapper {
-      padding-top: 11px;
+      padding-top: 2px;
       // padding-bottom: 12px;
       width: 100%;
       // background-color: #ffffff;
@@ -313,7 +313,7 @@ a.disabled {
 .text-description {
   color: #FFF;
   font-size: 17px;
-  font-family: "InterLight";
+  font-family: InterLight;
 }
 
 .file-chooser {
@@ -329,7 +329,7 @@ a.disabled {
 
 .text-disclaimer {
   color: #FFFFFF;
-  font-family: "InterLight";
+  font-family: InterLight;
   font-size: 17px;
 }
 
@@ -337,4 +337,122 @@ a.disabled {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.delete-comprobant{
+  // margin-left: 27vh;
+  cursor:pointer;
+  color: #936105;
+  text-align: center;
+  font-family: InterBold;
+  font-size: 17px;
+  font-style: normal;
+  line-height: normal;
+}
+
+.file-add{
+  background: #87CD9B; 
+  border-radius: 11px;
+  cursor: pointer;
+  border: 0px;
+  padding: 50px;
+  width: 145px;
+  height: 150px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+.file-icon-add{
+  color: #181D17; 
+  font-size: 45px; 
+  font-weight: bold;
+}
+
+.cancel-btn{
+  cursor: pointer;
+  position: absolute;
+  color: #a1afaa;
+  top: 0; 
+  right: 0;
+  z-index: 1;
+}
+
+.cancel-btn:active{
+  color: #4f504f;
+}
+
+.comprobant{
+  background: #87CD9B;
+  border-radius: 11px;
+  cursor: pointer;
+  border: 0px;
+  padding: 50px;
+  // width: 63vh;
+  height: 68vh;
+  margin: 18px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+
+}
+.articles-factured{
+  color: #7B7B7B;
+  font-size: 17px;
+  font-family: InterMedium;
+  word-wrap: break-word;
+  margin: 0px;
+  padding: 0px;
+}
+
+// Monto total
+.amount-total{
+  color: #C4C5C3;
+  font-size: 17px;
+  font-family: InterBold;
+  word-wrap: break-word;
+  margin: 0px;
+  padding: 0px;
+}
+
+// Transferencia Bancaria
+.btn-payments{
+  // display: flex;
+  // width: 399px;
+  // padding: 10px 28px 10px 31px;
+  // align-items: flex-start;
+  // gap: 10px;
+  // border-radius: 23px;
+  // border: 1px solid #7B7B7B;
+  color: white;
+  font-size: 17px;
+  font-family: InterRegular;
+  word-wrap: break-word;
+  width: -webkit-fill-available; 
+}
+
+// PayPal te cobra un 7.5% adicional
+.fee-paypal{
+  color: white;
+  font-size: 17px;
+  font-family: InterLight;
+  word-wrap: break-word
+}
+.p-text{
+  color: #FFF;
+  font-family: InterBold;
+  font-size: 19px;
+  font-style: normal;
+  line-height: normal;
+}
+.footer{
+  position: fixed;
+  bottom: 0;
+  margin: auto;
+  max-width: 500px;
+}
+.footer.mobile{
+  max-width: 427px;
+  margin-bottom: calc(100vh - 745px);
 }

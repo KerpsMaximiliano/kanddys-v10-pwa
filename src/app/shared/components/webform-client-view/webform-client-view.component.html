@@ -304,6 +304,7 @@
   </swiper>
 
   <button
+    [ngClass]="{mobile: !isMobile}"
     class="save-button"
     (click)="saveWebform(false, true)"
     *ngIf="steps[currentStepIndex]?.fields.valid"

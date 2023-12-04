@@ -16,6 +16,7 @@ import { MatDatepicker } from '@angular/material/datepicker';
 import { SwiperOptions } from 'swiper';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { OptionsMenuComponent } from 'src/app/shared/dialogs/options-menu/options-menu.component';
+import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-order-progress',
   templateUrl: './order-progress.component.html',
@@ -92,7 +93,7 @@ export class OrderProgressComponent implements OnInit {
   filterOpened: boolean = false;
   filterModalOpened:boolean = false;
   filterBreadcumbsShow:boolean = false;
-
+  isMobile:boolean = false;
 
 
   constructor(
@@ -104,7 +105,12 @@ export class OrderProgressComponent implements OnInit {
     private itemsService: ItemsService,
     private renderer: Renderer2,
     private bottomSheet: MatBottomSheet,
-  ) { }
+    private translate: TranslateService
+  ) {
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+      translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+      translate.use(language?.length === 2 ? language  : 'es');
+   }
 
   imageFiles: string[] = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp'];
 
@@ -145,6 +151,8 @@ export class OrderProgressComponent implements OnInit {
   }
 
   async ngOnInit() {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
     await this.fetchPaginationData(false, true)
     this.toggleTutorial();
     await this.getDeliveryTime();

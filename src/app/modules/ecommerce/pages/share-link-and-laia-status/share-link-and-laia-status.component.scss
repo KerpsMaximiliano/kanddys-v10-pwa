@@ -1,0 +1,151 @@
+.container {
+    padding: 0 18px 22px;
+    background-color: #232921;
+    height: 100%;
+
+    
+    header {
+        padding: 14px 0;
+        display: flex;
+        justify-content: end;
+        align-items: center;
+
+        span {
+        color: #FFF;
+        font-family: FiraSansMedium;
+        font-size: 19px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+        }
+    }
+
+    .title {
+        margin: 0;
+        color: #F6F6F6;
+        font-family: InterBold;
+        font-size: 17px;
+        letter-spacing: 0.935px;
+        line-height: 22px;
+        margin-bottom: 11px;
+    }
+
+    .container-copy-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 22px 10px 16px;
+        width: 100%;
+        border-radius: 14px;
+        margin-bottom: 24px;
+        border: 1px solid #435A4A;
+      
+        .text {
+          color: #C4C5C3;
+          font-family: FiraSansLight;
+          font-size: 16px;
+          font-style: normal;
+          line-height: normal;
+          letter-spacing: 0.88px;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          width: 85%;
+        }
+      
+        .copy-text {
+            color: #87CD9B;
+            font-family: FiraSansBold;
+            font-size: 16px;
+            letter-spacing: 0.88px;
+        }
+    }
+
+    .integrations-titles {
+        border-top: 1px solid #435A4A;
+        border-bottom: 1px solid #435A4A;
+        padding: 18px 0 28px;
+
+        p {
+            margin: 0;
+        }
+
+        .title {
+            color: #F6F6F6;
+            font-family: InterSemiBold;
+            font-size: 17px;
+            margin-bottom: 13px;
+        }
+
+        .subtitle {
+            color: #87CD9B;
+            font-family: InterSemiBold;
+            font-size: 15px;
+        }
+    }
+
+
+    .container-integrations {
+        margin-top: 35px;
+
+        .integration {
+            border-radius: 6px;
+            border: 1px solid #7B7B7B;
+            margin-bottom: 5px;
+            padding: 18px 16px 12px;
+            
+            p {
+                margin: 0;
+            }
+    
+            .title {
+                color: #C4C5C3;
+                font-family: InterRegular;
+                font-size: 15px;
+                margin-bottom: 8px;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+            }
+    
+            .bottom {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+    
+                .subtitle {
+                    color: #C4C5C3;
+                    font-family: InterSemiBold;
+                    font-size: 15px;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+    
+                .toggle-icon {
+                    margin-left: 5px;
+                }
+            }
+        }
+    }
+
+    .footer {
+        position: fixed;
+        width: 100%;
+        max-width: 500px;
+        margin: 0px -18px;
+        bottom: 0;
+        background-color: #232921;
+        padding: 24px 27.5px 24px 17px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        p {
+            margin: 0;
+            color: #7AA787;
+            font-family: InterBold;
+            font-size: 17px;
+        }
+    }
+}

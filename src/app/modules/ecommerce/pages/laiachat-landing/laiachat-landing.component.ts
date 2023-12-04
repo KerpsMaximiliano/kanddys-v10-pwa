@@ -601,13 +601,18 @@ export class LaiachatLandingComponent implements OnInit {
   }
 
   shareLink() {
-    this.dialogService.open(ShareLinkInfoComponent, {
-      type: 'flat-action-sheet',
-      props: {
-        link: `${environment.uri}/ecommerce/${this.merchantSlug}/chat-merchant?fromStore=true`,
-      },
-      customClass: 'app-dialog',
-      flags: ['no-header'],
+    // this.dialogService.open(ShareLinkInfoComponent, {
+    //   type: 'flat-action-sheet',
+    //   props: {
+    //     link: `${environment.uri}/ecommerce/${this.merchantSlug}/chat-merchant?fromStore=true`,
+    //   },
+    //   customClass: 'app-dialog',
+    //   flags: ['no-header'],
+    // });
+    this.router.navigate(['/ecommerce/share-link'], {
+      queryParams: {
+        link: `${environment.uri}/ecommerce/${this.merchantSlug}/chat-merchant?fromStore=true`
+      }
     });
   }
 

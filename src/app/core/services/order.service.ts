@@ -769,4 +769,31 @@ export class OrderService {
     });
     return result?.orderQuantityOfFiltersOrderStatus;
   }
+
+  getOrderStatusNameUpperCase(status: OrderStatusType): OrderStatusNameType {
+    return (
+      {
+        cancelled: 'Cancelado',
+        started: 'Empezado',
+        verifying: 'Verificando',
+        'in progress': 'En Revisión',
+        'to confirm': 'Por Confirmar',
+        completed: 'Completado',
+        draft: 'Por Terminar',
+        paid: 'Pagada',
+      }[status] ?? 'Error'
+    );
+  }
+
+  orderDeliveryStatusUpperCaseSpanish(status: OrderStatusDeliveryType) {
+    return (
+      {
+        'in progress': 'Procesando',
+        pending: 'Preparando',
+        pickup: 'Recoger',
+        shipped: 'Enviada',
+        delivered: 'Entregado',
+      }[status] || 'Desconocido'
+    );
+  }
 }

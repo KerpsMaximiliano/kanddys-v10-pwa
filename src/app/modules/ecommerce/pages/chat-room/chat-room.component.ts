@@ -69,6 +69,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   activeAssistantStatus: boolean = true;
   adminChat: boolean = false;
   chatIpAddress: boolean = false;
+  domainId: string;
 
   constructor(
     public headerService: HeaderService,
@@ -101,10 +102,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     }
     this.routeParamsSubscription = this.route.params.subscribe(({ chatId }) => {
       this.queryParamsSubscription = this.route.queryParams.subscribe(
-        async ({ fromStore, chatIpAddress }) => {
+        async ({ fromStore, chatIpAddress, domainId }) => {
           this.fromStore = fromStore ? JSON.parse(fromStore) : false;
           this.chatIpAddress = chatIpAddress ? JSON.parse(chatIpAddress) : false;
-          console.log('notLogged', chatIpAddress)
+          this.domainId = domainId ? domainId : null;
 
           if (!this.headerService.user) {
             this.typeOfReceiver = 'MERCHANT';
@@ -142,7 +143,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   }
 
   async initSocketClientEventListeners(chatId: string) {
-    let ip = await fetch('httpss://api.ipify.org/?format=json')
+    let ip = await fetch('https://api.ipify.org/?format=json')
     .then((res) => {
       return res.json()
     });
@@ -175,7 +176,13 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
 
       this.socketConnected = true;
       // Send a message to the server
-      if (this.chatIpAddress) {
+      if (this.domainId) {
+        this.socket.emit('GET_OR_CREATE_CHAT', {
+          type: 'iframe',
+          domain: this.domainId,
+          userId: this.headerService.saleflow.merchant.owner?._id,
+        })
+      } else if (this.chatIpAddress) {
         this.socket.emit('GET_OR_CREATE_CHAT', {
           owners: [this.socket.id],
           chatId: chatId,

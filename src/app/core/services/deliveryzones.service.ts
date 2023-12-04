@@ -23,6 +23,7 @@ export class DeliveryZonesService {
         variables: { id },
         fetchPolicy: 'no-cache',
       });
+      console.log("result", result)
       if (!result) return undefined;
       return result.deliveryZone;
     } catch (e) {

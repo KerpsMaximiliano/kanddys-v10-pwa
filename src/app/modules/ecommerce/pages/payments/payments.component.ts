@@ -38,6 +38,8 @@ import {
 } from 'src/app/modules/auth/pages/login-dialog/login-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { base64ToFile } from 'src/app/core/helpers/files.helpers';
+import { DeliveryZonesService } from 'src/app/core/services/deliveryzones.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-payments',
@@ -263,7 +265,10 @@ export class PaymentsComponent implements OnInit {
 
   azulPaymentURL: string =
     'https://pruebas.azul.com.do/paymentpage/Default.aspx';
+    isMobile:boolean = false;
 
+  valComprobant: boolean = false;
+  valDeliveryZone: any = null;
   constructor(
     private walletService: WalletService,
     private orderService: OrderService,
@@ -279,15 +284,22 @@ export class PaymentsComponent implements OnInit {
     private entityTemplateService: EntityTemplateService,
     private authService: AuthService,
     private matDialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private deliveryZonesService: DeliveryZonesService,
+    private translate: TranslateService
   ) {
     history.pushState(null, null, window.location.href);
     this.location.onPopState(() => {
       history.pushState(null, null, window.location.href);
     });
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+      translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+      translate.use(language?.length === 2 ? language  : 'es');
   }
 
   async ngOnInit(): Promise<void> {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
     this.route.params.subscribe((params) => {
       this.route.queryParams.subscribe(async (queryParams) => {
         const orderId = params['orderId'];
@@ -299,6 +311,8 @@ export class PaymentsComponent implements OnInit {
           const { orderStatus } = await this.orderService.getOrderStatus(
             orderId
           );
+          
+          
           if (orderStatus === 'draft')
             this.order = (await this.orderService.preOrder(orderId)).order;
           else if (orderStatus === 'in progress')
@@ -306,6 +320,12 @@ export class PaymentsComponent implements OnInit {
           else {
             this.orderCompleted(orderId);
             return;
+          }
+
+          // DELIVERY ZONE //
+          if(this.order.deliveryZone){
+            const deliveryData = await this.deliveryZonesService.deliveryZone(this.order.deliveryZone)
+            this.valDeliveryZone = deliveryData;
           }
           if (!this.headerService.saleflow)
             this.headerService.saleflow = this.headerService.getSaleflow();
@@ -316,6 +336,7 @@ export class PaymentsComponent implements OnInit {
             this.orderCompleted();
             return;
           }
+          // console.log("this.order", this.order)
           // Cálculo del subtotal (monto acumulado de todos los artículos involucrados en la orden)
           this.subtotal = this.order.subtotals.reduce(
             (a, b) => (b?.type === 'item' ? a + b.amount : a),
@@ -342,12 +363,14 @@ export class PaymentsComponent implements OnInit {
               await this.postsService.getPost(this.order.items[0].post._id)
             ).post;
           }
+          console.log("this.headerService", this.headerService)
         }
         const exchangeData = await this.walletService.exchangeData(
           this.headerService.saleflow?.module?.paymentMethod?.paymentModule?._id
         );
 
         this.banks = exchangeData?.ExchangeData?.bank;
+        console.log("this.banks", this.banks)
         this.electronicPayments = exchangeData?.ExchangeData?.electronicPayment;
 
         const registeredUser = JSON.parse(
@@ -500,8 +523,10 @@ export class PaymentsComponent implements OnInit {
     reader.onload = (e) => {
       this.imageBase64 = e.target.result as string;
       this.image = base64ToFile(e.target.result as string);
+      this.valComprobant = true;
     };
-    reader.readAsDataURL(event.target.files[0] as File);
+    if(event?.target)
+      reader.readAsDataURL(event.target.files[0] as File);
   }
 
   onFileInput(file: File | { image: File; index: number }) {
@@ -865,16 +890,29 @@ export class PaymentsComponent implements OnInit {
   }
 
   selectPaymentMethod(method: 'bank-transfer' | 'paypal' | 'azul') {
-    if (!this.paymentMethod) this.paymentMethod = method;
-    else if (this.paymentMethod === method) {
+    if (!this.paymentMethod) {
+      this.paymentMethod = method;
+      this.imageBase64 = null;
+      this.image = null;
+    }else if (this.paymentMethod === method) {
       this.paymentMethod = null;
       this.image = null;
       this.imageBase64 = null;
     }
     else this.paymentMethod = method;
-
+    
     if (this.paymentMethod === 'azul') {
       this.selectOnlinePayment(0);
     }
+  }
+
+  cleanPhoto(){
+    this.imageBase64 = null;
+    this.image = null;
+    this.valComprobant = false;
+  }
+  
+  onBackClickComprobant(){
+    this.valComprobant = false;
   }
 }
