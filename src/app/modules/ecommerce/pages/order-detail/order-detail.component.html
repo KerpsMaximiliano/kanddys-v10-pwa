@@ -1,289 +1,248 @@
 <!-- <app-navigation [opened]="openNavigation" (closed)="openNavigation = false"> -->
-  <div class="container" [ngClass]="{'overlay-active': showOverlay}">
-     <div class="header-navigation">
-      <mat-accordion>
-        <mat-expansion-panel
-          (opened)="panelOpenState = true"
-          (closed)="panelOpenState = false"
-          disabled
-          class="panel"
-          [ngClass]="{ 'mat-elevation-z0': !panelOpenState }"
-        >
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              <!-- <div class="row"> -->
-                <!-- <a>
-                  <mat-icon
-                    style="
-                      font-size: 30px;
-                      margin-top: 0.1em;
-                      color: white;
-                      margin-right: 14px;
-                    "
-                    (click)="returnEvent()"
-                    >keyboard_arrow_left</mat-icon
-                  >
-                </a> -->
-                <!-- <div
-                  class="icon"
-                  [style.background]="
-                    _DomSanitizer.bypassSecurityTrustStyle(
-                      'url(' +
-                        order?.items[0].saleflow.merchant?.image +
-                        ') no-repeat center center / cover #e9e371'
-                    )
-                  "
-                ></div> -->
-                <div class="center-vertical" style="width: 75%;">
-                  <p class="merchant-header">
-                    <!-- titlecase -->
-                    {{ (order?.items[0].saleflow.merchant.name.length < 14 ? order?.items[0].saleflow.merchant.name : (order?.items[0].saleflow.merchant.name.slice(0, 14) + "..." || "Tienda")) | titlecase}}
-                    <span>facturó a:</span>
-                  </p>
-                </div>
-                <div class="center-vertical" style="width: 25%; justify-content: end;">
-                  <svg style="fill: var(--El-verdecito, #87CD9B); width: 14.422px; height: 14.422px; flex-shrink: 0;" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
-                    <path d="M7.21094 0C5.78475 0 4.39059 0.422914 3.20476 1.21526C2.01893 2.00761 1.09468 3.1338 0.548903 4.45143C0.00312435 5.76906 -0.139676 7.21894 0.138559 8.61772C0.416795 10.0165 1.10357 11.3014 2.11204 12.3098C3.12051 13.3183 4.40537 14.0051 5.80416 14.2833C7.20294 14.5616 8.65282 14.4188 9.97044 13.873C11.2881 13.3272 12.4143 12.4029 13.2066 11.2171C13.999 10.0313 14.4219 8.63713 14.4219 7.21094C14.4219 5.29848 13.6622 3.46435 12.3098 2.11203C10.9575 0.759722 9.1234 0 7.21094 0ZM7.21094 0.599802C8.46816 0.59925 9.69945 0.957349 10.7603 1.63207C11.8211 2.30678 12.6674 3.27011 13.2 4.40899C13.7325 5.54786 13.9291 6.815 13.7666 8.06169C13.6042 9.30837 13.0895 10.4829 12.283 11.4473C11.5896 11.1629 9.99843 10.6119 9.06249 10.3346C8.97928 10.3102 8.96893 10.3035 8.96893 9.96477C8.98641 9.68226 9.06448 9.40682 9.19783 9.15715C9.35563 8.8089 9.46309 8.43997 9.51696 8.06146C9.76941 7.72808 9.93178 7.33533 9.98844 6.92102C10.0868 6.60881 10.0819 6.27319 9.97439 5.964C9.9665 5.94476 9.95959 5.92514 9.95368 5.9052C9.94077 5.4542 9.97685 5.00312 10.0613 4.5599C10.1251 3.92249 9.93956 3.28513 9.54358 2.78157C9.29739 2.481 8.98812 2.23824 8.63767 2.07049C8.28721 1.90274 7.90416 1.81411 7.51565 1.81087H6.90919C6.52358 1.81641 6.14384 1.90616 5.79654 2.07384C5.44925 2.24151 5.1428 2.48306 4.89863 2.78157C4.50081 3.28426 4.31433 3.92208 4.37871 4.5599C4.46315 5.00312 4.49923 5.4542 4.48631 5.9052C4.47929 5.92961 4.47226 5.94662 4.46561 5.9677C4.35644 6.27648 4.35163 6.61257 4.45192 6.92435C4.51021 7.33822 4.67242 7.73058 4.92341 8.06479C4.9793 8.4427 5.08654 8.81121 5.24217 9.16011C5.34454 9.42008 5.38945 9.69912 5.37381 9.97809C5.37381 10.3213 5.35976 10.325 5.28359 10.3479C4.30955 10.6356 2.76678 11.1903 2.1496 11.4573C1.33996 10.4939 0.82227 9.3194 0.657444 8.07186C0.492617 6.82432 0.687508 5.55565 1.21919 4.4151C1.75087 3.27455 2.59722 2.30957 3.65868 1.63368C4.72014 0.957785 5.95256 0.599094 7.21094 0.599802Z" fill="#87CD9B"/>
-                  </svg>
-                  <p class="user-header">
-                    {{user.length < 10 ? user : (user.slice(0, 10) + "..." || "UserID")}}
-                    
-                  </p>
-                </div>
-                
-                
-              <!-- </div> -->
-            </mat-panel-title>
-            <!-- <button
-              style="
-                all: unset;
-                cursor: pointer;
-              "
-              *ngIf="messageLink"
-              (click)="goToWhatsapp()"
-            >
-              <img
-                [src]="env + '/whatsApp-img.webp'"
-                style="height: 25px; width: 25px"
-                alt=""
-              />
-            </button> -->
-          </mat-expansion-panel-header>
-        </mat-expansion-panel>
-      </mat-accordion>
+<div class="container" [ngClass]="{'overlay-active': showOverlay}">
+  <div class="header-navigation">
+    <div class="center-vertical" style="width: 75%;">
+      <p class="merchant-header">
+        <!-- titlecase -->
+        {{ (order?.items[0].saleflow.merchant.name.length < 9 ? order?.items[0].saleflow.merchant.name :
+          (order?.items[0].saleflow.merchant.name.slice(0, 9) + "..." || "Tienda" )) | titlecase}} <span>facturó
+          a:</span>
+      </p>
     </div>
-    <div style="padding: 10px 0px; cursor: pointer;" (click)="progress()" >
-      <div style="width: 12%; display: inline-block; text-align: center;">
-        <svg style="fill: #6FCF97;" xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21" fill="none">
-          <circle cx="10.5" cy="10.5" r="10.5" fill="#6FCF97"/>
-        </svg>
-      </div>
-      <div style="width: 88%; display: inline-block;">
-        <div>
-          <p class="state">{{ orderStatus }}</p>
-          <!-- <p *ngIf="order.orderStatus === 'to confirm'" class="state">Por Confirmar</p> -->
-          <!-- <p class="state">
+    <div class="center-vertical" style="width: 25%; justify-content: end;">
+      <svg style="fill: var(--El-verdecito, #87CD9B); width: 14.422px; height: 14.422px; flex-shrink: 0;"
+        xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
+        <path
+          d="M7.21094 0C5.78475 0 4.39059 0.422914 3.20476 1.21526C2.01893 2.00761 1.09468 3.1338 0.548903 4.45143C0.00312435 5.76906 -0.139676 7.21894 0.138559 8.61772C0.416795 10.0165 1.10357 11.3014 2.11204 12.3098C3.12051 13.3183 4.40537 14.0051 5.80416 14.2833C7.20294 14.5616 8.65282 14.4188 9.97044 13.873C11.2881 13.3272 12.4143 12.4029 13.2066 11.2171C13.999 10.0313 14.4219 8.63713 14.4219 7.21094C14.4219 5.29848 13.6622 3.46435 12.3098 2.11203C10.9575 0.759722 9.1234 0 7.21094 0ZM7.21094 0.599802C8.46816 0.59925 9.69945 0.957349 10.7603 1.63207C11.8211 2.30678 12.6674 3.27011 13.2 4.40899C13.7325 5.54786 13.9291 6.815 13.7666 8.06169C13.6042 9.30837 13.0895 10.4829 12.283 11.4473C11.5896 11.1629 9.99843 10.6119 9.06249 10.3346C8.97928 10.3102 8.96893 10.3035 8.96893 9.96477C8.98641 9.68226 9.06448 9.40682 9.19783 9.15715C9.35563 8.8089 9.46309 8.43997 9.51696 8.06146C9.76941 7.72808 9.93178 7.33533 9.98844 6.92102C10.0868 6.60881 10.0819 6.27319 9.97439 5.964C9.9665 5.94476 9.95959 5.92514 9.95368 5.9052C9.94077 5.4542 9.97685 5.00312 10.0613 4.5599C10.1251 3.92249 9.93956 3.28513 9.54358 2.78157C9.29739 2.481 8.98812 2.23824 8.63767 2.07049C8.28721 1.90274 7.90416 1.81411 7.51565 1.81087H6.90919C6.52358 1.81641 6.14384 1.90616 5.79654 2.07384C5.44925 2.24151 5.1428 2.48306 4.89863 2.78157C4.50081 3.28426 4.31433 3.92208 4.37871 4.5599C4.46315 5.00312 4.49923 5.4542 4.48631 5.9052C4.47929 5.92961 4.47226 5.94662 4.46561 5.9677C4.35644 6.27648 4.35163 6.61257 4.45192 6.92435C4.51021 7.33822 4.67242 7.73058 4.92341 8.06479C4.9793 8.4427 5.08654 8.81121 5.24217 9.16011C5.34454 9.42008 5.38945 9.69912 5.37381 9.97809C5.37381 10.3213 5.35976 10.325 5.28359 10.3479C4.30955 10.6356 2.76678 11.1903 2.1496 11.4573C1.33996 10.4939 0.82227 9.3194 0.657444 8.07186C0.492617 6.82432 0.687508 5.55565 1.21919 4.4151C1.75087 3.27455 2.59722 2.30957 3.65868 1.63368C4.72014 0.957785 5.95256 0.599094 7.21094 0.599802Z"
+          fill="#87CD9B" />
+      </svg>
+      <p class="user-header">
+        {{user.length < 7 ? user : (user.slice(0, 7) + "..." || "UserID" )}} </p>
+    </div>
+  </div>
+  <div style="padding: 10px 0px; cursor: pointer;" (click)="progress()">
+    <div style="width: 12%; display: inline-block; text-align: center;">
+      <svg style="fill: #6FCF97;" xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21"
+        fill="none">
+        <circle cx="10.5" cy="10.5" r="10.5" fill="#6FCF97" />
+      </svg>
+    </div>
+    <div style="width: 88%; display: inline-block;">
+      <div>
+        <p class="state">{{ orderStatus }}</p>
+        <!-- <p *ngIf="order.orderStatus === 'to confirm'" class="state">Por Confirmar</p> -->
+        <!-- <p class="state">
           </p> -->
-        </div>
-        <div>
-          <p class="distribution">{{ orderDelivery }}</p>
-        </div>
+      </div>
+      <div>
+        <p class="distribution">{{ orderDelivery }}</p>
       </div>
     </div>
-    <div class="container-div">
-      <mat-accordion>
-        <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false" hideToggle>
-          <mat-expansion-panel-header>
-            <div class="div-header">
-              <p style="margin: 0;" *ngIf="order">
-                {{ orderDate }} | {{ formatId(order.dateId) }} 
-                <!-- 14 de marzo | #0000-0000-00 -->
-              </p>
-              <mat-icon [ngStyle]="{ color: '#000' }" >
-                {{ panelOpenState ? "keyboard_arrow_up" : "keyboard_arrow_down" }}
-              </mat-icon>
-            </div>
-          </mat-expansion-panel-header>
-          <div class="first-list">
-            <div class="flex-wrapper-items">
-              <p class="label-one">Tipo</p>
-              <p class="label-one">Id</p>
-            </div>
-            <div class="flex-wrapper-items">
-              <p class="label-one">NFC</p>
-              <p class="label-one">Id</p>
-            </div>
-            <div class="flex-wrapper-items">
-              <p class="label-one">Vencimiento de secuencia</p>
-              <p class="label-one">Id</p>
-            </div>
+  </div>
+  <div class="container-div">
+    <mat-accordion>
+      <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false" hideToggle>
+        <mat-expansion-panel-header>
+          <div class="div-header">
+            <p style="margin: 0;" *ngIf="order">
+              {{ orderDate }} | {{ formatId(order.dateId) }}
+              <!-- 14 de marzo | #0000-0000-00 -->
+            </p>
+            <mat-icon [ngStyle]="{ color: '#000' }">
+              {{ panelOpenState ? "keyboard_arrow_up" : "keyboard_arrow_down" }}
+            </mat-icon>
           </div>
-        </mat-expansion-panel>
-      </mat-accordion>
-      <hr>
-      <div class="first-list">
-        <div class="flex-wrapper-items">
-          <p class="label">Productos</p>
-          <p class="amount">$ {{ itemsAmount | number : "1.2-2" }} </p>
+        </mat-expansion-panel-header>
+        <div class="first-list">
+          <div class="flex-wrapper-items">
+            <p class="label-one">Tipo</p>
+            <p class="label-one">Id</p>
+          </div>
+          <div class="flex-wrapper-items">
+            <p class="label-one">NFC</p>
+            <p class="label-one">Id</p>
+          </div>
+          <div class="flex-wrapper-items">
+            <p class="label-one">Vencimiento de secuencia</p>
+            <p class="label-one">Id</p>
+          </div>
         </div>
-        <div class="flex-wrapper-items">
-          <p class="label">Descuento</p>
-          <p class="amount">$ {{ 0 | number : "1.2-2" }}</p>
-        </div>
-        <div class="flex-wrapper-items">
-          <p class="label">Envío</p>
-          <p class="amount">$ {{ deliveryAmount | number : "1.2-2" }}</p>
-        </div>
-        <div class="flex-wrapper-items">
-          <p class="label">Tax</p>
-          <p class="amount">$ {{ 0 | number : "1.2-2" }}</p>
-        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+    <hr>
+    <div class="first-list">
+      <div class="flex-wrapper-items">
+        <p class="label">Productos</p>
+        <p class="amount">$ {{ itemsAmount | number : "1.2-2" }} </p>
       </div>
-      <hr>
-      <div class="first-list">
-        <div class="flex-wrapper-items">
-          <p class="total">Total</p>
-          <p class="total">$ {{ payment | number : "1.2-2" }}</p>
-        </div>
+      <div class="flex-wrapper-items">
+        <p class="label">Descuento</p>
+        <p class="amount">$ {{ 0 | number : "1.2-2" }}</p>
+      </div>
+      <div class="flex-wrapper-items">
+        <p class="label">Envío</p>
+        <p class="amount">$ {{ deliveryAmount | number : "1.2-2" }}</p>
+      </div>
+      <div class="flex-wrapper-items">
+        <p class="label">Tax</p>
+        <p class="amount">$ {{ 0 | number : "1.2-2" }}</p>
       </div>
     </div>
-    <div class="container-div" style="margin: 30px 10px 10px;">
-      <div style="padding: 10px;">
-        <p class="header-merchant" style="display: block;">{{ (order?.items[0].saleflow.merchant?.name.length < 30 ? order?.items[0].saleflow.merchant?.name : (order?.items[0].saleflow.merchant?.name.slice(0, 30) + "..." || "Tienda")) | titlecase}}</p>
-        <p class="count-articles" style="display: block; margin-bottom: 10px;">
-          {{ countOrders }} 
-          {{ countOrders > 1 ? "Artículos" : "Artículo" }}
-        </p>
-        <div *ngIf="order" class="grid-container">
-          <div class="item-container" *ngFor="let item of order?.items; index as i">
-            <!-- (click)="item.item.images?.length && openImageModal(item.item.images[0].value)" -->
-            <!-- *ngIf="!item.item.images.length || !item.item.images || (item.item.images?.length && !urlIsVideo(item.item.images[0].value))" -->
-             
-            <div class="image" 
-             [ngStyle]="{
+    <hr>
+    <div class="first-list">
+      <div class="flex-wrapper-items">
+        <p class="total">Total</p>
+        <p class="total">$ {{ payment | number : "1.2-2" }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="container-div" style="margin: 30px 10px 10px;">
+    <div style="padding: 10px;">
+      <p class="header-merchant" style="display: block;">{{ (order?.items[0].saleflow.merchant?.name.length < 30 ?
+          order?.items[0].saleflow.merchant?.name : (order?.items[0].saleflow.merchant?.name.slice(0, 30) + "..."
+          || "Tienda" )) | titlecase}}</p>
+          <p class="count-articles" style="display: block; margin-bottom: 10px;">
+            {{ countOrders }}
+            {{ countOrders > 1 ? "Artículos" : "Artículo" }}
+          </p>
+          <div *ngIf="order" class="grid-container">
+            <div class="item-container" *ngFor="let item of order?.items; index as i">
+              <!-- (click)="item.item.images?.length && openImageModal(item.item.images[0].value)" -->
+              <!-- *ngIf="!item.item.images.length || !item.item.images || (item.item.images?.length && !urlIsVideo(item.item.images[0].value))" -->
+
+              <div class="image" [ngStyle]="{
                 backgroundImage: item.item?.images?.length > 0 ? getValidImageUrl(item.item?.images) : 'url(/assets/images/noimage.png)',
                 backgroundRepeat: 'no-repeat',
                 backgroundPosition: 'center',
                 backgroundSize: 'cover'
               }"></div>
-            <div class="text">
-              <span class="text-items">
-                {{ item.item?.description?.length < 32 ? item.item?.description : (item.item?.description?.slice(0, 32) + "..") }} 
-              </span>
-              <div class="price-container">
-                <span *ngIf="item.item?.amount > 1" class="main-price">X2</span>
-                <span style="display: flex; align-items: flex-start;">
-                  <span class="main-price">${{ getPricePart(item.item?.pricing, 'main') }}</span>
-                  <span class="decimal-price">{{ getPricePart(item.item?.pricing, 'decimal') }}</span>
-                </span>
+              <div class="text">
+                <span class="text-items">
+                  {{ item.item?.description?.length < 20 ? item.item?.description : (item.item?.description?.slice(0,
+                    20) + ".." ) }} </span>
+                    <div class="price-container">
+                      <span *ngIf="item.item?.amount > 1" class="main-price">X2</span>
+                      <span style="display: flex; align-items: flex-start;">
+                        <span class="main-price">${{ getPricePart(item.item?.pricing, 'main') }}</span>
+                        <span class="decimal-price">{{ getPricePart(item.item?.pricing, 'decimal') }}</span>
+                      </span>
+                    </div>
               </div>
             </div>
           </div>
+    </div>
+    <hr>
+    <div style="padding: 10px;">
+      <p class="opcionales">OPCIONALES</p>
+    </div>
+    <div class="container-div">
+      <div class="first-list" style="padding: 0px 20px !important;">
+        <div class="flex-wrapper-items" style="border-bottom: 1px solid #D9D9D9; padding: 3px 6px;">
+          <p class="label-two">Dedicatoria</p>
+          <p class="resp-two">Contenido privado</p>
+          <!-- <p *ngIf="post?.envelopeText" class="resp-two">Contenido privado</p> -->
         </div>
-      </div>
-      <hr>
-      <div style="padding: 10px;">
-        <p class="opcionales">OPCIONALES</p>
-      </div>
-      <div class="container-div">
-        <div class="first-list" style="padding: 0px 20px !important;">
-          <div class="flex-wrapper-items" style="border-bottom: 1px solid #D9D9D9; padding: 3px 6px;">
-            <p class="label-two">Dedicatoria</p>
-            <p class="resp-two">Contenido privado</p>
-            <!-- <p *ngIf="post?.envelopeText" class="resp-two">Contenido privado</p> -->
-          </div>
-          <!-- <div class="flex-wrapper-items" style="border-bottom: 1px solid #D9D9D9; padding: 3px 6px;">
+        <!-- <div class="flex-wrapper-items" style="border-bottom: 1px solid #D9D9D9; padding: 3px 6px;">
             <p class="label-two">Tipo de factura</p>
             <p class="resp-two">tipoFacturaID</p>
           </div> -->
-          <div class="flex-wrapper-items" style="border-bottom: 1px solid #D9D9D9; padding: 3px 6px;">
-            <p class="label-two">Reserva</p>
-            <p *ngIf="deliveryImages?.deliveryZone" class="resp-two">
-              {{ displayReservation(deliveryImages?.reservation) }}
-            </p>
-          </div>
+        <div class="flex-wrapper-items" style="border-bottom: 1px solid #D9D9D9; padding: 3px 6px;">
+          <p class="label-two">Reserva</p>
+          <p *ngIf="deliveryImages?.deliveryZone" class="resp-two">
+            {{ displayReservation(deliveryImages?.reservation) }}
+          </p>
         </div>
       </div>
-      <div style="padding: 10px;">
-        <p class="message">
-          Mensaje de información sobre los opcionales puede referirse a las reservas o a dedicatoria
-        </p>
-      </div>
-      <div style="padding: 10px;">
-        <p class="opcionales">FACTURA DEL MERCHANTID</p>
-      </div>
-      <div class="container-div">
-        <div *ngIf="order" class="item-container" style="width: 100%; padding: 12px 22px 4px; align-items: start; height: auto;">
-          <div class="image"
-            [ngStyle]="{
+    </div>
+    <div style="padding: 10px;">
+      <p class="message">
+        Mensaje de información sobre los opcionales puede referirse a las reservas o a dedicatoria
+      </p>
+    </div>
+    <div style="padding: 10px;">
+      <p class="opcionales">FACTURA DE {{order.items[0].saleflow.merchant.name.toUpperCase() || 
+      order.items[0].saleflow.merchant.slug.toUpperCase()}}</p>
+    </div>
+    <div class="container-div">
+      <div *ngIf="order" class="item-container"
+        style="width: 100%; padding: 12px 22px 4px; align-items: start; height: auto;">
+        <div class="image" [ngStyle]="{
               backgroundImage: order.ocr?.image ? 'url(' + order.ocr.image + ')' : 'url(/assets/images/noimage.png)',
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
               backgroundSize: 'cover'}">
+        </div>
+        <div *ngIf="order" class="text">
+          <div class="price-container" style="margin-top: 0px;">
+            <span class="pay-price">$ {{ payment | number : "1.2-2" }}</span>
+            <span class="approved">{{ orderStatus }}</span>
+            <!-- <span *ngIf="order.orderStatus === 'to confirm'" class="approved">Por Confirmar</span> -->
+            <!-- <span class="approved">Aprobado</span> -->
           </div>
-          <div *ngIf="order" class="text">
-            <div class="price-container" style="margin-top: 0px;">
-              <span class="pay-price">$ {{ payment | number : "1.2-2" }}</span>
-              <span class="approved">{{ orderStatus }}</span>
-              <!-- <span *ngIf="order.orderStatus === 'to confirm'" class="approved">Por Confirmar</span> -->
-              <!-- <span class="approved">Aprobado</span> -->
-            </div>
-            <span class="pay-text">
-              Pagado por {{ paymentType }}
-            </span>
-            <div class="price-container" style="margin-top: 20px;">
-              <span class="text-two-pay">{{ orderDate }} | {{ formatId(order.dateId) }} </span>
-              <!-- <span class="text-two-pay">14 de marzo | #0000-0000-00</span> -->
-              <!-- <svg *ngIf="order.orderStatus === 'to confirm'" xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19" fill="none">
+          <span class="pay-text">
+            Pagado por {{ paymentType }}
+          </span>
+          <div class="price-container" style="margin-top: 20px;">
+            <span class="text-two-pay">{{ orderDate }} | {{ formatId(order.dateId) }} </span>
+            <!-- <span class="text-two-pay">14 de marzo | #0000-0000-00</span> -->
+            <!-- <svg *ngIf="order.orderStatus === 'to confirm'" xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19" fill="none">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M4.07447 1H15.4234C16.6769 1 17.6932 2.08731 17.6932 3.42857V15.5714C17.6932 16.9127 16.6769 18 15.4234 18H4.07447C2.8209 18 1.80469 16.9127 1.80469 15.5714V3.42857C1.80469 2.08731 2.8209 1 4.07447 1Z" stroke="#f1a139" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 <path d="M17.6941 13.1429L14.2894 9.5L10.8848 13.1246" stroke="#f1a139" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 <path d="M15.4234 18.0008L5.20936 7.07227L1.80469 10.7151" stroke="#f1a139" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 <path d="M13.7208 6.46373C14.3476 6.46373 14.8557 5.92007 14.8557 5.24944C14.8557 4.57881 14.3476 4.03516 13.7208 4.03516C13.094 4.03516 12.5859 4.57881 12.5859 5.24944C12.5859 5.92007 13.094 6.46373 13.7208 6.46373Z" fill="#f1a139"/>
               </svg> -->
-              <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19" fill="none">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M4.07447 1H15.4234C16.6769 1 17.6932 2.08731 17.6932 3.42857V15.5714C17.6932 16.9127 16.6769 18 15.4234 18H4.07447C2.8209 18 1.80469 16.9127 1.80469 15.5714V3.42857C1.80469 2.08731 2.8209 1 4.07447 1Z" stroke="#6FCF97" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M17.6941 13.1429L14.2894 9.5L10.8848 13.1246" stroke="#6FCF97" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M15.4234 18.0008L5.20936 7.07227L1.80469 10.7151" stroke="#6FCF97" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M13.7208 6.46373C14.3476 6.46373 14.8557 5.92007 14.8557 5.24944C14.8557 4.57881 14.3476 4.03516 13.7208 4.03516C13.094 4.03516 12.5859 4.57881 12.5859 5.24944C12.5859 5.92007 13.094 6.46373 13.7208 6.46373Z" fill="#6FCF97"/>
-              </svg>
-            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19" fill="none">
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M4.07447 1H15.4234C16.6769 1 17.6932 2.08731 17.6932 3.42857V15.5714C17.6932 16.9127 16.6769 18 15.4234 18H4.07447C2.8209 18 1.80469 16.9127 1.80469 15.5714V3.42857C1.80469 2.08731 2.8209 1 4.07447 1Z"
+                stroke="#6FCF97" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M17.6941 13.1429L14.2894 9.5L10.8848 13.1246" stroke="#6FCF97" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M15.4234 18.0008L5.20936 7.07227L1.80469 10.7151" stroke="#6FCF97" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" />
+              <path
+                d="M13.7208 6.46373C14.3476 6.46373 14.8557 5.92007 14.8557 5.24944C14.8557 4.57881 14.3476 4.03516 13.7208 4.03516C13.094 4.03516 12.5859 4.57881 12.5859 5.24944C12.5859 5.92007 13.094 6.46373 13.7208 6.46373Z"
+                fill="#6FCF97" />
+            </svg>
           </div>
         </div>
-        <div style="text-align: center; padding: 0px 0px 15px;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="7" viewBox="0 0 13 7" fill="none">
-            <path d="M12.7454 6.75968C13.0849 6.44035 13.0849 5.92552 12.7454 5.60619L6.98841 0.19062C6.71823 -0.06354 6.28178 -0.0635399 6.01159 0.19062L0.254597 5.60619C-0.0848655 5.92552 -0.0848655 6.44035 0.254597 6.75968C0.594058 7.07901 1.14135 7.07901 1.48082 6.75968L6.50346 2.04143L11.5261 6.7662C11.8586 7.07901 12.4129 7.07901 12.7454 6.75968Z" fill="#7B7B7B"/>
-          </svg>
-        </div>
+      </div>
+      <div style="text-align: center; padding: 0px 0px 15px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="7" viewBox="0 0 13 7" fill="none">
+          <path
+            d="M12.7454 6.75968C13.0849 6.44035 13.0849 5.92552 12.7454 5.60619L6.98841 0.19062C6.71823 -0.06354 6.28178 -0.0635399 6.01159 0.19062L0.254597 5.60619C-0.0848655 5.92552 -0.0848655 6.44035 0.254597 6.75968C0.594058 7.07901 1.14135 7.07901 1.48082 6.75968L6.50346 2.04143L11.5261 6.7662C11.8586 7.07901 12.4129 7.07901 12.7454 6.75968Z"
+            fill="#7B7B7B" />
+        </svg>
       </div>
     </div>
-    <div style="padding: 10px;">
-      <p class="opcionales">ENVÍO</p>
-    </div>
-    <div class="container-div">
-      <div *ngIf="order" class="first-list" style="padding: 15px 20px !important;">
-        <div class="flex-wrapper-items" style="border-bottom: 1px solid #D9D9D9; padding: 3px 6px;">
-          <p class="label-two">Dirección</p>
-          <p class="resp-two">{{ address }}</p>
-        </div>
-        <div class="flex-wrapper-items" style="border-bottom: 1px solid #D9D9D9; padding: 3px 6px;">
-          <p class="label-two">Teléfono</p>
-          <p class="resp-two">{{order.receiverData?.receiverPhoneNumber}}</p>
-        </div>
-        <div class="flex-wrapper-items" style="border-bottom: 1px solid #D9D9D9; padding: 3px 6px;">
-          <p class="label-two">Lo recibe</p>
-          <p class="resp-two">{{order.receiverData?.receiver}}</p>
-        </div>
-        <div class="flex-wrapper-items" style="border-bottom: 1px solid #D9D9D9; padding: 3px 6px;">
-          <p class="text-t">Casa con portico bla bla bla...</p>
-        </div>
+  </div>
+  <div style="padding: 10px;">
+    <p class="opcionales">ENVÍO</p>
+  </div>
+  <div class="container-div">
+    <div *ngIf="order" class="first-list" style="padding: 15px 20px !important;">
+      <div class="flex-wrapper-items" style="border-bottom: 1px solid #D9D9D9; padding: 3px 6px;">
+        <p class="label-two">Dirección</p>
+        <p class="resp-two">{{ address }}</p>
+      </div>
+      <div class="flex-wrapper-items" style="border-bottom: 1px solid #D9D9D9; padding: 3px 6px;">
+        <p class="label-two">Teléfono</p>
+        <p class="resp-two">{{order.receiverData?.receiverPhoneNumber}}</p>
+      </div>
+      <div class="flex-wrapper-items" style="border-bottom: 1px solid #D9D9D9; padding: 3px 6px;">
+        <p class="label-two">Lo recibe</p>
+        <p class="resp-two">{{order.receiverData?.receiver}}</p>
+      </div>
+      <div class="flex-wrapper-items" style="border-bottom: 1px solid #D9D9D9; padding: 3px 6px;">
+        <p class="text-t">{{order.items[0].deliveryLocation?.note}}</p>
       </div>
     </div>
-    <div style="padding: 10px;">
-      <p class="info-rev">
-        ¡Revisa que la información esté correcta! es donde entregaremos tu pedido.
-      </p>
-    </div>
-    <!--
+  </div>
+  <div style="padding: 10px;">
+    <p class="info-rev">
+      ¡Revisa que la información esté correcta! es donde entregaremos tu pedido.
+    </p>
+  </div>
+  <!--
     <app-progress-slider
       [title]=""
       [statusList]="statusList"
@@ -740,14 +699,6 @@
     <footer class="bottom-footer" *ngIf="isMerchant" (click)="goToBenefits()">
       <p>Beneficio: ${{ itemsAmount | number : "1.2-2" }}</p>
     </footer> -->
-    <qrcode
-      style="display: none"
-      #qrcode
-      [qrdata]="qrdata"
-      [elementType]="'img'"
-      [width]="500"
-      [errorCorrectionLevel]="'M'"
-      [allowEmptyString]="true"
-      colorDark="#000"
-    ></qrcode>
-  </div>
+  <qrcode style="display: none" #qrcode [qrdata]="qrdata" [elementType]="'img'" [width]="500"
+    [errorCorrectionLevel]="'M'" [allowEmptyString]="true" colorDark="#000"></qrcode>
+</div>
