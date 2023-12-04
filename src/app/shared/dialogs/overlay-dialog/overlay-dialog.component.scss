@@ -1,0 +1,128 @@
+* {
+    margin: 0;
+  }
+  
+  ::ng-deep .cdk-overlay-pane {
+    width: 100%;
+    max-width: 500px !important;
+  }
+  
+  .list {
+    color: #ffffff;
+  
+    &.full-screen {
+      min-height: 100vh;
+    }
+  }
+
+  .mat-bottom-sheet-container {
+    border-radius: 10px;
+    border: 1px solid #87CD9B;
+  }
+  
+  ::ng-deep.mat-bottom-sheet-container {
+    padding: 24px;
+    padding-top: 0;
+    width: 100%;
+    min-width: 90%;
+    box-shadow: 0 8px 10px -5px #0003, 0 16px 24px 2px #00000024,
+      0 6px 30px 5px #0000001f;
+    background: #181D17;
+    border-radius: 9px 9px 0 0;
+    border: 1px solid #87CD9B;
+  }
+  
+  .overlay {
+    // position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    overflow: hidden;
+    transition: height 0.5s ease-out, transform 0.5s ease-out; 
+    &.slide-up {
+        height: 50vh;
+    }  
+  }
+
+  svg {
+    float: right;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin: 10px -13px 10px 10px;
+    // margin-right: -13px;
+  }
+
+  .option-cta {
+    cursor: pointer;
+    background-color: transparent;
+    border-radius: 34px;
+    border: solid 1px #aaa6a6;
+    color: #FFF;
+    width: 100%;
+    margin-bottom: 10px;
+    white-space: normal;
+    line-height: 22px;
+    padding: 10px;
+    transition: 0.2s all;
+    text-align: center;
+  }
+  
+  .option-cta-light {
+    cursor: pointer;
+    border: solid 1px #aaa6a6;
+    width: 100%;
+    margin-bottom: 10px;
+    white-space: normal;
+    padding: 10px;
+    transition: 0.2s all;
+    border-radius: 34px;
+    background: linear-gradient(92deg, #6BC8A7 18.84%, #6A9EB8 93.01%);
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    color: #181D17;
+    font-family: InterSemiBold;
+    font-size: 17px;
+    font-style: normal;
+    line-height: normal;
+  }
+
+  .option-default{
+    cursor: pointer;
+    background-color: transparent;
+    border-radius: 34px;
+    width: 100%;
+    margin-bottom: 10px;
+    white-space: normal;
+    padding: 10px;
+    transition: 0.2s all;
+    text-align: center;
+    text-align: center;
+    font-family: InterSemiBold;
+    font-size: 17px;
+    font-style: normal;
+    line-height: normal;
+  }
+
+  .text-overlay{
+    background: linear-gradient(142deg, #6FCF97 5.07%, #59A86A 52.09%, #6F9BCF 100.11%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    font-family: InterBold;
+    font-size: 40px;
+    font-style: normal;
+    line-height: normal;
+    padding: 0px !important;
+  }
+  
+  .text-overlay-p{
+    color: #7B7B7B;
+    text-align: center;
+    font-family: InterRegular;
+    font-size: 17px;
+    font-style: normal;
+    line-height: normal;
+    padding: 10px 0px 36px 0px;
+  }

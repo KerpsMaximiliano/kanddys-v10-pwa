@@ -254,9 +254,13 @@ import { ContactUsDialogComponent } from './dialogs/contact-us-dialog/contact-us
 import { OrderStatusBadgeComponent } from './components/order-status-badge/order-status-badge.component';
 import { StatusAudioRecorderComponent } from './dialogs/status-audio-recorder/status-audio-recorder.component';
 import { ShareLinkInfoComponent } from './dialogs/share-link-info/share-link-info.component';
+import { OverlayDialogComponent } from './dialogs/overlay-dialog/overlay-dialog.component';
+import { ProgressDialogComponent } from './dialogs/progress-dialog/progress-dialog.component';
+import { FiscalReceiptDialogComponent } from './dialogs/fiscal-receipt-dialog/fiscal-receipt-dialog.component';
 import { SliderComponent } from './components/slider/slider.component';
 
 const imports = [
+  
   CommonModule,
   DialogModule,
   NgxFormsModule,
@@ -293,7 +297,7 @@ const imports = [
   MatSidenavModule,
   MatSlideToggleModule,
   TranslateModule,
-  MatDatepickerModule
+  MatDatepickerModule,
 ];
 const declarations = [
   // Pages
@@ -301,6 +305,7 @@ const declarations = [
   ItemListComponent,
   CustomFieldsComponent,
   // ...
+  FiscalReceiptDialogComponent,
   TitlebarComponent,
   CommunityPreviewComponent,
   FilterbarComponent,
@@ -521,6 +526,8 @@ const declarations = [
   StatusAudioRecorderComponent,
   ShareLinkInfoComponent,
   SliderComponent,
+  OverlayDialogComponent,
+  ProgressDialogComponent
 ];
 
 @NgModule({

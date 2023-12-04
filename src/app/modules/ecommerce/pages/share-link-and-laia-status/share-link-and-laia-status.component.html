@@ -1,0 +1,84 @@
+<div class="container">
+    <header>
+        <span (click)="goBack()">X</span>
+    </header>
+
+    <p class="title">{{ "share-link-status.title" | translate }}</p>
+
+    <div class="container-copy-link" (click)="copyLink()">
+        <span class="text">
+            {{ link }}
+        </span>
+        <span class="copy-text">{{ "copy" | translate }}</span>
+    </div>
+
+    <div class="integrations-titles">
+        <p class="title">{{ "share-link-status.integrations" | translate }}</p>
+        <p class="subtitle" (click)="goLaiaIntegrations()">{{ "share-link-status.showTitle" | translate }}</p>
+    </div>
+
+    <div class="container-integrations" [style.opacity]="autoResponse ? 1 : .4">
+        <p class="title">{{ "share-link-status.titleConfiguration" | translate }}</p>
+
+        <div class="integration">
+            <p class="title">{{ "share-link-status.in" | translate }} www.laichat.com/userID</p>
+            <div class="bottom">
+                <p class="subtitle">{{ "share-link-status.responseLaia" | translate }}</p>
+                <img
+                    [src]="
+                        assetsFolder +
+                        (usersStatus
+                            ? '/toggle-on.svg'
+                            : '/toggle-off.svg')
+                    "
+                    (click)="autoResponse ? updateConfiguration('users', !usersStatus) : null"
+                />
+            </div>
+        </div>
+
+        <div class="integration">
+            <p class="title">{{ "share-link-status.in" | translate }} www.página.com</p>
+            <div class="bottom">
+                <p class="subtitle">{{ "share-link-status.responseLaia" | translate }}</p>
+                <img
+                    [src]="
+                        assetsFolder +
+                        (iframeStatus
+                            ? '/toggle-on.svg'
+                            : '/toggle-off.svg')
+                    "
+                    (click)="autoResponse ? updateConfiguration('iframe', !iframeStatus) : null"
+                />
+            </div>
+        </div>
+
+        <div class="integration">
+            <p class="title">{{ "share-link-status.in" | translate }} WhatsApp (000) 000-0000</p>
+            <div class="bottom">
+                <p class="subtitle">{{ "share-link-status.responseLaia" | translate }}</p>
+                <img
+                    [src]="
+                        assetsFolder +
+                        (whatsappStatus
+                            ? '/toggle-on.svg'
+                            : '/toggle-off.svg')
+                    "
+                    (click)="autoResponse ? updateConfiguration('whatsapp', !whatsappStatus) : null"
+                />
+            </div>
+        </div>
+    </div>
+
+    <div class="footer" [style.maxWidth]="!isMobile ? '427px' : '500px'" [style.marginBottom]="!isMobile ? calculateMargin : '0px'">
+        <p>{{ "share-link-status.permissionsTitle" | translate}}</p>
+        <img
+            (click)="autoResponseSwitch()"
+            [src]="
+                assetsFolder +
+                (autoResponse
+                    ? '/toggle-on.svg'
+                    : '/toggle-off.svg')
+            "
+        />
+    </div>
+</div>

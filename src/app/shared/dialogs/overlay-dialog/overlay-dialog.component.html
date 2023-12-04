@@ -1,0 +1,24 @@
+<svg (click)="toggleOverlay()" xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26" fill="none">
+    <path d="M13 25C19.6274 25 25 19.6274 25 13C25 6.37258 19.6274 1 13 1C6.37258 1 1 6.37258 1 13C1 19.6274 6.37258 25 13 25Z" stroke="#7B7B7B" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M8.5 8.5L17.5 17.5" stroke="#7B7B7B" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M17.5 8.5L8.5 17.5" stroke="#7B7B7B" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+<div class="overlay" [ngClass]="{'slide-up': showOverlay}">
+
+    <div style="margin: 0vh 7vh 7vh 7vh;">
+        <p class="text-overlay">{{ data.title }}</p>
+        <p class="text-overlay-p"> {{ data.text1 }} </p>
+        <div *ngFor="let option of data.buttons; let i = index">
+            <button mat-button 
+                class="option-default"
+                [style.background]="option?.class?.background? option?.class?.background: ''" 
+                [style.border]="option?.class?.border ? option?.class?.border: '1px solid #aaa6a6'"
+                [style.color]="option?.class?.color ? option?.class?.color : '#FFF'" 
+                [style.font-family]="option?.class?.fontFamily ? option?.class?.fontFamily : 'InterSemiBold'"
+                [style.font-size]="option?.class?.fontSize ? option?.class?.fontSize :'17px'"
+                (click)="onClick(i)" >
+                {{ option.value }}
+            </button>
+        </div>
+    </div>
+</div>

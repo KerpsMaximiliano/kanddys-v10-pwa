@@ -68,6 +68,7 @@ import { Dialogs } from './dialogs';
 import { NotificationsService } from 'src/app/core/services/notifications.service';
 import { filter } from 'rxjs/operators';
 import { QuotationsService } from 'src/app/core/services/quotations.service';
+import { TranslateService } from '@ngx-translate/core';
 
 interface ExtendedItem extends Item {
   ready?: boolean;
@@ -144,6 +145,7 @@ export class CheckoutComponent implements OnInit {
   panelOpenState = false;
 
   orderInMemory: ItemOrderInput;
+  isMobile:boolean = false;
 
   constructor(
     private _DomSanitizer: DomSanitizer,
@@ -166,12 +168,18 @@ export class CheckoutComponent implements OnInit {
     public matDialog: MatDialog,
     private toastr: ToastrService,
     private _WebformsService: WebformsService,
-    private deliveryzonesService: DeliveryZonesService
+    private deliveryzonesService: DeliveryZonesService,
+    private translate: TranslateService
   ) {
     window.scroll(0, 0);
+    let language = navigator?.language ? navigator?.language?.substring(0, 2) : 'es';
+      translate.setDefaultLang(language?.length === 2 ? language  : 'es');
+      translate.use(language?.length === 2 ? language  : 'es');
   }
 
   async ngOnInit(): Promise<void> {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    this.isMobile = regex.test(navigator.userAgent);
     for (let i = 0; i < this.headerService.order.products.length; i++) {
       this.totalItems += this.headerService.order.products[i].amount;
     }
