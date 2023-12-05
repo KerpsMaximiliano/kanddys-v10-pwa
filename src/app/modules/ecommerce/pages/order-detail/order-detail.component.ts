@@ -255,7 +255,13 @@ export class OrderDetailComponent implements OnInit {
       this.orderId = orderId;
       this.order = (await this.orderService.order(orderId, false))?.order;
       console.log("this.order", this.order)
-      
+      this.route.queryParams.subscribe(async (queryParams) => {
+        if(queryParams?.notify) {
+          setTimeout(() => {
+            this.toggleOverlay() 
+          }, 1000);
+        }
+      })
       // DIRECCIÓN //
       if(!this.order?.items[0]?.deliveryLocation?.street){
         this.address = `${this.order?.items[0]?.deliveryLocation?.nickName}, República Dominicana`
@@ -431,13 +437,6 @@ export class OrderDetailComponent implements OnInit {
       deliveryZone: deliveryZone ? deliveryZone : null,
       reservation: reservation ? reservation : null,
     };
-
-    // VERIFICAMOS PARA MOSTRAR EL OVERLAY DE AGRADECIMIENTO //
-    if(this.headerService.user)
-      if(this.headerService.user._id == this.order.user._id)
-        setTimeout(() => {
-          this.toggleOverlay() 
-        }, 100);
 
     this.buildStatusList();
     await this.isMerchantOwner(this.order);
