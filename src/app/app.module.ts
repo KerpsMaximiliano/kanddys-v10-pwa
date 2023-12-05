@@ -27,9 +27,9 @@ import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
     CommonModule,
     // SocialLoginModule,
     AppRoutingModule,
-    ServiceWorkerModule.register('service-worker.js', {
-      enabled: environment.production,
-    }),
+    // ServiceWorkerModule.register('service-worker.js', {
+    //   enabled: environment.production,
+    // }),
     SharedModule,
     GraphQLModule,
     HttpClientModule,
@@ -37,6 +37,9 @@ import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
     ToastrModule.forRoot({
       positionClass: 'toast-bottom-center',
       preventDuplicates: true,
+    }),
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
     }),
   ],
   providers: [

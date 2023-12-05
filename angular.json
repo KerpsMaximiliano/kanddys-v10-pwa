@@ -34,11 +34,7 @@
               "src/styles.scss",
               "node_modules/ngx-toastr/toastr.css"
             ],
-            "stylePreprocessorOptions": {
-              "includePaths": [
-                "src/scss"
-              ]
-            },
+            "stylePreprocessorOptions": { "includePaths": ["src/scss"] },
             "scripts": []
           },
           "configurations": {
@@ -126,9 +122,7 @@
               "tsconfig.spec.json",
               "e2e/tsconfig.json"
             ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         },
         "e2e": {
@@ -138,16 +132,12 @@
             "devServerTarget": "rewardcharly:serve"
           },
           "configurations": {
-            "production": {
-              "devServerTarget": "rewardcharly:serve:production"
-            }
+            "production": { "devServerTarget": "rewardcharly:serve:production" }
           }
         }
       }
     }
   },
   "defaultProject": "rewardcharly",
-  "cli": {
-    "analytics": false
-  }
+  "cli": { "analytics": false }
 }
