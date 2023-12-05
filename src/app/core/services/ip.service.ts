@@ -9,6 +9,6 @@ export class IpService {
   constructor(private http: HttpClient) {}
 
   getIp(): Observable<any> {
-    return this.http.get('http://api.ipify.org/?format=json');
+    return this.http.get('https://api.ipify.org/?format=json');
   }
 }
