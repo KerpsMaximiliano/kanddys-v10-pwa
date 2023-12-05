@@ -84,7 +84,7 @@ export class ShareLinkAndLaiaStatusComponent implements OnInit, OnDestroy {
 
   async updateConfiguration(type: string, status: boolean) {
     let body;
-    if(type === 'users') body = { logged: status};
+    if(type === 'users') body = { logged: status, notLogged: status };
     else if(type === 'whatsapp') body = { whatsapp: status};
     else if(type === 'iframe') body = { iframe: status};
 
