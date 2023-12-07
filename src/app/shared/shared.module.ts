@@ -259,8 +259,15 @@ import { ProgressDialogComponent } from './dialogs/progress-dialog/progress-dial
 import { FiscalReceiptDialogComponent } from './dialogs/fiscal-receipt-dialog/fiscal-receipt-dialog.component';
 import { SliderComponent } from './components/slider/slider.component';
 
+// * Components.
+// Laia Input.
+import { LaiaInputComponent } from './components/laia-input/laia-input.component';
+
+// * Dialogs.
+// Whatsapp.
+import { WhatsappDialogComponent } from './dialogs/whatsapp-dialog/whatsapp-dialog.component';
+
 const imports = [
-  
   CommonModule,
   DialogModule,
   NgxFormsModule,
@@ -527,7 +534,11 @@ const declarations = [
   ShareLinkInfoComponent,
   SliderComponent,
   OverlayDialogComponent,
-  ProgressDialogComponent
+  ProgressDialogComponent,
+  // * Components.
+  LaiaInputComponent, // Laia Input.
+  // * Dialogs.
+  WhatsappDialogComponent, // Whatsapp.
 ];
 
 @NgModule({
