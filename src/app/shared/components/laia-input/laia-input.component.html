@@ -1,14 +1,34 @@
 <div>
   <button mat-icon-button routerLink="../laiachat-landing">
-    <mat-icon matBadge="1" matBadgeSize="small" matBadgeColor="accent">chat</mat-icon>
+    <mat-icon matBadge="1" matBadgeSize="small" matBadgeColor="accent"
+      >chat</mat-icon
+    >
   </button>
-  <div [ngStyle]="{'grid-template-columns': textarea.value ? '1fr max-content' : 'max-content 1fr max-content'}">
-    <button mat-icon-button *ngIf="!textarea.value" (click)="open()"><mat-icon>add</mat-icon></button>
-    <textarea matInput cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="1" cdkAutosizeMaxRows="6"
-      [formControl]="textarea" [placeholder]="config.placeholder" (keydown.enter)="textarea.value && record()">
+  <div
+    [ngStyle]="{
+      'grid-template-columns': textarea.value
+        ? '1fr max-content'
+        : 'max-content 1fr max-content'
+    }"
+  >
+    <button mat-icon-button *ngIf="!textarea.value" (click)="open()">
+      <mat-icon>add</mat-icon>
+    </button>
+    <textarea
+      matInput
+      cdkTextareaAutosize
+      #autosize="cdkTextareaAutosize"
+      cdkAutosizeMinRows="1"
+      cdkAutosizeMaxRows="6"
+      [formControl]="textarea"
+      [placeholder]="
+        config?.placeholder ? config.placeholder : '¿En qué puedo ayudarte hoy?'
+      "
+      (keydown.enter)="textarea.value && record()"
+    >
     </textarea>
     <button mat-icon-button (click)="record()">
-      <mat-icon>{{ textarea.value ? 'send' : 'graphic_eq' }} </mat-icon>
+      <mat-icon>{{ textarea.value ? "send" : "graphic_eq" }} </mat-icon>
     </button>
   </div>
 </div>

@@ -35,7 +35,7 @@ interface IData {
 }
 
 interface IConfig {
-  placeholder: string;
+  placeholder?: string;
   store?: string;
 }
 
@@ -43,7 +43,7 @@ interface IConfig {
 import { FormControl } from '@angular/forms';
 
 // * Material.
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 
 // * Components.
 import { AudioRecorderComponent } from 'src/app/shared/components/audio-recorder/audio-recorder.component';
@@ -139,7 +139,7 @@ export class LaiaInputComponent implements AfterViewInit, OnDestroy {
   private _redirect(message: string): void {
     let url: string = `/ecommerce/${this._slug}/chat-merchant`;
     if (this.config.store) {
-      url = `/ecommerce/${this._slug}/chat-merchant/${this.config.store}`;
+      url = `/ecommerce/${this.config.store}/chat-merchant`;
     }
     this._router.navigate([url], {
       queryParams: {

@@ -1,4 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
+
+// * Environment.
+import { environment } from 'src/environments/environment';
+
+// * Services.
+import { MerchantsService } from 'src/app/core/services/merchants.service';
+
+// * Material.
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 /**
  * @class
@@ -9,24 +18,17 @@ import { Component } from '@angular/core';
  *
  * @public
  * @property url - Dirección de la conversación de WhatsApp.
+ * @property status - Estado de la solicitud.
+ * @property data - Datos inyectados en el diálogo: slug.
  *
  * @private
- * @property _phone - Número de teléfono del usuario.
+ * @property _merchantService - Servicio para interactuar con los comerciantes.
+ * @property dialogRef - Referencia al diálogo abierto.
  */
 @Component({
   selector: 'app-whatsapp-dialog',
   template: `
-    <div>
-      <p>Abrir la conversación en WhatsApp</p>
-      <a [href]="url" target="_blank">
-        <button mat-icon-button>
-          <mat-icon>open_in_new</mat-icon>
-        </button>
-      </a>
-    </div>
-  `,
-  styles: [
-    `
+    <style>
       div {
         background-color: #181d17;
         width: 100%;
@@ -36,31 +38,52 @@ import { Component } from '@angular/core';
         margin: 0;
         padding: 16px;
         border-radius: 12px;
-
-        & p {
-          margin: 0;
-          color: #c4c5c3;
-          font-size: 16px;
-        }
-
-        & button {
-          background-color: #353434;
-          color: #ffffff;
-        }
       }
-    `,
-  ],
+
+      p {
+        margin: 0;
+        color: #c4c5c3;
+        font-size: 16px;
+      }
+
+      button {
+        background-color: #353434;
+        color: #ffffff;
+      }
+    </style>
+    <div>
+      <p>Abrir la conversación en WhatsApp</p>
+      <a [href]="url" *ngIf="status" target="_blank">
+        <button mat-icon-button>
+          <mat-icon>open_in_new</mat-icon>
+        </button>
+      </a>
+    </div>
+  `,
 })
 export class WhatsappDialogComponent {
   public url: string;
+  public status: boolean = false;
 
-  private _phone: string = '0';
-
-  // private _phoneService: PhoneService
-  constructor() {}
+  constructor(
+    private _merchantService: MerchantsService,
+    public dialogRef: MatDialogRef<WhatsappDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {}
 
   public ngOnInit(): void {
-    // const phone: string = this._phoneService.phone();
-    // this._phone = `https://api.whatsapp.com/send?phone=${this._phone}`;
+    let id: string = environment.ai.slug;
+    if (this.data?.slug) id = this.data.slug;
+    this._merchantService
+      .merchantBySlug(id)
+      .then((res: any) => {
+        if (res?.owner?.phone) {
+          this.status = true;
+          this.url = `https://api.whatsapp.com/send?phone=${res.owner.phone}`;
+        }
+      })
+      .catch((err) => {
+        console.error('whatsapp-dialog.component.ts => ngOnInit() => ', err);
+      });
   }
 }
